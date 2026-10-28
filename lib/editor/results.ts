@@ -72,3 +72,25 @@ export function gradGauge(g: GradDiff, width = 12): string {
   for (let i = 0; i < width; i++) bar += i === t ? "|" : i < e ? "#" : ".";
   return `[${bar}] err ${g.relError.toExponential(1)} (limit ${g.tol.toExponential(0)})`;
 }
+
+export interface CppCaseRow {
+  title: string;
+  verdict: string;
+  ms: number;
+  hidden: boolean;
+  detail?: string;
+}
+
+/** Sample cases show their first difference; hidden cases only show the verdict, so inputs cannot be read off. */
+export function buildCppRows(sample: { name: string; verdict: string; ms: number; detail?: string }[], hidden: { verdict: string; ms: number }[]): CppCaseRow[] {
+  return [
+    ...sample.map((c) => ({ title: c.name, verdict: c.verdict, ms: c.ms, hidden: false, detail: c.detail })),
+    ...hidden.map((c, i) => ({
+      title: `hidden check ${i + 1}`,
+      verdict: c.verdict,
+      ms: c.ms,
+      hidden: true,
+      detail: c.verdict === "AC" ? undefined : "A hidden check failed. Re-read the statement and try other inputs.",
+    })),
+  ];
+}

@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { Workspace, validatePath, languageOf } from "@/lib/editor/workspace";
 import { MemoryDraftStore, createAutosave, IdbDraftStore } from "@/lib/editor/drafts";
-import { buildReport, gradGauge, parseGradDiff } from "@/lib/editor/results";
+import { buildCppRows, buildReport, gradGauge, parseGradDiff } from "@/lib/editor/results";
+import { playerPackage } from "@/lib/editor/tasks";
+import { SIGMOID_TASK } from "@/lib/editor/samples";
 
 const starter = { "main.py": "x = 1\n", "util/helpers.py": "def f(): ...\n" };
 
@@ -99,5 +101,18 @@ describe("results", () => {
   });
   it("draws a gauge", () => {
     expect(gradGauge({ relError: 1e-9, tol: 1e-6 })).toMatch(/^\[###\.\.\.\|\.{5}\] err 1\.0e-9/);
+  });
+});
+
+describe("editor workbench helpers", () => {
+  it("hides hidden C++ case names and details", () => {
+    const rows = buildCppRows([{ name: "three", verdict: "WA", ms: 3, detail: "line 1: expected 1 2 3" }], [{ verdict: "WA", ms: 2 }]);
+    expect(rows[0].detail).toContain("expected");
+    expect(rows[1].title).toBe("hidden check 1");
+    expect(rows[1].detail).not.toMatch(/expected|\d+ \d+/);
+  });
+
+  it("mounts only non-entry python files as the player package", () => {
+    expect(Object.keys(playerPackage(SIGMOID_TASK, SIGMOID_TASK.starter))).toEqual(["helpers.py"]);
   });
 });

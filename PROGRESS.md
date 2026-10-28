@@ -54,3 +54,11 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Known gaps: the IndexedDB backend is only tested for its failure path (no browser IDB in vitest); the real round trip is covered when A5b's Playwright smoke runs.
 - Next: A5b (CodeMirror editor UI).
 - Note: the first `npm test` run in a cold container reported 3 unhandled errors and skipped the 8 real-runtime tests (likely the cold toolchain staging); the immediate re-run passed 37/37.
+
+## 2026-10-28: A5b editor UI
+- Added `components/CodeEditor.tsx` (CodeMirror 6: Python/C++ highlighting, dark pixel-matched theme, per-file state so undo survives tab switches, failing-line marker), `components/EditorWorkbench.tsx` (file tree, tabs, new/delete/reset file with path validation, drafts via `lib/editor/drafts.ts` with autosave and restore, Run = sample checks, Submit = sample + hidden, test panel with gradient-check gauge, masked hidden checks, stdout, C++ compile errors with hints), `/dev/editor`, `lib/editor/tasks.ts` + `samples.ts` (a Python sigmoid task with a second `player` package file, a C++ sort task), `buildCppRows` (masks hidden C++ cases), `npm run smoke:editor`.
+- Python: the entry file runs as `__main__`; other `.py` files are mounted as the `player` package. C++: only the entry file is compiled.
+- Verification: `lint`, `typecheck`, `test` (39 pass, 2 new), `content:verify`, `build`, `build:pages` pass. `npm run smoke:editor` passes at desktop and iPhone 14 (starter fails, wrong derivative shows the gauge, correct solution accepted with hidden checks, draft restored after reload, unsafe path rejected, C++ reject/accept/compile error; no console errors or horizontal overflow); screenshots inspected.
+- CI and Pages deploy confirmation skipped (Actions quota exhausted until 2026-11-01).
+- Known gaps: multi-file C++ (includes between player files) is not supported yet; no rename UI (logic exists); no jump-to-definition or search (ARCH §6 later); no autocomplete.
+- Next: A6 (save system v1).
