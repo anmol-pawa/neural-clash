@@ -36,3 +36,13 @@ Append a dated entry after every run: what changed, how it was verified (command
 - CI and Pages deploy confirmation skipped (Actions quota exhausted until 2026-11-01).
 - Known gaps: TLE is only tested in the browser smoke (a sync loop can't be stopped in Node); no memory-limit verdict (reported as RE); no real-iPhone check; the `class Solution` harness comes with A4.
 - Next: A4 (content pipeline).
+
+## 2026-10-28: A4 content pipeline
+- Added `scripts/content-verify.mjs` (`npm run content:verify`): validates and natively verifies Lab modules (reference passes visible + hidden tests incl. finite-difference gradient checks; the unmodified starter and every `wrong/*.py` must fail) and problems (reference vs brute on seeded cases from `gen.py`, every wrong solution must earn its documented verdict, mediums/hards need a TLE wrong solution, 3-rung hint ladder, complexity, editorial). Formats are documented in ARCH §4.
+- Samples: Lab `content/labs/linear-gd` (MSE gradient + GD step, 3 wrong implementations) and problem `content/problems/top-k-tokens` (Hot Tokens, M, 2 WA + 1 TLE wrongs).
+- `tests/content.test.ts`: the verifier accepts both samples and rejects mutated packages (wrong reference gradient, weak tests, undocumented wrong, reference/brute disagreement, missing TLE).
+- Verification: `lint`, `typecheck`, `test` (24 pass), `build`, `build:pages`, `content:verify` (about 16 s) all pass. No visual change, so no screenshots.
+- Environment note: in this image `python3` is 3.11 without numpy while `/usr/bin/python3` has it; the verifier probes for one (or set `$PYTHON`).
+- CI and Pages deploy confirmation skipped (Actions quota exhausted until 2026-11-01). `ci.yml` does not yet run `npm run content:verify`; add that step after the quota period (workflow edits are frozen until then).
+- Known gaps: no `class Solution` harness or in-browser run of packages yet (A5); Lab packages are not yet loaded by the app; hidden tests ship as files, not yet bundled as data.
+- Next: A5 (editors).

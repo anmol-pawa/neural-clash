@@ -12,6 +12,7 @@
     "lint": "eslint",
     "typecheck": "next typegen && tsc --noEmit",
     "test": "vitest run",
+    "content:verify": "node scripts/content-verify.mjs",
     "smoke:pyodide": "node scripts/smoke-pyodide.mjs",
     "smoke:judge": "node scripts/smoke-judge.mjs",
     "build:pages": "npm run stage:pyodide && npm run stage:clang && STATIC_EXPORT=1 BASE_PATH=${BASE_PATH-/neural-clash} next build && BASE_PATH=${BASE_PATH-/neural-clash} node scripts/gen-sw.mjs"

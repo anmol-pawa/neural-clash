@@ -1,0 +1,12 @@
+{
+  "id": "linear-gd",
+  "title": "Linear model and gradient descent",
+  "phase": "forge",
+  "language": "python",
+  "functions": ["mse_loss_grad", "gd_step"],
+  "wrong": {
+    "sum_not_mean.py": "gradient is not divided by N (fails the finite-difference check)",
+    "missing_transpose.py": "uses X instead of X.T in the gradient (shape error)",
+    "step_adds.py": "gd_step moves uphill (adds the gradient)"
+  }
+}

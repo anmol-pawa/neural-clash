@@ -1,0 +1,32 @@
+{
+  "id": "top-k-tokens",
+  "title": "Hot Tokens",
+  "difficulty": "M",
+  "language": "cpp",
+  "tags": ["hash-map", "heap", "sorting"],
+  "similar": "LeetCode 347 Top K Frequent Elements",
+  "compare": "tokens",
+  "timeLimitMs": 1000,
+  "complexity": { "time": "O(n log k)", "space": "O(n)" },
+  "groups": {
+    "sample": [1],
+    "edge": [1, 2, 3, 4],
+    "random": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+    "perf": [1, 2]
+  },
+  "hints": [
+    "How many times does each token appear? Which structure answers that in one pass?",
+    "You need the k best by (count, then smaller id). Sorting every distinct token works; can you keep only k of them?",
+    "Count with a hash map, then keep a min-heap of size k ordered by (count asc, id desc) so the weakest candidate is on top."
+  ],
+  "wrong": {
+    "tie_larger_first.cpp": "breaks ties by larger token id instead of smaller",
+    "off_by_one_k.cpp": "returns k-1 tokens",
+    "tle_quadratic.cpp": "counts with a linear scan per token (quadratic, fails the perf group)"
+  },
+  "wrongExpect": {
+    "tie_larger_first.cpp": "WA",
+    "off_by_one_k.cpp": "WA",
+    "tle_quadratic.cpp": "TLE"
+  }
+}
