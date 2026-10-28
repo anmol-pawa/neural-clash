@@ -28,3 +28,12 @@ Append a dated entry after every run: what changed, how it was verified (command
 - CI and Pages deploy confirmation skipped (Actions quota exhausted until 2026-11-01).
 - Known gaps: load progress is by stage, not bytes; no real-iPhone memory check; CI downloads a ~340 MB tarball when `.cache/` is cold (owner may prefer hosting the wheel; see ADR). The session runs on branch `claude/wonderful-goodall-n5g3zi` as well as `main`.
 - Next: A3 (C++ judge).
+
+## 2026-10-28: A3a C++ judge core
+- Algo Clash has no `lib/judge/` yet, so I ran the spike and wrote ADR 0002. Added `lib/judge/` (`core.ts` compile + run + verdict mapping, `wasi.ts` minimal sandboxed WASI shim, `stdcxx.ts` `bits/stdc++.h` shim) and `tests/judge.core.test.ts` (real clang in Node: AC path with stdin/stdout, CE diagnostics, abort → RE, exit code → RE).
+- Findings (ADR): exceptions unsupported (no libc++abi runtime; must use `-fno-exceptions`, library throws abort → RE); compile ~5-8 s for a small STL file (`-O2`, warm ~5 s); output ~600 KB; ~105 MB of clang assets to fetch; recursion depth is bounded by the engine stack, not `-z stack-size`.
+- Verification: `lint`, `typecheck`, `test`, `build`, `build:pages` (see commit). No visual change, so no screenshots.
+- CI and Pages deploy confirmation skipped (Actions quota exhausted until 2026-11-01).
+- Known gaps: no browser worker, TLE timeout, asset caching or iPhone measurement yet (A3b); `@yowasp/clang` is a devDependency for now and becomes a staged asset in A3b.
+- Session branch: `claude/wonderful-goodall-pwateo` (pushed instead of `main` per the session's branch instructions).
+- Next: A3b.
