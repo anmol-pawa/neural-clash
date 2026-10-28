@@ -21,7 +21,7 @@ for (const file of walk(out).sort()) {
   const rel = relative(out, file).split(sep).join("/");
   if (rel === "sw.js" || rel === ".nojekyll" || rel.endsWith(".map")) continue;
   // The Python runtime (~15 MB) is cached on first use instead of on install, in a cache that survives deploys.
-  if (rel.startsWith("pyodide/")) continue;
+  if (rel.startsWith("pyodide/") || rel.startsWith("clang/")) continue;
   hash.update(rel).update(readFileSync(file));
   // serve directory indexes by their pretty URL too (…/campaign/)
   urls.push(`${base}/${rel}`);
@@ -53,13 +53,15 @@ const forWorker = (req, res) =>
     : res;
 
 const PY_CACHE = "nc-pyodide-v1"; // not prefixed "neural-clash-", so deploys keep it
+const CLANG_CACHE = "nc-clang-v1"; // the ~100 MB C++ toolchain: cached on first use, survives deploys
 
 self.addEventListener("fetch", (e) => {
   const req = e.request;
   if (req.method !== "GET" || new URL(req.url).origin !== location.origin) return;
-  if (new URL(req.url).pathname.startsWith("${base}/pyodide/")) {
+  const heavy = new URL(req.url).pathname.startsWith("${base}/pyodide/") ? PY_CACHE : new URL(req.url).pathname.startsWith("${base}/clang/") ? CLANG_CACHE : null;
+  if (heavy) {
     e.respondWith(
-      caches.open(PY_CACHE).then((c) =>
+      caches.open(heavy).then((c) =>
         c.match(req).then((hit) => hit || fetch(req).then((res) => { if (res.ok) c.put(req, res.clone()); return res; })),
       ),
     );

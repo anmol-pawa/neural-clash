@@ -5,14 +5,16 @@
   "description": "Neural Clash: a creature RPG where your companion is a neural network you implement and train",
   "scripts": {
     "stage:pyodide": "node scripts/fetch-pyodide.mjs",
-    "dev": "npm run stage:pyodide && next dev",
-    "build": "npm run stage:pyodide && next build",
+    "stage:clang": "node scripts/fetch-clang.mjs",
+    "dev": "npm run stage:pyodide && npm run stage:clang && next dev",
+    "build": "npm run stage:pyodide && npm run stage:clang && next build",
     "start": "next start",
     "lint": "eslint",
     "typecheck": "next typegen && tsc --noEmit",
     "test": "vitest run",
     "smoke:pyodide": "node scripts/smoke-pyodide.mjs",
-    "build:pages": "npm run stage:pyodide && STATIC_EXPORT=1 BASE_PATH=${BASE_PATH-/neural-clash} next build && BASE_PATH=${BASE_PATH-/neural-clash} node scripts/gen-sw.mjs"
+    "smoke:judge": "node scripts/smoke-judge.mjs",
+    "build:pages": "npm run stage:pyodide && npm run stage:clang && STATIC_EXPORT=1 BASE_PATH=${BASE_PATH-/neural-clash} next build && BASE_PATH=${BASE_PATH-/neural-clash} node scripts/gen-sw.mjs"
   },
   "dependencies": {
     "next": "^16.2.10",
@@ -24,6 +26,7 @@
     "@types/node": "^24.19.0",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
+    "@yowasp/clang": "22.0.0-git20542-10",
     "esbuild": "^0.28.2",
     "eslint": "^9.39.5",
     "eslint-config-next": "^16.2.10",

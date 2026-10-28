@@ -28,3 +28,11 @@ Append a dated entry after every run: what changed, how it was verified (command
 - CI and Pages deploy confirmation skipped (Actions quota exhausted until 2026-11-01).
 - Known gaps: load progress is by stage, not bytes; no real-iPhone memory check; CI downloads a ~340 MB tarball when `.cache/` is cold (owner may prefer hosting the wheel; see ADR). The session runs on branch `claude/wonderful-goodall-n5g3zi` as well as `main`.
 - Next: A3 (C++ judge).
+
+## 2026-10-28: A3 C++ judge
+- Algo Clash has no judge yet, so this ran the spike (ADR 0002). Added `lib/judge/`: `wasi.ts` (minimal WASI host), `compile.ts` (clang flags, `bits/stdc++.h` shim), `diagnostics.ts` (clang errors to line/column/snippet/hint), `verdict.ts` (AC/WA/RE/TLE/OLE, lines/tokens/float compare), clang and runner workers, `client.ts` (warm compiler worker, one killable runner worker per case), `scripts/fetch-clang.mjs`, `/dev/judge`, `scripts/smoke-judge.mjs`. The service worker caches `clang/` on first use.
+- Findings: no `<bits/stdc++.h>` in libc++ (shimmed); no exception runtime, so the judge builds with `-fno-exceptions` and hints on throw/try; compile about 3 s warm, toolchain about 105 MB.
+- Verification: `lint`, `typecheck`, `test` (17 pass, 7 new against real clang: AC/WA, compile-error hint, abort, exit code, stack overflow, output flood, compare modes), `build`, `build:pages` pass. `npm run smoke:judge` passes at desktop and iPhone 14 (AC, WA, RE, TLE, CE with hint, recovery after a TLE; no console errors or horizontal overflow); screenshots inspected.
+- CI and Pages deploy confirmation skipped (Actions quota exhausted until 2026-11-01).
+- Known gaps: TLE is only tested in the browser smoke (a sync loop can't be stopped in Node); no memory-limit verdict (reported as RE); no real-iPhone check; the `class Solution` harness comes with A4.
+- Next: A4 (content pipeline).
