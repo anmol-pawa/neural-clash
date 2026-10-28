@@ -20,6 +20,8 @@ const urls = [];
 for (const file of walk(out).sort()) {
   const rel = relative(out, file).split(sep).join("/");
   if (rel === "sw.js" || rel === ".nojekyll" || rel.endsWith(".map")) continue;
+  // The Python runtime (~15 MB) is cached on first use instead of on install, in a cache that survives deploys.
+  if (rel.startsWith("pyodide/")) continue;
   hash.update(rel).update(readFileSync(file));
   // serve directory indexes by their pretty URL too (…/campaign/)
   urls.push(`${base}/${rel}`);
@@ -50,9 +52,19 @@ const forWorker = (req, res) =>
     ? new Response(res.body, { status: res.status, statusText: res.statusText, headers: res.headers })
     : res;
 
+const PY_CACHE = "nc-pyodide-v1"; // not prefixed "neural-clash-", so deploys keep it
+
 self.addEventListener("fetch", (e) => {
   const req = e.request;
   if (req.method !== "GET" || new URL(req.url).origin !== location.origin) return;
+  if (new URL(req.url).pathname.startsWith("${base}/pyodide/")) {
+    e.respondWith(
+      caches.open(PY_CACHE).then((c) =>
+        c.match(req).then((hit) => hit || fetch(req).then((res) => { if (res.ok) c.put(req, res.clone()); return res; })),
+      ),
+    );
+    return;
+  }
   e.respondWith(
     caches.match(req, { ignoreSearch: true }).then(
       (hit) =>

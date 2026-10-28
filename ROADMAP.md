@@ -9,7 +9,7 @@ Work top to bottom: take the **first unchecked box**, and split big boxes into r
 ## Phase A: Foundation
 
 - [x] A1. **Scaffold from Query Clash:** Next.js 16 / React 19 / Pixi 8 / Tailwind 4, PWA + service worker (keep the worker-fragment fix), `ci.yml` (also installs python3 deps from `requirements-dev.txt`) + `pages.yml` (basePath `/neural-clash`), scripts, `.routine/` lock and README. Remove all Query/SQL/PGlite references. The title screen renders.
-- [ ] A2. **Pyodide runtime** (ARCH §2): a worker with numpy, lazy load with progress, timeouts/respawn, stdout capture, the `nc_test` harness with a gradient checker, and a `/dev/pyodide` page. Write an ADR (version, size, load times on desktop and Playwright iPhone, offline caching, mobile policy). Add a Playwright smoke test.
+- [x] A2. **Pyodide runtime** (ARCH §2): a worker with numpy, lazy load with progress, timeouts/respawn, stdout capture, the `nc_test` harness with a gradient checker, and a `/dev/pyodide` page. Write an ADR (version, size, load times on desktop and Playwright iPhone, offline caching, mobile policy). Add a Playwright smoke test.
 - [ ] A3. **C++ judge:** port from `/home/user/algo-clash/lib/judge/` if present, else run the spike + ADR. Add `/dev/judge` and a smoke test.
 - [ ] A4. **Content pipeline** (ARCH §4): Lab module package (`lesson`, `spec.py`, `reference/`, `tests_visible.py`, `tests_hidden.py`, `wrong/`), problem packages (the Algo Clash format), `npm run content:verify` running native python3 and g++, `requirements-dev.txt`, and one sample of each.
 - [ ] A5. **Editors:** a multi-file Python/C++ editor with a file tree, Run/Submit, test results with gradient-check diffs, and drafts in IndexedDB.
