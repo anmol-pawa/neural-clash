@@ -1,0 +1,38 @@
+{
+  "name": "neural-clash",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Neural Clash — a creature RPG where your companion is a neural network you implement from scratch",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "typecheck": "next typegen && tsc --noEmit",
+    "test": "vitest run",
+    "build:pages": "STATIC_EXPORT=1 BASE_PATH=${BASE_PATH-/neural-clash} next build && BASE_PATH=${BASE_PATH-/neural-clash} node scripts/gen-sw.mjs"
+  },
+  "dependencies": {
+    "@codemirror/commands": "^6.11.1",
+    "@codemirror/language": "^6.12.4",
+    "@codemirror/state": "^6.7.6",
+    "@codemirror/view": "^6.43.13",
+    "codemirror": "^6.0.2",
+    "motion": "^13.4.4",
+    "next": "^16.2.10",
+    "pixi.js": "^8.21.0",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.3.3",
+    "@types/node": "^24.19.0",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "^16.2.10",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^5.9.3",
+    "vitest": "^5.0.2"
+  }
+}
