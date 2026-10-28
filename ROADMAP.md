@@ -14,7 +14,7 @@ Work top to bottom: take the **first unchecked box**, and split big boxes into r
 - [x] A4. **Content pipeline** (ARCH §4): Lab module package (`lesson`, `spec.py`, `reference/`, `tests_visible.py`, `tests_hidden.py`, `wrong/`), problem packages (the Algo Clash format), `npm run content:verify` running native python3 and g++, `requirements-dev.txt`, and one sample of each.
 - [x] A5a. **Editor logic** (pure, tested): immutable multi-file `Workspace` (tree, create/rename/remove/reset, dirty tracking, path validation), draft stores (IndexedDB with graceful fallback, debounced autosave), test-report view model (hidden tests masked, gradient-check diff parsing and gauge).
 - [x] A5b. **Editor UI:** CodeMirror 6 multi-file editor (file tree, tabs, Python/C++ highlighting), Run/Submit wired to Pyodide and the C++ judge, test panel with gradient-check diffs, drafts via `lib/editor/drafts.ts`, `/dev/editor`, Playwright smoke at desktop and iPhone 14.
-- [ ] A6. **Save system v1** (port from Algo Clash if present), including storage of the player's `latent` package files.
+- [x] A6. **Save system v1** (port from Algo Clash if present), including storage of the player's `latent` package files.
 
 ## Phase B: Vertical slice (Python Port → Perceptron, about 40 minutes)
 

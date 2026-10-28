@@ -62,3 +62,10 @@ Append a dated entry after every run: what changed, how it was verified (command
 - CI and Pages deploy confirmation skipped (Actions quota exhausted until 2026-11-01).
 - Known gaps: multi-file C++ (includes between player files) is not supported yet; no rename UI (logic exists); no jump-to-definition or search (ARCH §6 later); no autocomplete.
 - Next: A6 (save system v1).
+
+## 2026-10-28: A6 save system v1
+- Algo Clash has no save yet, so this adapts Query Clash's `save.ts` into `lib/save/`: `schema.ts` (versioned `SaveData`, `migrate` that rebuilds a valid save from any input, `sanitizeLatent` keeping only safe `.py` paths within size limits, tagged JSON `exportSave`/`importSave` that rejects foreign or newer files, `latentMount` for the `latent` package with the "use reference" toggle marked assisted), `store.ts` (`SaveBackend` with Memory and IndexedDB backends that never throw, `SaveManager` with subscribe, debounced persist, replace/reset/flush), `react.ts` (`useSave`, loads on first use, flushes on `pagehide`).
+- Verification: `lint`, `typecheck`, `test` (48 pass, 9 new in `tests/save.test.ts`), `content:verify`, `build`, `build:pages` pass. No visual change, so no screenshots.
+- CI and Pages deploy confirmation skipped (Actions quota exhausted until 2026-11-01).
+- Known gaps: the IndexedDB round trip is only tested for its failure path (no browser IDB in vitest); no UI yet for export/import/reset (comes with the settings screen); the hook is not yet used by a page; the Pyodide mount of `latent` into the worker FS is wired when Lab flow lands (B6). Two of three `npm test` runs early in this session showed 3 unhandled errors and skipped the 8 real-runtime tests (cold toolchain staging while other commands ran); sequential reruns passed 48/48.
+- Next: B1 (art: Neuron-Pup Perceptron, player, Professor Okafor, tileset).
