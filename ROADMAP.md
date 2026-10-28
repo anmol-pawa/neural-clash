@@ -18,7 +18,8 @@ Work top to bottom: take the **first unchecked box**, and split big boxes into r
 
 ## Phase B: Vertical slice (Python Port → Perceptron, about 40 minutes)
 
-- [ ] B1. **Art:** Neuron-Pup Perceptron form (64×64, original, full animation set), the player, Professor Okafor (overworld + portrait), the Python Port tileset and the Lab interior.
+- [x] B1a. **Art tooling + Neuron-Pup Perceptron:** palette/char-grid `SpriteDef`, shaded-primitive rasteriser (`scripts/art/`), front + back 64×64 sprites (idle/attack/hurt/faint, front also evolve), `/dev/sprites` review page, sprite tests.
+- [ ] B1b. **Art:** the player (overworld walk cycles + portrait), Professor Okafor (overworld + portrait), the Python Port tileset and the Lab interior.
 - [ ] B2. **Overworld + dialogue engine** (port from Algo Clash if present).
 - [ ] B3. **Battle stage and card battles:** MCQ, derive-it (numeric), shape check, metric drill, spot-the-bug. The solvers in `lib/solvers/` are tested.
 - [ ] B4. **Python Port content, part 1** (CUR F1: Python + interview Python): lessons, 30 cards, 10 judged functions.

@@ -69,3 +69,13 @@ Append a dated entry after every run: what changed, how it was verified (command
 - CI and Pages deploy confirmation skipped (Actions quota exhausted until 2026-11-01).
 - Known gaps: the IndexedDB round trip is only tested for its failure path (no browser IDB in vitest); no UI yet for export/import/reset (comes with the settings screen); the hook is not yet used by a page; the Pyodide mount of `latent` into the worker FS is wired when Lab flow lands (B6). Two of three `npm test` runs early in this session showed 3 unhandled errors and skipped the 8 real-runtime tests (cold toolchain staging while other commands ran); sequential reruns passed 48/48.
 - Next: B1 (art: Neuron-Pup Perceptron, player, Professor Okafor, tileset).
+
+## 2026-10-28: B1a Neuron-Pup Perceptron art
+- B1 was too big for one run, so it is split (B1a done, B1b next: player, Professor Okafor, Python Port tileset, Lab interior).
+- Added `game/sprites/pixel.ts` (palette + char-grid `SpriteDef`, adapted from Query Clash), `scripts/art/raster.mjs` (shaded ellipse/disc/line primitives, silhouette + inter-part outline pass, TS module writer), `scripts/art/neuron-pup.mjs` (the design) and `scripts/art/preview.mjs` (PNG contact sheet). Generated `game/sprites/creatures/neuron-pup-perceptron{,-back}.ts` (64×64, 4-shade fur/belly/signal ramps, outline). Front: idle 4, attack 5 (with a signal bolt), hurt 3, faint 4, evolve 4 (aura rings). Back: idle 4, attack 3, hurt 2, faint 3.
+- Design reads as the concept: ears end in input nodes, the chest shows a 3-input perceptron (inputs, weighted sum, output), the tail ends in the bias knob, the forehead has a sigma gem.
+- `/dev/sprites` (`components/SpriteLab.tsx`) plays every animation at its fps on plain canvas with nearest-neighbour scaling. Pixi is not needed until the battle stage (B3).
+- Verification: `lint`, `typecheck`, `test` (61 pass, 13 new in `tests/sprites.test.ts`), `content:verify`, `build`, `build:pages` pass. Playwright on the static export at desktop 1280×900 and iPhone 14: no console errors, no horizontal overflow; screenshots inspected.
+- CI and Pages deploy confirmation skipped (GitHub Actions quota exhausted until 2026-11-01).
+- Known gaps: back view is simpler than the front (head reads large; polish later); evolve is aura-only until the Multilayer form exists for a real morph; no sprite-sheet PNG export yet; no hurt-flash tests beyond `frameToRGBA`. Cold containers need `npm run stage:pyodide && npm run stage:clang` before `npm test` or 8 runtime tests are skipped.
+- Next: B1b, then B2 (overworld + dialogue engine).
