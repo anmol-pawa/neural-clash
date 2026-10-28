@@ -46,3 +46,11 @@ Append a dated entry after every run: what changed, how it was verified (command
 - CI and Pages deploy confirmation skipped (Actions quota exhausted until 2026-11-01). `ci.yml` does not yet run `npm run content:verify`; add that step after the quota period (workflow edits are frozen until then).
 - Known gaps: no `class Solution` harness or in-browser run of packages yet (A5); Lab packages are not yet loaded by the app; hidden tests ship as files, not yet bundled as data.
 - Next: A5 (editors).
+
+## 2026-10-28: A5a editor logic
+- A5 was too big for one run, so it is split (ROADMAP A5a done, A5b UI next). Added `lib/editor/`: `workspace.ts` (immutable multi-file Workspace: path validation, tree, create/rename/remove/reset, dirty tracking vs starter, draft restore that drops unsafe paths), `drafts.ts` (DraftStore with Memory and IndexedDB backends that never throw into play, debounced autosave with flush), `results.ts` (test report view model: `test_hidden_*` failures are masked so values cannot be read off, gradient-check relative error parsed from the `nc_test` message, text gauge).
+- Verification: `lint`, `typecheck`, `test` (13 new in `tests/editor.test.ts`), `build`, `build:pages`, `content:verify` pass. No visual change, so no screenshots.
+- CI and Pages deploy confirmation skipped (Actions quota exhausted until 2026-11-01).
+- Known gaps: the IndexedDB backend is only tested for its failure path (no browser IDB in vitest); the real round trip is covered when A5b's Playwright smoke runs.
+- Next: A5b (CodeMirror editor UI).
+- Note: the first `npm test` run in a cold container reported 3 unhandled errors and skipped the 8 real-runtime tests (likely the cold toolchain staging); the immediate re-run passed 37/37.

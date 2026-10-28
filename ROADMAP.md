@@ -12,7 +12,8 @@ Work top to bottom: take the **first unchecked box**, and split big boxes into r
 - [x] A2. **Pyodide runtime** (ARCH §2): a worker with numpy, lazy load with progress, timeouts/respawn, stdout capture, the `nc_test` harness with a gradient checker, and a `/dev/pyodide` page. Write an ADR (version, size, load times on desktop and Playwright iPhone, offline caching, mobile policy). Add a Playwright smoke test.
 - [x] A3. **C++ judge:** port from `/home/user/algo-clash/lib/judge/` if present, else run the spike + ADR. Add `/dev/judge` and a smoke test.
 - [x] A4. **Content pipeline** (ARCH §4): Lab module package (`lesson`, `spec.py`, `reference/`, `tests_visible.py`, `tests_hidden.py`, `wrong/`), problem packages (the Algo Clash format), `npm run content:verify` running native python3 and g++, `requirements-dev.txt`, and one sample of each.
-- [ ] A5. **Editors:** a multi-file Python/C++ editor with a file tree, Run/Submit, test results with gradient-check diffs, and drafts in IndexedDB.
+- [x] A5a. **Editor logic** (pure, tested): immutable multi-file `Workspace` (tree, create/rename/remove/reset, dirty tracking, path validation), draft stores (IndexedDB with graceful fallback, debounced autosave), test-report view model (hidden tests masked, gradient-check diff parsing and gauge).
+- [ ] A5b. **Editor UI:** CodeMirror 6 multi-file editor (file tree, tabs, Python/C++ highlighting), Run/Submit wired to Pyodide and the C++ judge, test panel with gradient-check diffs, drafts via `lib/editor/drafts.ts`, `/dev/editor`, Playwright smoke at desktop and iPhone 14.
 - [ ] A6. **Save system v1** (port from Algo Clash if present), including storage of the player's `latent` package files.
 
 ## Phase B: Vertical slice (Python Port → Perceptron, about 40 minutes)
