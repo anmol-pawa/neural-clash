@@ -1,0 +1,14 @@
+{
+  "id": "py-top-k-frequent",
+  "title": "Top-k frequent words",
+  "phase": "python-port",
+  "language": "python",
+  "functions": [
+    "top_k_frequent"
+  ],
+  "wrong": {
+    "ties_first_seen.py": "breaks ties by first appearance (Counter.most_common) instead of alphabetically",
+    "ascending.py": "sorts by count ascending, returning the least frequent words",
+    "off_by_one.py": "returns k+1 words (slice end is k+1)"
+  }
+}

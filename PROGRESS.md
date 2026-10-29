@@ -152,3 +152,11 @@ Append a dated entry after every run: what changed, how it was verified (command
 - CI and Pages deploy confirmation skipped (Actions quota exhausted until 2026-11-01).
 - Known gaps: no syntax highlighting; lessons are not yet gated by progress or saved as read; "Practise" links to the generic demo battle, not a topic deck.
 - Next: B4c (10 judged Python functions).
+
+## 2026-10-29: B4c ten judged Python functions
+- Added ten Lab packages under `content/labs/py-*` (phase `python-port`): top-k frequent words, two sum, merge intervals, LRU cache, moving average, group anagrams, flatten (iterative, deep-nesting safe), running mean/variance (Welford), batch iterator (lazy generator), lower bound. Each has a lesson with the interview signal, a failing starter (`spec.py`), a reference, visible and hidden tests, and three documented wrong implementations (30 in total: ties by first-seen, self-pairing, touching intervals, no-refresh LRU, partial windows, `str` recursion, naive variance cancelling at 1e9, reused batch list, `bisect_right`, O(n²) and O(n) variants...).
+- Performance claims are tested without wall-clock flakiness: read-counting list subclasses (moving average, lower bound), a deep-nesting test and large inputs.
+- Verification: `content:verify` (every reference passes, every starter and wrong implementation fails the hidden tests; two weak suites found and strengthened), `lint` (warnings only), `typecheck`, `test` (155 pass; new inventory test), `build`, `build:pages`. No visual changes, so no screenshots.
+- CI and Pages deploy confirmation skipped (Actions quota exhausted until 2026-11-01).
+- Known gaps: the packages are not yet surfaced in the editor/task list or a `/labs` index (comes with the Lab flow, B6); no hint ladder or editorial per function (lesson only); timing-based TLE checks use read counts, not the Pyodide worker timeout.
+- Next: B5 (Python Port part 2: numpy, broadcasting, vectorisation).

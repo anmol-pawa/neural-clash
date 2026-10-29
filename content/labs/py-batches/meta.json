@@ -1,0 +1,14 @@
+{
+  "id": "py-batches",
+  "title": "Batch iterator",
+  "phase": "python-port",
+  "language": "python",
+  "functions": [
+    "batches"
+  ],
+  "wrong": {
+    "drops_last.py": "drops the final partial batch",
+    "reuses_list.py": "clears and reuses one list, so kept batches are all emptied or overwritten",
+    "needs_len.py": "slices by index, so it fails on generators and is not lazy"
+  }
+}

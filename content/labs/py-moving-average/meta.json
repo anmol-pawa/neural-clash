@@ -1,0 +1,14 @@
+{
+  "id": "py-moving-average",
+  "title": "Moving average",
+  "phase": "python-port",
+  "language": "python",
+  "functions": [
+    "moving_average"
+  ],
+  "wrong": {
+    "partial_windows.py": "includes the partial windows at the start (divides by the wrong count)",
+    "off_by_one_window.py": "slides with width w-1 (wrong subtraction index)",
+    "quadratic.py": "recomputes sum(xs[i:i+w]) for every position: correct but O(n*w), too slow"
+  }
+}

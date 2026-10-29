@@ -1,0 +1,14 @@
+{
+  "id": "py-two-sum",
+  "title": "Two sum with a hash map",
+  "phase": "python-port",
+  "language": "python",
+  "functions": [
+    "two_sum"
+  ],
+  "wrong": {
+    "self_pair.py": "looks the complement up after inserting, so an element can pair with itself",
+    "returns_values.py": "returns the two values instead of their indices",
+    "quadratic.py": "O(n^2) pair scan: correct but far too slow for the large hidden test"
+  }
+}

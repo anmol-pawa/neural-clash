@@ -1,4 +1,4 @@
-import { cpSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { cpSync, existsSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterAll, describe, expect, it } from "vitest";
@@ -61,5 +61,29 @@ describe("content:verify", () => {
     meta.wrongExpect["tle_quadratic.cpp"] = "WA";
     writeFileSync(join(dir, "meta.json"), JSON.stringify(meta));
     expect(verifyProblem(python, dir).some((e: string) => e.includes("need a wrong solution that must TLE"))).toBe(true);
+  });
+});
+
+describe("Python Port judged functions (B4c)", () => {
+  const labs = readdirSync(join(process.cwd(), "content/labs")).filter((n) => n.startsWith("py-"));
+  const meta = (id: string) => JSON.parse(readFileSync(join(process.cwd(), "content/labs", id, "meta.json"), "utf8"));
+
+  it("ships ten packages, each with a lesson, a failing starter and 3+ documented wrong implementations", () => {
+    expect(labs).toHaveLength(10);
+    for (const id of labs) {
+      const m = meta(id);
+      expect(m.phase).toBe("python-port");
+      expect(m.functions).toHaveLength(1);
+      expect(Object.keys(m.wrong).length).toBeGreaterThanOrEqual(3);
+      expect(existsSync(join(process.cwd(), "content/labs", id, "lesson.md"))).toBe(true);
+    }
+  });
+
+  it("each starter defines the advertised function and is unimplemented", () => {
+    for (const id of labs) {
+      const spec = readFileSync(join(process.cwd(), "content/labs", id, "spec.py"), "utf8");
+      expect(spec).toMatch(new RegExp(`(def|class) ${meta(id).functions[0]}\\b`));
+      expect(spec).toContain("NotImplementedError");
+    }
   });
 });

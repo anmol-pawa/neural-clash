@@ -1,0 +1,14 @@
+{
+  "id": "py-group-anagrams",
+  "title": "Group anagrams",
+  "phase": "python-port",
+  "language": "python",
+  "functions": [
+    "group_anagrams"
+  ],
+  "wrong": {
+    "by_length.py": "groups by word length instead of by letters",
+    "set_key.py": "keys on the set of letters, merging 'aab' with 'abb'",
+    "unsorted_output.py": "returns groups in insertion order without sorting"
+  }
+}

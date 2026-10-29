@@ -1,0 +1,14 @@
+{
+  "id": "py-flatten",
+  "title": "Flatten nested lists",
+  "phase": "python-port",
+  "language": "python",
+  "functions": [
+    "flatten"
+  ],
+  "wrong": {
+    "treats_str_as_container.py": "recurses into strings (RecursionError on one-character strings)",
+    "one_level.py": "flattens only a single level of nesting",
+    "recursive.py": "plain recursion: right for shallow input, RecursionError at depth 50,000"
+  }
+}

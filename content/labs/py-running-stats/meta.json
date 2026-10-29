@@ -1,0 +1,14 @@
+{
+  "id": "py-running-stats",
+  "title": "Running mean and variance",
+  "phase": "python-port",
+  "language": "python",
+  "functions": [
+    "RunningStats"
+  ],
+  "wrong": {
+    "naive_sum_squares.py": "E[x^2]-E[x]^2 cancels catastrophically with a 1e9 offset",
+    "population_variance.py": "divides by n instead of n - 1",
+    "shared_state.py": "keeps its totals in class attributes shared by every instance"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "id": "py-lower-bound",
+  "title": "Binary search (lower bound)",
+  "phase": "python-port",
+  "language": "python",
+  "functions": [
+    "lower_bound"
+  ],
+  "wrong": {
+    "upper_bound.py": "returns the index after the last equal element (bisect_right)",
+    "misses_end.py": "hi starts at len(a) - 1, so it can never return len(a)",
+    "linear_scan.py": "scans left to right: correct but O(n), caught by the read counter"
+  }
+}

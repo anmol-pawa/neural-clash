@@ -1,0 +1,14 @@
+{
+  "id": "py-merge-intervals",
+  "title": "Merge intervals",
+  "phase": "python-port",
+  "language": "python",
+  "functions": [
+    "merge_intervals"
+  ],
+  "wrong": {
+    "no_sort.py": "skips the sort, so unsorted input is merged wrongly",
+    "strict_overlap.py": "uses < so touching intervals are not merged",
+    "takes_last_end.py": "assigns the new end instead of max(), shrinking a container interval"
+  }
+}

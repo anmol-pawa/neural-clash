@@ -1,0 +1,14 @@
+{
+  "id": "py-lru-cache",
+  "title": "LRU cache",
+  "phase": "python-port",
+  "language": "python",
+  "functions": [
+    "LRUCache"
+  ],
+  "wrong": {
+    "get_no_refresh.py": "get() does not mark the key as recently used",
+    "put_no_refresh.py": "re-putting an existing key updates the value but not its recency",
+    "evicts_newest.py": "evicts the most recently used key (popitem() default pops the end)"
+  }
+}
