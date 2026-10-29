@@ -1,0 +1,15 @@
+{
+  "id": "np-one-hot",
+  "title": "One-hot encoding",
+  "phase": "python-port",
+  "language": "python",
+  "functions": [
+    "one_hot"
+  ],
+  "wrong": {
+    "python_loop.py": "loops over labels",
+    "infers_k.py": "width from labels.max()+1, ignoring k",
+    "negative_wraps.py": "no range check: -1 silently selects the last class",
+    "transposed.py": "returns (k, n)"
+  }
+}

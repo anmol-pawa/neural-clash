@@ -1,0 +1,15 @@
+{
+  "id": "np-topk-rows",
+  "title": "Top-k per row",
+  "phase": "python-port",
+  "language": "python",
+  "functions": [
+    "topk_rows"
+  ],
+  "wrong": {
+    "python_loop.py": "loops over rows",
+    "smallest.py": "returns the k smallest (forgot to negate)",
+    "unstable_ties.py": "default quicksort: ties come out in arbitrary order",
+    "index_order.py": "right columns but listed by column index, not by score"
+  }
+}

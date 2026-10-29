@@ -1,0 +1,16 @@
+{
+  "id": "np-standardize-cols",
+  "title": "Standardise columns",
+  "phase": "python-port",
+  "language": "python",
+  "functions": [
+    "standardize_cols"
+  ],
+  "wrong": {
+    "rows_not_cols.py": "standardises each row (axis=1)",
+    "constant_nan.py": "no zero-variance guard: NaN on a constant column",
+    "sample_std.py": "uses ddof=1 (sample std) so columns do not have std 1",
+    "in_place.py": "mutates the caller's array (and truncates integers)",
+    "python_loop.py": "loops over columns"
+  }
+}

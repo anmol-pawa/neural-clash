@@ -1,9 +1,11 @@
 """nc_test: the Neural Clash test harness. Runs unchanged in Pyodide and native python3.
 
 Tests are plain functions named ``test_*`` that raise on failure. Helpers:
-``assert_close``, ``grad_check`` (central finite differences) and ``guard_arrays``
+``assert_close``, ``grad_check`` (central finite differences), ``python_lines`` (counts executed
+Python lines, to prove a function is vectorised) and ``guard_arrays``
 (refuse huge allocations so a typo cannot freeze the tab).
 """
+import sys
 import traceback
 
 import numpy as np
@@ -54,6 +56,32 @@ def grad_check(f, x, analytic, eps=1e-5, tol=1e-6):
     if not err <= tol:
         raise GradCheckError(f"gradient check failed: relative error {err:.3g} > {tol:g}")
     return err
+
+
+def python_lines(fn, *args, **kwargs):
+    """Run ``fn`` and count the Python lines executed in the file that defines it.
+
+    A vectorised function runs a handful of lines whatever the input size; an
+    element loop runs at least one per element. Returns (result, line_count).
+    Works unchanged in Pyodide and native python3 (uses ``sys.settrace``).
+    """
+    filename = fn.__code__.co_filename
+    count = [0]
+
+    def tracer(frame, event, arg):
+        if frame.f_code.co_filename != filename:
+            return None
+        if event == "line":
+            count[0] += 1
+        return tracer
+
+    previous = sys.gettrace()
+    sys.settrace(tracer)
+    try:
+        result = fn(*args, **kwargs)
+    finally:
+        sys.settrace(previous)
+    return result, count[0]
 
 
 _limit = [5_000_000]

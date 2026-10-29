@@ -1,0 +1,15 @@
+{
+  "id": "np-cosine-sim",
+  "title": "Cosine similarity matrix",
+  "phase": "python-port",
+  "language": "python",
+  "functions": [
+    "cosine_sim"
+  ],
+  "wrong": {
+    "python_loops.py": "double Python loop",
+    "zero_row_nan.py": "no zero-norm guard",
+    "normalises_columns.py": "divides by column norms instead of row norms",
+    "raw_dot_product.py": "forgets to normalise (plain dot products)"
+  }
+}

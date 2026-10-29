@@ -169,3 +169,12 @@ Append a dated entry after every run: what changed, how it was verified (command
 - CI and Pages deploy confirmation skipped (Actions quota exhausted until 2026-11-01).
 - Known gaps: einsum and pandas-lite have no cards yet; shape card input accepts "error" but there is no hint ladder; numpy outputs depend on numpy 2.x printing (guarded by `--check` and the test).
 - Next: B5b (numpy vectorisation challenges).
+
+## 2026-10-29: B5b eight numpy vectorisation challenges
+- Eight Lab packages under `content/labs/np-*` (phase `python-port`): pairwise distances, row softmax, column standardisation, one-hot, cosine-similarity matrix, top-k per row, max drawdown, confusion matrix. Each has a lesson with the interview signal, a failing starter, reference, visible + hidden tests and 4-5 documented wrong versions (37 total): Python loops, missing clip (NaN), unstable softmax, wrong axis, ddof, in-place mutation, `labels.max()` width, silent negative-index wrap, `C[t,p] += 1` counting duplicates once, unstable tie order, global-vs-running peak, and so on.
+- "Vectorised" is proven, not asserted: new `nc_test.python_lines(fn, ...)` counts Python lines executed in the player's file via `sys.settrace` (works in Pyodide and native). Hidden tests require a handful of lines on thousands of rows, so a correct element-loop is rejected with a clear message. `nc_test.py.gen.ts` regenerated.
+- `content:verify` caught three of my own mistakes and I fixed them: a test scale where the reference itself could not meet its tolerance, a top-k reference that mishandled boundary ties (now a stable `argsort`; the `argpartition` trade-off is in the lesson), and an "unordered partition" wrong version that numpy 2.x happens to return sorted (replaced by a deterministic index-order wrong version).
+- Verification: `lint` (warnings only), `typecheck`, `test` (162 pass; new inventory + native verify of all `np-*` packages), `content:verify`, `build`, `build:pages` pass. No visual changes, so no screenshots.
+- CI and Pages deploy confirmation skipped (Actions quota exhausted until 2026-11-01).
+- Known gaps: packages are not yet surfaced in the editor or a labs index (Lab flow, B6); no hint ladder/editorial beyond the lesson; the line-count threshold is 40 lines, so tiny hand-unrolled code could pass (acceptable).
+- Next: B6 (Lab flow v1 + Forge linear model module).

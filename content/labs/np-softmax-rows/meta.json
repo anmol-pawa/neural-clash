@@ -1,0 +1,15 @@
+{
+  "id": "np-softmax-rows",
+  "title": "Row-wise softmax",
+  "phase": "python-port",
+  "language": "python",
+  "functions": [
+    "softmax_rows"
+  ],
+  "wrong": {
+    "unstable.py": "no max subtraction: overflows to NaN",
+    "wrong_axis.py": "normalises down columns, not along rows",
+    "global_max_underflow.py": "subtracts the global max, so a row far below it underflows to 0/0",
+    "python_loop.py": "loops over rows"
+  }
+}

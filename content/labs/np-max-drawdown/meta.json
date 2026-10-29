@@ -1,0 +1,15 @@
+{
+  "id": "np-max-drawdown",
+  "title": "Maximum drawdown",
+  "phase": "python-port",
+  "language": "python",
+  "functions": [
+    "max_drawdown"
+  ],
+  "wrong": {
+    "python_loop.py": "single Python loop tracking the peak",
+    "global_peak.py": "uses the overall maximum, counting falls before the peak",
+    "absolute_not_relative.py": "returns the absolute fall, not a fraction",
+    "quadratic.py": "O(n\u00b2) pairwise comparison (also a Python loop)"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "id": "np-pairwise-dists",
+  "title": "Pairwise distances",
+  "phase": "python-port",
+  "language": "python",
+  "functions": [
+    "pairwise_dists"
+  ],
+  "wrong": {
+    "python_loops.py": "two nested Python loops (correct but not vectorised)",
+    "no_clip_nan.py": "expansion trick without clipping: NaN for near-identical points",
+    "squared_not_rooted.py": "returns squared distances",
+    "row_vs_row_only.py": "pairs X[i] with Y[i] (zip) instead of all pairs"
+  }
+}

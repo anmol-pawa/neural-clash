@@ -87,3 +87,33 @@ describe("Python Port judged functions (B4c)", () => {
     }
   });
 });
+
+describe("numpy vectorisation challenges (B5b)", () => {
+  const labs = readdirSync(join(process.cwd(), "content/labs")).filter((n) => n.startsWith("np-"));
+  const meta = (id: string) => JSON.parse(readFileSync(join(process.cwd(), "content/labs", id, "meta.json"), "utf8"));
+
+  it("ships eight packages with a lesson, an unimplemented starter and 3+ documented wrong versions", () => {
+    expect(labs).toHaveLength(8);
+    for (const id of labs) {
+      const m = meta(id);
+      expect(m.phase).toBe("python-port");
+      expect(Object.keys(m.wrong).length).toBeGreaterThanOrEqual(3);
+      expect(existsSync(join(process.cwd(), "content/labs", id, "lesson.md"))).toBe(true);
+      const spec = readFileSync(join(process.cwd(), "content/labs", id, "spec.py"), "utf8");
+      expect(spec).toMatch(new RegExp(`def ${m.functions[0]}\\b`));
+      expect(spec).toContain("NotImplementedError");
+    }
+  });
+
+  it("every package has a Python-loop wrong version that is correct but rejected for not being vectorised", () => {
+    for (const id of labs) {
+      const loops = Object.keys(meta(id).wrong).filter((w) => /loop|quadratic/.test(w));
+      expect(loops.length, id).toBeGreaterThanOrEqual(1);
+    }
+  });
+
+  it("every reference passes and every wrong version fails (native python3 + numpy)", () => {
+    const python = findPython();
+    for (const id of labs) expect(verifyLab(python, join(process.cwd(), "content/labs", id)), id).toEqual([]);
+  }, 120_000);
+});

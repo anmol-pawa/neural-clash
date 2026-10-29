@@ -1,0 +1,15 @@
+{
+  "id": "np-confusion-matrix",
+  "title": "Confusion matrix",
+  "phase": "python-port",
+  "language": "python",
+  "functions": [
+    "confusion_matrix"
+  ],
+  "wrong": {
+    "python_loop.py": "counts in a Python loop",
+    "fancy_index_plus_equals.py": "C[t, p] += 1 counts duplicate pairs once",
+    "transposed.py": "predicted classes on the rows",
+    "width_from_data.py": "size from max label instead of k"
+  }
+}
