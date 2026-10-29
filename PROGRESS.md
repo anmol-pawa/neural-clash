@@ -88,3 +88,12 @@ Append a dated entry after every run: what changed, how it was verified (command
 - CI and Pages deploy confirmation skipped (Actions quota exhausted until 2026-11-01).
 - Known gaps: the back-facing Okafor is a plain hair ball; overworld sprites are small and face detail is minimal (2px eyes); no sleeve or tablet animation; portraits have no gender-neutral variants or player customisation yet.
 - Next: B1b-ii (tileset + Lab interior), then B2.
+
+## 2026-10-29: B1b-ii Python Port tileset and Lab interior
+- Added `scripts/art/tiles.mjs` generating `game/sprites/tiles/python-port.ts`: 57 original 16×16-grid tiles (objects up to 48×32) with a shared 3–4 shade palette. Outdoor: grass variants, cobble, plaza + emblem, 4-frame water and shoreline, sand, dock, brick, windows, door, teal shingle roofs, tree, bush, crates, barrel, bollard, lamp (2f), sign, containers, fence, flowerbed, boat (2f). Lab: wall + wainscot, 2 floors, doormat, 9-piece rug, windows, whiteboard (scatter + fit + loss curve), bookshelves, server rack (4f LEDs), desks with live monitors (2f), chair, GPU rig with spinning fans (2f), coffee machine, plant, pup bed, poster, lab sign.
+- `game/sprites/tileset.ts` (TileSetDef, validation, frame timing), `game/maps/` (`MapDef`, validation, collision grid, BFS reachability, pure `renderMap`), `neural-lab` (20×14) and `port-square` (22×14) maps, `/dev/tiles` review page (`components/TileLab.tsx`), `scripts/art/preview-map.mjs` PNG dump, `npm run smoke:tiles`.
+- Verification: `lint` (warnings only), `typecheck`, `test` (92 pass, 11 new in `tests/tiles.test.ts`: tileset validity, animation, maps valid, lab/port reachability, bad-map detection), `content:verify`, `build`, `build:pages` pass. `npm run smoke:tiles` at desktop and iPhone 14: no console errors, no horizontal overflow; screenshots and PNG dumps inspected.
+- CI and Pages deploy confirmation skipped (Actions quota exhausted until 2026-11-01).
+- Known gaps: the lab-sign glyph is a rough placeholder; bollards read as buckets; no tile-edge autotiling (shore/rug corners are hand-placed); render is canvas-only until the Pixi overworld (B2); no night/interior lighting variants.
+- Decision: this run pushed to the session branch `claude/wonderful-goodall-7w6pqd` (identical to `main` at start) rather than `main`, per the session's branch instruction; merge to `main` to deploy.
+- Next: B2 (overworld + dialogue engine).
