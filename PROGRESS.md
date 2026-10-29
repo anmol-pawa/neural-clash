@@ -116,3 +116,13 @@ Append a dated entry after every run: what changed, how it was verified (command
 - CI and Pages deploy confirmation skipped (Actions quota exhausted until 2026-11-01).
 - Known gaps: the foe is the Perceptron front sprite recoloured (placeholder, needs its own art); no win-path in the smoke test (needs card answers exposed; logic is unit-tested); no intro transition, audio or keyboard shortcuts for answers; the numpy cross-check needs a python3 with numpy (`/usr/bin/python3` fallback). Win/lose does not touch the save yet.
 - Next: B3c, then B4 (Python Port content, part 1).
+
+## 2026-10-29: B3c-i curve, technique and trade-off cards + deck loader
+- B3c was split: B3c-i (this) done; B3c-ii (Noise-minion sprite) remains.
+- `lib/cards/curves.ts`: real full-batch gradient-descent polynomial-regression runs (noisy sine) for four diagnoses (overfitting, underfitting, learning rate too high, healthy). `classifyCurves` names a pair of curves from the numbers alone; `genCurve` scans seeds until the *displayed* (downsampled, clipped) curves classify as the intended diagnosis, so a card cannot mislabel its picture.
+- New `curve` card kind (types, checker, SVG log-scale chart in `/battle`); `mcq` gains a `variant` ("technique" / "tradeoff") shown in the header.
+- `lib/cards/loader.ts`: `validateCard` / `loadDeck` never throw; bad cards are dropped and reported. `content/decks/foundations-strategy.json`: 6 technique/trade-off cards (RAG vs fine-tune, LoRA, imbalance metrics, batch size, ANN recall), an LLM-judge-bias multi-select, plus 6 generated curve cards. Demo deck now includes them.
+- Verification: `lint` (warnings only), `typecheck`, `test` (139 pass; new: curve label vs classifier over 40 seeds, curves are real runs, deck loads clean, loader reports malformed cards), `content:verify`, `build`, `build:pages` pass; `smoke:battle` passes; Playwright screenshots of a curve card at desktop and iPhone 14 inspected (no console errors, no overflow; first version plotted the exploded run as a flat clip, fixed with a log axis).
+- CI and Pages deploy confirmation skipped (Actions quota exhausted until 2026-11-01).
+- Known gaps: the "leakage" diagnosis has no curve card (indistinguishable from healthy on loss alone; needs a dataset-based card); technique/trade-off content is a starter set, CUR topic ids are provisional; no "as of" stamps needed yet (no time-sensitive facts) but the RAG/LoRA cards should be revisited with B-series LLM content; Noise-minion art still a placeholder.
+- Next: B3c-ii (Noise-minion sprite), then B4.

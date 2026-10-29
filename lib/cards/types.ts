@@ -11,6 +11,16 @@ export interface CardBase {
 
 export interface McqCard extends CardBase {
   kind: "mcq";
+  /** Flavour label for the card header; behaviour is identical. */
+  variant?: "technique" | "tradeoff";
+  choices: string[];
+  answer: number;
+}
+
+export interface CurveCard extends CardBase {
+  kind: "curve";
+  /** Per-epoch losses from a real training run (see `curves.ts`), downsampled for display. */
+  curves: { train: number[]; val: number[]; epochs: number };
   choices: string[];
   answer: number;
 }
@@ -54,7 +64,7 @@ export interface BugCard extends CardBase {
   line: number;
 }
 
-export type Card = McqCard | MultiCard | DeriveCard | ShapeCard | MetricCard | BugCard;
+export type Card = McqCard | MultiCard | DeriveCard | ShapeCard | MetricCard | BugCard | CurveCard;
 
 export type Response =
   | { kind: "mcq"; choice: number }
@@ -62,7 +72,8 @@ export type Response =
   | { kind: "derive"; values: number[] }
   | { kind: "shape"; shape: number[] | null }
   | { kind: "metric"; value: number }
-  | { kind: "bug"; line: number };
+  | { kind: "bug"; line: number }
+  | { kind: "curve"; choice: number };
 
 export interface Verdict {
   correct: boolean;

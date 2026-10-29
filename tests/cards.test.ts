@@ -8,7 +8,9 @@ import { confusion, precision, recall, f1, rocAuc, ndcg, ece, reciprocalRank, re
 import { check, parseShape } from "@/lib/cards/check";
 import { GENERATORS } from "@/lib/cards/generators";
 import type { Card } from "@/lib/cards/types";
-import { HANDWRITTEN, SOFTMAX_BUG_SRC, SOFTMAX_FIXED_SRC, demoDeck } from "@/lib/cards/samples";
+import { classifyCurves, trainCurves } from "@/lib/cards/curves";
+import { loadDeck } from "@/lib/cards/loader";
+import { STRATEGY_DECK, HANDWRITTEN, SOFTMAX_BUG_SRC, SOFTMAX_FIXED_SRC, demoDeck } from "@/lib/cards/samples";
 import { startBattle, answer, next, summarize } from "@/lib/battle/battle";
 
 const findPy = () =>
@@ -122,7 +124,7 @@ print(json.dumps({"g": g.tolist(), "ce": ce, "bc": bc, "mm": mm, "ndcg": float(d
 describe("generated cards", () => {
   it("every generator is deterministic and self-consistent over many seeds", () => {
     for (const [name, gen] of Object.entries(GENERATORS)) {
-      for (let seed = 1; seed <= 200; seed++) {
+      for (let seed = 1; seed <= (name === "curve" ? 25 : 200); seed++) {
         const a = gen(seed);
         expect(gen(seed)).toEqual(a);
         expect(a.prompt.length, name).toBeGreaterThan(10);
@@ -130,6 +132,7 @@ describe("generated cards", () => {
         // the stored answer must be accepted by the checker
         const ok =
           a.kind === "derive" ? check(a, { kind: "derive", values: a.answers })
+          : a.kind === "curve" ? check(a, { kind: "curve", choice: a.answer })
           : a.kind === "shape" ? check(a, { kind: "shape", shape: a.answer })
           : check(a, { kind: "metric", value: a.answer });
         expect(ok.correct, `${name} seed ${seed}`).toBe(true);
@@ -281,5 +284,41 @@ describe("sample deck", () => {
     // the fix changes exactly the line the card blames
     const diff = SOFTMAX_BUG_SRC.map((l, i) => (l === SOFTMAX_FIXED_SRC[i] ? 0 : i + 1)).filter(Boolean);
     expect(diff).toEqual([bug.line]);
+  });
+});
+
+describe("curve cards and deck loader", () => {
+  it("every generated curve card's picture is classified as its own answer", () => {
+    for (let seed = 1; seed <= 40; seed++) {
+      const card = GENERATORS.curve(seed);
+      expect(classifyCurves(card.curves)).toBe(card.choices[card.answer]);
+      expect(check(card, { kind: "curve", choice: card.answer }).correct).toBe(true);
+      expect(check(card, { kind: "curve", choice: (card.answer + 1) % 4 }).correct).toBe(false);
+      expect(card.curves.train.every(Number.isFinite)).toBe(true);
+    }
+  });
+  it("curves are real runs: overfit validation rises while training falls, a high LR diverges", () => {
+    const over = trainCurves("Overfitting", 1);
+    expect(Math.min(...over.val)).toBeLessThan(over.val.at(-1) as number);
+    expect(over.train.at(-1)).toBeLessThan(over.train[0]);
+    const hot = trainCurves("Learning rate too high", 1);
+    expect(hot.train.at(-1)).toBeGreaterThan(hot.train[0]);
+    const ok = trainCurves("Healthy fit", 1);
+    expect(classifyCurves(ok)).toBe("Healthy fit");
+  });
+  it("the strategy deck loads cleanly with unique ids", () => {
+    expect(STRATEGY_DECK.errors).toEqual([]);
+    expect(STRATEGY_DECK.cards.length).toBeGreaterThanOrEqual(13);
+    expect(new Set(STRATEGY_DECK.cards.map((c) => c.id)).size).toBe(STRATEGY_DECK.cards.length);
+  });
+  it("the loader reports malformed cards instead of throwing", () => {
+    const d = loadDeck({ id: "x", title: "x", cards: [{ kind: "mcq", id: "a", topic: "t", prompt: "p", explanation: "e", choices: ["a", "b"], answer: 5 }, 7, { kind: "metric" }], generate: [{ generator: "nope", seeds: [1] }] });
+    expect(d.cards).toEqual([]);
+    expect(d.errors).toHaveLength(4);
+  });
+  it("hand-written technique/trade-off answers never sit at the same index every time", () => {
+    // Guards against a deck whose answer is always "A"; the content rewards reading, not pattern-spotting.
+    const idx = STRATEGY_DECK.cards.filter((c) => c.kind === "mcq").map((c) => (c as { answer: number }).answer);
+    expect(new Set(idx).size).toBeGreaterThan(1);
   });
 });

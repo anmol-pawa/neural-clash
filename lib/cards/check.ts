@@ -30,6 +30,8 @@ export function check(card: Card, r: Response): Verdict {
       const half = 0.5 * 10 ** -card.places;
       return { correct: Number.isFinite(x) && Math.abs(x - card.answer) <= half + 1e-12 };
     }
+    case "curve":
+      return { correct: (r as Extract<Response, { kind: "curve" }>).choice === card.answer };
     case "bug":
       return { correct: (r as Extract<Response, { kind: "bug" }>).line === card.line };
   }

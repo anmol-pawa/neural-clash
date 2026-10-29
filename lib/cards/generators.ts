@@ -1,5 +1,6 @@
+import { DIAGNOSES, classifyCurves, trainCurves, type Diagnosis } from "./curves";
 import { randInt, pick, rng } from "./rng";
-import type { DeriveCard, MetricCard, ShapeCard } from "./types";
+import type { CurveCard, DeriveCard, MetricCard, ShapeCard } from "./types";
 import { softmaxCEGrad, softmaxCrossEntropy, bceWithLogitsGrad, bceWithLogits, mseGrad } from "@/lib/solvers/math";
 import { matmul, broadcast, conv2d, splitHeads, reshape, fmtShape } from "@/lib/solvers/shapes";
 import { confusion, precision, recall, f1, ndcg, rocAuc } from "@/lib/solvers/metrics";
@@ -212,6 +213,44 @@ export function genNdcg(seed: number): MetricCard {
   };
 }
 
+const CURVE_EXPLAIN: Record<Diagnosis, string> = {
+  Overfitting: "Training loss keeps falling while validation loss bottoms out and climbs back up: the model is fitting noise in the few examples it has seen. Regularise, add data, or stop early at the validation minimum.",
+  Underfitting: "Both curves flatten out together at a high loss. The model cannot represent the pattern, so more training will not help; add capacity or better features.",
+  "Learning rate too high": "The loss explodes instead of settling: each step overshoots the minimum and lands higher up the bowl. Lower the learning rate (or clip gradients).",
+  "Healthy fit": "Both curves fall together and settle at a low value with a small gap, which is what a model that generalises looks like.",
+};
+
+/** Loss curves from a real gradient-descent run; seeds are scanned until the curves classify as the intended diagnosis. */
+export function genCurve(seed: number): CurveCard {
+  const r = rng(seed);
+  const want = pick(r, DIAGNOSES);
+  // Exploded runs are clipped so the log-scale picture stays drawable; the cut is stated in the prompt.
+  const clip = (xs: number[]) => xs.map((v) => (Number.isFinite(v) ? Math.min(v, 1e6) : 1e6));
+  // Scan seeds until the *displayed* (downsampled, clipped) curves classify as the intended diagnosis.
+  for (let j = 0; j < 200; j++) {
+    const full = trainCurves(want, j === 0 ? seed : seed * 1000 + j);
+    const n = full.train.length;
+    const stride = Math.ceil(n / 60);
+    const down = (xs: number[]) => clip(xs.filter((_, i) => i % stride === 0 || i === n - 1));
+    const shown = { train: down(full.train), val: down(full.val) };
+    if (classifyCurves(shown) === want) return curveCard(seed, want, { ...shown, epochs: n });
+  }
+  throw new Error(`no ${want} curve found for seed ${seed}`);
+}
+
+function curveCard(seed: number, want: Diagnosis, curves: CurveCard["curves"]): CurveCard {
+  return {
+    id: `gen-curve-${seed}`,
+    kind: "curve",
+    topic: "diagnosing-training",
+    prompt: "These loss curves come from a real run (loss clipped at 1,000,000 for display). What do they show?",
+    curves,
+    choices: [...DIAGNOSES],
+    answer: DIAGNOSES.indexOf(want),
+    explanation: CURVE_EXPLAIN[want],
+  };
+}
+
 export type GeneratorId = keyof typeof GENERATORS;
 
 export const GENERATORS = {
@@ -226,4 +265,5 @@ export const GENERATORS = {
   precisionRecall: genPrecisionRecall,
   auc: genAuc,
   ndcg: genNdcg,
+  curve: genCurve,
 } as const;

@@ -1,0 +1,127 @@
+{
+  "id": "foundations-strategy",
+  "title": "Choosing the right tool",
+  "cards": [
+    {
+      "id": "tech-rag-vs-finetune-facts",
+      "kind": "mcq",
+      "variant": "technique",
+      "topic": "llm-adaptation",
+      "prompt": "A support bot must answer from a product manual that changes every week. Answers must cite the page they came from. Which approach fits best?",
+      "choices": [
+        "Retrieval-augmented generation over the manual",
+        "Fine-tune the model on the manual each week",
+        "Train a new model from scratch",
+        "A longer system prompt with no retrieval"
+      ],
+      "answer": 0,
+      "explanation": "Facts that change and need citations belong in an index you can refresh and point at, not in weights. Retrieval lets you update a document in minutes and show the source. Fine-tuning is better for stable style or format, and a fixed prompt cannot hold a whole manual."
+    },
+    {
+      "id": "tech-finetune-style",
+      "kind": "mcq",
+      "variant": "technique",
+      "topic": "llm-adaptation",
+      "prompt": "You need every reply in a strict house JSON format and tone. A good prompt gets 82% of replies right, and you have 5,000 reviewed examples. What is the sensible next step?",
+      "choices": [
+        "Add a retrieval index of the examples",
+        "Switch to a bigger base model and stop",
+        "Fine-tune on the reviewed examples",
+        "Lower the temperature to zero and ship"
+      ],
+      "answer": 2,
+      "explanation": "Behaviour and format consistency are what fine-tuning is good at, and you already have labelled data. Retrieval supplies knowledge, not discipline. Temperature zero removes sampling variety but does not teach a format the model keeps missing."
+    },
+    {
+      "id": "tech-lora-vs-full",
+      "kind": "mcq",
+      "variant": "technique",
+      "topic": "fine-tuning",
+      "prompt": "One GPU, a 7B-parameter model, and ten different customer-specific tasks to serve. Which fine-tuning plan is most practical?",
+      "choices": [
+        "Ten separate full fine-tunes",
+        "One low-rank adapter (LoRA) per task on a shared frozen base",
+        "One full fine-tune on all tasks mixed with no task tags",
+        "Retrain the tokenizer for each customer"
+      ],
+      "answer": 1,
+      "explanation": "Adapters train a small number of extra parameters, fit in far less memory, and can be swapped on one resident base model. Ten full copies multiply storage and serving cost. Full fine-tuning can still win on quality for a large domain shift, which is the deciding factor to measure."
+    },
+    {
+      "id": "tech-metric-imbalance",
+      "kind": "mcq",
+      "variant": "technique",
+      "topic": "evaluation",
+      "prompt": "A fraud model sees 1 fraud in 1,000 transactions. A model that always predicts 'not fraud' reaches 99.9% accuracy. Which metric should you report instead?",
+      "choices": [
+        "Accuracy, but on a bigger test set",
+        "Training loss",
+        "Mean squared error on the labels",
+        "Precision and recall (or PR-AUC) on the fraud class"
+      ],
+      "answer": 3,
+      "explanation": "With rare positives accuracy mostly measures the base rate. Precision and recall look only at the positive class, and PR-AUC summarises the trade-off across thresholds."
+    },
+    {
+      "id": "trade-batch-size",
+      "kind": "mcq",
+      "variant": "tradeoff",
+      "topic": "optimisation",
+      "prompt": "Trade-off duel: you double the batch size and scale the learning rate with it. Which statement is the honest summary?",
+      "choices": [
+        "Training always gets faster and always generalises better",
+        "Each step is less noisy and hardware is used better, but very large batches can generalise worse unless tuned",
+        "Gradients become exact so no validation set is needed",
+        "Convergence per epoch is guaranteed to improve"
+      ],
+      "answer": 1,
+      "explanation": "Bigger batches reduce gradient noise and improve throughput, yet the noise also acts as a mild regulariser, so past a point you may need warm-up, a retuned learning rate or more regularisation. Nothing makes validation unnecessary."
+    },
+    {
+      "id": "trade-ann-recall",
+      "kind": "mcq",
+      "variant": "tradeoff",
+      "topic": "retrieval",
+      "prompt": "Trade-off duel: an approximate nearest-neighbour index is 40x faster than exact search but misses some true neighbours. When is it the wrong call?",
+      "choices": [
+        "When the corpus has millions of passages",
+        "When latency matters to users",
+        "When a missed document can cause a harmful wrong answer and the corpus is small enough to search exactly",
+        "When you can measure recall@k against exact search"
+      ],
+      "answer": 2,
+      "explanation": "Approximate search trades recall for speed, which is a bargain at scale. On a small corpus exact search is cheap, so giving up recall buys nothing. Measuring recall@k against exact results is how you decide."
+    },
+    {
+      "id": "multi-llm-judge-bias",
+      "kind": "multi",
+      "topic": "evals",
+      "prompt": "An LLM judge scores two answers. Which known biases should you test for before trusting it? Pick all that apply.",
+      "choices": [
+        "Preferring the answer shown first",
+        "Preferring longer answers",
+        "Preferring answers written by its own model family",
+        "Preferring answers with fewer typos in the question"
+      ],
+      "answers": [
+        0,
+        1,
+        2
+      ],
+      "explanation": "Position, length and self-preference are well-documented judge biases. Swap the order, control length, and calibrate against human labels. A judge is a measuring instrument, so you validate it like one."
+    }
+  ],
+  "generate": [
+    {
+      "generator": "curve",
+      "seeds": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ]
+    }
+  ]
+}

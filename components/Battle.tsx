@@ -11,11 +11,43 @@ import type { Card, Response } from "@/lib/cards/types";
 const btn = "min-h-11 rounded border-2 border-indigo-300/40 bg-slate-900/80 px-3 py-2 text-left text-sm hover:border-cyan-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300";
 const primary = "min-h-11 rounded border-2 border-cyan-300 bg-cyan-400/20 px-4 py-2 font-semibold text-cyan-100 hover:bg-cyan-400/30";
 
+/** Pixel-styled train/validation loss chart; values are already clipped by the card generator. */
+function CurveChart({ train, val }: { train: number[]; val: number[] }) {
+  const W = 240, H = 120;
+  const lg = (v: number) => Math.log10(Math.max(v, 1e-6));
+  const all = [...train, ...val].map(lg), lo = Math.min(...all), hi = Math.max(...all, lo + 0.1);
+  const path = (ys: number[]) => ys.map((y, i) => `${i ? "L" : "M"}${((i / (ys.length - 1)) * W).toFixed(1)} ${(H - 8 - ((lg(y) - lo) / (hi - lo)) * (H - 20)).toFixed(1)}`).join("");
+  return (
+    <svg viewBox={`-2 -2 ${W + 4} ${H + 4}`} role="img" aria-label="Training and validation loss against epochs" className="w-full max-w-md rounded border-2 border-indigo-300/40 bg-slate-950" shapeRendering="crispEdges">
+      <path d={path(train)} fill="none" stroke="#38bdf8" strokeWidth="2" />
+      <path d={path(val)} fill="none" stroke="#fb923c" strokeWidth="2" />
+      <text x="4" y="12" fontSize="9" fill="#38bdf8">train</text>
+      <text x="34" y="12" fontSize="9" fill="#fb923c">validation</text>
+      <text x={W - 4} y={H - 4} fontSize="8" fill="#94a3b8" textAnchor="end">epochs → · loss on a log scale</text>
+    </svg>
+  );
+}
+
 /** The answer form for one card. Remounted per card (keyed by id) so its local state resets. */
 function CardForm({ card, onSubmit }: { card: Card; onSubmit: (r: Response) => void }) {
   const [picked, setPicked] = useState<number[]>([]);
   const [text, setText] = useState<string[]>(() => (card.kind === "derive" ? card.fields.map(() => "") : [""]));
   const [err, setErr] = useState("");
+
+  if (card.kind === "curve")
+    return (
+      <div className="grid gap-2">
+        <CurveChart train={card.curves.train} val={card.curves.val} />
+        <div className="grid gap-2" role="group" aria-label="Choices">
+          {card.choices.map((c, i) => (
+            <button key={i} className={btn} onClick={() => onSubmit({ kind: "curve", choice: i })}>
+              <span className="mr-2 text-cyan-300">{String.fromCharCode(65 + i)}</span>
+              {c}
+            </button>
+          ))}
+        </div>
+      </div>
+    );
 
   if (card.kind === "mcq")
     return (
@@ -173,7 +205,7 @@ export default function Battle() {
         </section>
       ) : card ? (
         <section className="grid gap-3 rounded border-2 border-indigo-300/40 bg-slate-900/60 p-3" aria-label="Card">
-          <p className="text-xs uppercase tracking-wide text-slate-400">{card.kind.replace("mcq", "multiple choice").replace("multi", "pick all")} · {card.topic}</p>
+          <p className="text-xs uppercase tracking-wide text-slate-400">{card.kind === "mcq" && card.variant ? (card.variant === "tradeoff" ? "trade-off duel" : "which technique?") : card.kind.replace("mcq", "multiple choice").replace("multi", "pick all").replace("curve", "diagnose the curve")} · {card.topic}</p>
           <p className="text-base leading-snug">{card.prompt}</p>
           <CardForm key={card.id} card={card} onSubmit={submit} />
         </section>

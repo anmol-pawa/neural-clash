@@ -25,7 +25,8 @@ Work top to bottom: take the **first unchecked box**, and split big boxes into r
 - [x] B2b. **Overworld UI:** `/play` canvas scene (animated tiles, walk cycles, y-sorted actors), dialogue box with portraits, keyboard + touch d-pad, `smoke:overworld` Playwright test.
 - [x] B3a. **Solvers, card model and battle logic** (pure, tested): `lib/solvers/` (stable softmax/CE/BCE/MSE gradients, numpy shape rules, precision/recall/F1/AUC/nDCG/ECE, cross-checked against numpy), `lib/cards/` (MCQ, multi, derive-it, shape, metric, spot-the-bug; seeded generators), `lib/battle/` (streaks, counters, requeue, stars).
 - [x] B3b. **Battle stage UI** (`/battle`): canvas stage with backdrop, platforms, lunge/bolt/hurt flash/faint, damage numbers, HP bars, shake; card forms for every type; `smoke:battle`. Uses a tinted Neuron-Pup as the placeholder foe.
-- [ ] B3c. **Diagnose-the-curve, which-technique and trade-off cards**, a proper Noise-minion sprite (64×64, multi-frame), and the deck loader reading `content/` packages (needed by B4).
+- [x] B3c-i. **Diagnose-the-curve cards** (loss curves from real GD runs, label verified by a classifier), **technique / trade-off duel** card variants, and the deck loader + validator reading `content/decks/*.json`.
+- [ ] B3c-ii. **A proper Noise-minion sprite** (64×64, front, multi-frame idle/attack/hurt/faint) replacing the recoloured Neuron-Pup foe.
 - [ ] B4. **Python Port content, part 1** (CUR F1: Python + interview Python): lessons, 30 cards, 10 judged functions.
 - [ ] B5. **Python Port content, part 2** (numpy, broadcasting, vectorisation): lessons, 25 cards (shape cards generated), 8 vectorisation challenges with perf thresholds.
 - [ ] B6. **Lab flow v1 + Forge module "linear model + GD"** (a pre-autograd perceptron/linear regression with a hand-derived gradient). The companion stats come from its test metrics.
