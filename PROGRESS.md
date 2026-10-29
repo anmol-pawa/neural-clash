@@ -160,3 +160,12 @@ Append a dated entry after every run: what changed, how it was verified (command
 - CI and Pages deploy confirmation skipped (Actions quota exhausted until 2026-11-01).
 - Known gaps: the packages are not yet surfaced in the editor/task list or a `/labs` index (comes with the Lab flow, B6); no hint ladder or editorial per function (lesson only); timing-based TLE checks use read counts, not the Pyodide worker timeout.
 - Next: B5 (Python Port part 2: numpy, broadcasting, vectorisation).
+
+## 2026-10-29: B5a numpy cards and lessons
+- B5 was split: B5a (cards and lessons, this run), B5b (8 vectorisation challenges).
+- `scripts/gen-numpy.mjs` generates `content/decks/numpy.json` (28 cards: 13 predict-the-output whose answers are real numpy stdout, 11 shape cards whose answers come from numpy and are cross-checked against `lib/solvers` broadcast/matmul in tests, 4 concept cards, a views-vs-copies multi-select, and a proven spot-the-bug) and `content/lessons/numpy.json` (5 lessons: dtypes, views/copies, broadcasting, axes/indexing, numerical stability and seeded generators; every output computed natively). `--check` detects staleness.
+- Loader now accepts pre-computed `shape` cards (answer must be a size list or null); `/learn` lists 15 lessons; the demo battle mixes in numpy cards.
+- Verification: `lint` (warnings only), `typecheck`, `test` (159 pass; new `tests/numpy.test.ts`, lessons test extended), `content:verify`, `build`, `build:pages`, `smoke:learn` (15 lessons) and `smoke:battle` pass at desktop and iPhone 14; list screenshot inspected (no console errors or overflow).
+- CI and Pages deploy confirmation skipped (Actions quota exhausted until 2026-11-01).
+- Known gaps: einsum and pandas-lite have no cards yet; shape card input accepts "error" but there is no hint ladder; numpy outputs depend on numpy 2.x printing (guarded by `--check` and the test).
+- Next: B5b (numpy vectorisation challenges).

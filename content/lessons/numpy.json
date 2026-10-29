@@ -1,0 +1,235 @@
+{
+  "id": "numpy-lessons",
+  "title": "numpy lessons",
+  "lessons": [
+    {
+      "id": "numpy-arrays-dtypes",
+      "title": "Arrays and dtypes",
+      "topics": [
+        "np-arrays"
+      ],
+      "intro": "An ndarray is a block of memory holding one fixed type, plus a shape that says how to read it. Almost every numpy surprise is the dtype or the shape doing exactly what it was told.",
+      "takeaways": [
+        "Every array has one dtype and one shape.",
+        "`/` gives floats, `//` keeps ints, small ints wrap around.",
+        "Vectorising removes interpreter overhead, not algorithmic work."
+      ],
+      "trap": "Treating a `uint8` or `int32` array like Python's unbounded integers: overflow is silent and gives plausible wrong numbers.",
+      "sections": [
+        {
+          "heading": "One type per array",
+          "text": "Integers stay integers until something forces a float. `/` always yields floats; `//` keeps integers. The result dtype is the 'widest' of the operands.",
+          "code": [
+            "a = np.array([1, 2, 3])",
+            "print(a.dtype, (a / 2).dtype, (a // 2).dtype, (a * 1.5).dtype)"
+          ],
+          "output": "int64 float64 int64 float64"
+        },
+        {
+          "heading": "Fixed width means wrap-around",
+          "text": "Small integer dtypes do not grow. A `uint8` image array that overflows wraps silently, so cast before arithmetic.",
+          "code": [
+            "p = np.array([200, 250], dtype=np.uint8)",
+            "print(p + np.uint8(100), p.astype(np.int32) + 100)"
+          ],
+          "output": "[44 94] [300 350]"
+        },
+        {
+          "heading": "Why vectorise",
+          "text": "A loop in Python pays interpreter cost per element. A numpy call runs one compiled loop over packed numbers. The algorithm is the same, so the gain is a constant factor, usually large.",
+          "code": [
+            "x = np.arange(5)",
+            "print(np.sum(x * x), sum(int(v) ** 2 for v in x))"
+          ],
+          "output": "30 30"
+        }
+      ]
+    },
+    {
+      "id": "numpy-views-copies",
+      "title": "Views and copies",
+      "topics": [
+        "np-views"
+      ],
+      "intro": "numpy avoids copying whenever it can describe the result as a different way of reading the same memory. That makes it fast, and it means editing one name can change another.",
+      "takeaways": [
+        "Basic slices, transposes and reshapes are views.",
+        "List, integer-array and boolean indexing copy.",
+        "Copy before mutating a slice you do not own."
+      ],
+      "trap": "Normalising `X[:, :3] /= s` in place when `X` is the caller's training data: you have just rewritten their dataset.",
+      "sections": [
+        {
+          "heading": "Basic slicing is a view",
+          "text": "Slices, `.T`, and `reshape` of contiguous data share the buffer. Writing through one name shows up in every other.",
+          "code": [
+            "a = np.arange(6)",
+            "b = a[1:4]",
+            "b[:] = 0",
+            "print(a, b.base is a)"
+          ],
+          "output": "[0 0 0 0 4 5] True"
+        },
+        {
+          "heading": "Fancy and boolean indexing copy",
+          "text": "Indexing with lists, integer arrays or masks gathers elements into a new array, so edits to the result do not touch the source.",
+          "code": [
+            "a = np.arange(6)",
+            "c = a[[1, 2]]",
+            "c[:] = 0",
+            "print(a, np.shares_memory(a, c))"
+          ],
+          "output": "[0 1 2 3 4 5] False"
+        },
+        {
+          "heading": "Ask when unsure",
+          "text": "`np.shares_memory(a, b)` answers it directly. Call `.copy()` before mutating anything you did not just create.",
+          "code": [
+            "x = np.arange(4.0)",
+            "y = x[:2].copy()",
+            "y += 10",
+            "print(x, y)"
+          ],
+          "output": "[0. 1. 2. 3.] [10. 11.]"
+        }
+      ]
+    },
+    {
+      "id": "numpy-broadcasting",
+      "title": "Broadcasting and shapes",
+      "topics": [
+        "np-broadcast"
+      ],
+      "intro": "Broadcasting is the rule that lets arrays of different shapes combine without loops. Learn the rule and shape errors become readable instead of mysterious.",
+      "takeaways": [
+        "Align from the right; sizes must match or be 1.",
+        "`None` / `keepdims=True` add the size-1 axes that make broadcasting do what you mean.",
+        "Write the expected shape in a comment, and assert it."
+      ],
+      "trap": "A silent broadcast: subtracting a `(n,)` vector from a `(n, 1)` column gives `(n, n)`, not an error and not what you wanted.",
+      "sections": [
+        {
+          "heading": "The rule",
+          "text": "Line the shapes up from the right. Each pair of sizes must be equal, or one of them must be 1 (that axis is stretched). Missing leading axes count as 1.",
+          "code": [
+            "a = np.zeros((8, 1, 6, 1))",
+            "b = np.zeros((7, 1, 5))",
+            "print((a + b).shape)"
+          ],
+          "output": "(8, 7, 6, 5)"
+        },
+        {
+          "heading": "Pairwise tables for free",
+          "text": "Adding an axis with `None` turns a vector into a column, so a single expression builds every pairwise difference. This is the core of distance matrices and attention scores.",
+          "code": [
+            "x = np.array([1.0, 4.0, 6.0])",
+            "print(np.abs(x[:, None] - x[None, :]))"
+          ],
+          "output": "[[0. 3. 5.]\n [3. 0. 2.]\n [5. 2. 0.]]"
+        },
+        {
+          "heading": "When it fails",
+          "text": "A mismatch with no 1 to stretch raises. Fix it by reshaping on purpose, not by guessing: `(3, 4) + (3,)` fails because the 3 aligns with the 4.",
+          "code": [
+            "a = np.zeros((3, 4))",
+            "try:",
+            "    a + np.zeros(3)",
+            "except ValueError as e:",
+            "    print('error')",
+            "print((a + np.zeros((3, 1))).shape)"
+          ],
+          "output": "error\n(3, 4)"
+        }
+      ]
+    },
+    {
+      "id": "numpy-axis-indexing",
+      "title": "Axes, reductions and indexing",
+      "topics": [
+        "np-axis"
+      ],
+      "intro": "`axis` names the dimension a reduction collapses. Once you can say that sentence for any call, indexing and reductions stop needing trial and error.",
+      "takeaways": [
+        "`axis=k` removes axis k from the shape.",
+        "`keepdims=True` keeps it as size 1 so results broadcast back.",
+        "Masks select and assign; `argmax` takes the first tie."
+      ],
+      "trap": "Taking the mean over the wrong axis still returns an array of plausible shape. Check the shape and a hand-computed row.",
+      "sections": [
+        {
+          "heading": "axis means 'collapse this one'",
+          "text": "Summing over axis 0 of a `(2, 3)` array collapses the rows and leaves three column totals; axis 1 leaves two row totals.",
+          "code": [
+            "a = np.arange(6).reshape(2, 3)",
+            "print(a.sum(axis=0), a.sum(axis=1))"
+          ],
+          "output": "[3 5 7] [ 3 12]"
+        },
+        {
+          "heading": "keepdims for normalising",
+          "text": "Keeping the collapsed axis as size 1 lets the result broadcast straight back. This is the row-normalisation idiom.",
+          "code": [
+            "a = np.array([[1.0, 3.0], [2.0, 2.0]])",
+            "print(a / a.sum(axis=1, keepdims=True))"
+          ],
+          "output": "[[0.25 0.75]\n [0.5  0.5 ]]"
+        },
+        {
+          "heading": "Masks and arg-functions",
+          "text": "A boolean mask selects (and, on the left of `=`, edits) elements. `argmax` returns the first maximum.",
+          "code": [
+            "a = np.array([5, -1, 3, -2])",
+            "a[a < 0] = 0",
+            "print(a, np.argmax([3, 7, 7, 1]))"
+          ],
+          "output": "[5 0 3 0] 1"
+        }
+      ]
+    },
+    {
+      "id": "numpy-numerics-random",
+      "title": "Numerical stability and random numbers",
+      "topics": [
+        "np-numerics"
+      ],
+      "intro": "Floats are finite approximations. Most ML bugs that print `nan` or drift slowly are one of three things: overflow, absorption or catastrophic cancellation.",
+      "takeaways": [
+        "Subtract the max before `exp`; use `logsumexp` for logs of sums.",
+        "Compare floats with a tolerance and detect NaN with `isnan`.",
+        "Pass a seeded `Generator`; avoid global seeds."
+      ],
+      "trap": "Assuming a seed fixes results across numpy versions: stream details can change between releases, so assert properties, not exact draws, in long-lived tests.",
+      "sections": [
+        {
+          "heading": "Overflow and the max trick",
+          "text": "`exp` overflows for inputs around 710 in float64 (far sooner in float16). Subtract the maximum and the largest exponent becomes 0.",
+          "code": [
+            "x = np.array([1000.0, 1001.0])",
+            "z = np.exp(x - x.max())",
+            "print(z / z.sum())"
+          ],
+          "output": "[0.26894142 0.73105858]"
+        },
+        {
+          "heading": "Absorption and NaN",
+          "text": "Small numbers vanish next to large ones, and a NaN poisons everything it touches. Use `np.isnan`, never `==`.",
+          "code": [
+            "print(float(np.float32(16777216) + np.float32(1)), np.float64(2**53) + 1 == np.float64(2**53))",
+            "print(np.nan == np.nan, np.isnan(np.nan))"
+          ],
+          "output": "16777216.0 True\nFalse True"
+        },
+        {
+          "heading": "Seeded generators",
+          "text": "Create one `Generator` per experiment and pass it down. The same seed gives the same stream, on any machine, for the same numpy version.",
+          "code": [
+            "rng = np.random.default_rng(7)",
+            "print(rng.integers(0, 10, size=5))",
+            "print(np.random.default_rng(7).integers(0, 10, size=5))"
+          ],
+          "output": "[9 6 6 8 5]\n[9 6 6 8 5]"
+        }
+      ]
+    }
+  ]
+}

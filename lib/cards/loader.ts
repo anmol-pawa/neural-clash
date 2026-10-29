@@ -46,8 +46,11 @@ export function validateCard(c: unknown): string[] {
     case "bug":
       if (!isStrs(x.code, 1) || !Number.isInteger(x.line) || (x.line as number) < 1 || (x.line as number) > (x.code as string[]).length) errs.push("bug line outside code");
       break;
+    case "shape":
+      if (!(x.answer === null || (Array.isArray(x.answer) && x.answer.every((n) => Number.isInteger(n) && (n as number) >= 0)))) errs.push("shape answer must be a list of sizes or null");
+      break;
     default:
-      errs.push(`card kind "${String(x.kind)}" cannot be hand-written (shape/metric cards are generated)`);
+      errs.push(`card kind "${String(x.kind)}" cannot be hand-written (metric cards are generated)`);
   }
   return errs;
 }

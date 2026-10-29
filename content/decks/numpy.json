@@ -1,0 +1,459 @@
+{
+  "id": "numpy",
+  "title": "Python Port: numpy",
+  "cards": [
+    {
+      "id": "np-view-slice",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "np-views",
+      "prompt": "What does this print?",
+      "code": [
+        "a = np.arange(6)",
+        "b = a[1:4]",
+        "b[0] = 99",
+        "print(a)"
+      ],
+      "choices": [
+        "[0 1 2 3 4 5]",
+        "[ 0 99  2  3  4  5]",
+        "[99  1  2  3  4  5]",
+        "[ 0  1  2 99  4  5]"
+      ],
+      "answer": 1,
+      "explanation": "Basic slicing returns a **view**: `b` shares memory with `a`, so writing through `b` changes `a`. Call `.copy()` when you need independence."
+    },
+    {
+      "id": "np-fancy-copy",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "np-views",
+      "prompt": "What does this print?",
+      "code": [
+        "a = np.arange(5)",
+        "b = a[[1, 2]]",
+        "b[0] = 99",
+        "print(a)"
+      ],
+      "choices": [
+        "[0 1 2 3 4]",
+        "[ 0 99  2  3  4]",
+        "[ 0  1 99  3  4]",
+        "[99  1  2  3  4]"
+      ],
+      "answer": 0,
+      "explanation": "Indexing with a list or an integer array (fancy indexing) always copies. The same holds for boolean masks. Only basic slices give views."
+    },
+    {
+      "id": "np-uint8-wrap",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "np-arrays",
+      "prompt": "What does this print?",
+      "code": [
+        "a = np.array([200], dtype=np.uint8)",
+        "print(a + np.uint8(100))"
+      ],
+      "choices": [
+        "[300]",
+        "[255]",
+        "[100]",
+        "[44]"
+      ],
+      "answer": 3,
+      "explanation": "A `uint8` array stays `uint8`: 300 wraps modulo 256 to 44, silently. Cast first (`a.astype(np.int32)`) when values can leave the dtype's range, as with raw image pixels."
+    },
+    {
+      "id": "np-true-divide",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "np-arrays",
+      "prompt": "What does this print?",
+      "code": [
+        "a = np.array([1, 2, 3])",
+        "print(a / 2, a // 2)"
+      ],
+      "choices": [
+        "[0 1 1] [0 1 1]",
+        "[0.5 1.  1.5] [0.5 1.  1.5]",
+        "[0.5 1.  1.5] [0 1 1]",
+        "[0 1 1] [0.5 1.  1.5]"
+      ],
+      "answer": 2,
+      "explanation": "`/` is true division and always produces floats; `//` floors and keeps the integer dtype. Mixing them up changes the dtype of everything downstream."
+    },
+    {
+      "id": "np-axis-sums",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "np-axis",
+      "prompt": "What does this print?",
+      "code": [
+        "a = np.arange(6).reshape(2, 3)",
+        "print(a.sum(axis=0), a.sum(axis=1))"
+      ],
+      "choices": [
+        "[ 3 12] [3 5 7]",
+        "[3 5 7] [ 3 12]",
+        "[3 5 7] [3 5 7]",
+        "[ 3 12] [ 3 12]"
+      ],
+      "answer": 1,
+      "explanation": "`axis=k` collapses axis k. Summing over axis 0 squashes the rows into one row of column sums (shape `(3,)`); axis 1 gives one total per row (shape `(2,)`)."
+    },
+    {
+      "id": "np-outer-broadcast",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "np-broadcast",
+      "prompt": "What does this print?",
+      "code": [
+        "a = np.array([1, 2, 3])",
+        "print((a[:, None] + a).shape)"
+      ],
+      "choices": [
+        "(3, 3)",
+        "(3,)",
+        "(1, 3)",
+        "(3, 1)"
+      ],
+      "answer": 0,
+      "explanation": "`a[:, None]` has shape (3, 1) and `a` has shape (3,), which aligns as (1, 3). Broadcasting stretches both 1s, giving (3, 3): every pairwise sum. This is how pairwise distance matrices are built without loops."
+    },
+    {
+      "id": "np-argmax-tie",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "np-axis",
+      "prompt": "What does this print?",
+      "code": [
+        "print(np.argmax([3, 7, 7, 1]))"
+      ],
+      "choices": [
+        "2",
+        "7",
+        "(1, 2)",
+        "1"
+      ],
+      "answer": 3,
+      "explanation": "`argmax` returns the index of the **first** maximum. It never returns both. Ties matter when you compare a model's predictions against a reference."
+    },
+    {
+      "id": "np-mask-assign",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "np-axis",
+      "prompt": "What does this print?",
+      "code": [
+        "a = np.array([5, -1, 3, -2])",
+        "a[a < 0] = 0",
+        "print(a)"
+      ],
+      "choices": [
+        "[ 5 -1  3 -2]",
+        "[5 3]",
+        "[5 0 3 0]",
+        "[0 0 0 0]"
+      ],
+      "answer": 2,
+      "explanation": "A boolean mask on the left of an assignment writes in place to every selected position. This is a ReLU in one line: `np.maximum(a, 0)` is the non-mutating form."
+    },
+    {
+      "id": "np-reshape-infer",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "np-broadcast",
+      "prompt": "What does this print?",
+      "code": [
+        "print(np.arange(12).reshape(3, -1).shape)"
+      ],
+      "choices": [
+        "(3,)",
+        "(3, 4)",
+        "(12, 3)",
+        "(3, 3)"
+      ],
+      "answer": 1,
+      "explanation": "A single `-1` means \"infer this axis from the element count\": 12 / 3 = 4. Two `-1`s are ambiguous and raise an error."
+    },
+    {
+      "id": "np-keepdims",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "np-axis",
+      "prompt": "What does this print?",
+      "code": [
+        "x = np.ones((2, 3))",
+        "print(x.sum(axis=1).shape, x.sum(axis=1, keepdims=True).shape)"
+      ],
+      "choices": [
+        "(2,) (2, 1)",
+        "(2, 3) (2, 1)",
+        "(2,) (2,)",
+        "(1, 2) (2, 1)"
+      ],
+      "answer": 0,
+      "explanation": "Reductions drop the axis by default, giving shape (2,). With `keepdims=True` the axis stays as size 1, so the result broadcasts back against the original. That is what makes `x / x.sum(axis=1, keepdims=True)` a row normaliser."
+    },
+    {
+      "id": "np-nan",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "np-numerics",
+      "prompt": "What does this print?",
+      "code": [
+        "print(np.nan == np.nan, np.isnan(np.nan), np.nanmax([1, np.nan, 3]))"
+      ],
+      "choices": [
+        "True True 3.0",
+        "False True nan",
+        "False False 3.0",
+        "False True 3.0"
+      ],
+      "answer": 3,
+      "explanation": "NaN is not equal to anything, itself included, so test with `np.isnan`. A plain `max` over data containing NaN returns NaN; the `nan*` family skips them. A silent NaN in a loss is usually an overflow or a log(0) upstream."
+    },
+    {
+      "id": "np-softmax-overflow",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "np-numerics",
+      "prompt": "What does this print?",
+      "code": [
+        "x = np.array([1000.0, 1001.0])",
+        "with np.errstate(all='ignore'):",
+        "    print(np.exp(x) / np.exp(x).sum())"
+      ],
+      "choices": [
+        "[0.26894142 0.73105858]",
+        "[0. 1.]",
+        "[nan nan]",
+        "[inf inf]"
+      ],
+      "answer": 2,
+      "explanation": "`exp(1000)` overflows to inf, and inf / inf is NaN. Subtracting the maximum first leaves the result mathematically identical but keeps every exponent at most 0."
+    },
+    {
+      "id": "np-float32-absorb",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "np-numerics",
+      "prompt": "What does this print?",
+      "code": [
+        "print(float(np.float32(16777216) + np.float32(1)))"
+      ],
+      "choices": [
+        "16777217.0",
+        "16777216.0",
+        "16777218.0",
+        "1.0"
+      ],
+      "answer": 1,
+      "explanation": "A float32 has a 24-bit significand, so above 2^24 = 16,777,216 it cannot represent every integer. Adding 1 is rounded away. This is why long float32 accumulations drift and why mixed-precision training keeps a float32 master copy."
+    },
+    {
+      "id": "np-shape-bcast-4d",
+      "kind": "shape",
+      "topic": "np-broadcast",
+      "prompt": "With `a = np.zeros((8, 1, 6, 1))` and `b = np.zeros((7, 1, 5))`, what is the shape of `a + b`? Type \"error\" if it raises.",
+      "answer": [
+        8,
+        7,
+        6,
+        5
+      ],
+      "explanation": "Result shape (8, 7, 6, 5). Broadcasting aligns trailing axes, matmul needs matching inner sizes, reductions drop their axis, and `None` or a size-1 list index keeps one."
+    },
+    {
+      "id": "np-shape-bcast-row",
+      "kind": "shape",
+      "topic": "np-broadcast",
+      "prompt": "With `a = np.zeros((3, 4))` and `b = np.zeros((4,))`, what is the shape of `a + b`? Type \"error\" if it raises.",
+      "answer": [
+        3,
+        4
+      ],
+      "explanation": "Result shape (3, 4). Broadcasting aligns trailing axes, matmul needs matching inner sizes, reductions drop their axis, and `None` or a size-1 list index keeps one."
+    },
+    {
+      "id": "np-shape-bcast-fail",
+      "kind": "shape",
+      "topic": "np-broadcast",
+      "prompt": "With `a = np.zeros((3, 4))` and `b = np.zeros((3,))`, what is the shape of `a + b`? Type \"error\" if it raises.",
+      "answer": null,
+      "explanation": "numpy aligns shapes from the right, and each pair of sizes must be equal or contain a 1. Here a pair differs without a 1, so numpy raises. Read the error message: it names the axes."
+    },
+    {
+      "id": "np-shape-bcast-col",
+      "kind": "shape",
+      "topic": "np-broadcast",
+      "prompt": "With `a = np.zeros((5, 1))` and `b = np.zeros((1, 5))`, what is the shape of `a * b`? Type \"error\" if it raises.",
+      "answer": [
+        5,
+        5
+      ],
+      "explanation": "Result shape (5, 5). Broadcasting aligns trailing axes, matmul needs matching inner sizes, reductions drop their axis, and `None` or a size-1 list index keeps one."
+    },
+    {
+      "id": "np-shape-sum-axis",
+      "kind": "shape",
+      "topic": "np-axis",
+      "prompt": "With `a = np.zeros((2, 3, 4))`, what is the shape of `a.sum(axis=1)`? Type \"error\" if it raises.",
+      "answer": [
+        2,
+        4
+      ],
+      "explanation": "Result shape (2, 4). Broadcasting aligns trailing axes, matmul needs matching inner sizes, reductions drop their axis, and `None` or a size-1 list index keeps one."
+    },
+    {
+      "id": "np-shape-newaxis",
+      "kind": "shape",
+      "topic": "np-axis",
+      "prompt": "With `x = np.zeros((4, 3))`, what is the shape of `x[:, None, :]`? Type \"error\" if it raises.",
+      "answer": [
+        4,
+        1,
+        3
+      ],
+      "explanation": "Result shape (4, 1, 3). Broadcasting aligns trailing axes, matmul needs matching inner sizes, reductions drop their axis, and `None` or a size-1 list index keeps one."
+    },
+    {
+      "id": "np-shape-matvec",
+      "kind": "shape",
+      "topic": "np-broadcast",
+      "prompt": "With `X = np.zeros((10, 3))` and `w = np.zeros((3,))`, what is the shape of `X @ w`? Type \"error\" if it raises.",
+      "answer": [
+        10
+      ],
+      "explanation": "Result shape (10,). Broadcasting aligns trailing axes, matmul needs matching inner sizes, reductions drop their axis, and `None` or a size-1 list index keeps one."
+    },
+    {
+      "id": "np-shape-matmul-fail",
+      "kind": "shape",
+      "topic": "np-broadcast",
+      "prompt": "With `A = np.zeros((2, 3))` and `B = np.zeros((2, 3))`, what is the shape of `A @ B`? Type \"error\" if it raises.",
+      "answer": null,
+      "explanation": "numpy aligns shapes from the right, and each pair of sizes must be equal or contain a 1. Here a pair differs without a 1, so numpy raises. Read the error message: it names the axes."
+    },
+    {
+      "id": "np-shape-fancy-rows",
+      "kind": "shape",
+      "topic": "np-axis",
+      "prompt": "With `X = np.zeros((5, 4))`, what is the shape of `X[[0, 2]]`? Type \"error\" if it raises.",
+      "answer": [
+        2,
+        4
+      ],
+      "explanation": "Result shape (2, 4). Broadcasting aligns trailing axes, matmul needs matching inner sizes, reductions drop their axis, and `None` or a size-1 list index keeps one."
+    },
+    {
+      "id": "np-shape-col-int",
+      "kind": "shape",
+      "topic": "np-axis",
+      "prompt": "With `X = np.zeros((5, 4))`, what is the shape of `X[:, 0]`? Type \"error\" if it raises.",
+      "answer": [
+        5
+      ],
+      "explanation": "Result shape (5,). Broadcasting aligns trailing axes, matmul needs matching inner sizes, reductions drop their axis, and `None` or a size-1 list index keeps one."
+    },
+    {
+      "id": "np-shape-col-list",
+      "kind": "shape",
+      "topic": "np-axis",
+      "prompt": "With `X = np.zeros((5, 4))`, what is the shape of `X[:, [0]]`? Type \"error\" if it raises.",
+      "answer": [
+        5,
+        1
+      ],
+      "explanation": "Result shape (5, 1). Broadcasting aligns trailing axes, matmul needs matching inner sizes, reductions drop their axis, and `None` or a size-1 list index keeps one."
+    },
+    {
+      "id": "np-vectorise-why",
+      "kind": "mcq",
+      "topic": "np-arrays",
+      "prompt": "`np.sum(x * x)` beats a Python `for` loop over a million floats by a large factor. What is the main reason?",
+      "choices": [
+        "numpy uses a smarter O(log n) algorithm for sums",
+        "numpy always runs on the GPU",
+        "The loop runs in compiled code over one contiguous typed buffer, with no per-element Python object or interpreter overhead",
+        "Python loops are slow only because of the garbage collector"
+      ],
+      "answer": 2,
+      "explanation": "Both versions do O(n) arithmetic. numpy removes the interpreter from the inner loop and walks a packed array of machine floats. The speed-up is a constant factor, often 10 to 100 times, not a better big-O."
+    },
+    {
+      "id": "np-copy-explicit",
+      "kind": "mcq",
+      "topic": "np-views",
+      "prompt": "You need a normalised version of `X[:, :3]` and must not modify `X`. What is the safest approach?",
+      "choices": [
+        "Edit the slice directly; slices are always copies",
+        "Take `X[:, :3].copy()` (or build a new array) before editing",
+        "Use `X[:, :3].view()` to be safe",
+        "Call `del X` first"
+      ],
+      "answer": 1,
+      "explanation": "A basic slice is a view of `X`, so an in-place edit such as `/=` rewrites the original. Copy explicitly, or use non-mutating operations that return new arrays."
+    },
+    {
+      "id": "np-logsumexp",
+      "kind": "mcq",
+      "topic": "np-numerics",
+      "prompt": "Why does a stable `logsumexp(x)` compute `m + log(sum(exp(x - m)))` with `m = max(x)`?",
+      "choices": [
+        "The shifted exponents are at most 0, so exp cannot overflow, and the identity keeps the value exact",
+        "It makes the sum run faster",
+        "It rounds the result to the nearest integer",
+        "It removes negative inputs"
+      ],
+      "answer": 0,
+      "explanation": "log(sum(exp(x))) = m + log(sum(exp(x - m))) for any m. Choosing the maximum guarantees the largest term is exp(0) = 1, which avoids overflow and keeps at least one term from underflowing to zero."
+    },
+    {
+      "id": "np-rng",
+      "kind": "mcq",
+      "topic": "np-numerics",
+      "prompt": "Which is the better way to get reproducible randomness in new numpy code?",
+      "choices": [
+        "Call `np.random.seed(0)` at the top of every module",
+        "Use `time.time()` as the seed",
+        "Avoid seeds so that results are unbiased",
+        "Create `rng = np.random.default_rng(seed)` and pass it around"
+      ],
+      "answer": 3,
+      "explanation": "A `Generator` object carries its own state, so code that shares one is reproducible and independent code can use separate streams. The legacy global `np.random.seed` is shared mutable state that any import can disturb."
+    },
+    {
+      "id": "np-views-which",
+      "kind": "multi",
+      "topic": "np-views",
+      "prompt": "Which of these return a view (shared memory) rather than a copy? Pick all that apply.",
+      "choices": [
+        "`a[1:3]`",
+        "`a.T`",
+        "`a.reshape(2, 3)` on a contiguous 1-D array of 6",
+        "`a[[0, 2]]`",
+        "`a[a > 0]`"
+      ],
+      "answers": [
+        0,
+        1,
+        2
+      ],
+      "explanation": "Basic slices, transposes and reshapes of contiguous data reuse the same buffer. List/array indexing and boolean masks gather elements into a new array."
+    },
+    {
+      "id": "np-bug-center",
+      "kind": "bug",
+      "topic": "np-axis",
+      "prompt": "`center(X)` should subtract each column's mean so every column has mean 0. Which line is wrong?",
+      "code": [
+        "import numpy as np",
+        "def center(X):",
+        "    return X - X.mean()"
+      ],
+      "line": 3,
+      "explanation": "Without `axis=0`, `mean()` averages every element into one scalar, so only the global mean is removed. `X.mean(axis=0)` has shape (n_features,) and broadcasts across rows. Check results with `Z.mean(axis=0)`, which should be about 0."
+    }
+  ]
+}
