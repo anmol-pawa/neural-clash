@@ -96,3 +96,12 @@ Append a dated entry after every run: what changed, how it was verified (command
 - CI and Pages deploy confirmation skipped (Actions quota exhausted until 2026-11-01).
 - Known gaps: no path/shore edge or corner variants (maps use plain tiles; autotiling comes with B2), no collision/interaction metadata yet (B2), no interior props for the house, tile palettes are per-tileset (48 colours max).
 - Next: B2 (overworld + dialogue engine).
+
+## 2026-10-29: B2 overworld + dialogue engine
+- B2 was split (B2a logic, B2b UI), both done. Algo Clash and Query Clash have no walkable overworld (Query's is a node map), so this is new code.
+- `lib/world/world.ts` (pure): grid walker with 0.18 s steps (a step in flight always completes), solid tiles, NPC and prop blocking, warps firing on arrival, facing-tile interaction, NPCs turning to the player, clamped/centred camera. `lib/world/maps.ts` (Python Port and the Lab with warps both ways, Okafor, a dockhand, props) and `lib/world/scripts.ts` (original dialogue). `lib/dialogue/dialogue.ts`: scripts as graphs with flag effects, flag-conditioned choices and branches, router lines resolved instantly, `validateScript`, code-point typewriter.
+- `game/render/{atlas,overworld}.ts` and `components/Overworld.tsx` (`/play`): canvas at 11×8 tiles scaled with nearest neighbour, animated tiles, walk cycles, y-sorted actors, dialogue box with animated portrait, keyboard (arrows/WASD, Enter/Space/E, 1-9 for choices) and touch d-pad + A button (44 px+ targets).
+- Verification: `lint` (warnings only), `typecheck`, `test` (110 pass; 17 new in `tests/world.test.ts`: map validity, warp landings standable, flood-fill reachability of the Lab door, movement, interpolation, big-dt collision, warps, interaction, camera, dialogue branching, script validation), `content:verify`, `build`, `build:pages` pass. `npm run smoke:overworld` passes 20 checks at desktop and iPhone 14 (walk to the door, warp, talk to Okafor, choose, close; no console errors or horizontal overflow); screenshots inspected.
+- CI and Pages deploy confirmation skipped (Actions quota exhausted until 2026-11-01).
+- Known gaps: the dockhand reuses Okafor's sprite (needs its own art); dialogue flags are not saved yet (save wiring comes with B6/B8); no NPC wandering, no map-edge autotiling, no screen transitions or audio (B9); the title screen does not link to `/play` yet.
+- Next: B3 (battle stage and card battles).
