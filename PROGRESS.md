@@ -105,3 +105,14 @@ Append a dated entry after every run: what changed, how it was verified (command
 - CI and Pages deploy confirmation skipped (Actions quota exhausted until 2026-11-01).
 - Known gaps: the dockhand reuses Okafor's sprite (needs its own art); dialogue flags are not saved yet (save wiring comes with B6/B8); no NPC wandering, no map-edge autotiling, no screen transitions or audio (B9); the title screen does not link to `/play` yet.
 - Next: B3 (battle stage and card battles).
+
+## 2026-10-29: B3 battle stage and card battles (B3a + B3b)
+- B3 was split: B3a (logic) and B3b (UI) done; B3c (curve/technique/trade-off cards, real foe art, content loader) added.
+- `lib/solvers/` (pure): stable logsumexp/softmax/softmax-CE, sigmoid, BCE-with-logits, MSE and their gradients; numpy shape rules (broadcast, matmul incl. 1-D and batch, conv output size, reshape with -1, head split, reduce); confusion/precision/recall/F1, ROC AUC, nDCG, MRR, recall@k, ECE, perplexity.
+- `lib/cards/`: card types (mcq, multi, derive, shape, metric, bug), `check` (tolerances, malformed input never throws), `parseShape`, seeded generators (11: softmax-CE/BCE/MSE gradients, matmul/broadcast/conv/heads/reshape shapes, P/R/F1, AUC, nDCG), demo deck.
+- `lib/battle/battle.ts`: pure state machine: streak-scaled damage, counter-hits, hearts, missed cards requeued 3 turns later, first-try tracking, win by knockout or on points, stars.
+- `/battle` (`components/Battle.tsx`, `game/render/battle.ts`): illustrated stage, lunge + signal bolt, white hurt flash, recoil, faint, shake, floating damage, HP bars, forms for every card type, feedback with explanation, result screen.
+- Verification: `lint` (warnings only), `typecheck`, `test` (134 pass; 24 new in `tests/cards.test.ts`: finite-difference gradient checks, numpy cross-check for gradients/shapes/nDCG, 200 seeds × 11 generators accepted by their own checker, the softmax bug card proven by running buggy and fixed code natively), `content:verify`, `build`, `build:pages` pass. `npm run smoke:battle` passes at desktop and iPhone 14 (hits, counters, loss, restart; no console errors or horizontal overflow); screenshots inspected.
+- CI and Pages deploy confirmation skipped (Actions quota exhausted until 2026-11-01).
+- Known gaps: the foe is the Perceptron front sprite recoloured (placeholder, needs its own art); no win-path in the smoke test (needs card answers exposed; logic is unit-tested); no intro transition, audio or keyboard shortcuts for answers; the numpy cross-check needs a python3 with numpy (`/usr/bin/python3` fallback). Win/lose does not touch the save yet.
+- Next: B3c, then B4 (Python Port content, part 1).

@@ -23,7 +23,9 @@ Work top to bottom: take the **first unchecked box**, and split big boxes into r
 - [x] B1b-ii. **Art:** the Python Port tileset and the Lab interior (16×16 tiles, animated water/lamps/servers/Training Rig, `tilemap.ts` composer, preview maps).
 - [x] B2a. **Overworld + dialogue logic** (pure, tested): tile-grid walker with collision, warps, NPC/prop interaction, camera; branching dialogue scripts with flags, choices and typewriter. (Neither Algo nor Query Clash has a walkable overworld, so this is new.)
 - [x] B2b. **Overworld UI:** `/play` canvas scene (animated tiles, walk cycles, y-sorted actors), dialogue box with portraits, keyboard + touch d-pad, `smoke:overworld` Playwright test.
-- [ ] B3. **Battle stage and card battles:** MCQ, derive-it (numeric), shape check, metric drill, spot-the-bug. The solvers in `lib/solvers/` are tested.
+- [x] B3a. **Solvers, card model and battle logic** (pure, tested): `lib/solvers/` (stable softmax/CE/BCE/MSE gradients, numpy shape rules, precision/recall/F1/AUC/nDCG/ECE, cross-checked against numpy), `lib/cards/` (MCQ, multi, derive-it, shape, metric, spot-the-bug; seeded generators), `lib/battle/` (streaks, counters, requeue, stars).
+- [x] B3b. **Battle stage UI** (`/battle`): canvas stage with backdrop, platforms, lunge/bolt/hurt flash/faint, damage numbers, HP bars, shake; card forms for every type; `smoke:battle`. Uses a tinted Neuron-Pup as the placeholder foe.
+- [ ] B3c. **Diagnose-the-curve, which-technique and trade-off cards**, a proper Noise-minion sprite (64×64, multi-frame), and the deck loader reading `content/` packages (needed by B4).
 - [ ] B4. **Python Port content, part 1** (CUR F1: Python + interview Python): lessons, 30 cards, 10 judged functions.
 - [ ] B5. **Python Port content, part 2** (numpy, broadcasting, vectorisation): lessons, 25 cards (shape cards generated), 8 vectorisation challenges with perf thresholds.
 - [ ] B6. **Lab flow v1 + Forge module "linear model + GD"** (a pre-autograd perceptron/linear regression with a hand-derived gradient). The companion stats come from its test metrics.
