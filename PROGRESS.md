@@ -79,3 +79,12 @@ Append a dated entry after every run: what changed, how it was verified (command
 - CI and Pages deploy confirmation skipped (GitHub Actions quota exhausted until 2026-11-01).
 - Known gaps: back view is simpler than the front (head reads large; polish later); evolve is aura-only until the Multilayer form exists for a real morph; no sprite-sheet PNG export yet; no hurt-flash tests beyond `frameToRGBA`. Cold containers need `npm run stage:pyodide && npm run stage:clang` before `npm test` or 8 runtime tests are skipped.
 - Next: B1b, then B2 (overworld + dialogue engine).
+
+## 2026-10-29: B1b-i character art
+- B1b was split again (B1b-i characters done, B1b-ii tileset + Lab interior next).
+- Added `scripts/art/characters.mjs` and generated `game/sprites/characters/{player,okafor}{,-portrait}.ts`: 16×24 overworld sprites (walk cycles of 4 frames in four directions, plus breathing stand frames) and 48×48 portraits (idle with blink, talk, smile, think). Player: teal hoodie, headphones, satchel. Prof. Lumen Okafor: lab coat, round glasses, curly grey hair, slate tablet. Registered in the roster; `/dev/sprites` shows them. `toModule` now quotes animation keys.
+- Tests: character-specific cases in `tests/sprites.test.ts` (sizes, walk cycles differ, talk changes the mouth); creature size bar applies to creatures only.
+- Verification: `lint` (warnings only), `typecheck`, `test` (81 pass), `content:verify`, `build`, `build:pages` pass. Playwright on the static export at desktop and iPhone 14: no console errors, no horizontal overflow; screenshots inspected.
+- CI and Pages deploy confirmation skipped (Actions quota exhausted until 2026-11-01).
+- Known gaps: the back-facing Okafor is a plain hair ball; overworld sprites are small and face detail is minimal (2px eyes); no sleeve or tablet animation; portraits have no gender-neutral variants or player customisation yet.
+- Next: B1b-ii (tileset + Lab interior), then B2.

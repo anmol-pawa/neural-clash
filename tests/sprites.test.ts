@@ -2,8 +2,12 @@ import { describe, expect, it } from "vitest";
 import { bounds, validateSprite } from "@/game/sprites/pixel";
 import { SPRITES } from "@/game/sprites/roster";
 
+const isCharacter = (d: { id: string }) => d.id === "player" || d.id === "okafor" || d.id.endsWith("-portrait");
+const CREATURES = SPRITES.filter((d) => !isCharacter(d));
+const CHARACTERS = SPRITES.filter(isCharacter);
+
 describe("sprite roster", () => {
-  for (const def of SPRITES) {
+  for (const def of CREATURES) {
     describe(def.id, () => {
       it("is a valid sprite definition", () => {
         expect(validateSprite(def)).toEqual([]);
@@ -34,6 +38,44 @@ describe("sprite roster", () => {
       });
       it("uses a limited palette", () => {
         expect(Object.keys(def.palette).length).toBeLessThanOrEqual(28);
+      });
+    });
+  }
+  for (const def of CHARACTERS) {
+    describe(`character ${def.id}`, () => {
+      const portrait = def.id.endsWith("-portrait");
+      it("is a valid sprite definition", () => {
+        expect(validateSprite(def)).toEqual([]);
+      });
+      it(portrait ? "is a 48×48 portrait with talk, smile and think frames" : "is 16×24 with a 4-frame walk cycle in every direction", () => {
+        if (portrait) {
+          expect([def.w, def.h]).toEqual([48, 48]);
+          for (const a of ["idle", "talk", "smile", "think"]) expect(def.anims[a]?.length).toBeGreaterThanOrEqual(2);
+        } else {
+          expect([def.w, def.h]).toEqual([16, 24]);
+          for (const d of ["down", "up", "left", "right"]) {
+            expect(def.anims[`walk-${d}`]).toHaveLength(4);
+            expect(def.anims[`stand-${d}`]?.length).toBeGreaterThanOrEqual(2);
+          }
+        }
+      });
+      it("is outlined and fits the canvas", () => {
+        for (const [name, frames] of Object.entries(def.anims))
+          for (const f of frames) {
+            expect(bounds(f), name).not.toBeNull();
+            expect(f.join("").includes("k"), name).toBe(true);
+          }
+      });
+      it("walk frames differ so the cycle visibly animates", () => {
+        if (portrait) return;
+        for (const d of ["down", "up", "left", "right"]) {
+          const w = def.anims[`walk-${d}`];
+          expect(new Set(w.map((f) => f.join(""))).size, d).toBeGreaterThanOrEqual(3);
+        }
+      });
+      it("talking changes the mouth", () => {
+        if (!portrait) return;
+        expect(def.anims.talk[0].join("")).not.toBe(def.anims.talk[1].join(""));
       });
     });
   }
