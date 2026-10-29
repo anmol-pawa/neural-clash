@@ -27,7 +27,9 @@ Work top to bottom: take the **first unchecked box**, and split big boxes into r
 - [x] B3b. **Battle stage UI** (`/battle`): canvas stage with backdrop, platforms, lunge/bolt/hurt flash/faint, damage numbers, HP bars, shake; card forms for every type; `smoke:battle`. Uses a tinted Neuron-Pup as the placeholder foe.
 - [x] B3c-i. **Diagnose-the-curve cards** (loss curves from real GD runs, label verified by a classifier), **technique / trade-off duel** card variants, and the deck loader + validator reading `content/decks/*.json`.
 - [x] B3c-ii. **A proper Noise-minion sprite** (64×64, front, multi-frame idle/attack/hurt/faint) replacing the recoloured Neuron-Pup foe.
-- [ ] B4. **Python Port content, part 1** (CUR F1: Python + interview Python): lessons, 30 cards, 10 judged functions.
+- [x] B4a. **Python Port cards** (CUR F1): 32-card deck `content/decks/python-port.json`, 21 predict-the-output cards whose answers are computed by running native python3 (`scripts/gen-python-deck.mjs`), 2 proven spot-the-bug cards.
+- [ ] B4b. **Python Port lessons** (CUR F1: Python + interview Python): short original lessons for each card topic, linked from the deck.
+- [ ] B4c. **10 judged Python functions** (Lab/problem packages: reference, wrong solutions, hidden tests) for interview Python.
 - [ ] B5. **Python Port content, part 2** (numpy, broadcasting, vectorisation): lessons, 25 cards (shape cards generated), 8 vectorisation challenges with perf thresholds.
 - [ ] B6. **Lab flow v1 + Forge module "linear model + GD"** (a pre-autograd perceptron/linear regression with a hand-derived gradient). The companion stats come from its test metrics.
 - [ ] B7. **Training Grounds v1** (ARCH §5): the TS trainer for linear models + 2D toys, live curves, the hidden test-set battle, and equivalence tests vs Python.

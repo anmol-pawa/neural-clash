@@ -32,7 +32,9 @@ export function validateCard(c: unknown): string[] {
       if (!isStrs(x.choices, 2)) errs.push("choices must be 2+ non-empty strings");
       else if (!Number.isInteger(x.answer) || (x.answer as number) < 0 || (x.answer as number) >= x.choices.length) errs.push("answer out of range");
       else if (new Set(x.choices).size !== x.choices.length) errs.push("duplicate choices");
-      if (x.variant !== undefined && x.variant !== "technique" && x.variant !== "tradeoff") errs.push("bad variant");
+      if (x.variant !== undefined && x.variant !== "technique" && x.variant !== "tradeoff" && x.variant !== "predict") errs.push("bad variant");
+      if (x.code !== undefined && !(Array.isArray(x.code) && x.code.length > 0 && x.code.every((l) => typeof l === "string"))) errs.push("code must be a list of lines");
+      if (x.variant === "predict" && x.code === undefined) errs.push("predict cards need code");
       break;
     case "multi":
       if (!isStrs(x.choices, 2)) errs.push("choices must be 2+ non-empty strings");

@@ -10,7 +10,7 @@ import { GENERATORS } from "@/lib/cards/generators";
 import type { Card } from "@/lib/cards/types";
 import { classifyCurves, trainCurves } from "@/lib/cards/curves";
 import { loadDeck } from "@/lib/cards/loader";
-import { STRATEGY_DECK, HANDWRITTEN, SOFTMAX_BUG_SRC, SOFTMAX_FIXED_SRC, demoDeck } from "@/lib/cards/samples";
+import { STRATEGY_DECK, PYTHON_DECK, HANDWRITTEN, SOFTMAX_BUG_SRC, SOFTMAX_FIXED_SRC, demoDeck } from "@/lib/cards/samples";
 import { startBattle, answer, next, summarize } from "@/lib/battle/battle";
 
 const findPy = () =>
@@ -320,5 +320,33 @@ describe("curve cards and deck loader", () => {
     // Guards against a deck whose answer is always "A"; the content rewards reading, not pattern-spotting.
     const idx = STRATEGY_DECK.cards.filter((c) => c.kind === "mcq").map((c) => (c as { answer: number }).answer);
     expect(new Set(idx).size).toBeGreaterThan(1);
+  });
+});
+
+describe("Python Port deck", () => {
+  it("loads cleanly with 30+ unique cards across many topics", () => {
+    expect(PYTHON_DECK.errors).toEqual([]);
+    expect(PYTHON_DECK.cards.length).toBeGreaterThanOrEqual(30);
+    expect(new Set(PYTHON_DECK.cards.map((c) => c.id)).size).toBe(PYTHON_DECK.cards.length);
+    expect(new Set(PYTHON_DECK.cards.map((c) => c.topic)).size).toBeGreaterThanOrEqual(12);
+  });
+  it("every predict-the-output answer is the real stdout of its snippet, and no distractor is", () => {
+    const predicts = PYTHON_DECK.cards.filter((c) => c.kind === "mcq" && c.variant === "predict");
+    expect(predicts.length).toBeGreaterThanOrEqual(20);
+    for (const c of predicts) {
+      if (c.kind !== "mcq" || !c.code) throw new Error("unreachable");
+      const out = execFileSync(findPy(), ["-I", "-c", c.code.join("\n")], { encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] }).trim();
+      expect(c.choices[c.answer], c.id).toBe(out);
+      expect(c.choices.filter((x) => x === out), c.id).toHaveLength(1);
+    }
+  });
+  it("answer positions are spread across the choices", () => {
+    const idx = PYTHON_DECK.cards.filter((c) => c.kind === "mcq").map((c) => (c as { answer: number }).answer);
+    expect(new Set(idx).size).toBe(4);
+  });
+  it("spot-the-bug lines match the generator's buggy-vs-fixed proof and the JSON is not stale", () => {
+    const r = spawnSync("node", ["scripts/gen-python-deck.mjs", "--check"], { encoding: "utf8" });
+    expect(r.stderr).toBe("");
+    expect(r.status).toBe(0);
   });
 });

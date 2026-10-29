@@ -38,6 +38,11 @@ const tap = async (page, key, n = 1) => {
   }
 };
 
+// Hand-written mcq answers come from the deck files (predict-the-output answers are recomputed natively by the tests).
+const KNOWN = new Map();
+for (const f of ["python-port", "foundations-strategy"])
+  for (const c of JSON.parse(readFileSync(join(process.cwd(), "content", "decks", `${f}.json`), "utf8")).cards)
+    if (c.kind === "mcq") KNOWN.set(`${c.prompt}|${(c.code ?? []).join("\n")}`, c.choices[c.answer]);
 const browser = await chromium.launch();
 for (const [name, ctxOpts] of [["desktop", { viewport: { width: 1280, height: 900 } }], ["iphone14", { ...devices["iPhone 14"] }]]) {
   const ctx = await browser.newContext(ctxOpts);
@@ -50,12 +55,17 @@ for (const [name, ctxOpts] of [["desktop", { viewport: { width: 1280, height: 90
   await page.waitForTimeout(500);
   await page.screenshot({ path: join(shots, `battle-${name}-start.png`) });
 
-  let hits = 0, counters = 0, shotDone = false;
+  let hits = 0, counters = 0, shotDone = false, predictShot = false;
   for (let turn = 0; turn < 40; turn++) {
     if (await page.getByRole("region", { name: "Result" }).count()) break;
     const card = page.getByRole("region", { name: "Card" });
     const prompt = (await card.locator("p").nth(1).textContent()) ?? "";
-    if (prompt.includes("nan for logits")) await card.getByRole("button", { name: /Line 3/ }).click();
+    const codeText = (await card.getByLabel("Code").count()) ? await card.getByLabel("Code").first().textContent() : null;
+    const known = KNOWN.get(`${prompt}|${codeText ?? ""}`);
+    if (known) {
+      if (codeText && !predictShot) { await page.screenshot({ path: join(shots, `battle-${name}-predict.png`) }); predictShot = true; }
+      await card.getByRole("group", { name: "Choices" }).getByRole("button").filter({ hasText: known }).first().click();
+    } else if (prompt.includes("nan for logits")) await card.getByRole("button", { name: /Line 3/ }).click();
     else if (prompt.includes("climbs every step")) await card.getByRole("group", { name: "Choices" }).getByRole("button").first().click();
     else if (prompt.includes("99%")) { await card.getByRole("checkbox").nth(0).check(); await card.getByRole("checkbox").nth(1).check(); await card.getByRole("button", { name: "Attack" }).click(); }
     else if (await card.getByRole("group", { name: "Choices" }).count()) await card.getByRole("group", { name: "Choices" }).getByRole("button").nth(1).click();

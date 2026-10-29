@@ -52,6 +52,11 @@ function CardForm({ card, onSubmit }: { card: Card; onSubmit: (r: Response) => v
   if (card.kind === "mcq")
     return (
       <div className="grid gap-2" role="group" aria-label="Choices">
+        {card.code && (
+          <pre className="overflow-x-auto rounded border-2 border-indigo-300/40 bg-slate-950 p-2 font-mono text-sm" aria-label="Code">
+            {card.code.join("\n")}
+          </pre>
+        )}
         {card.choices.map((c, i) => (
           <button key={i} className={btn} onClick={() => onSubmit({ kind: "mcq", choice: i })}>
             <span className="mr-2 text-cyan-300">{String.fromCharCode(65 + i)}</span>
@@ -205,7 +210,7 @@ export default function Battle() {
         </section>
       ) : card ? (
         <section className="grid gap-3 rounded border-2 border-indigo-300/40 bg-slate-900/60 p-3" aria-label="Card">
-          <p className="text-xs uppercase tracking-wide text-slate-400">{card.kind === "mcq" && card.variant ? (card.variant === "tradeoff" ? "trade-off duel" : "which technique?") : card.kind.replace("mcq", "multiple choice").replace("multi", "pick all").replace("curve", "diagnose the curve")} · {card.topic}</p>
+          <p className="text-xs uppercase tracking-wide text-slate-400">{card.kind === "mcq" && card.variant ? (card.variant === "tradeoff" ? "trade-off duel" : card.variant === "predict" ? "predict the output" : "which technique?") : card.kind.replace("mcq", "multiple choice").replace("multi", "pick all").replace("curve", "diagnose the curve")} · {card.topic}</p>
           <p className="text-base leading-snug">{card.prompt}</p>
           <CardForm key={card.id} card={card} onSubmit={submit} />
         </section>

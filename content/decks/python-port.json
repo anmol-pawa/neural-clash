@@ -1,0 +1,620 @@
+{
+  "id": "python-port",
+  "title": "Python Port: Python and interview Python",
+  "cards": [
+    {
+      "id": "py-mutable-default",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "py-data-model",
+      "prompt": "What does the last line print?",
+      "code": [
+        "def add(x, acc=[]):",
+        "    acc.append(x)",
+        "    return acc",
+        "",
+        "add(1)",
+        "print(add(2))"
+      ],
+      "choices": [
+        "[2]",
+        "[1, 2]",
+        "[1]",
+        "[]"
+      ],
+      "answer": 1,
+      "explanation": "The default list is built once, when `def` runs, and shared by every call that omits it. The second call appends to the list the first call already filled. Use `None` and create the list inside the function."
+    },
+    {
+      "id": "py-late-binding",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "py-closures",
+      "prompt": "What does this print?",
+      "code": [
+        "fs = [lambda: i for i in range(3)]",
+        "print([f() for f in fs])"
+      ],
+      "choices": [
+        "[2, 2, 2]",
+        "[0, 1, 2]",
+        "[3, 3, 3]",
+        "[0, 0, 0]"
+      ],
+      "answer": 0,
+      "explanation": "A closure captures the variable, not its value at creation time. By the time the lambdas run, `i` has finished at 2. Bind it with a default argument (`lambda i=i: i`) to freeze each value."
+    },
+    {
+      "id": "py-generator-once",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "py-generators",
+      "prompt": "What does this print?",
+      "code": [
+        "g = (x * x for x in range(4))",
+        "print(sum(g), sum(g))"
+      ],
+      "choices": [
+        "14 14",
+        "0 14",
+        "14 6",
+        "14 0"
+      ],
+      "answer": 3,
+      "explanation": "A generator is a one-shot iterator. The first `sum` consumes it, so the second sees nothing and returns 0. Keep a list if you need two passes."
+    },
+    {
+      "id": "py-list-aliasing",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "py-copies",
+      "prompt": "What does this print?",
+      "code": [
+        "a = [[0] * 2] * 2",
+        "a[0][0] = 1",
+        "print(a)"
+      ],
+      "choices": [
+        "[[1, 0], [0, 0]]",
+        "[[0, 0], [0, 0]]",
+        "[[1, 0], [1, 0]]",
+        "[[1, 1], [1, 1]]"
+      ],
+      "answer": 2,
+      "explanation": "`[row] * 2` repeats a reference to the same inner list, so both rows are one object. Build rows independently with a comprehension: `[[0] * 2 for _ in range(2)]`."
+    },
+    {
+      "id": "py-iadd-vs-add",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "py-copies",
+      "prompt": "What does this print?",
+      "code": [
+        "a = [1, 2]",
+        "b = a",
+        "b = b + [3]",
+        "c = a",
+        "c += [4]",
+        "print(a)"
+      ],
+      "choices": [
+        "[1, 2]",
+        "[1, 2, 4]",
+        "[1, 2, 3]",
+        "[1, 2, 3, 4]"
+      ],
+      "answer": 1,
+      "explanation": "`b + [3]` builds a new list and rebinds `b`; `a` is untouched. `c += [4]` extends the shared list in place, and `a` is the same object. `+=` on a list is `extend`."
+    },
+    {
+      "id": "py-counter-most-common",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "py-collections",
+      "prompt": "What does this print?",
+      "code": [
+        "from collections import Counter",
+        "print(Counter('banana').most_common(2))"
+      ],
+      "choices": [
+        "[('a', 3), ('n', 2)]",
+        "[('b', 1), ('n', 2)]",
+        "[('n', 2), ('a', 3)]",
+        "[('a', 3), ('b', 1)]"
+      ],
+      "answer": 0,
+      "explanation": "`most_common` sorts by count, highest first: three a's, two n's, one b. It is the standard tool for frequency questions in interviews."
+    },
+    {
+      "id": "py-heapify-order",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "py-heapq",
+      "prompt": "What does this print?",
+      "code": [
+        "import heapq",
+        "h = [5, 1, 4]",
+        "heapq.heapify(h)",
+        "print(h)"
+      ],
+      "choices": [
+        "[1, 4, 5]",
+        "[5, 4, 1]",
+        "[5, 1, 4]",
+        "[1, 5, 4]"
+      ],
+      "answer": 3,
+      "explanation": "`heapify` arranges the list as a binary min-heap in place: the smallest element is first, but the rest is only partially ordered. Indexing a heap is not sorted order; pop to get sorted order."
+    },
+    {
+      "id": "py-nlargest",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "py-heapq",
+      "prompt": "What does this print?",
+      "code": [
+        "import heapq",
+        "print(heapq.nlargest(2, [5, 1, 4, 2]))"
+      ],
+      "choices": [
+        "[1, 2]",
+        "[4, 5]",
+        "[5, 4]",
+        "[5, 4, 2]"
+      ],
+      "answer": 2,
+      "explanation": "`nlargest(k, xs)` returns the k largest in descending order, in O(n log k) time using a size-k heap."
+    },
+    {
+      "id": "py-bisect-sides",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "py-bisect",
+      "prompt": "What does this print?",
+      "code": [
+        "from bisect import bisect_left, bisect_right",
+        "a = [1, 2, 2, 2, 3]",
+        "print(bisect_left(a, 2), bisect_right(a, 2))"
+      ],
+      "choices": [
+        "1 3",
+        "1 4",
+        "2 4",
+        "0 4"
+      ],
+      "answer": 1,
+      "explanation": "`bisect_left` gives the first index where 2 could be inserted (before the equal run); `bisect_right` gives the index after the last 2. The difference is the count of 2s."
+    },
+    {
+      "id": "py-accumulate",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "py-itertools",
+      "prompt": "What does this print?",
+      "code": [
+        "from itertools import accumulate",
+        "print(list(accumulate([1, 2, 3, 4])))"
+      ],
+      "choices": [
+        "[1, 3, 6, 10]",
+        "[1, 2, 3, 4]",
+        "[10]",
+        "[1, 2, 6, 24]"
+      ],
+      "answer": 0,
+      "explanation": "`accumulate` yields running totals by default (prefix sums), the one-liner behind many range-sum problems. Pass a function such as `operator.mul` for running products."
+    },
+    {
+      "id": "py-groupby-unsorted",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "py-itertools",
+      "prompt": "What does this print?",
+      "code": [
+        "from itertools import groupby",
+        "print([(k, len(list(g))) for k, g in groupby('aabaa')])"
+      ],
+      "choices": [
+        "[('a', 4), ('b', 1)]",
+        "[('a', 2), ('b', 1)]",
+        "[('a', 4)]",
+        "[('a', 2), ('b', 1), ('a', 2)]"
+      ],
+      "answer": 3,
+      "explanation": "`groupby` groups only *consecutive* equal keys, like run-length encoding. To group everything, sort by the key first."
+    },
+    {
+      "id": "py-lru-cache-calls",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "py-functools",
+      "prompt": "What does this print?",
+      "code": [
+        "from functools import lru_cache",
+        "calls = 0",
+        "",
+        "@lru_cache(maxsize=None)",
+        "def f(n):",
+        "    global calls",
+        "    calls += 1",
+        "    return n",
+        "",
+        "f(1); f(1); f(2)",
+        "print(calls)"
+      ],
+      "choices": [
+        "3",
+        "1",
+        "2",
+        "0"
+      ],
+      "answer": 2,
+      "explanation": "The cache is keyed by the arguments. `f(1)` runs once and is then served from the cache; `f(2)` is a new key. Arguments must be hashable, and unbounded caches can hold memory forever."
+    },
+    {
+      "id": "py-decorator-name",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "py-decorators",
+      "prompt": "What does this print?",
+      "code": [
+        "def log(fn):",
+        "    def wrapper(*args):",
+        "        return fn(*args)",
+        "    return wrapper",
+        "",
+        "@log",
+        "def square(x):",
+        "    return x * x",
+        "",
+        "print(square.__name__)"
+      ],
+      "choices": [
+        "square",
+        "wrapper",
+        "log",
+        "fn"
+      ],
+      "answer": 1,
+      "explanation": "The decorator replaced `square` with `wrapper`, so metadata is lost. `functools.wraps(fn)` on the wrapper copies the name, docstring and annotations; always use it."
+    },
+    {
+      "id": "py-context-suppress",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "py-context-managers",
+      "prompt": "What does this print?",
+      "code": [
+        "log = []",
+        "",
+        "class C:",
+        "    def __enter__(self):",
+        "        log.append('in')",
+        "        return self",
+        "    def __exit__(self, *exc):",
+        "        log.append('out')",
+        "        return True",
+        "",
+        "with C():",
+        "    log.append('body')",
+        "    raise ValueError",
+        "print(log)"
+      ],
+      "choices": [
+        "['in', 'body', 'out']",
+        "['in', 'body']",
+        "['in', 'out']",
+        "['in', 'body', 'out', 'error']"
+      ],
+      "answer": 0,
+      "explanation": "`__exit__` always runs, and returning a truthy value tells Python the exception was handled, so it is swallowed. Suppressing exceptions silently is rarely wise; do it deliberately."
+    },
+    {
+      "id": "py-finally-return",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "py-exceptions",
+      "prompt": "What does this print?",
+      "code": [
+        "def f():",
+        "    try:",
+        "        return 1",
+        "    finally:",
+        "        return 2",
+        "",
+        "print(f())"
+      ],
+      "choices": [
+        "1",
+        "None",
+        "Error",
+        "2"
+      ],
+      "answer": 3,
+      "explanation": "`finally` always runs before the function returns, and a `return` inside it overrides the earlier one (and would even discard an in-flight exception). Do not return from `finally`."
+    },
+    {
+      "id": "py-dataclass-eq",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "py-dataclasses",
+      "prompt": "What does this print?",
+      "code": [
+        "from dataclasses import dataclass, field",
+        "",
+        "@dataclass",
+        "class P:",
+        "    x: int",
+        "    tags: list = field(default_factory=list)",
+        "",
+        "a, b = P(1), P(1)",
+        "a.tags.append('t')",
+        "print(a == b, b.tags)"
+      ],
+      "choices": [
+        "True []",
+        "True ['t']",
+        "False []",
+        "False ['t']"
+      ],
+      "answer": 2,
+      "explanation": "`default_factory` gives each instance its own list, so `b.tags` stays empty. The generated `__eq__` compares fields, and `a.tags` now differs, so the instances are unequal."
+    },
+    {
+      "id": "py-dataclass-hash",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "py-dataclasses",
+      "prompt": "What does this print?",
+      "code": [
+        "from dataclasses import dataclass",
+        "",
+        "@dataclass",
+        "class P:",
+        "    x: int",
+        "",
+        "try:",
+        "    print(len({P(1), P(1)}))",
+        "except TypeError:",
+        "    print('unhashable')"
+      ],
+      "choices": [
+        "1",
+        "unhashable",
+        "2",
+        "TypeError"
+      ],
+      "answer": 1,
+      "explanation": "With the default `eq=True` and no `frozen=True`, a dataclass sets `__hash__` to None, so instances cannot go in sets or be dict keys. Use `@dataclass(frozen=True)` for value objects."
+    },
+    {
+      "id": "py-slice-step",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "py-data-model",
+      "prompt": "What does this print?",
+      "code": [
+        "s = 'neural'",
+        "print(s[::-2])"
+      ],
+      "choices": [
+        "lre",
+        "lan",
+        "nua",
+        "lrn"
+      ],
+      "answer": 0,
+      "explanation": "A negative step walks backwards from the end: l, then every second character. Slices never raise on out-of-range bounds, which is convenient and occasionally hides bugs."
+    },
+    {
+      "id": "py-sort-key-stable",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "py-sorting",
+      "prompt": "What does this print?",
+      "code": [
+        "print(sorted(['bb', 'a', 'cc', 'd'], key=len))"
+      ],
+      "choices": [
+        "['a', 'd', 'cc', 'bb']",
+        "['d', 'a', 'bb', 'cc']",
+        "['a', 'bb', 'cc', 'd']",
+        "['a', 'd', 'bb', 'cc']"
+      ],
+      "answer": 3,
+      "explanation": "`sorted` is stable: items with equal keys keep their original order, so 'a' stays before 'd' and 'bb' before 'cc'. That lets you sort by a secondary key first, then the primary key."
+    },
+    {
+      "id": "py-rounding-division",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "py-data-model",
+      "prompt": "What does this print?",
+      "code": [
+        "print(round(2.5), round(3.5), -7 // 2, -7 % 3)"
+      ],
+      "choices": [
+        "3 4 -3 -1",
+        "2 4 -3 2",
+        "2 4 -4 2",
+        "3 3 -4 1"
+      ],
+      "answer": 2,
+      "explanation": "`round` uses banker's rounding (ties go to even). `//` floors toward negative infinity and `%` takes the sign of the divisor, so `-7 // 2 == -4` and `-7 % 3 == 2`. This differs from C++ truncation, a classic trap when porting solutions."
+    },
+    {
+      "id": "py-float-equality",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "py-numerics",
+      "prompt": "What does this print?",
+      "code": [
+        "import math",
+        "print(0.1 + 0.2 == 0.3, math.isclose(0.1 + 0.2, 0.3))"
+      ],
+      "choices": [
+        "True True",
+        "False True",
+        "False False",
+        "True False"
+      ],
+      "answer": 1,
+      "explanation": "Binary floats cannot represent 0.1 or 0.2 exactly, so the sum is 0.30000000000000004. Compare floats with a tolerance (`math.isclose`, `pytest.approx`, `np.allclose`), never `==`."
+    },
+    {
+      "id": "py-list-pop0",
+      "kind": "mcq",
+      "topic": "py-complexity",
+      "prompt": "You pop from the front of a Python list in a loop on a million items (`xs.pop(0)`). What is wrong, and what is the fix?",
+      "choices": [
+        "Nothing; list pops are O(1) at both ends",
+        "It is O(log n); switch to a heap",
+        "Each pop is O(n) because every element shifts left; use `collections.deque.popleft()` for O(1)",
+        "It is O(1) but the list copies once at the end"
+      ],
+      "answer": 2,
+      "explanation": "A list is a contiguous array: removing at index 0 moves the other n-1 pointers, so a loop of n pops is O(n²). A deque is a block-linked structure with O(1) operations at both ends."
+    },
+    {
+      "id": "py-in-list-vs-set",
+      "kind": "mcq",
+      "topic": "py-complexity",
+      "prompt": "A function tests `x in banned` for each of a million tokens, where `banned` is a list of 50,000 words. What is the best first change?",
+      "choices": [
+        "Sort the list so `in` becomes O(log n)",
+        "Convert `banned` to a set once (average O(1) membership)",
+        "Use `banned.index(x)` instead",
+        "Nothing: `in` on a list is already O(1)"
+      ],
+      "answer": 1,
+      "explanation": "`in` on a list scans linearly; on a set it hashes. Building the set costs O(m) once and saves roughly 50,000 comparisons per lookup. Sorting a list does not make `in` binary search; use `bisect` explicitly for that."
+    },
+    {
+      "id": "py-max-heap",
+      "kind": "mcq",
+      "topic": "py-heapq",
+      "prompt": "`heapq` only provides a min-heap. What is the usual way to get max-heap behaviour for numbers?",
+      "choices": [
+        "Push the negated values and negate again on pop",
+        "Call `heapq.maxheap()`",
+        "Sort the list after every push",
+        "Use `reverse=True` in `heappush`"
+      ],
+      "answer": 0,
+      "explanation": "Negating reverses the order, so the smallest negated value is the largest original. For objects, push `(-priority, tiebreaker, item)` tuples; the tiebreaker avoids comparing items that cannot be ordered."
+    },
+    {
+      "id": "py-recursion-limit",
+      "kind": "mcq",
+      "topic": "py-recursion",
+      "prompt": "A recursive depth-first search works on small inputs but raises `RecursionError` on a 200,000-node chain. What is the most robust fix?",
+      "choices": [
+        "Catch the error and retry",
+        "Add `@lru_cache` to the function",
+        "Convert every `int` to `float`",
+        "Rewrite it iteratively with an explicit stack"
+      ],
+      "answer": 3,
+      "explanation": "CPython caps the call stack (about 1,000 frames by default) and each recursion costs a frame. Raising the limit risks crashing the interpreter on a real stack overflow. An explicit stack uses heap memory and has no such ceiling. Caching does not shorten the call chain."
+    },
+    {
+      "id": "py-typing-runtime",
+      "kind": "mcq",
+      "topic": "py-typing",
+      "prompt": "A function is annotated `def f(x: int) -> str:` and called as `f('hello')`. What happens at runtime?",
+      "choices": [
+        "A `TypeError` is raised before the body runs",
+        "The string is converted to an int",
+        "Nothing special: annotations are not enforced; a static checker such as mypy would flag it",
+        "The interpreter refuses to import the module"
+      ],
+      "answer": 2,
+      "explanation": "Python stores annotations but does not check them. They document intent and feed tools (mypy, pyright, IDEs, libraries such as pydantic that opt in to validating)."
+    },
+    {
+      "id": "py-approx",
+      "kind": "mcq",
+      "topic": "py-testing",
+      "prompt": "Which assertion is right for checking a computed gradient `g` against `0.3` in a pytest test?",
+      "choices": [
+        "`assert g == 0.3`",
+        "`assert g == pytest.approx(0.3, abs=1e-6)`",
+        "`assert str(g) == '0.3'`",
+        "`assert int(g * 10) == 3`"
+      ],
+      "answer": 1,
+      "explanation": "Floating-point results carry rounding error, so tests compare within a tolerance. `int(g * 10)` truncates and fails for 0.2999999; string comparison is brittle."
+    },
+    {
+      "id": "py-list-vs-view-slice",
+      "kind": "mcq",
+      "topic": "py-copies",
+      "prompt": "In pure Python `b = a[1:3]` on a list, versus numpy `b = arr[1:3]`. Which statement is correct?",
+      "choices": [
+        "The list slice copies the pointers; the numpy slice is a view sharing memory with `arr`",
+        "Both are views",
+        "Both are copies",
+        "The list slice is a view; the numpy slice is a copy"
+      ],
+      "answer": 0,
+      "explanation": "List slicing builds a new list. Basic numpy slicing returns a view on the same buffer, so writing `b[0] = 9` changes `arr`. Fancy (index-array) indexing copies instead. Use `.copy()` when you need independence."
+    },
+    {
+      "id": "py-bare-except",
+      "kind": "mcq",
+      "topic": "py-exceptions",
+      "prompt": "Why is a bare `except:` (or `except BaseException`) around a training loop a bad idea?",
+      "choices": [
+        "It is slower than `except Exception`",
+        "It is a syntax error in Python 3",
+        "It disables the garbage collector",
+        "It also catches `KeyboardInterrupt` and `SystemExit`, so you cannot stop the job and real bugs vanish"
+      ],
+      "answer": 3,
+      "explanation": "`KeyboardInterrupt` and `SystemExit` derive from `BaseException`, not `Exception`. Catch the narrowest error you can handle, and log or re-raise the rest."
+    },
+    {
+      "id": "py-o1-ops",
+      "kind": "multi",
+      "topic": "py-complexity",
+      "prompt": "Which operations are O(1) on average? Pick all that apply.",
+      "choices": [
+        "`d[key]` on a dict",
+        "`s.add(x)` on a set",
+        "`dq.appendleft(x)` on a deque",
+        "`xs.insert(0, x)` on a list"
+      ],
+      "answers": [
+        0,
+        1,
+        2
+      ],
+      "explanation": "Dicts and sets hash their keys; a deque is built for both ends. Inserting at the front of a list shifts every element: O(n)."
+    },
+    {
+      "id": "py-bug-moving-average",
+      "kind": "bug",
+      "topic": "py-comprehensions",
+      "prompt": "This should return the average of every full window of size k. Which line is wrong?",
+      "code": [
+        "def moving_avg(xs, k):",
+        "    return [sum(xs[i:i + k]) / k",
+        "            for i in range(len(xs))]"
+      ],
+      "line": 3,
+      "explanation": "Near the end the slice is shorter than k, but it is still divided by k, so the last windows are wrong. Only start indices up to `len(xs) - k` give full windows: `range(len(xs) - k + 1)`. Off-by-one bounds are the most common slicing bug."
+    },
+    {
+      "id": "py-bug-make-grid",
+      "kind": "bug",
+      "topic": "py-copies",
+      "prompt": "After `g = make_grid(2); g[0][0] = 1`, every row changes. Which line is the bug?",
+      "code": [
+        "def make_grid(n):",
+        "    return [[0] * n] * n"
+      ],
+      "line": 2,
+      "explanation": "`[row] * n` repeats a reference to one row, so all rows alias each other. Build each row separately with a comprehension."
+    }
+  ]
+}

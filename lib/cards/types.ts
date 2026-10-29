@@ -12,7 +12,9 @@ export interface CardBase {
 export interface McqCard extends CardBase {
   kind: "mcq";
   /** Flavour label for the card header; behaviour is identical. */
-  variant?: "technique" | "tradeoff";
+  variant?: "technique" | "tradeoff" | "predict";
+  /** Source shown above the choices for "predict" cards; the right choice is its real stdout (see scripts/gen-python-deck.mjs). */
+  code?: string[];
   choices: string[];
   answer: number;
 }

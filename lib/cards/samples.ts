@@ -1,3 +1,4 @@
+import deckPython from "@/content/decks/python-port.json";
 import deckStrategy from "@/content/decks/foundations-strategy.json";
 import { loadDeck } from "./loader";
 import { GENERATORS } from "./generators";
@@ -45,10 +46,13 @@ export const HANDWRITTEN: Card[] = [lrMcq, overfitMulti, softmaxBug];
 /** Hand-written and generated cards from `content/decks/`, validated by the loader. */
 export const STRATEGY_DECK = loadDeck(deckStrategy);
 
+/** Python Port deck: Python and interview-Python cards (answers computed natively by `scripts/gen-python-deck.mjs`). */
+export const PYTHON_DECK = loadDeck(deckPython);
+
 /** A varied deck: hand-written cards plus solver-generated ones, shuffled by a seed. */
 export function demoDeck(seed: number): Card[] {
   const r = rng(seed);
   const gens = Object.values(GENERATORS);
   const generated = gens.map((g, i) => g(seed * 31 + i + 1) as Card);
-  return shuffle(r, [...HANDWRITTEN, ...STRATEGY_DECK.cards.slice(0, 6), ...generated]);
+  return shuffle(r, [...HANDWRITTEN, ...STRATEGY_DECK.cards.slice(0, 6), ...shuffle(r, PYTHON_DECK.cards).slice(0, 6), ...generated]);
 }
