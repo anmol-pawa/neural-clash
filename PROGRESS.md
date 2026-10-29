@@ -88,3 +88,10 @@ Append a dated entry after every run: what changed, how it was verified (command
 - CI and Pages deploy confirmation skipped (Actions quota exhausted until 2026-11-01).
 - Known gaps: the back-facing Okafor is a plain hair ball; overworld sprites are small and face detail is minimal (2px eyes); no sleeve or tablet animation; portraits have no gender-neutral variants or player customisation yet.
 - Next: B1b-ii (tileset + Lab interior), then B2.
+
+## 2026-10-29: B1b-ii Python Port tileset and Lab interior
+- Added `scripts/art/tiles.mjs` (46 original 16×16 tiles on one shared palette: grass/cobble/quay/plank, 4-frame animated water, trees, lamps with a flickering glow, houses and a roof set, Lab sign; interior wood floor, slate walls, desks, 4-frame code monitors, blinking server racks, whiteboards, bookshelf, rug, chair, door) and `scripts/art/maps.mjs` (layout code → aligned grids). Generated `game/tiles/tileset.ts` and `game/tiles/maps/{python-port,lab}.ts` (28×20 harbour town, 16×12 Lumen Labs with Okafor's spot), plus `game/tiles/tiles.ts` (renderer-agnostic `TileSet`/`TileMap` types, `isWalkable`, `validateTileSet`, `validateMap`, `reachable`) and `/dev/tiles` (`components/TileLab.tsx`) showing both maps animated with the player and Okafor for scale, plus a catalogue.
+- Verification: `lint` (warnings only), `typecheck`, `test` (95 pass, 14 new in `tests/tiles.test.ts`: validity, distinct tiles, animation frames differ, solidity, warps reachable and round-trip, NPC reachable), `content:verify`, `build`, `build:pages` pass. Playwright on the static export at desktop and iPhone 14: no console errors, no horizontal overflow; screenshots inspected.
+- CI and Pages deploy confirmation skipped (Actions quota exhausted until 2026-11-01).
+- Known gaps: no Pixi renderer yet (B2); no autotiling or shoreline edge tiles; no villager NPC sprites; houses are decoration only; floor-wood reads strongly striped at small scale; palette uses ~70 characters, fine for tiles but not for sprites.
+- Next: B2 (overworld + dialogue engine), using `game/tiles` maps, warps and `isWalkable`.
