@@ -126,3 +126,10 @@ Append a dated entry after every run: what changed, how it was verified (command
 - CI and Pages deploy confirmation skipped (Actions quota exhausted until 2026-11-01).
 - Known gaps: the "leakage" diagnosis has no curve card (indistinguishable from healthy on loss alone; needs a dataset-based card); technique/trade-off content is a starter set, CUR topic ids are provisional; no "as of" stamps needed yet (no time-sensitive facts) but the RAG/LoRA cards should be revisited with B-series LLM content; Noise-minion art still a placeholder.
 - Next: B3c-ii (Noise-minion sprite), then B4.
+
+## 2026-10-29: B3c-ii Noise-minion sprite ("Static")
+- `scripts/art/noise-minion.mjs` generates `game/sprites/creatures/noise-minion.ts`: 64×64 front sprite, violet body ramp, magenta corruption patches, one glaring scanline-pupil eye, broken-pixel teeth, antenna spikes, glitch tears (rows sheared sideways) and a speckle fringe that re-rolls per frame. Animations: idle (4), attack (5, with lunge and growing tears), hurt (3), faint (4, collapsing into a heavy glitch smear with X eyes). Registered in `roster.ts` (so `/dev/sprites` and the sprite tests cover it); `/battle` now draws it untinted instead of the recoloured Neuron-Pup.
+- Verification: `lint` (warnings only), `typecheck`, `test` (145 pass; note Pyodide assets are staged by `npm run build`, so run it before `test` on a fresh checkout), `content:verify`, `build`, `build:pages` pass. `smoke:battle` passes at desktop and iPhone 14 (no console errors or overflow); screenshots inspected, the foe reads clearly on the stage. Contact sheet of all frames reviewed.
+- CI and Pages deploy confirmation skipped (Actions quota exhausted until 2026-11-01).
+- Known gaps: front view only (a minion never needs a back view); one minion design (the named Noise agents come with their regions); the stage's player HP bar sits close to the foe platform.
+- Next: B4 (Python Port content, part 1).

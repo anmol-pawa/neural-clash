@@ -132,7 +132,7 @@ export function drawBattle(g: CanvasRenderingContext2D, foe: SpriteDef, hero: Sp
   const bob = fx.foeDown ? 0 : Math.round(Math.sin(fx.t * 3) * 1.5);
   const recoil = foeHurt ? Math.round(6 * (1 - fx.foeHitAt / 0.35)) : 0;
   g.globalAlpha = 1 - faintT * 0.9;
-  g.drawImage(sprite(foe, foeAnim, fi, foeHurt && Math.floor(fx.foeHitAt * 24) % 2 === 0 ? "white" : "noise"), 144 + recoil, 40 + bob + Math.round(faintT * 14));
+  g.drawImage(sprite(foe, foeAnim, fi, foeHurt && Math.floor(fx.foeHitAt * 24) % 2 === 0 ? "white" : "none"), 144 + recoil, 40 + bob + Math.round(faintT * 14));
   g.globalAlpha = 1;
 
   // hero (back sprite): lunge on attack, flash when countered

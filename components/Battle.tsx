@@ -125,7 +125,7 @@ export default function Battle() {
   const [live, setLive] = useState("");
 
   useEffect(() => {
-    const foe = spriteById("neuron-pup-perceptron")!;
+    const foe = spriteById("noise-minion")!;
     const hero = spriteById("neuron-pup-perceptron-back")!;
     const g = canvasRef.current!.getContext("2d")!;
     let last = performance.now();
