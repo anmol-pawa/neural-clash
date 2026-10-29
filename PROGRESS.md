@@ -96,3 +96,15 @@ Append a dated entry after every run: what changed, how it was verified (command
 - CI and Pages deploy confirmation skipped (Actions quota exhausted until 2026-11-01).
 - Known gaps: no path/shore edge or corner variants (maps use plain tiles; autotiling comes with B2), no collision/interaction metadata yet (B2), no interior props for the house, tile palettes are per-tileset (48 colours max).
 - Next: B2 (overworld + dialogue engine).
+
+## 2026-10-29: B2 overworld + dialogue engine
+- Algo Clash has no overworld yet, so this is new code in Query Clash's spirit (canvas, not Pixi: the tile maps are small and Pixi isn't needed until the battle stage, B3).
+- `lib/dialogue/engine.ts`: scripts as data (`say`, `choice` with flag-gated options, `set`, `branch`, `do` effects), `validateScript`, and a `DialogueRunner` with a typewriter (confirm finishes the line, then advances; effects are drained by the caller; silent-node cycles are bounded).
+- `lib/world/area.ts` (areas as data: solid tiles, NPCs, warps, interactables, once-only step triggers, `validateArea`) and `lib/world/mover.ts` (one-tile slide in 190 ms, chained steps, bump-turn, locked during dialogue, warp events).
+- `game/world/{areas,scripts,draw}.ts`: Python Port and Okafor's Lab as playable areas (door warps both ways, Okafor NPC, trigger on entering her rug, signs/statue/bench/whiteboards/servers/rig/coffee), original dialogue (the intro, "Why write it from scratch?", "What is a perceptron?"), camera clamp, y-sorted characters with walk cycles.
+- `components/Overworld.tsx` + `/play`: keyboard (arrows/WASD, Space/Enter/Z, 1-9 for answers), touch D-pad + A button below `md`, fade on warps, area banner, DOM dialogue box with animated portrait (talk while typing) and tappable choices; flags persist in `save.extra.flags`. The title screen's Start now links to `/play`.
+- Verification: `lint`, `typecheck`, `test` (110 pass, 17 new in `tests/world.test.ts`: runner, area validation against real tilesets and scripts, every warp lands on a walkable tile, every interactable is reachable, mover timing/bump/lock/warp), `content:verify`, `build`, `build:pages` pass. `npm run smoke:play` passes at desktop and iPhone 14 (walk through the door, trigger intro, locked movement, menu, choice, dialogue closes, no console errors or horizontal overflow); screenshots inspected.
+- CI and Pages deploy confirmation skipped (Actions quota exhausted until 2026-11-01).
+- Known gaps: the smoke test does not yet prove that flags survive a reload through the UI (only that the save DB exists); no player position persistence; no NPC wandering or trainer line-of-sight; no sound; the Lab-to-next-region path doesn't exist yet (only two areas); the dialogue box covers much of the view on iPhone portrait; no "Continue" vs "New game" split on the title screen.
+- Process note: the session was told to develop on branch `claude/wonderful-goodall-5ety3r`, so this work is pushed there rather than to `main`; merge it to `main` for the Pages deploy.
+- Next: B3 (battle stage and card battles).
