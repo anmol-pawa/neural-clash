@@ -144,3 +144,11 @@ Append a dated entry after every run: what changed, how it was verified (command
 - CI and Pages deploy confirmation skipped (Actions quota exhausted until 2026-11-01).
 - Known gaps: cards are not yet linked to lessons (B4b); long code lines scroll horizontally inside the code block on iPhone; no syntax highlighting on cards; the Python deck is not yet reachable outside the demo battle mix (deck picker comes with the Python Port guardian, B8).
 - Next: B4b (Python Port lessons), then B4c.
+
+## 2026-10-29: B4b Python Port lessons
+- `scripts/gen-python-lessons.mjs` generates `content/lessons/python-port.json`: 10 original lessons covering all 20 deck topics (data model/slicing/numbers, comprehensions/generators, closures/decorators/functools, aliasing/copies, collections/complexity, heapq/bisect/itertools, context managers/exceptions, dataclasses/typing, recursion, testing numerics). Each has worked examples whose output is the real stdout from native python3 (`--check` detects staleness), takeaways and a common trap.
+- `lib/lessons/lessons.ts` (topic to lesson lookup), `/learn` reader (`components/Learn.tsx`, list at `/learn`, lesson at `/learn#<id>`), a "Python Port lessons" link on the title screen, and a "Lesson: ..." link in `/battle` feedback (opens in a new tab so the battle is kept).
+- Verification: `lint` (warnings only), `typecheck`, `test` (153 pass; new `tests/lessons.test.ts`: every deck topic has exactly one lesson, examples re-run natively, generator `--check`), `content:verify`, `build`, `build:pages`, `smoke:learn` 8/8 and `smoke:battle` pass at desktop and iPhone 14; screenshots inspected (no console errors or overflow).
+- CI and Pages deploy confirmation skipped (Actions quota exhausted until 2026-11-01).
+- Known gaps: no syntax highlighting; lessons are not yet gated by progress or saved as read; "Practise" links to the generic demo battle, not a topic deck.
+- Next: B4c (10 judged Python functions).

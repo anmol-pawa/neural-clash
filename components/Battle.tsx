@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+import { lessonForTopic } from "@/lib/lessons/lessons";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { drawBattle, STAGE_H, STAGE_W, type StageFx } from "@/game/render/battle";
 import { spriteById } from "@/game/sprites/roster";
@@ -206,6 +208,7 @@ export default function Battle() {
         <section className="grid gap-2 rounded border-2 p-3" style={{ borderColor: state.last.correct ? "#4ade80" : "#f87171" }} aria-label="Feedback">
           <h2 className="font-display">{state.last.correct ? `Hit! ${state.last.damage} damage` : "Counter-hit"}</h2>
           <p className="text-sm text-slate-200">{state.last.card.explanation}</p>
+          {(() => { const l = lessonForTopic(state.last.card.topic); return l ? <Link href={`/learn#${l.id}`} className="text-sm underline" target="_blank" rel="noreferrer">Lesson: {l.title}</Link> : null; })()}
           <button className={primary} onClick={() => setState(next)} autoFocus>Next card</button>
         </section>
       ) : card ? (

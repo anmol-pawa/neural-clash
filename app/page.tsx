@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { TitleNetwork } from "@/components/TitleNetwork";
 
 /** Title screen. Play/Continue arrive with the save system (ROADMAP A6) and the overworld (B2). */
@@ -13,6 +14,7 @@ export default function Home() {
         <button type="button" className="px-btn px-btn-primary px-4 py-3 text-lg" disabled>
           Start
         </button>
+        <Link href="/learn" className="px-btn px-4 py-2 text-center">Python Port lessons</Link>
         <p className="text-xs text-white/50">The Python Port opens soon. Work in progress.</p>
       </div>
     </main>

@@ -1,0 +1,484 @@
+{
+  "id": "python-port-lessons",
+  "title": "Python Port lessons",
+  "lessons": [
+    {
+      "id": "python-data-model",
+      "title": "Values, slices and numbers",
+      "topics": [
+        "py-data-model",
+        "py-sorting",
+        "py-numerics"
+      ],
+      "intro": "Most Python surprises in interviews come from three places: what a name refers to, how slices and sorting behave, and how numbers round. Learn the rules once and they stop being surprises.",
+      "takeaways": [
+        "Slices do not raise on bad bounds.",
+        "Sorting is stable; use it for multi-key ordering.",
+        "Floor division and banker's rounding are not C++ behaviour."
+      ],
+      "trap": "Using `int(a / b)` to emulate C++ division is wrong for large integers because it goes through floating point. Use `a // b` with care for negatives, or `divmod`.",
+      "sections": [
+        {
+          "heading": "Slices are forgiving",
+          "text": "`s[a:b:c]` never raises for out-of-range bounds, and a negative step walks backwards. That is handy for reversing (`s[::-1]`) and risky when an off-by-one hides.",
+          "code": [
+            "s = 'neural'",
+            "print(s[::-1], s[10:], s[::-2])"
+          ],
+          "output": "laruen  lre"
+        },
+        {
+          "heading": "Sorting is stable",
+          "text": "`sorted` and `list.sort` keep the original order of items with equal keys. To order by several criteria, sort by the least important key first, or return a tuple from `key`.",
+          "code": [
+            "rows = [('b', 2), ('a', 2), ('c', 1)]",
+            "print(sorted(rows, key=lambda r: (r[1], r[0])))"
+          ],
+          "output": "[('c', 1), ('a', 2), ('b', 2)]"
+        },
+        {
+          "heading": "Integer division and rounding",
+          "text": "`//` floors toward negative infinity and `%` takes the sign of the divisor. `round` sends ties to the nearest even number. Both differ from C++ truncation, which matters when you port a solution between the two languages.",
+          "code": [
+            "print(-7 // 2, -7 % 3, round(2.5), round(3.5))"
+          ],
+          "output": "-4 2 2 4"
+        }
+      ]
+    },
+    {
+      "id": "python-comprehensions-generators",
+      "title": "Comprehensions and generators",
+      "topics": [
+        "py-comprehensions",
+        "py-generators"
+      ],
+      "intro": "A comprehension builds a whole collection now. A generator produces values one at a time, on demand. Choosing between them is a memory and laziness decision.",
+      "takeaways": [
+        "Use a comprehension when you need the whole collection.",
+        "Use a generator for streams and single passes.",
+        "A generator can be consumed only once."
+      ],
+      "trap": "Calling `len()` on a generator fails, and `sum(g)` twice returns the right answer the first time and 0 the second.",
+      "sections": [
+        {
+          "heading": "Comprehensions",
+          "text": "They read as 'for each x, keep f(x)'. The same syntax builds lists, sets and dicts. Keep them to one loop and one condition; past that, a plain loop is clearer.",
+          "code": [
+            "words = ['to', 'be', 'or', 'not', 'to', 'be']",
+            "print({w: len(w) for w in set(words) if len(w) > 2})"
+          ],
+          "output": "{'not': 3}"
+        },
+        {
+          "heading": "Generators are one-shot",
+          "text": "A generator expression yields each value once, then it is exhausted. Reusing it silently gives nothing, which is a classic source of 'my second pass is empty' bugs.",
+          "code": [
+            "g = (x * x for x in range(4))",
+            "print(list(g), list(g))"
+          ],
+          "output": "[0, 1, 4, 9] []"
+        },
+        {
+          "heading": "Why bother",
+          "text": "Streaming a large file or a long training set through a generator keeps memory flat. `yield` lets you write the producer as an ordinary loop.",
+          "code": [
+            "def batches(xs, n):",
+            "    for i in range(0, len(xs), n):",
+            "        yield xs[i:i + n]",
+            "",
+            "print(list(batches([1, 2, 3, 4, 5], 2)))"
+          ],
+          "output": "[[1, 2], [3, 4], [5]]"
+        }
+      ]
+    },
+    {
+      "id": "python-closures-decorators",
+      "title": "Closures, decorators and functools",
+      "topics": [
+        "py-closures",
+        "py-decorators",
+        "py-functools"
+      ],
+      "intro": "Functions are values. A function can capture variables from where it was defined, and a decorator is a function that wraps another function.",
+      "takeaways": [
+        "A closure sees the variable at call time.",
+        "Always use `functools.wraps` in decorators.",
+        "`lru_cache` needs hashable arguments and unbounded caches grow forever."
+      ],
+      "trap": "Caching a function that takes a list or a numpy array raises `TypeError: unhashable`. Cache on a tuple or an id instead.",
+      "sections": [
+        {
+          "heading": "Closures capture variables, not values",
+          "text": "A closure looks the variable up when it runs. Lambdas created in a loop all see the loop variable's final value unless you bind it, for example with a default argument.",
+          "code": [
+            "fs = [lambda i=i: i for i in range(3)]",
+            "print([f() for f in fs])"
+          ],
+          "output": "[0, 1, 2]"
+        },
+        {
+          "heading": "Decorators wrap",
+          "text": "`@deco` above `def f` means `f = deco(f)`. Use `functools.wraps` so the wrapper keeps the name and docstring.",
+          "code": [
+            "from functools import wraps",
+            "",
+            "def traced(fn):",
+            "    @wraps(fn)",
+            "    def wrapper(*args):",
+            "        print('call', fn.__name__, args)",
+            "        return fn(*args)",
+            "    return wrapper",
+            "",
+            "@traced",
+            "def add(a, b):",
+            "    return a + b",
+            "",
+            "print(add(2, 3), add.__name__)"
+          ],
+          "output": "call add (2, 3)\n5 add"
+        },
+        {
+          "heading": "Memoisation",
+          "text": "`functools.lru_cache` stores results keyed by the arguments, which must be hashable. It turns exponential recursion into linear time, at the price of memory.",
+          "code": [
+            "from functools import lru_cache",
+            "",
+            "@lru_cache(maxsize=None)",
+            "def fib(n):",
+            "    return n if n < 2 else fib(n - 1) + fib(n - 2)",
+            "",
+            "print(fib(80), fib.cache_info().hits)"
+          ],
+          "output": "23416728348467685 78"
+        }
+      ]
+    },
+    {
+      "id": "python-copies-aliasing",
+      "title": "Aliasing and copies",
+      "topics": [
+        "py-copies"
+      ],
+      "intro": "Assignment never copies. It makes another name for the same object. Whether a change is visible through the other name depends on whether the object is mutable and whether the operation mutates it.",
+      "takeaways": [
+        "Assignment shares; it does not copy.",
+        "A shallow copy shares nested objects.",
+        "Build 2-D grids with a comprehension."
+      ],
+      "trap": "numpy slices are views, not copies: writing into a slice changes the original array. Use `.copy()` when you need independence (see the numpy lessons).",
+      "sections": [
+        {
+          "heading": "Two names, one list",
+          "text": "`b = a` binds a second name. Mutating through either shows through both.",
+          "code": [
+            "a = [1, 2]",
+            "b = a",
+            "b.append(3)",
+            "print(a, a is b)"
+          ],
+          "output": "[1, 2, 3] True"
+        },
+        {
+          "heading": "Shallow versus deep",
+          "text": "`a.copy()` and `a[:]` copy only the outer list; the inner objects are shared. `copy.deepcopy` copies recursively.",
+          "code": [
+            "import copy",
+            "a = [[1], [2]]",
+            "s, d = a.copy(), copy.deepcopy(a)",
+            "a[0].append(9)",
+            "print(s, d)"
+          ],
+          "output": "[[1, 9], [2]] [[1], [2]]"
+        },
+        {
+          "heading": "The grid trap",
+          "text": "`[[0] * 3] * 3` repeats one inner list three times. Build each row separately.",
+          "code": [
+            "bad = [[0] * 2] * 2",
+            "good = [[0] * 2 for _ in range(2)]",
+            "bad[0][0] = 1; good[0][0] = 1",
+            "print(bad, good)"
+          ],
+          "output": "[[1, 0], [1, 0]] [[1, 0], [0, 0]]"
+        }
+      ]
+    },
+    {
+      "id": "python-collections-complexity",
+      "title": "Collections and what they cost",
+      "topics": [
+        "py-collections",
+        "py-complexity"
+      ],
+      "intro": "Interview Python is mostly about picking the right container and knowing its cost. The standard library already has most of what you would otherwise hand-roll.",
+      "takeaways": [
+        "Pick the container for the operation you repeat.",
+        "Know the O(1) versus O(n) list operations.",
+        "A set or dict is the default for membership."
+      ],
+      "trap": "Dictionaries preserve insertion order, but sets do not promise any order. Never rely on set iteration order in an answer.",
+      "sections": [
+        {
+          "heading": "Counter, defaultdict, deque",
+          "text": "`Counter` counts, `defaultdict` creates missing values on first access, and `deque` gives O(1) operations at both ends.",
+          "code": [
+            "from collections import Counter, defaultdict, deque",
+            "print(Counter('banana').most_common(1))",
+            "groups = defaultdict(list)",
+            "for w in ['ant', 'bee', 'ape']:",
+            "    groups[w[0]].append(w)",
+            "print(dict(groups))",
+            "q = deque([1, 2, 3]); q.appendleft(0); print(q.popleft(), len(q))"
+          ],
+          "output": "[('a', 3)]\n{'a': ['ant', 'ape'], 'b': ['bee']}\n0 3"
+        },
+        {
+          "heading": "Costs worth memorising",
+          "text": "Appending to a list and indexing are O(1). `list.pop(0)` and `list.insert(0, x)` are O(n). `x in list` is O(n); `x in set` and `x in dict` are average O(1). Sorting is O(n log n). String `+=` in a loop can be O(n²) while `''.join` is linear."
+        },
+        {
+          "heading": "A cheap fix with a big effect",
+          "text": "Converting a list you search repeatedly into a set is often the whole optimisation.",
+          "code": [
+            "import timeit",
+            "xs = list(range(20000)); ys = set(xs)",
+            "slow = timeit.timeit(lambda: 19999 in xs, number=200)",
+            "fast = timeit.timeit(lambda: 19999 in ys, number=200)",
+            "print(slow > 20 * fast)"
+          ],
+          "output": "True"
+        }
+      ]
+    },
+    {
+      "id": "python-heaps-bisect-itertools",
+      "title": "heapq, bisect and itertools",
+      "topics": [
+        "py-heapq",
+        "py-bisect",
+        "py-itertools"
+      ],
+      "intro": "Three small modules cover a large share of coding-round patterns: priority queues, binary search on sorted lists, and iteration helpers.",
+      "takeaways": [
+        "Min-heap by default; negate for max.",
+        "bisect needs a sorted list.",
+        "groupby only merges neighbours."
+      ],
+      "trap": "Heap entries that tie on priority fall through to comparing the next tuple element. Add a counter as a tiebreaker when the payloads cannot be compared.",
+      "sections": [
+        {
+          "heading": "heapq is a min-heap on a list",
+          "text": "`heappush` and `heappop` cost O(log n). For a max-heap push negated values. `nlargest(k, xs)` is O(n log k).",
+          "code": [
+            "import heapq",
+            "h = []",
+            "for x in [5, 1, 4, 2]:",
+            "    heapq.heappush(h, -x)",
+            "print([-heapq.heappop(h) for _ in range(2)])"
+          ],
+          "output": "[5, 4]"
+        },
+        {
+          "heading": "bisect for sorted lists",
+          "text": "`bisect_left` returns the first insertion point and `bisect_right` the one after equal items. Their difference counts equal elements.",
+          "code": [
+            "from bisect import bisect_left, bisect_right",
+            "a = [1, 2, 2, 2, 3]",
+            "print(bisect_left(a, 2), bisect_right(a, 2))"
+          ],
+          "output": "1 4"
+        },
+        {
+          "heading": "itertools",
+          "text": "`accumulate` gives prefix sums, `groupby` groups consecutive equal keys (sort first to group everything), `combinations` and `permutations` enumerate subsets lazily.",
+          "code": [
+            "from itertools import accumulate, combinations",
+            "print(list(accumulate([1, 2, 3, 4])), list(combinations('abc', 2)))"
+          ],
+          "output": "[1, 3, 6, 10] [('a', 'b'), ('a', 'c'), ('b', 'c')]"
+        }
+      ]
+    },
+    {
+      "id": "python-context-exceptions",
+      "title": "Context managers and exceptions",
+      "topics": [
+        "py-context-managers",
+        "py-exceptions"
+      ],
+      "intro": "Resources must be released even when code fails. `with` and `try`/`finally` are Python's RAII.",
+      "takeaways": [
+        "Use `with` for files, locks and temporary state.",
+        "Catch narrow, re-raise with context.",
+        "Never return from `finally`."
+      ],
+      "trap": "Returning True from `__exit__` swallows the exception. That is occasionally right and usually a hidden bug.",
+      "sections": [
+        {
+          "heading": "with",
+          "text": "`__enter__` runs on the way in and `__exit__` always runs on the way out, even when an exception escapes. `contextlib.contextmanager` writes one as a generator.",
+          "code": [
+            "from contextlib import contextmanager",
+            "",
+            "@contextmanager",
+            "def section(name):",
+            "    print('enter', name)",
+            "    try:",
+            "        yield",
+            "    finally:",
+            "        print('leave', name)",
+            "",
+            "with section('load'):",
+            "    print('working')"
+          ],
+          "output": "enter load\nworking\nleave load"
+        },
+        {
+          "heading": "Catch narrowly",
+          "text": "Catch the specific exception you can handle. A bare `except:` also hides `KeyboardInterrupt` and typos. Use `raise ... from err` to keep the cause chain.",
+          "code": [
+            "try:",
+            "    int('x')",
+            "except ValueError as err:",
+            "    print(type(err).__name__)"
+          ],
+          "output": "ValueError"
+        },
+        {
+          "heading": "finally wins",
+          "text": "Code in `finally` runs last, and a `return` there overrides everything before it. Do not return from `finally`.",
+          "code": [
+            "def f():",
+            "    try:",
+            "        return 1",
+            "    finally:",
+            "        print('cleanup')",
+            "",
+            "print(f())"
+          ],
+          "output": "cleanup\n1"
+        }
+      ]
+    },
+    {
+      "id": "python-dataclasses-typing",
+      "title": "Dataclasses and type hints",
+      "topics": [
+        "py-dataclasses",
+        "py-typing"
+      ],
+      "intro": "Dataclasses remove boilerplate for plain data records, and type hints document intent for people and tools. Neither changes what the interpreter does at run time.",
+      "takeaways": [
+        "Use dataclasses for records.",
+        "`default_factory` for mutable defaults.",
+        "Type hints are for tools and readers, not for the runtime."
+      ],
+      "trap": "A dataclass with `eq=True` and no `frozen` sets `__hash__` to None, so it cannot go in a set or be a dict key.",
+      "sections": [
+        {
+          "heading": "Dataclasses",
+          "text": "`@dataclass` writes `__init__`, `__repr__` and `__eq__` from annotated fields. Mutable defaults need `field(default_factory=...)`. `frozen=True` makes instances hashable and read-only.",
+          "code": [
+            "from dataclasses import dataclass, field",
+            "",
+            "@dataclass(frozen=True)",
+            "class Point:",
+            "    x: int",
+            "    y: int = 0",
+            "",
+            "print(Point(1), Point(1) == Point(1), len({Point(1), Point(1)}))"
+          ],
+          "output": "Point(x=1, y=0) True 1"
+        },
+        {
+          "heading": "Hints are not enforced",
+          "text": "Python stores annotations and ignores them. Static checkers (mypy, pyright) and libraries that opt in (pydantic) use them. Annotate public signatures; it pays off in review and in AI-assisted coding.",
+          "code": [
+            "def scale(x: int) -> str:",
+            "    return x * 2",
+            "",
+            "print(scale('ab'))"
+          ],
+          "output": "abab"
+        }
+      ]
+    },
+    {
+      "id": "python-recursion",
+      "title": "Recursion and its limits",
+      "topics": [
+        "py-recursion"
+      ],
+      "intro": "Python does not optimise tail calls and caps the stack. Deep recursion is a design choice you make knowingly.",
+      "takeaways": [
+        "Expect RecursionError near 1000 frames.",
+        "Prefer an explicit stack for deep inputs.",
+        "Memoisation does not shorten the call chain."
+      ],
+      "trap": "In an interview say the limit out loud and offer the iterative version when inputs can be a long chain.",
+      "sections": [
+        {
+          "heading": "The limit",
+          "text": "CPython allows about a thousand nested calls by default. Raising the limit trades a clean error for the risk of crashing the interpreter.",
+          "code": [
+            "import sys",
+            "print(sys.getrecursionlimit())"
+          ],
+          "output": "1000"
+        },
+        {
+          "heading": "Replace depth with a stack",
+          "text": "Any recursive DFS can use an explicit stack, which lives on the heap and has no fixed ceiling.",
+          "code": [
+            "def depth(next_of, start):",
+            "    d, cur = 0, start",
+            "    while cur is not None:",
+            "        d, cur = d + 1, next_of.get(cur)",
+            "    return d",
+            "",
+            "chain = {i: i + 1 for i in range(5000)}",
+            "print(depth(chain, 0))"
+          ],
+          "output": "5001"
+        }
+      ]
+    },
+    {
+      "id": "python-testing",
+      "title": "Testing numerical code",
+      "topics": [
+        "py-testing"
+      ],
+      "intro": "A test that cannot fail is not a test, and floating-point equality is the quickest way to write one that fails for the wrong reason.",
+      "takeaways": [
+        "Never compare floats with `==`.",
+        "Finite differences verify gradients.",
+        "Test the failing case first."
+      ],
+      "trap": "Choosing h too small makes the difference dominated by rounding error; 1e-5 to 1e-6 is a good range in float64.",
+      "sections": [
+        {
+          "heading": "Compare with tolerance",
+          "text": "Use `pytest.approx` or `math.isclose` for floats. Pick the tolerance from the problem, not from what makes the test pass.",
+          "code": [
+            "import math",
+            "print(0.1 + 0.2 == 0.3, math.isclose(0.1 + 0.2, 0.3, abs_tol=1e-9))"
+          ],
+          "output": "False True"
+        },
+        {
+          "heading": "Check a gradient numerically",
+          "text": "A central difference `(f(x+h) - f(x-h)) / 2h` approximates the derivative to O(h²). Neural Clash labs use it to verify every hand-written gradient.",
+          "code": [
+            "def f(x): return x ** 3",
+            "h = 1e-5",
+            "print(round((f(2 + h) - f(2 - h)) / (2 * h), 4))"
+          ],
+          "output": "12.0"
+        }
+      ]
+    }
+  ]
+}
