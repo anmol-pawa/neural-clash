@@ -126,3 +126,11 @@ Append a dated entry after every run: what changed, how it was verified (command
 - CI and Pages deploy confirmation skipped (Actions quota exhausted until 2026-11-01).
 - Known gaps: the "leakage" diagnosis has no curve card (indistinguishable from healthy on loss alone; needs a dataset-based card); technique/trade-off content is a starter set, CUR topic ids are provisional; no "as of" stamps needed yet (no time-sensitive facts) but the RAG/LoRA cards should be revisited with B-series LLM content; Noise-minion art still a placeholder.
 - Next: B3c-ii (Noise-minion sprite), then B4.
+
+## 2026-10-29: B3c-ii Noise-minion sprite
+- Added `scripts/art/noise-minion.mjs` and generated `game/sprites/creatures/noise-minion.ts` ("Static"): 64×64, 4-shade magenta ramp, outline, spiky fuzz ring, one bloodshot eye, jagged mouth, seeded grain speckles that re-roll per frame, orbiting glitch blocks. Idle 4, attack 4+1 (crackling noise ball), hurt 3, faint 4. Registered in the roster (`/dev/sprites`); the existing sprite tests cover it.
+- `/battle` now uses it as the foe (no recolour; the white hurt flash is kept). Fixed a layout bug found in the screenshots: the HP name boxes were attached to the wrong creature, so each bar now sits above its own creature (hero top-left, foe top-right).
+- Verification: `lint` (warnings only), `typecheck`, `test` (145 pass after staging runtimes), `content:verify`, `build`, `build:pages` pass; `smoke:battle` 10/10 at desktop and iPhone 14 (no console errors or overflow); contact sheet and battle screenshots inspected.
+- CI and Pages deploy confirmation skipped (Actions quota exhausted until 2026-11-01).
+- Known gaps: the unused `"noise"` tint branch in `game/render/battle.ts` can go; the minion has no back view (not needed) and no evolve; other Noise agents (Overfit, Leakage, ...) still need their own art.
+- Next: B4 (Python Port content, part 1).

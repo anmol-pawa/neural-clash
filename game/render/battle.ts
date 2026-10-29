@@ -124,7 +124,7 @@ export function drawBattle(g: CanvasRenderingContext2D, foe: SpriteDef, hero: Sp
   platform(g, 176, 92, 40, 7);
   platform(g, 62, 122, 46, 8);
 
-  // foe (front sprite, noise-tinted): idle bob, hurt flash + recoil, faint sink
+  // foe (Noise minion): idle bob, hurt flash + recoil, faint sink
   const foeHurt = fx.foeHitAt >= 0 && fx.foeHitAt < 0.35;
   const foeAnim = fx.foeDown ? "faint" : foeHurt ? "hurt" : "idle";
   const faintT = fx.foeDown ? Math.min(1, Math.max(0, fx.foeHitAt) / 0.9) : 0;
@@ -132,7 +132,7 @@ export function drawBattle(g: CanvasRenderingContext2D, foe: SpriteDef, hero: Sp
   const bob = fx.foeDown ? 0 : Math.round(Math.sin(fx.t * 3) * 1.5);
   const recoil = foeHurt ? Math.round(6 * (1 - fx.foeHitAt / 0.35)) : 0;
   g.globalAlpha = 1 - faintT * 0.9;
-  g.drawImage(sprite(foe, foeAnim, fi, foeHurt && Math.floor(fx.foeHitAt * 24) % 2 === 0 ? "white" : "noise"), 144 + recoil, 40 + bob + Math.round(faintT * 14));
+  g.drawImage(sprite(foe, foeAnim, fi, foeHurt && Math.floor(fx.foeHitAt * 24) % 2 === 0 ? "white" : "none"), 144 + recoil, 40 + bob + Math.round(faintT * 14));
   g.globalAlpha = 1;
 
   // hero (back sprite): lunge on attack, flash when countered
@@ -152,8 +152,8 @@ export function drawBattle(g: CanvasRenderingContext2D, foe: SpriteDef, hero: Sp
     g.fillRect(Math.round(81 + p * 84), Math.round(91 - p * 30), 2, 1);
   }
 
-  bar(g, 6, 5, 90, fx.foeHp, "NOISE MINION");
-  bar(g, 144, 104, 90, fx.playerHp, "NEURON-PUP");
+  bar(g, 148, 5, 90, fx.foeHp, "NOISE MINION");
+  bar(g, 6, 5, 90, fx.playerHp, "NEURON-PUP");
 
   g.font = "bold 10px monospace";
   for (const f of fx.floaters) {
