@@ -31,7 +31,7 @@ function AnimCell({ def, anim, scale }: { def: SpriteDef; anim: string; scale: n
   }, [def, anim, scale]);
   return (
     <figure className="m-0 flex flex-col items-center gap-1">
-      <canvas ref={ref} className="max-w-full bg-[#7ab06a]" style={{ imageRendering: "pixelated" }} aria-label={`${def.name} ${anim}`} />
+      <canvas ref={ref} className="h-auto max-w-full bg-[#7ab06a]" style={{ imageRendering: "pixelated" }} aria-label={`${def.name} ${anim}`} />
       <figcaption className="text-[10px] uppercase tracking-wider text-slate-300">
         {anim} · {def.anims[anim].length}f
       </figcaption>

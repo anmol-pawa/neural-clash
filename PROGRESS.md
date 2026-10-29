@@ -88,3 +88,11 @@ Append a dated entry after every run: what changed, how it was verified (command
 - CI and Pages deploy confirmation skipped (Actions quota exhausted until 2026-11-01).
 - Known gaps: the back-facing Okafor is a plain hair ball; overworld sprites are small and face detail is minimal (2px eyes); no sleeve or tablet animation; portraits have no gender-neutral variants or player customisation yet.
 - Next: B1b-ii (tileset + Lab interior), then B2.
+
+## 2026-10-29: B1b-ii tilesets
+- Added `scripts/art/tiles.mjs` and generated `game/sprites/tiles/{python-port,lab}-tiles.ts`: 16×16 opaque tiles, each tile a named "animation" (1 frame static, 2–4 animated). Python Port (19 tiles): swaying grass, flowers, cobble path, 4-frame water and shoreline, trees, fence, `{}` signpost with blinking cursor, flickering lamp, roof/wall/window/door, a coiled-serpent statue with a flicking tongue, bench. Lab (18 tiles): slate floor, wall, windows, whiteboards (loss curve, equations, cursor), desks, 4-frame code monitor, blinking server racks, plants, bookshelf, the 4-frame glowing-neuron Training Rig, rug, door, coffee machine. `idle` aliases `grass` / `rig` so the validator and `/dev/sprites` treat tilesets like any sprite.
+- Added `game/sprites/tilemap.ts` (pure: `validateMap`, `composeMap`, `mapSprite`) and `maps.ts` (a Python Port town and the Lab as character-grid maps with legends). `/dev/sprites` shows both composed preview scenes; B2's overworld engine will reuse the same tiles and legends.
+- Verification: `lint` (warnings only), `typecheck`, `test` (93 pass; new tileset and map tests: 16×16, fully opaque, animated tiles change, seamless edges, map validation, composition), `content:verify`, `build`, `build:pages` pass. Playwright on the static export at desktop and iPhone 14: no console errors, no horizontal overflow; screenshots of both preview scenes and tilesheets inspected.
+- CI and Pages deploy confirmation skipped (Actions quota exhausted until 2026-11-01).
+- Known gaps: no path/shore edge or corner variants (maps use plain tiles; autotiling comes with B2), no collision/interaction metadata yet (B2), no interior props for the house, tile palettes are per-tileset (48 colours max).
+- Next: B2 (overworld + dialogue engine).

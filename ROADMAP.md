@@ -20,7 +20,7 @@ Work top to bottom: take the **first unchecked box**, and split big boxes into r
 
 - [x] B1a. **Art tooling + Neuron-Pup Perceptron:** palette/char-grid `SpriteDef`, shaded-primitive rasteriser (`scripts/art/`), front + back 64×64 sprites (idle/attack/hurt/faint, front also evolve), `/dev/sprites` review page, sprite tests.
 - [x] B1b-i. **Art:** the player and Professor Okafor (16×24 overworld, 4-direction walk cycles + stand, 48×48 portraits with blink/talk/smile/think).
-- [ ] B1b-ii. **Art:** the Python Port tileset and the Lab interior.
+- [x] B1b-ii. **Art:** the Python Port tileset and the Lab interior (16×16 tiles, animated water/lamps/servers/Training Rig, `tilemap.ts` composer, preview maps).
 - [ ] B2. **Overworld + dialogue engine** (port from Algo Clash if present).
 - [ ] B3. **Battle stage and card battles:** MCQ, derive-it (numeric), shape check, metric drill, spot-the-bug. The solvers in `lib/solvers/` are tested.
 - [ ] B4. **Python Port content, part 1** (CUR F1: Python + interview Python): lessons, 30 cards, 10 judged functions.
