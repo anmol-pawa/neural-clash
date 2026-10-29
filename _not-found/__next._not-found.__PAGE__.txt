@@ -1,0 +1,30 @@
+1:"$Sreact.fragment"
+2:"/neural-clash/_next/static/chunks/45bbbbx7t6jrb.js"
+3:I[39756,["$2"],"default"]
+4:I[37457,["$2"],"default"]
+5:"/neural-clash/_next/static/chunks/2n5qeheznvl4u.js"
+6:I[22016,["$2","$5"],""]
+7:I[64576,["$2"],"PwaRegister"]
+e:I[97367,["$2"],"OutletBoundary"]
+f:"$Sreact.suspense"
+12:"ViewportBoundary"
+13:I[97367,["$2"],"$12"]
+14:"MetadataBoundary"
+15:I[97367,["$2"],"$14"]
+16:I[27201,["$2"],"IconMark"]
+:HL["/neural-clash/_next/static/chunks/37wo-qs0s2s__.css","style"]
+9:X
+c:X
+c:C
+d:[["children",{"s":"__PAGE__","h":160,"d":{"r":["$","$1","c",{"children":[["$","main",null,{"className":"flex min-h-dvh flex-col items-center justify-center gap-4 px-4 text-center","children":[["$","div",null,{"className":"font-display text-5xl text-[var(--accent)]","children":"404"}],["$","p",null,{"className":"text-white/60","children":"shape mismatch: this route has no tensor to broadcast to."}],["$","$L6",null,{"href":"/","className":"px-btn px-5 py-3 text-sm","children":"Back to the title screen"}]]}],[["$","script","script-0",{"src":"/neural-clash/_next/static/chunks/2n5qeheznvl4u.js","async":true}]],["$","$Le",null,{"children":["$","$f",null,{"name":"Next.MetadataOutlet","children":"$@10"}]}]]}],"p":"$@11","v":null,"s":"$9"}}]]
+a:[["children",{"s":"/_not-found","h":96,"d":{"r":["$","$1","c",{"children":[null,["$","$L3",null,{"parallelRouterKey":"children","template":["$","$L4",null,{}]}]]}],"p":"$@b","v":"$c","s":"$9"},"c":"$Qd"}]]
+0:{"t":{"t":{"s":"","h":80,"d":{"r":["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/neural-clash/_next/static/chunks/37wo-qs0s2s__.css","precedence":"next"}],["$","script","script-0",{"src":"/neural-clash/_next/static/chunks/45bbbbx7t6jrb.js","async":true}]],["$","html",null,{"lang":"en","className":"r7opxW_variable auY9QW_variable u-EJdW_variable h-full","children":["$","body",null,{"className":"min-h-full","children":[["$","$L3",null,{"parallelRouterKey":"children","template":["$","$L4",null,{}],"notFound":[["$","main",null,{"className":"flex min-h-dvh flex-col items-center justify-center gap-4 px-4 text-center","children":[["$","div",null,{"className":"font-display text-5xl text-[var(--accent)]","children":"404"}],["$","p",null,{"className":"text-white/60","children":"shape mismatch: this route has no tensor to broadcast to."}],["$","$L6",null,{"href":"/","className":"px-btn px-5 py-3 text-sm","children":"Back to the title screen"}]]}],[]]}],["$","$L7",null,{}]]}]}]]}],"p":"$@8","v":null,"s":"$9"},"c":"$Qa"},"h":{"r":["$","$1","h",{"children":[["$","meta",null,{"name":"robots","content":"noindex"}],["$","$L13",null,{"children":[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1, viewport-fit=cover"}],["$","meta","2",{"name":"theme-color","content":"#0a0c1a"}]]}],["$","$L15",null,{"children":[["$","div",null,{"hidden":true,"children":["$","$f",null,{"name":"Next.Metadata","children":[["$","title","0",{"children":"Neural Clash"}],["$","meta","1",{"name":"description","content":"A creature RPG where your companion is a neural network you implement from scratch and train, from ML fundamentals to the AI-engineer interview loop."}],["$","link","2",{"rel":"manifest","href":"/neural-clash/manifest.webmanifest"}],["$","meta","3",{"name":"mobile-web-app-capable","content":"yes"}],["$","meta","4",{"name":"apple-mobile-web-app-title","content":"Neural Clash"}],["$","meta","5",{"name":"apple-mobile-web-app-status-bar-style","content":"black-translucent"}],["$","link","6",{"rel":"icon","href":"/neural-clash/icon.png?icon.2gumjq204ym0i.png","sizes":"64x64","type":"image/png"}],["$","link","7",{"rel":"apple-touch-icon","href":"/neural-clash/apple-icon.png?apple-icon.3zuan50psnme1.png","sizes":"180x180","type":"image/png"}],["$","$L16","8",{}]]}]}],null]}],["$","meta",null,{"name":"next-size-adjust","content":""}]]}],"p":"$@17","v":null,"s":"$9"}},"a":"$@18","u":"$@19","b":"A-5Qil3SOlNQUITHJbgen"}
+10:null
+9:300
+19:true
+9:C
+18:0
+b:"$undefined"
+8:"$undefined"
+17:"$undefined"
+11:"$undefined"
