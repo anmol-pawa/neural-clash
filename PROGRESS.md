@@ -88,3 +88,11 @@ Append a dated entry after every run: what changed, how it was verified (command
 - CI and Pages deploy confirmation skipped (Actions quota exhausted until 2026-11-01).
 - Known gaps: the back-facing Okafor is a plain hair ball; overworld sprites are small and face detail is minimal (2px eyes); no sleeve or tablet animation; portraits have no gender-neutral variants or player customisation yet.
 - Next: B1b-ii (tileset + Lab interior), then B2.
+
+## 2026-10-29: B1b-ii Python Port tileset and Lab interior
+- Added `scripts/art/tiles.mjs` and generated `game/tiles/python-port.ts` (26 tiles: grass, flowers, cobbles, animated water and shore, dock, trees, hedge, fence, teal-roofed houses, door, window, snake banner, Lab sign, animated lamps, crate, barrel, signpost, bench) and `game/tiles/lab-interior.ts` (23 tiles: checker floor, walls, animated window, bookshelves, desks, animated monitors and server LEDs, perceptron whiteboard, plant, rug, chair, mat, animated Neuron-Pup incubator capsule). All 16×16 with shaded ramps and outlines on objects.
+- `game/tiles/tileset.ts` (types, validator, walkability, BFS), `maps.ts` (Python Port 24×16 and the Lab 12×10 with warps both ways and spawns), `render.ts`, `components/TileLab.tsx` and `/dev/tiles` (composed maps with the player and Okafor, then every tile animating).
+- Verification: `lint` (warnings only), `typecheck`, `test` (92 pass, 11 new in `tests/tiles.test.ts`: valid tiles, animated tiles differ per frame, rectangular layers, legend and tile references, spawns/warps reachable, warps round trip), `content:verify`, `build`, `build:pages` pass. Playwright on the static export at desktop and iPhone 14: no console errors, no horizontal overflow; screenshots inspected.
+- CI and Pages deploy confirmation skipped (Actions quota exhausted until 2026-11-01).
+- Known gaps: one building style and a single interior; no autotiling for water/path edges (cobble road is a plain strip); no NPC walk-cycle demo on the map yet; tiles are not yet used by the game scene (B2).
+- Next: B2 (overworld + dialogue engine).
