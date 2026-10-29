@@ -30,7 +30,10 @@ Work top to bottom: take the **first unchecked box**, and split big boxes into r
 - [x] B4a. **Python Port cards** (CUR F1): 32-card deck `content/decks/python-port.json`, 21 predict-the-output cards whose answers are computed by running native python3 (`scripts/gen-python-deck.mjs`), 2 proven spot-the-bug cards.
 - [x] B4b. **Python Port lessons** (CUR F1: Python + interview Python): short original lessons for each card topic, linked from the deck.
 - [x] B4c. **10 judged Python functions** (Lab/problem packages: reference, wrong solutions, hidden tests) for interview Python.
-- [ ] B5. **Python Port content, part 2** (numpy, broadcasting, vectorisation): lessons, 25 cards (shape cards generated), 8 vectorisation challenges with perf thresholds.
+- [ ] B5. **Python Port content, part 2** (numpy, broadcasting, vectorisation), split:
+  - [x] B5a. 28-card numpy deck `content/decks/numpy-port.json` (17 predict-the-output cards computed under native numpy, 2 proven bug cards).
+  - [ ] B5b. numpy lessons (broadcasting, views vs copies, reductions/keepdims, dtypes, vectorisation) in `content/lessons/`, linked by topic.
+  - [ ] B5c. 8 vectorisation challenges (Lab packages with wrong implementations and read/loop-count perf checks).
 - [ ] B6. **Lab flow v1 + Forge module "linear model + GD"** (a pre-autograd perceptron/linear regression with a hand-derived gradient). The companion stats come from its test metrics.
 - [ ] B7. **Training Grounds v1** (ARCH §5): the TS trainer for linear models + 2D toys, live curves, the hidden test-set battle, and equivalence tests vs Python.
 - [ ] B8. **Python Port guardian battle** (96×96 boss, three phases: cards → a Lab mini-task → a Training battle vs *Overfit*'s minion), a badge.

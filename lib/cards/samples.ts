@@ -1,4 +1,5 @@
 import deckPython from "@/content/decks/python-port.json";
+import deckNumpy from "@/content/decks/numpy-port.json";
 import deckStrategy from "@/content/decks/foundations-strategy.json";
 import { loadDeck } from "./loader";
 import { GENERATORS } from "./generators";
@@ -48,6 +49,9 @@ export const STRATEGY_DECK = loadDeck(deckStrategy);
 
 /** Python Port deck: Python and interview-Python cards (answers computed natively by `scripts/gen-python-deck.mjs`). */
 export const PYTHON_DECK = loadDeck(deckPython);
+
+/** Python Port part 2: numpy, broadcasting and vectorisation (answers computed natively by `scripts/gen-numpy-deck.mjs`). */
+export const NUMPY_DECK = loadDeck(deckNumpy);
 
 /** A varied deck: hand-written cards plus solver-generated ones, shuffled by a seed. */
 export function demoDeck(seed: number): Card[] {

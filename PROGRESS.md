@@ -160,3 +160,12 @@ Append a dated entry after every run: what changed, how it was verified (command
 - CI and Pages deploy confirmation skipped (Actions quota exhausted until 2026-11-01).
 - Known gaps: the packages are not yet surfaced in the editor/task list or a `/labs` index (comes with the Lab flow, B6); no hint ladder or editorial per function (lesson only); timing-based TLE checks use read counts, not the Pyodide worker timeout.
 - Next: B5 (Python Port part 2: numpy, broadcasting, vectorisation).
+
+## 2026-10-29: B5a numpy card deck
+- B5 was split into B5a (cards, this run), B5b (lessons), B5c (8 vectorisation challenges).
+- `scripts/gen-numpy-deck.mjs` generates `content/decks/numpy-port.json`: 28 cards over 8 numpy topics (broadcasting, views/copies, indexing, reductions/keepdims, dtypes/overflow, linear algebra shapes, vectorisation, testing). 17 `predict` cards whose answer is the real stdout of the snippet under native python3 + numpy (shapes, errors, values; the generator drops any distractor equal to the real output); a views multi-select proven with `np.shares_memory`; 2 bug cards (row-normalise without `keepdims`, softmax summing the whole batch) proven by running buggy vs fixed code. `--check` detects staleness.
+- `NUMPY_DECK` exported from `lib/cards/samples.ts`; 3 new tests in `tests/cards.test.ts` (clean load, every predict answer re-run natively and unique, positions spread, not stale).
+- Verification: `lint` (warnings only), `typecheck`, `test` (158 pass; one first run showed a transient failure in a Pyodide-related file, the immediate re-run and a second run were clean), `content:verify`, `build`, `build:pages`. No visual changes (cards reuse the `/battle` predict renderer), so no screenshots.
+- CI and Pages deploy confirmation skipped (Actions quota exhausted until 2026-11-01).
+- Known gaps: the numpy deck is not yet mixed into the demo battle or linked from lessons (B5b); no generated `shape` cards (the loader disallows hand-written shape cards, so shapes are predict MCQs); one flaky test run to watch.
+- Next: B5b (numpy lessons).
