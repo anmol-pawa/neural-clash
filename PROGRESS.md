@@ -187,3 +187,12 @@ Append a dated entry after every run: what changed, how it was verified (command
 - CI/Pages: this run was committed to the designated branch `claude/wonderful-goodall-jpmlxg` and main (see below); Actions confirmation not polled.
 - Known gaps: no hint ladder/editorial; Labs not yet gated by progression or tied to companion stats.
 - Next: B6b.
+
+## 2026-11-02: B6b linear-gd train loop + companion stats
+- `linear-gd` Lab extended to four functions: `fit_linear` (full-batch GD from zeros, loss recorded before each step) and `r2_score` (held-out metric, baseline mean(y)). Hidden tests: first loss = loss at zero weights, monotone fall, recovery of true weights, inputs unmodified, determinism, zero epochs, R² reference values, held-out R² > 0.98 on a noisy problem. Four new documented wrong versions (stale gradient, loss after step, random init, zero-baseline R²); `content:verify` rejects all seven.
+- `lib/companion/stats.ts` (`companionStats`): attack = held-out score, defence = 1 - 4*(train-test gap), speed = log10 parameter cost; tests in `tests/companion.test.ts`.
+- Lab lesson renderer now supports `## ` headings; smoke test focuses the editor instead of clicking it.
+- Verification: `lint` (warnings only), `typecheck`, `test` (170 pass, runtimes staged), `content:verify` (20 ok), `build`, `build:pages`, `smoke:labs` at desktop and iPhone 14 (screenshot inspected, no overflow/console errors).
+- Branch note: committed to the designated branch `claude/wonderful-goodall-e38ez4` (session instruction) rather than `main`, so Pages is not updated by this run. CI/deploy not checked.
+- Known gaps: the Lab runner only reports pass/fail, so `companionStats` is not yet fed live metrics (comes with Training Grounds, B7); no hint ladder.
+- Next: B7 (Training Grounds v1).

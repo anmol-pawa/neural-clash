@@ -3,10 +3,19 @@
   "title": "Linear model and gradient descent",
   "phase": "forge",
   "language": "python",
-  "functions": ["mse_loss_grad", "gd_step"],
+  "functions": [
+    "mse_loss_grad",
+    "gd_step",
+    "fit_linear",
+    "r2_score"
+  ],
   "wrong": {
     "sum_not_mean.py": "gradient is not divided by N (fails the finite-difference check)",
     "missing_transpose.py": "uses X instead of X.T in the gradient (shape error)",
-    "step_adds.py": "gd_step moves uphill (adds the gradient)"
+    "step_adds.py": "gd_step moves uphill (adds the gradient)",
+    "fit_stale_gradient.py": "gradient computed once outside the loop (loss never falls)",
+    "fit_loss_after_step.py": "records the loss after the step instead of before",
+    "fit_random_init.py": "random start instead of zeros (not deterministic)",
+    "r2_uses_zero_baseline.py": "R^2 baseline around zero instead of mean(y)"
   }
 }

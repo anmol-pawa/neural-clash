@@ -44,7 +44,7 @@ for (const [name, opts] of [["desktop", { viewport: { width: 1280, height: 800 }
   await page.getByTestId("lab-linear-gd").click();
   await page.locator(".cm-content").first().waitFor();
   await page.waitForSelector("[data-loaded=true]");
-  await page.locator(".cm-content").first().click();
+  await page.locator(".cm-content").first().focus();
   await page.keyboard.press("Control+A");
   await page.keyboard.press("Delete");
   await page.keyboard.insertText(ref);

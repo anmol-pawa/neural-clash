@@ -15,9 +15,13 @@ function Lesson({ text }: { text: string }) {
   const paras = text.replace(/^# .*\n/, "").trim().split(/\n\s*\n/);
   return (
     <div className="grid gap-2 text-sm leading-relaxed text-slate-300">
-      {paras.map((p, i) => (
-        <p key={i}><Rich text={p.replace(/\n/g, " ")} /></p>
-      ))}
+      {paras.map((p, i) =>
+        p.startsWith("## ") ? (
+          <h2 key={i} className="mt-2 font-display text-lg text-[var(--accent)]">{p.slice(3)}</h2>
+        ) : (
+          <p key={i}><Rich text={p.replace(/\n/g, " ")} /></p>
+        ),
+      )}
     </div>
   );
 }
