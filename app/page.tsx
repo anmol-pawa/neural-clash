@@ -15,6 +15,7 @@ export default function Home() {
           Start
         </button>
         <Link href="/learn" className="px-btn px-4 py-2 text-center">Python Port lessons</Link>
+        <Link href="/labs" className="px-btn px-4 py-2 text-center">Labs</Link>
         <p className="text-xs text-white/50">The Python Port opens soon. Work in progress.</p>
       </div>
     </main>

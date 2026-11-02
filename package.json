@@ -19,6 +19,8 @@
     "smoke:overworld": "node scripts/smoke-overworld.mjs",
     "smoke:battle": "node scripts/smoke-battle.mjs",
     "smoke:learn": "node scripts/smoke-learn.mjs",
+    "smoke:labs": "node scripts/smoke-labs.mjs",
+    "gen:labs": "node scripts/gen-labs.mjs",
     "build:pages": "npm run stage:pyodide && npm run stage:clang && STATIC_EXPORT=1 BASE_PATH=${BASE_PATH-/neural-clash} next build && BASE_PATH=${BASE_PATH-/neural-clash} node scripts/gen-sw.mjs"
   },
   "dependencies": {

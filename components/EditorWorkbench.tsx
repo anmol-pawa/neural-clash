@@ -48,7 +48,7 @@ function FileTree({ nodes, active, dirty, onOpen, depth = 0 }: { nodes: TreeNode
   );
 }
 
-export default function EditorWorkbench({ task }: { task: EditorTask }) {
+export default function EditorWorkbench({ task, onResult, hideHeader }: { task: EditorTask; hideHeader?: boolean; onResult?: (r: { mode: Mode; allPassed: boolean }) => void }) {
   const [ws, setWs] = useState(() => Workspace.fromStarter(task.starter));
   const [active, setActive] = useState(task.entry);
   const [tabs, setTabs] = useState<string[]>([task.entry]);
@@ -136,6 +136,7 @@ export default function EditorWorkbench({ task }: { task: EditorTask }) {
         const r = await py.current.run({ code: ws.files[task.entry] ?? "", tests });
         setOutcome({ kind: "py", report: buildReport(r.tests), stdout: r.stdout, error: r.error, errorLine: r.errorLine, ms: r.ms, mode });
         if (r.errorLine && active === task.entry) setActive(task.entry);
+        onResult?.({ mode, allPassed: !r.error && buildReport(r.tests).allPassed });
       } else {
         judge.current ??= new JudgeClient();
         judge.current.setTimeLimit(task.timeLimitMs ?? 2000);
@@ -168,12 +169,14 @@ export default function EditorWorkbench({ task }: { task: EditorTask }) {
 
   return (
     <div className="flex flex-col gap-3" data-testid="workbench" data-loaded={loaded}>
-      <div>
-        <div className="font-display text-xl text-[var(--accent)]">{task.title}</div>
-        <p className="text-sm text-white/70">{task.brief}</p>
-      </div>
+      {!hideHeader && (
+        <div>
+          <div className="font-display text-xl text-[var(--accent)]">{task.title}</div>
+          <p className="text-sm text-white/70">{task.brief}</p>
+        </div>
+      )}
 
-      <div className="panel flex min-h-[420px] flex-col overflow-hidden md:h-[460px] md:flex-row">
+      <div className="panel flex min-h-[560px] flex-col overflow-hidden md:min-h-0 md:h-[460px] md:flex-row">
         <aside className="flex shrink-0 flex-col border-b border-white/10 md:w-52 md:border-b-0 md:border-r" aria-label="Files">
           <div className="flex-1 overflow-y-auto" data-testid="file-tree">
             <FileTree nodes={ws.tree()} active={active} dirty={dirty} onOpen={open} />

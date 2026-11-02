@@ -178,3 +178,12 @@ Append a dated entry after every run: what changed, how it was verified (command
 - CI and Pages deploy confirmation skipped (Actions quota exhausted until 2026-11-01).
 - Known gaps: packages are not yet surfaced in the editor or a labs index (Lab flow, B6); no hint ladder/editorial beyond the lesson; the line-count threshold is 40 lines, so tiny hand-unrolled code could pass (acceptable).
 - Next: B6 (Lab flow v1 + Forge linear model module).
+
+## 2026-11-02: B6a Lab flow v1
+- B6 was split: B6a (Lab flow, this run), B6b (Forge linear-model module + companion stats).
+- `scripts/gen-labs.mjs` bundles every `content/labs/*` package (lesson, starter, visible and hidden tests; no references or wrong versions) into `lib/labs/labs.gen.ts`; hidden tests are renamed `test_hidden_*` so the panel masks failing values. `lib/labs/catalog.ts` (grouping, brief, task builder). `/labs` index (19 labs by phase, solved badges) and `/labs#<id>` (lesson + multi-file editor + Run/Submit); an all-pass Submit saves `labs[id].passed`. `EditorWorkbench` gained `onResult` and `hideHeader`; mobile panel height fixed (editor overlapped the file tree). Title screen links to Labs.
+- Verification: `lint` (warnings only), `typecheck`, `test` (165 pass, new `tests/labs.test.ts`), `content:verify`, `build`, `build:pages`, `smoke:labs` at desktop and iPhone 14 (reference accepted, solved state persists, no overflow or console errors); iPhone screenshot inspected.
+- Env note: `/usr/local/bin/python3` here lacks numpy; run with `PATH=/usr/bin:$PATH`.
+- CI/Pages: this run was committed to the designated branch `claude/wonderful-goodall-jpmlxg` and main (see below); Actions confirmation not polled.
+- Known gaps: no hint ladder/editorial; Labs not yet gated by progression or tied to companion stats.
+- Next: B6b.
