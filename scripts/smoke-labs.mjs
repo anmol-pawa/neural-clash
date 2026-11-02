@@ -38,13 +38,18 @@ for (const [name, opts] of [["desktop", { viewport: { width: 1280, height: 800 }
   page.on("pageerror", (e) => errors.push(String(e)));
   await page.goto(`${origin}${BASE}/labs`);
   await page.getByTestId("lab-linear-gd").waitFor();
+  check((await page.getByTestId("companion-stats").innerText()).includes("20"), `${name}: companion stats shown`);
   const n = await page.locator("[data-testid^=lab-]").count();
   check(n >= 19, `${name}: labs listed (${n})`);
   await page.screenshot({ path: join(shots, `labs-list-${name}.png`) });
   await page.getByTestId("lab-linear-gd").click();
   await page.locator(".cm-content").first().waitFor();
+  check((await page.getByTestId("hint").count()) === 0, `${name}: hints start hidden`);
+  await page.getByTestId("hint-next").click();
+  await page.screenshot({ path: join(shots, `labs-hint-${name}.png`), fullPage: true });
+  check((await page.getByTestId("hint").count()) === 1, `${name}: first hint revealed`);
   await page.waitForSelector("[data-loaded=true]");
-  await page.locator(".cm-content").first().click();
+  await page.locator(".cm-content").first().focus();
   await page.keyboard.press("Control+A");
   await page.keyboard.press("Delete");
   await page.keyboard.insertText(ref);
@@ -52,7 +57,7 @@ for (const [name, opts] of [["desktop", { viewport: { width: 1280, height: 800 }
   await page.getByTestId("summary").waitFor({ timeout: 90000 });
   check((await page.getByTestId("summary").innerText()).includes("accepted"), `${name}: reference accepted on Submit`);
   await page.getByTestId("lab-solved").waitFor();
-  check(true, `${name}: solved banner shown`);
+  check((await page.getByTestId("lab-solved").innerText()).includes("with hints"), `${name}: solved banner shown, marked assisted`);
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth);
   check(!overflow, `${name}: no horizontal overflow`);
   await page.screenshot({ path: join(shots, `labs-lab-${name}.png`), fullPage: true });

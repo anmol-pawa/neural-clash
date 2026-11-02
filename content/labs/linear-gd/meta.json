@@ -3,10 +3,24 @@
   "title": "Linear model and gradient descent",
   "phase": "forge",
   "language": "python",
-  "functions": ["mse_loss_grad", "gd_step"],
+  "functions": [
+    "mse_loss_grad",
+    "gd_step",
+    "fit",
+    "r2_score"
+  ],
   "wrong": {
     "sum_not_mean.py": "gradient is not divided by N (fails the finite-difference check)",
     "missing_transpose.py": "uses X instead of X.T in the gradient (shape error)",
-    "step_adds.py": "gd_step moves uphill (adds the gradient)"
-  }
+    "step_adds.py": "gd_step moves uphill (adds the gradient)",
+    "fit_warm_start.py": "fit starts from random-looking nonzero weights/ignores zero init: history[0] is not the loss at w = 0",
+    "fit_history_after.py": "history records the loss after each step, so history[0] is not the starting loss",
+    "r2_uses_mean_of_pred.py": "r2_score centres on the prediction mean instead of the truth mean (overstates a biased model)",
+    "r2_no_constant_guard.py": "r2_score divides by zero on a constant target"
+  },
+  "hints": [
+    "Write the loss as a residual first: r = X @ w - y. Both the loss and the gradient are built from r.",
+    "dL/dw = (2/N) * X.T @ r. If your gradient has shape (N,) instead of (D,), you used X where X.T belongs. fit is just a loop: start at zeros, record the loss, then step.",
+    "r2_score = 1 - sum((y - y_hat)^2) / sum((y - mean(y))^2). Centre on the mean of the TRUTH. Watch the constant-target case, where the denominator is zero."
+  ]
 }

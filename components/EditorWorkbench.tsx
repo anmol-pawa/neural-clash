@@ -176,7 +176,7 @@ export default function EditorWorkbench({ task, onResult, hideHeader }: { task: 
         </div>
       )}
 
-      <div className="panel flex min-h-[560px] flex-col overflow-hidden md:min-h-0 md:h-[460px] md:flex-row">
+      <div className="panel flex flex-col overflow-hidden md:min-h-0 md:h-[460px] md:flex-row">
         <aside className="flex shrink-0 flex-col border-b border-white/10 md:w-52 md:border-b-0 md:border-r" aria-label="Files">
           <div className="flex-1 overflow-y-auto" data-testid="file-tree">
             <FileTree nodes={ws.tree()} active={active} dirty={dirty} onOpen={open} />
@@ -205,7 +205,7 @@ export default function EditorWorkbench({ task, onResult, hideHeader }: { task: 
           </div>
         </aside>
 
-        <div className="flex min-h-[300px] min-w-0 flex-1 flex-col">
+        <div className="flex min-w-0 flex-1 flex-col">
           <div className="flex items-stretch overflow-x-auto border-b border-white/10 bg-black/30" role="tablist">
             {tabs.filter((t) => t in ws.files).map((t) => (
               <div key={t} className={`flex shrink-0 items-center border-r border-white/10 ${t === active ? "bg-[#0d0f22] text-[var(--accent)]" : "text-white/60"}`}>
@@ -220,7 +220,7 @@ export default function EditorWorkbench({ task, onResult, hideHeader }: { task: 
               {dirty(active) && <button type="button" className="min-h-11 px-2 text-xs text-white/60" onClick={() => resetFile(active)}>Reset file</button>}
             </div>
           </div>
-          <div className="min-h-0 flex-1">
+          <div className="h-[420px] min-h-0 md:h-auto md:flex-1">
             {ws.files[active] !== undefined && <CodeEditor path={active} value={ws.files[active]} onChange={onType} errorLine={errorLine} />}
           </div>
         </div>

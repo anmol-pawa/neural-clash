@@ -8,6 +8,7 @@ export const LAB_SOURCES: LabSource[] = [
   "functions": [
    "confusion_matrix"
   ],
+  "hints": [],
   "lesson": "# Confusion matrix\n\nCount, for every pair `(true, predicted)`, how many samples fall in it: a `(k, k)` integer matrix with true classes on the rows. Both inputs are integer arrays of equal length with values in `0..k-1`.\n\n**Interview signal:** `cm[t, p] += 1` with fancy indices counts a repeated pair **once** (buffered assignment). Use `np.add.at`, or flatten the pair to `t * k + p` and `np.bincount` it (the fast route).\n",
   "spec": "\"\"\"Starter file shown to the player.\"\"\"\nimport numpy as np\n\n\ndef confusion_matrix(y_true, y_pred, k):\n    \"\"\"Return a (k, k) int array C where C[t, p] counts samples with true class t and predicted class p.\"\"\"\n    raise NotImplementedError\n",
   "visibleTests": "import numpy as np\nfrom nc_test import assert_close, python_lines\n\n\ndef test_small_example():\n    C = confusion_matrix([0, 0, 1, 1, 2], [0, 1, 1, 1, 0], 3)\n    assert (C == [[1, 1, 0], [0, 2, 0], [1, 0, 0]]).all()\n\n\ndef test_total_is_sample_count():\n    assert confusion_matrix([0, 1, 1], [1, 1, 0], 2).sum() == 3\n\ndef _vectorised(fn, *args, limit=40):\n    out, lines = python_lines(fn, *args)\n    assert lines <= limit, f\"{lines} Python lines executed: the work is happening in a Python loop, not in numpy\"\n    return out\n",
@@ -20,6 +21,7 @@ export const LAB_SOURCES: LabSource[] = [
   "functions": [
    "cosine_sim"
   ],
+  "hints": [],
   "lesson": "# Cosine similarity matrix\n\nGiven `X` of shape `(n, d)`, return the `(n, n)` matrix whose `[i, j]` entry is the cosine of the angle between rows `i` and `j`. A zero row has no direction: define its similarity with everything as 0 (not NaN).\n\n**Interview signal:** normalise the rows once, then a single matmul (this is the core of embedding search). Normalising *columns* is the classic axis slip.\n",
   "spec": "\"\"\"Starter file shown to the player.\"\"\"\nimport numpy as np\n\n\ndef cosine_sim(X):\n    \"\"\"Return the (n, n) matrix of cosine similarities between rows of X (zero rows give similarity 0).\"\"\"\n    raise NotImplementedError\n",
   "visibleTests": "import numpy as np\nfrom nc_test import assert_close, python_lines\n\n\ndef test_orthogonal_and_parallel():\n    S = cosine_sim([[1.0, 0.0], [0.0, 2.0], [3.0, 0.0]])\n    assert_close(S, [[1, 0, 1], [0, 1, 0], [1, 0, 1]])\n\n\ndef test_opposite():\n    assert_close(cosine_sim([[1.0, 1.0], [-2.0, -2.0]])[0, 1], -1.0)\n\ndef _vectorised(fn, *args, limit=40):\n    out, lines = python_lines(fn, *args)\n    assert lines <= limit, f\"{lines} Python lines executed: the work is happening in a Python loop, not in numpy\"\n    return out\n",
@@ -32,6 +34,7 @@ export const LAB_SOURCES: LabSource[] = [
   "functions": [
    "max_drawdown"
   ],
+  "hints": [],
   "lesson": "# Maximum drawdown\n\nGiven a 1-D array of positive `prices`, return the maximum drawdown: the largest value of `(peak - price) / peak`, where `peak` is the highest price seen **so far**. Return `0.0` if the series never falls (or is empty).\n\n**Interview signal:** `np.maximum.accumulate` gives the running peak in one call. A global `max` instead of the running one counts a fall *before* the peak, which is not a drawdown. The same trick builds running best-so-far curves for hyper-parameter searches.\n",
   "spec": "\"\"\"Starter file shown to the player.\"\"\"\nimport numpy as np\n\n\ndef max_drawdown(prices):\n    \"\"\"Largest peak-to-trough fall as a fraction of the running peak (0 if prices never fall).\"\"\"\n    raise NotImplementedError\n",
   "visibleTests": "import numpy as np\nfrom nc_test import assert_close, python_lines\n\n\ndef test_simple_fall():\n    assert_close(max_drawdown([100.0, 120.0, 60.0, 90.0]), 0.5)\n\n\ndef test_monotone_increasing_is_zero():\n    assert max_drawdown([1.0, 2.0, 3.0]) == 0.0\n\ndef _vectorised(fn, *args, limit=40):\n    out, lines = python_lines(fn, *args)\n    assert lines <= limit, f\"{lines} Python lines executed: the work is happening in a Python loop, not in numpy\"\n    return out\n",
@@ -44,6 +47,7 @@ export const LAB_SOURCES: LabSource[] = [
   "functions": [
    "one_hot"
   ],
+  "hints": [],
   "lesson": "# One-hot encoding\n\nTurn integer class `labels` (length n, values in `0..k-1`) into an `(n, k)` float matrix with a single 1 per row. `k` is given: a batch may not contain every class, so never infer it from `labels.max()`.\n\nRaise `ValueError` for a label outside `0..k-1` (negative indices would silently wrap in numpy).\n\n**Interview signal:** fancy indexing `out[np.arange(n), labels] = 1`, and guarding the silent-wrap trap.\n",
   "spec": "\"\"\"Starter file shown to the player.\"\"\"\nimport numpy as np\n\n\ndef one_hot(labels, k):\n    \"\"\"Return an (n, k) float array with a 1 at [i, labels[i]]. No Python loops.\"\"\"\n    raise NotImplementedError\n",
   "visibleTests": "import numpy as np\nfrom nc_test import assert_close, python_lines\n\n\ndef test_basic():\n    assert_close(one_hot([0, 2, 1], 3), [[1, 0, 0], [0, 0, 1], [0, 1, 0]])\n\n\ndef test_empty():\n    assert one_hot([], 4).shape == (0, 4)\n\ndef _vectorised(fn, *args, limit=40):\n    out, lines = python_lines(fn, *args)\n    assert lines <= limit, f\"{lines} Python lines executed: the work is happening in a Python loop, not in numpy\"\n    return out\n",
@@ -56,6 +60,7 @@ export const LAB_SOURCES: LabSource[] = [
   "functions": [
    "pairwise_dists"
   ],
+  "hints": [],
   "lesson": "# Pairwise distances\n\n`X` is (n, d) and `Y` is (m, d); return the (n, m) matrix of Euclidean distances, with no Python-level loop.\n\n**Interview signal:** broadcasting `(n,1,d) - (1,m,d)` is correct but allocates n*m*d. The expansion `|x|² + |y|² - 2x·y` uses one matmul, but rounding can make a squared distance slightly *negative* (identical points), and `sqrt` of that is NaN. Clip at zero.\n",
   "spec": "\"\"\"Starter file shown to the player.\"\"\"\nimport numpy as np\n\n\ndef pairwise_dists(X, Y):\n    \"\"\"Return D with D[i, j] = Euclidean distance between row X[i] and row Y[j]. No Python loops.\"\"\"\n    raise NotImplementedError\n",
   "visibleTests": "import numpy as np\nfrom nc_test import assert_close, python_lines\n\n\ndef test_small_example():\n    X = np.array([[0.0, 0.0], [3.0, 4.0]])\n    Y = np.array([[0.0, 0.0], [6.0, 8.0], [3.0, 0.0]])\n    assert_close(pairwise_dists(X, Y), [[0, 10, 3], [5, 5, 4]])\n\n\ndef test_shape():\n    rng = np.random.default_rng(0)\n    assert pairwise_dists(rng.normal(size=(4, 3)), rng.normal(size=(6, 3))).shape == (4, 6)\n\ndef _vectorised(fn, *args, limit=40):\n    out, lines = python_lines(fn, *args)\n    assert lines <= limit, f\"{lines} Python lines executed: the work is happening in a Python loop, not in numpy\"\n    return out\n",
@@ -68,6 +73,7 @@ export const LAB_SOURCES: LabSource[] = [
   "functions": [
    "softmax_rows"
   ],
+  "hints": [],
   "lesson": "# Row-wise softmax\n\nReturn the softmax of each row of the 2-D array `Z`.\n\n**Interview signal:** subtract the row max first (softmax is shift-invariant), keep dims so broadcasting lines up, and normalise along the right axis. `exp(1000)` overflows to `inf`; the shift is what keeps training from producing NaN.\n",
   "spec": "\"\"\"Starter file shown to the player.\"\"\"\nimport numpy as np\n\n\ndef softmax_rows(Z):\n    \"\"\"Softmax over the last axis of a 2-D array, numerically stable. No Python loops.\"\"\"\n    raise NotImplementedError\n",
   "visibleTests": "import numpy as np\nfrom nc_test import assert_close, python_lines\n\n\ndef test_uniform_row():\n    assert_close(softmax_rows([[1.0, 1.0, 1.0, 1.0]]), [[0.25] * 4])\n\n\ndef test_known_values():\n    assert_close(softmax_rows([[0.0, np.log(3.0)]]), [[0.25, 0.75]])\n\ndef _vectorised(fn, *args, limit=40):\n    out, lines = python_lines(fn, *args)\n    assert lines <= limit, f\"{lines} Python lines executed: the work is happening in a Python loop, not in numpy\"\n    return out\n",
@@ -80,6 +86,7 @@ export const LAB_SOURCES: LabSource[] = [
   "functions": [
    "standardize_cols"
   ],
+  "hints": [],
   "lesson": "# Standardise columns\n\nStandardise each column of `X` to mean 0 and population standard deviation 1 (`ddof=0`). A constant column has std 0: return zeros for it instead of NaN.\n\n**Interview signal:** the axis (columns, `axis=0`), `keepdims` or broadcasting, and the divide-by-zero guard. In real pipelines you fit these statistics on the training split only; the lesson on leakage covers why.\n",
   "spec": "\"\"\"Starter file shown to the player.\"\"\"\nimport numpy as np\n\n\ndef standardize_cols(X):\n    \"\"\"Return X with every column shifted to mean 0 and scaled to population std 1 (constant columns become 0).\"\"\"\n    raise NotImplementedError\n",
   "visibleTests": "import numpy as np\nfrom nc_test import assert_close, python_lines\n\n\ndef test_two_columns():\n    out = standardize_cols([[1.0, 10.0], [3.0, 10.0], [5.0, 40.0]])\n    assert_close(out[:, 0], [-np.sqrt(1.5), 0.0, np.sqrt(1.5)])\n\n\ndef test_shape_kept():\n    assert standardize_cols(np.arange(12.0).reshape(4, 3)).shape == (4, 3)\n\ndef _vectorised(fn, *args, limit=40):\n    out, lines = python_lines(fn, *args)\n    assert lines <= limit, f\"{lines} Python lines executed: the work is happening in a Python loop, not in numpy\"\n    return out\n",
@@ -92,6 +99,7 @@ export const LAB_SOURCES: LabSource[] = [
   "functions": [
    "topk_rows"
   ],
+  "hints": [],
   "lesson": "# Top-k per row\n\nFor each row of the score matrix `S` return the column indices of its `k` largest scores, ordered from largest to smallest. Assume `1 <= k <= S.shape[1]` and ties are broken by lower index.\n\n**Interview signal:** say the trade-off out loud. `np.argpartition` finds the top-k in O(m) per row but makes no promise about their order, and it picks arbitrary columns among boundary ties; a stable `argsort` of the negated scores is O(m log m) but gives the exact, deterministic answer the spec asks for. Choose by whether m is large and whether ties matter.\n",
   "spec": "\"\"\"Starter file shown to the player.\"\"\"\nimport numpy as np\n\n\ndef topk_rows(S, k):\n    \"\"\"Return an (n, k) array: for each row of S, the column indices of its k largest values, largest first.\"\"\"\n    raise NotImplementedError\n",
   "visibleTests": "import numpy as np\nfrom nc_test import assert_close, python_lines\n\n\ndef test_simple():\n    S = np.array([[0.1, 0.9, 0.5], [3.0, 1.0, 2.0]])\n    assert (topk_rows(S, 2) == [[1, 2], [0, 2]]).all()\n\n\ndef test_k_equals_width_is_full_sort():\n    S = np.array([[2.0, 3.0, 1.0]])\n    assert (topk_rows(S, 3) == [[1, 0, 2]]).all()\n\ndef _vectorised(fn, *args, limit=40):\n    out, lines = python_lines(fn, *args)\n    assert lines <= limit, f\"{lines} Python lines executed: the work is happening in a Python loop, not in numpy\"\n    return out\n",
@@ -104,6 +112,7 @@ export const LAB_SOURCES: LabSource[] = [
   "functions": [
    "batches"
   ],
+  "hints": [],
   "lesson": "# Batch iterator\n\n`batches(items, size)` is a generator yielding consecutive lists of up to `size` items. The last batch may be shorter. It must work on any iterable, including a generator that can be read only once.\n\n**Interview signal:** laziness (do not materialise the whole input), and yielding a *fresh* list per batch. Reusing and clearing one list is a classic aliasing bug that only shows when the caller keeps the batches.\n",
   "spec": "\"\"\"Starter file shown to the player.\"\"\"\n\n\ndef batches(items, size):\n    \"\"\"Yield lists of up to `size` consecutive items from any iterable.\"\"\"\n    raise NotImplementedError\n",
   "visibleTests": "def test_basic():\n    assert list(batches([1, 2, 3, 4, 5], 2)) == [[1, 2], [3, 4], [5]]\n",
@@ -116,6 +125,7 @@ export const LAB_SOURCES: LabSource[] = [
   "functions": [
    "flatten"
   ],
+  "hints": [],
   "lesson": "# Flatten nested lists\n\nFlatten arbitrarily nested lists and tuples into one list, left to right. Strings are leaves, not containers.\n\n**Interview signal:** recursion with a clear base case, the `str` trap (a one-character string iterates to itself forever), and the follow-up \"what if nesting is 100,000 deep?\" which wants an explicit stack.\n",
   "spec": "\"\"\"Starter file shown to the player.\"\"\"\n\n\ndef flatten(nested):\n    \"\"\"Return a flat list of the leaves of nested lists/tuples (strings are leaves).\"\"\"\n    raise NotImplementedError\n",
   "visibleTests": "def test_basic():\n    assert flatten([1, [2, [3, 4]], 5]) == [1, 2, 3, 4, 5]\n",
@@ -128,6 +138,7 @@ export const LAB_SOURCES: LabSource[] = [
   "functions": [
    "group_anagrams"
   ],
+  "hints": [],
   "lesson": "# Group anagrams\n\nGroup words that are anagrams of each other. Return the groups with each group sorted, and the list of groups sorted by its first word.\n\n**Interview signal:** a canonical key (`\"\".join(sorted(word))`) into a `defaultdict(list)`. Compare the sorted-key cost O(L log L) against a 26-count tuple key O(L) when the alphabet is small.\n",
   "spec": "\"\"\"Starter file shown to the player.\"\"\"\n\n\ndef group_anagrams(words):\n    \"\"\"Groups of anagrams: each group sorted, groups sorted by first word.\"\"\"\n    raise NotImplementedError\n",
   "visibleTests": "def test_basic():\n    assert group_anagrams([\"eat\", \"tea\", \"tan\", \"ate\", \"nat\", \"bat\"]) == [[\"ate\", \"eat\", \"tea\"], [\"bat\"], [\"nat\", \"tan\"]]\n",
@@ -140,6 +151,7 @@ export const LAB_SOURCES: LabSource[] = [
   "functions": [
    "lower_bound"
   ],
+  "hints": [],
   "lesson": "# Lower bound\n\nReturn the first index `i` such that `a[i] >= x` in a sorted list, or `len(a)` if every element is smaller. This is `bisect.bisect_left`, written by hand.\n\n**Interview signal:** a loop invariant you can state (`lo` is never too small, `hi` is never too small) with a half-open range `[lo, hi)`, and the right-hand end: the answer may be `len(a)`. Most binary-search bugs are an inclusive/exclusive mix-up.\n",
   "spec": "\"\"\"Starter file shown to the player.\"\"\"\n\n\ndef lower_bound(a, x):\n    \"\"\"First index i with a[i] >= x in sorted list a; len(a) if none.\"\"\"\n    raise NotImplementedError\n",
   "visibleTests": "def test_basic():\n    assert lower_bound([1, 3, 5, 7], 5) == 2\n",
@@ -152,6 +164,7 @@ export const LAB_SOURCES: LabSource[] = [
   "functions": [
    "LRUCache"
   ],
+  "hints": [],
   "lesson": "# LRU cache\n\n`LRUCache(capacity)` with `get(key)` (returns `-1` when absent) and `put(key, value)`. Both are O(1). Reading or writing a key makes it the most recently used. Inserting past capacity evicts the least recently used key.\n\n**Interview signal:** `collections.OrderedDict` with `move_to_end` and `popitem(last=False)` is accepted in most loops; be ready to explain the hash map plus doubly linked list underneath.\n",
   "spec": "\"\"\"Starter file shown to the player.\"\"\"\n\n\nclass LRUCache:\n    def __init__(self, capacity):\n        raise NotImplementedError\n\n    def get(self, key):\n        \"\"\"Return the value, or -1 if absent. Marks the key as recently used.\"\"\"\n        raise NotImplementedError\n\n    def put(self, key, value):\n        \"\"\"Insert or update. Evict the least recently used key if over capacity.\"\"\"\n        raise NotImplementedError\n",
   "visibleTests": "def test_get_and_put():\n    c = LRUCache(2)\n    c.put(1, 10)\n    assert c.get(1) == 10\n    assert c.get(2) == -1\n",
@@ -164,6 +177,7 @@ export const LAB_SOURCES: LabSource[] = [
   "functions": [
    "merge_intervals"
   ],
+  "hints": [],
   "lesson": "# Merge intervals\n\nMerge overlapping closed intervals `[start, end]`. Intervals that touch (`[1, 2]` and `[2, 3]`) merge too.\n\n**Interview signal:** sort by start first, then sweep keeping the last merged interval. Ask about touching intervals and unsorted input before coding. O(n log n) from the sort.\n",
   "spec": "\"\"\"Starter file shown to the player.\"\"\"\n\n\ndef merge_intervals(intervals):\n    \"\"\"Return the merged list of [start, end] pairs, sorted by start.\"\"\"\n    raise NotImplementedError\n",
   "visibleTests": "def test_basic():\n    assert merge_intervals([[1, 3], [2, 6], [8, 10]]) == [[1, 6], [8, 10]]\n",
@@ -176,6 +190,7 @@ export const LAB_SOURCES: LabSource[] = [
   "functions": [
    "moving_average"
   ],
+  "hints": [],
   "lesson": "# Moving average\n\nReturn the average of every full window of width `w`: `len(xs) - w + 1` values. Use a running sum so each element is touched a constant number of times.\n\n**Interview signal:** the sliding window (add the new element, subtract the one that left) instead of `sum(xs[i:i+w])` per position. Mention floating-point drift for very long streams.\n",
   "spec": "\"\"\"Starter file shown to the player.\"\"\"\n\n\ndef moving_average(xs, w):\n    \"\"\"Averages of each full window of width w. Empty list if w > len(xs).\"\"\"\n    raise NotImplementedError\n",
   "visibleTests": "from nc_test import assert_close\n\n\ndef test_basic():\n    assert_close(moving_average([1, 2, 3, 4], 2), [1.5, 2.5, 3.5])\n",
@@ -188,6 +203,7 @@ export const LAB_SOURCES: LabSource[] = [
   "functions": [
    "RunningStats"
   ],
+  "hints": [],
   "lesson": "# Running mean and variance\n\n`RunningStats` accepts values one at a time with `add(x)` and reports `mean()` and the sample variance `variance()` (divide by `n - 1`; `0.0` when fewer than two values). It must stay accurate when values are huge and close together.\n\n**Interview signal:** Welford's update. The textbook `E[x²] - E[x]²` cancels catastrophically (the same reason a softmax needs the max subtracted); be able to say why.\n",
   "spec": "\"\"\"Starter file shown to the player.\"\"\"\n\n\nclass RunningStats:\n    def __init__(self):\n        raise NotImplementedError\n\n    def add(self, x):\n        raise NotImplementedError\n\n    def mean(self):\n        raise NotImplementedError\n\n    def variance(self):\n        \"\"\"Sample variance (n - 1 denominator); 0.0 with fewer than two values.\"\"\"\n        raise NotImplementedError\n",
   "visibleTests": "from nc_test import assert_close\n\n\ndef test_mean_and_variance():\n    s = RunningStats()\n    for x in [2.0, 4.0, 4.0, 4.0, 5.0, 5.0, 7.0, 9.0]:\n        s.add(x)\n    assert_close(s.mean(), 5.0)\n    assert_close(s.variance(), 32.0 / 7.0)\n",
@@ -200,6 +216,7 @@ export const LAB_SOURCES: LabSource[] = [
   "functions": [
    "top_k_frequent"
   ],
+  "hints": [],
   "lesson": "# Top-k frequent words\n\nCount words, then return the `k` most frequent. Ties break alphabetically, so the answer is deterministic.\n\n**Interview signal:** `collections.Counter`, a sort key that combines two criteria (negate the count instead of reversing), and stating the cost: O(n + u log u) with `u` unique words, or O(n + u log k) with a heap. Say which you chose and why.\n",
   "spec": "\"\"\"Starter file shown to the player.\"\"\"\n\n\ndef top_k_frequent(words, k):\n    \"\"\"Return the k most frequent words, most frequent first; ties alphabetical.\"\"\"\n    raise NotImplementedError\n",
   "visibleTests": "def test_basic():\n    assert top_k_frequent([\"a\", \"b\", \"a\", \"c\", \"b\", \"a\"], 2) == [\"a\", \"b\"]\n\n\ndef test_k_larger_than_unique():\n    assert top_k_frequent([\"x\", \"y\"], 5) == [\"x\", \"y\"]\n",
@@ -212,6 +229,7 @@ export const LAB_SOURCES: LabSource[] = [
   "functions": [
    "two_sum"
   ],
+  "hints": [],
   "lesson": "# Two sum\n\nGiven numbers and a target, return the indices `(i, j)` with `i < j` and `nums[i] + nums[j] == target`, or `None`. Exactly one answer exists whenever one does.\n\n**Interview signal:** trade O(n²) pairs for one pass with a dict of value to index. Check for the complement *before* inserting the current number, which is what stops an element pairing with itself.\n",
   "spec": "\"\"\"Starter file shown to the player.\"\"\"\n\n\ndef two_sum(nums, target):\n    \"\"\"Return (i, j) with i < j and nums[i] + nums[j] == target, else None.\"\"\"\n    raise NotImplementedError\n",
   "visibleTests": "def test_basic():\n    assert two_sum([2, 7, 11, 15], 9) == (0, 1)\n",
@@ -223,11 +241,18 @@ export const LAB_SOURCES: LabSource[] = [
   "phase": "forge",
   "functions": [
    "mse_loss_grad",
-   "gd_step"
+   "gd_step",
+   "fit",
+   "r2_score"
   ],
-  "lesson": "# Linear model and gradient descent\n\nYour companion starts as the simplest creature: a weight vector. The prediction is `y_hat = X @ w`\nand the loss is the mean squared error `L = (1/N) * sum((y_hat - y)^2)`.\n\nDerivation: with residual `r = X @ w - y`, `dL/dw = (2/N) * X.T @ r`. Check the shapes: `X.T` is\n`(D, N)`, `r` is `(N,)`, so the gradient is `(D,)`, the same shape as `w`.\n\nA gradient step moves *against* the gradient: `w <- w - lr * grad`.\n\nTrust, but verify: the tests compare your gradient with central finite differences.\n",
-  "spec": "\"\"\"Starter file shown to the player. Fill in the two functions.\"\"\"\nimport numpy as np\n\n\ndef mse_loss_grad(w, X, y):\n    \"\"\"Return (loss, grad) for the model  y_hat = X @ w  with loss = mean((y_hat - y)**2).\n\n    X: (N, D), w: (D,), y: (N,). grad has the same shape as w.\n    \"\"\"\n    raise NotImplementedError\n\n\ndef gd_step(w, grad, lr):\n    \"\"\"Return the weights after one plain gradient-descent step.\"\"\"\n    raise NotImplementedError\n",
-  "visibleTests": "import numpy as np\nfrom nc_test import assert_close\n\n\ndef test_loss_on_a_perfect_fit_is_zero():\n    X = np.array([[1.0, 0.0], [0.0, 1.0]])\n    w = np.array([2.0, -1.0])\n    loss, grad = mse_loss_grad(w, X, X @ w)\n    assert_close(loss, 0.0)\n    assert_close(grad, [0.0, 0.0])\n\n\ndef test_gradient_has_the_shape_of_w():\n    X = np.arange(12.0).reshape(4, 3)\n    _, grad = mse_loss_grad(np.zeros(3), X, np.ones(4))\n    assert grad.shape == (3,), f\"expected (3,), got {grad.shape}\"\n",
-  "hiddenTests": "import numpy as np\nfrom nc_test import assert_close, grad_check\n\n\ndef _data(seed, n, d):\n    rng = np.random.default_rng(seed)\n    return rng.normal(size=(n, d)), rng.normal(size=n), rng.normal(size=d)\n\n\ndef test_hidden_loss_value():\n    X = np.array([[1.0, 2.0], [3.0, 4.0]])\n    loss, _ = mse_loss_grad(np.array([1.0, 0.0]), X, np.array([0.0, 0.0]))\n    assert_close(loss, (1.0 + 9.0) / 2)\n\n\ndef test_hidden_gradient_matches_finite_differences():\n    for seed, (n, d) in enumerate([(5, 3), (1, 4), (20, 1), (7, 7)]):\n        X, y, w = _data(seed, n, d)\n        _, grad = mse_loss_grad(w, X, y)\n        grad_check(lambda v: mse_loss_grad(v, X, y)[0], w, grad)\n\n\ndef test_hidden_inputs_are_not_modified():\n    X, y, w = _data(9, 6, 3)\n    X0, y0, w0 = X.copy(), y.copy(), w.copy()\n    mse_loss_grad(w, X, y)\n    assert_close(X, X0)\n    assert_close(y, y0)\n    assert_close(w, w0)\n\n\ndef test_hidden_step_goes_downhill():\n    X, y, w = _data(3, 10, 4)\n    loss, grad = mse_loss_grad(w, X, y)\n    w2 = gd_step(w, grad, 0.01)\n    assert mse_loss_grad(w2, X, y)[0] < loss, \"a small step must reduce the loss\"\n    assert_close(w2, w - 0.01 * grad)\n\n\ndef test_hidden_gd_converges_on_a_noiseless_problem():\n    X, _, w_true = _data(4, 50, 3)\n    y = X @ w_true\n    w = np.zeros(3)\n    for _ in range(400):\n        _, g = mse_loss_grad(w, X, y)\n        w = gd_step(w, g, 0.1)\n    assert_close(w, w_true, atol=1e-3)\n"
+  "hints": [
+   "Write the loss as a residual first: r = X @ w - y. Both the loss and the gradient are built from r.",
+   "dL/dw = (2/N) * X.T @ r. If your gradient has shape (N,) instead of (D,), you used X where X.T belongs. fit is just a loop: start at zeros, record the loss, then step.",
+   "r2_score = 1 - sum((y - y_hat)^2) / sum((y - mean(y))^2). Centre on the mean of the TRUTH. Watch the constant-target case, where the denominator is zero."
+  ],
+  "lesson": "# Linear model and gradient descent\n\nYour companion starts as the simplest creature: a weight vector. The prediction is `y_hat = X @ w`\nand the loss is the mean squared error `L = (1/N) * sum((y_hat - y)^2)`.\n\nDerivation: with residual `r = X @ w - y`, `dL/dw = (2/N) * X.T @ r`. Check the shapes: `X.T` is\n`(D, N)`, `r` is `(N,)`, so the gradient is `(D,)`, the same shape as `w`.\n\nA gradient step moves *against* the gradient: `w <- w - lr * grad`.\n\nTrust, but verify: the tests compare your gradient with central finite differences.\n\n## Train it, then measure it\n\n`fit` is the whole training loop in four lines: start at zero weights, and for each step record the\nloss, compute the gradient, take a step. Recording the loss *before* the step means `history[0]` is\nthe untrained model's loss, which makes the curve honest.\n\nA low training loss alone proves little. The score you will see in battle is measured on data the\nmodel never trained on. `r2_score` turns that into one number: `1 - SS_res / SS_tot`. A model that\nonly predicts the mean scores 0; a biased model can score below 0. Learning rate matters too: too\nlarge and the loss grows each step instead of falling.\n",
+  "spec": "\"\"\"Starter file shown to the player. Fill in the four functions.\"\"\"\nimport numpy as np\n\n\ndef mse_loss_grad(w, X, y):\n    \"\"\"Return (loss, grad) for the model  y_hat = X @ w  with loss = mean((y_hat - y)**2).\n\n    X: (N, D), w: (D,), y: (N,). grad has the same shape as w.\n    \"\"\"\n    raise NotImplementedError\n\n\ndef gd_step(w, grad, lr):\n    \"\"\"Return the weights after one plain gradient-descent step.\"\"\"\n    raise NotImplementedError\n\n\ndef fit(X, y, lr, steps):\n    \"\"\"Train y_hat = X @ w from w = 0 with `steps` plain gradient-descent steps.\n\n    Return (w, history) where history is a list of the loss *before* each step\n    (length `steps`). Reuse mse_loss_grad and gd_step.\n    \"\"\"\n    raise NotImplementedError\n\n\ndef r2_score(y_true, y_pred):\n    \"\"\"Coefficient of determination: 1 - SS_res / SS_tot.\n\n    It is 1.0 for a perfect fit and 0.0 for a model that only predicts the mean of y_true.\n    If y_true is constant (SS_tot == 0), return 1.0 when the fit is exact, else 0.0.\n    \"\"\"\n    raise NotImplementedError\n",
+  "visibleTests": "import numpy as np\nfrom nc_test import assert_close\n\n\ndef test_loss_on_a_perfect_fit_is_zero():\n    X = np.array([[1.0, 0.0], [0.0, 1.0]])\n    w = np.array([2.0, -1.0])\n    loss, grad = mse_loss_grad(w, X, X @ w)\n    assert_close(loss, 0.0)\n    assert_close(grad, [0.0, 0.0])\n\n\ndef test_gradient_has_the_shape_of_w():\n    X = np.arange(12.0).reshape(4, 3)\n    _, grad = mse_loss_grad(np.zeros(3), X, np.ones(4))\n    assert grad.shape == (3,), f\"expected (3,), got {grad.shape}\"\n\n\ndef test_fit_returns_weights_and_one_loss_per_step():\n    X = np.array([[1.0], [2.0], [3.0]])\n    w, history = fit(X, 2.0 * X[:, 0], 0.05, 7)\n    assert w.shape == (1,), f\"expected (1,), got {w.shape}\"\n    assert len(history) == 7, f\"expected 7 losses, got {len(history)}\"\n\n\ndef test_r2_of_a_perfect_and_a_mean_only_model():\n    y = np.array([1.0, 2.0, 3.0, 4.0])\n    assert_close(r2_score(y, y), 1.0)\n    assert_close(r2_score(y, np.full(4, y.mean())), 0.0)\n",
+  "hiddenTests": "import numpy as np\nfrom nc_test import assert_close, grad_check\n\n\ndef _data(seed, n, d):\n    rng = np.random.default_rng(seed)\n    return rng.normal(size=(n, d)), rng.normal(size=n), rng.normal(size=d)\n\n\ndef test_hidden_loss_value():\n    X = np.array([[1.0, 2.0], [3.0, 4.0]])\n    loss, _ = mse_loss_grad(np.array([1.0, 0.0]), X, np.array([0.0, 0.0]))\n    assert_close(loss, (1.0 + 9.0) / 2)\n\n\ndef test_hidden_gradient_matches_finite_differences():\n    for seed, (n, d) in enumerate([(5, 3), (1, 4), (20, 1), (7, 7)]):\n        X, y, w = _data(seed, n, d)\n        _, grad = mse_loss_grad(w, X, y)\n        grad_check(lambda v: mse_loss_grad(v, X, y)[0], w, grad)\n\n\ndef test_hidden_inputs_are_not_modified():\n    X, y, w = _data(9, 6, 3)\n    X0, y0, w0 = X.copy(), y.copy(), w.copy()\n    mse_loss_grad(w, X, y)\n    assert_close(X, X0)\n    assert_close(y, y0)\n    assert_close(w, w0)\n\n\ndef test_hidden_step_goes_downhill():\n    X, y, w = _data(3, 10, 4)\n    loss, grad = mse_loss_grad(w, X, y)\n    w2 = gd_step(w, grad, 0.01)\n    assert mse_loss_grad(w2, X, y)[0] < loss, \"a small step must reduce the loss\"\n    assert_close(w2, w - 0.01 * grad)\n\n\ndef test_hidden_gd_converges_on_a_noiseless_problem():\n    X, _, w_true = _data(4, 50, 3)\n    y = X @ w_true\n    w = np.zeros(3)\n    for _ in range(400):\n        _, g = mse_loss_grad(w, X, y)\n        w = gd_step(w, g, 0.1)\n    assert_close(w, w_true, atol=1e-3)\n\n\ndef test_hidden_fit_history_starts_at_the_loss_for_zero_weights():\n    X, y, _ = _data(11, 12, 3)\n    w, history = fit(X, y, 0.05, 5)\n    assert_close(history[0], mse_loss_grad(np.zeros(3), X, y)[0])\n    assert_close(w, _manual_fit(X, y, 0.05, 5))\n\n\ndef _manual_fit(X, y, lr, steps):\n    w = np.zeros(X.shape[1])\n    for _ in range(steps):\n        w = w - lr * (2.0 / len(y)) * (X.T @ (X @ w - y))\n    return w\n\n\ndef test_hidden_fit_loss_decreases_every_step_with_a_small_lr():\n    X, y, _ = _data(12, 40, 4)\n    _, history = fit(X, y, 0.05, 60)\n    assert all(b < a for a, b in zip(history, history[1:])), \"loss must fall monotonically\"\n\n\ndef test_hidden_fit_generalises_to_held_out_data():\n    rng = np.random.default_rng(21)\n    w_true = np.array([2.0, -1.0, 0.5])\n    Xtr, Xte = rng.normal(size=(120, 3)), rng.normal(size=(60, 3))\n    ytr = Xtr @ w_true + 0.1 * rng.normal(size=120)\n    yte = Xte @ w_true + 0.1 * rng.normal(size=60)\n    w, _ = fit(Xtr, ytr, 0.1, 300)\n    assert r2_score(yte, Xte @ w) > 0.98, \"a linear model should explain a linear signal on held-out data\"\n\n\ndef test_hidden_fit_diverges_visibly_when_lr_is_too_large():\n    X, y, _ = _data(13, 30, 3)\n    _, history = fit(X, y, 5.0, 12)\n    assert history[-1] > history[0], \"an oversized step must make the loss grow, not hide it\"\n\n\ndef test_hidden_r2_penalises_a_biased_model_and_can_go_negative():\n    y = np.array([0.0, 1.0, 2.0, 3.0])\n    assert r2_score(y, y + 10.0) < 0\n    assert_close(r2_score(y, np.array([0.0, 1.0, 2.0, 4.0])), 1 - 1.0 / 5.0)\n\n\ndef test_hidden_r2_on_a_constant_target():\n    assert_close(r2_score(np.ones(5), np.ones(5)), 1.0)\n    assert_close(r2_score(np.ones(5), np.zeros(5)), 0.0)\n"
  }
 ];

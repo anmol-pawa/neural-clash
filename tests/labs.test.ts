@@ -26,3 +26,26 @@ describe("lab catalog", () => {
     expect(new Set(LABS.map((l) => l.id)).size).toBe(LABS.length);
   });
 });
+
+import { BASE_STATS, companionStats } from "../lib/labs/companion";
+
+describe("hints and companion stats", () => {
+  it("linear-gd ships a three-rung hint ladder that does not leak the answer", () => {
+    const l = labById("linear-gd")!;
+    expect(l.hints).toHaveLength(3);
+    expect(l.functions).toEqual(["mse_loss_grad", "gd_step", "fit", "r2_score"]);
+  });
+  it("stats start at base and reward unassisted solves more than assisted ones", () => {
+    expect(companionStats({})).toEqual(BASE_STATS);
+    const clean = companionStats({ "linear-gd": { passed: true, assisted: false } });
+    const helped = companionStats({ "linear-gd": { passed: true, assisted: true } });
+    expect(clean.power).toBe(BASE_STATS.power + 10);
+    expect(helped.power).toBe(BASE_STATS.power + 5);
+    expect(companionStats({ "linear-gd": { passed: false, assisted: false } }).power).toBe(BASE_STATS.power);
+  });
+  it("speed is capped and only np-* labs feed it", () => {
+    const labs = Object.fromEntries(Array.from({ length: 10 }, (_, i) => [`np-${i}`, { passed: true, assisted: false }]));
+    expect(companionStats(labs).speed).toBe(BASE_STATS.speed + 16);
+    expect(companionStats({ "py-two-sum": { passed: true, assisted: false } }).speed).toBe(BASE_STATS.speed);
+  });
+});

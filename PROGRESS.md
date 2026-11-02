@@ -187,3 +187,14 @@ Append a dated entry after every run: what changed, how it was verified (command
 - CI/Pages: this run was committed to the designated branch `claude/wonderful-goodall-jpmlxg` and main (see below); Actions confirmation not polled.
 - Known gaps: no hint ladder/editorial; Labs not yet gated by progression or tied to companion stats.
 - Next: B6b.
+
+## 2026-11-02: B6b linear-gd extended: train loop, R², hints, companion stats
+- `linear-gd` now has four functions: `mse_loss_grad`, `gd_step`, plus `fit` (zero-init GD loop, loss history before each step) and `r2_score` (with the constant-target guard). 4 new documented wrong versions (non-zero init, history after the step, R² centred on the prediction mean, no constant guard); hidden tests add monotone loss, a held-out R² > 0.98 check, visible divergence at a too-large LR and biased/negative R². Lesson gained a "Train it, then measure it" section.
+- Hint ladder: `hints` in `meta.json` (bundled by `gen-labs`), a reveal-one-at-a-time panel in `/labs#<id>`; revealing any hint marks a first solve as assisted ("Solved (with hints)"); a later clean solve clears it.
+- `lib/labs/companion.ts` (pure, tested): companion stats (vitality, power, precision, speed) from saved Lab results; unassisted solves earn full value, assisted half; shown on `/labs`. These are record-of-pass stats, not live metrics from Python (the Python side only reports pass/fail).
+- Layout fixes found in screenshots: lesson `## ` headings rendered literally; the labs page grid let the editor push the page wider than an iPhone (grid `minmax(0,1fr)`); mobile editor now has a fixed 420px height.
+- Verification: `content:verify` (linear-gd ok), `lint` (0 errors), `typecheck`, `test` 168 pass (after `stage:pyodide`/`stage:clang`; python via `/usr/bin` for numpy), `build`, `build:pages`, `smoke:labs` at desktop and iPhone 14 (hints, assisted banner, stats, persistence, no overflow/console errors); iPhone screenshot inspected.
+- CI/Pages confirmation: no `gh` access in this session, so not polled.
+- Committed on the session branch `claude/wonderful-goodall-3byvqt` per the session's branch rule.
+- Known gaps: stats are not yet shown in battle; no editorial for linear-gd.
+- Next: B7 (Training Grounds v1).

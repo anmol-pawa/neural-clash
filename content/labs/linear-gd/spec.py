@@ -1,4 +1,4 @@
-"""Starter file shown to the player. Fill in the two functions."""
+"""Starter file shown to the player. Fill in the four functions."""
 import numpy as np
 
 
@@ -12,4 +12,22 @@ def mse_loss_grad(w, X, y):
 
 def gd_step(w, grad, lr):
     """Return the weights after one plain gradient-descent step."""
+    raise NotImplementedError
+
+
+def fit(X, y, lr, steps):
+    """Train y_hat = X @ w from w = 0 with `steps` plain gradient-descent steps.
+
+    Return (w, history) where history is a list of the loss *before* each step
+    (length `steps`). Reuse mse_loss_grad and gd_step.
+    """
+    raise NotImplementedError
+
+
+def r2_score(y_true, y_pred):
+    """Coefficient of determination: 1 - SS_res / SS_tot.
+
+    It is 1.0 for a perfect fit and 0.0 for a model that only predicts the mean of y_true.
+    If y_true is constant (SS_tot == 0), return 1.0 when the fit is exact, else 0.0.
+    """
     raise NotImplementedError

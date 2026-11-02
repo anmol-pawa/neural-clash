@@ -19,6 +19,7 @@ export function buildLabs() {
         title: meta.title,
         phase: meta.phase,
         functions: meta.functions ?? [],
+        hints: meta.hints ?? [],
         lesson: read(d.name, "lesson.md"),
         spec: read(d.name, "spec.py"),
         visibleTests: read(d.name, "tests_visible.py"),
