@@ -34,6 +34,9 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
 
+      - name: Stage Pyodide (needed by the Pyodide tests)
+        run: npm run stage:pyodide
+
       - name: Test
         run: npm test
 
