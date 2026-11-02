@@ -44,6 +44,10 @@ for (const [name, opts] of [["desktop", { viewport: { width: 1280, height: 800 }
   await page.getByTestId("lab-linear-gd").click();
   await page.locator(".cm-content").first().waitFor();
   await page.waitForSelector("[data-loaded=true]");
+  check((await page.getByTestId("lab-hint").count()) === 0, `${name}: hints start hidden`);
+  await page.getByTestId("lab-hint-next").click();
+  await page.getByTestId("lab-hint-next").click();
+  check((await page.getByTestId("lab-hint").count()) === 2, `${name}: hint ladder reveals one rung per click`);
   await page.locator(".cm-content").first().click();
   await page.keyboard.press("Control+A");
   await page.keyboard.press("Delete");

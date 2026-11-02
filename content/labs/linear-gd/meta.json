@@ -3,10 +3,23 @@
   "title": "Linear model and gradient descent",
   "phase": "forge",
   "language": "python",
-  "functions": ["mse_loss_grad", "gd_step"],
+  "functions": [
+    "mse_loss_grad",
+    "gd_step",
+    "fit",
+    "r2_score"
+  ],
   "wrong": {
     "sum_not_mean.py": "gradient is not divided by N (fails the finite-difference check)",
     "missing_transpose.py": "uses X instead of X.T in the gradient (shape error)",
-    "step_adds.py": "gd_step moves uphill (adds the gradient)"
-  }
+    "step_adds.py": "gd_step moves uphill (adds the gradient)",
+    "fit_loss_after_step.py": "history records the loss after the step instead of before it",
+    "fit_starts_at_ones.py": "initialises w at ones instead of zeros",
+    "r2_uncentred.py": "R2 denominator is not centred on mean(y)"
+  },
+  "hints": [
+    "The residual r = X @ w - y appears in both the loss and the gradient. Compute it once.",
+    "Shape check: X.T is (D, N) and r is (N,), so X.T @ r is (D,). The 2/N factor comes from differentiating the mean of squares.",
+    "fit is a loop: measure the loss and gradient at the current w, record the loss, then step. r2_score is 1 - SS_res/SS_tot where SS_tot is centred on mean(y)."
+  ]
 }

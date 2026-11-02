@@ -26,3 +26,10 @@ describe("lab catalog", () => {
     expect(new Set(LABS.map((l) => l.id)).size).toBe(LABS.length);
   });
 });
+
+describe("lab hint ladders", () => {
+  it("linear-gd ships a three-rung ladder and every lab has a hints array", () => {
+    expect(labById("linear-gd")!.hints).toHaveLength(3);
+    for (const l of LABS) expect(Array.isArray(l.hints)).toBe(true);
+  });
+});

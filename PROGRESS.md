@@ -187,3 +187,13 @@ Append a dated entry after every run: what changed, how it was verified (command
 - CI/Pages: this run was committed to the designated branch `claude/wonderful-goodall-jpmlxg` and main (see below); Actions confirmation not polled.
 - Known gaps: no hint ladder/editorial; Labs not yet gated by progression or tied to companion stats.
 - Next: B6b.
+
+## 2026-11-02: B6b linear-gd extended, hint ladder, companion stats
+- `linear-gd` now has four functions: `mse_loss_grad`, `gd_step`, `fit` (train loop, loss recorded before each step) and `r2_score`. Hidden tests: exact history, monotone loss, match to `np.linalg.lstsq`, hand-computed R², constant-target edge cases. Three new wrong versions (loss-after-step, w starts at ones, uncentred R²) are all rejected by `content:verify`. Lesson gained a "Train it, then score it" section.
+- Hint ladder: `meta.hints` is bundled into the catalog and shown one rung at a time on the lab page (`Hints` in `components/Labs.tsx`); the lesson renderer now shows `## ` headings.
+- `lib/labs/companion.ts`: pure `companionStats` (Attack = test R², Defence = 1/(1+gap/0.1), Speed = log-scaled params), unit-tested. Not yet wired to the UI; B7 (Training Grounds) will feed it real test metrics.
+- Fixed a mobile bug: the lab article grid expanded to the editor's content width (811px on iPhone 14); now `minmax(0,1fr)`.
+- Verification: lint (warnings only), typecheck, test (170 pass), content:verify, build, build:pages, smoke:labs at desktop and iPhone 14 (hints, accepted submit, no overflow, no console errors; iPhone screenshot inspected).
+- CI/Pages: Actions quota note expired (2026-11-01); confirmation attempted after push.
+- Known gaps: only linear-gd has hints; stats mapping weights are a first guess to tune in B7/B8.
+- Next: B7 Training Grounds v1.

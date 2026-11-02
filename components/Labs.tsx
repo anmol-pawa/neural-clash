@@ -15,9 +15,31 @@ function Lesson({ text }: { text: string }) {
   const paras = text.replace(/^# .*\n/, "").trim().split(/\n\s*\n/);
   return (
     <div className="grid gap-2 text-sm leading-relaxed text-slate-300">
-      {paras.map((p, i) => (
-        <p key={i}><Rich text={p.replace(/\n/g, " ")} /></p>
+      {paras.map((p, i) =>
+        p.startsWith("## ") ? (
+          <h2 key={i} className="font-display text-lg text-white">{p.slice(3).split("\n")[0]}</h2>
+        ) : (
+          <p key={i}><Rich text={p.replace(/\n/g, " ")} /></p>
+        ),
+      )}
+    </div>
+  );
+}
+
+/** Hint ladder: one rung at a time, so the player chooses how much help to take. */
+function Hints({ hints }: { hints: string[] }) {
+  const [shown, setShown] = useState(0);
+  if (!hints.length) return null;
+  return (
+    <div className="panel grid gap-2 p-3 text-sm" data-testid="lab-hints">
+      {hints.slice(0, shown).map((h, i) => (
+        <p key={i} className="text-amber-100" data-testid="lab-hint"><b>Hint {i + 1}.</b> <Rich text={h} /></p>
       ))}
+      {shown < hints.length && (
+        <button type="button" className="min-h-11 justify-self-start rounded border border-white/20 px-3 hover:bg-white/10" onClick={() => setShown(shown + 1)} data-testid="lab-hint-next">
+          {shown === 0 ? "Need a hint?" : "Another hint"} ({shown}/{hints.length})
+        </button>
+      )}
     </div>
   );
 }
@@ -48,10 +70,11 @@ export default function Labs() {
         {lab ? <a href="#" className="underline" onClick={() => setId(null)}>All labs</a> : <Link href="/learn" className="underline">Lessons</Link>}
       </nav>
       {lab ? (
-        <article className="grid gap-4" aria-label={lab.title}>
+        <article className="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-4" aria-label={lab.title}>
           <h1 className="font-display text-2xl text-[var(--accent)]">{lab.title}</h1>
           <Lesson text={lab.lesson} />
           {save.labs[lab.id]?.passed && <div className="text-emerald-300" data-testid="lab-solved">Solved: all hidden checks passed.</div>}
+          <Hints key={`h:${lab.id}`} hints={lab.hints} />
           <EditorWorkbench key={lab.id} task={labTask(lab)} hideHeader onResult={(r) => onResult(lab.id, r)} />
         </article>
       ) : (
