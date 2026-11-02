@@ -4,6 +4,11 @@
   "phase": "forge",
   "language": "python",
   "functions": ["mse_loss_grad", "gd_step"],
+  "hints": [
+    "Compute the residual r = X @ w - y first; both the loss and the gradient come from it.",
+    "Check shapes: X.T is (D, N) and r is (N,), so X.T @ r is (D,), the shape of w. Do not forget the 2/N factor.",
+    "grad = (2.0 / N) * X.T @ r, and the step is w - lr * grad (against the gradient)."
+  ],
   "wrong": {
     "sum_not_mean.py": "gradient is not divided by N (fails the finite-difference check)",
     "missing_transpose.py": "uses X instead of X.T in the gradient (shape error)",

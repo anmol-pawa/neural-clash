@@ -39,10 +39,12 @@ for (const [name, opts] of [["desktop", { viewport: { width: 1280, height: 800 }
   await page.goto(`${origin}${BASE}/labs`);
   await page.getByTestId("lab-linear-gd").waitFor();
   const n = await page.locator("[data-testid^=lab-]").count();
-  check(n >= 19, `${name}: labs listed (${n})`);
+  check(n >= 20, `${name}: labs listed (${n})`);
   await page.screenshot({ path: join(shots, `labs-list-${name}.png`) });
   await page.getByTestId("lab-linear-gd").click();
   await page.locator(".cm-content").first().waitFor();
+  for (let i = 0; i < 3; i++) await page.getByTestId("lab-hint-btn").click();
+  check((await page.getByTestId("lab-hints").locator("p").count()) === 3 && (await page.getByTestId("lab-hint-btn").count()) === 0, `${name}: hint ladder reveals 3 rungs`);
   await page.waitForSelector("[data-loaded=true]");
   await page.locator(".cm-content").first().click();
   await page.keyboard.press("Control+A");

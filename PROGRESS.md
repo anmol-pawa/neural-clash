@@ -187,3 +187,13 @@ Append a dated entry after every run: what changed, how it was verified (command
 - CI/Pages: this run was committed to the designated branch `claude/wonderful-goodall-jpmlxg` and main (see below); Actions confirmation not polled.
 - Known gaps: no hint ladder/editorial; Labs not yet gated by progression or tied to companion stats.
 - Next: B6b.
+
+## 2026-11-02: B6b Forge linear-model lab, hint ladder, companion stats
+- New Lab `content/labs/linear-fit` (phase `forge`): `fit_linear` (full-batch GD with bias, loss history recorded before each step) and `evaluate` (test MSE and R squared). Hidden tests check the starting loss, monotone descent, learning the bias, agreement with `np.linalg.lstsq`, input immutability, R squared baseline/negative/centring and constant targets. Three documented wrong versions (frozen bias, loss recorded after the step, uncentred R squared) all fail; `content:verify` ok.
+- Hint ladder: `hints` in `meta.json` bundled by `gen-labs.mjs`, shown one rung at a time in `/labs#<id>` (`linear-gd` and `linear-fit` have three each).
+- `lib/labs/companion.ts`: pure `companionStats({r2})` mapping held-out R squared to power 0-100 and a grade (tested). Not yet wired to the save/companion UI: that needs real metrics from Training Grounds (B7).
+- Fixed an existing iPhone bug found by the smoke test: the lab page grid expanded to the widest child (811px on a 390px viewport); columns are now `minmax(0,1fr)`. Hint text kept single `*` characters. `smoke:labs` asserts the hint ladder.
+- Verification: `lint` (warnings only), `typecheck`, `test` (168 pass), `content:verify`, `build`, `build:pages`, `smoke:labs` 14/14 at desktop and iPhone 14; iPhone screenshot inspected, no overflow.
+- CI/Pages: not polled. Committed to the designated branch `claude/wonderful-goodall-bnqrsa` (the session's branch rule), not main.
+- Known gaps: companion stats not shown in UI; no editorial for the labs.
+- Next: B7 Training Grounds v1.

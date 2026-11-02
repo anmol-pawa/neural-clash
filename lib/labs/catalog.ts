@@ -6,6 +6,8 @@ export interface LabSource {
   title: string;
   phase: string;
   functions: string[];
+  /** Hint ladder, gentlest first. */
+  hints: string[];
   lesson: string;
   spec: string;
   visibleTests: string;

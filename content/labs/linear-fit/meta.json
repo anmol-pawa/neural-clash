@@ -1,0 +1,17 @@
+{
+  "id": "linear-fit",
+  "title": "Train a linear model",
+  "phase": "forge",
+  "language": "python",
+  "functions": ["fit_linear", "evaluate"],
+  "hints": [
+    "Each epoch is: predict, take the residual, compute both gradients, step both parameters. Record the loss before the step.",
+    "With a bias, y_hat = X @ w + b. dL/dw = (2/N) * X.T @ r as before, and dL/db = (2/N) * sum(r).",
+    "R squared is 1 - SS_res / SS_tot, where SS_tot is measured around the mean of y. A model that always predicts the mean scores 0."
+  ],
+  "wrong": {
+    "bias_frozen.py": "the bias is never updated",
+    "loss_after_step.py": "history records the loss after the step, so history[0] is not the starting loss",
+    "r2_uncentered.py": "R squared divides by mean(y**2) instead of the variance"
+  }
+}

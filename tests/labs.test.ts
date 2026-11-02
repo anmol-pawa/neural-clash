@@ -26,3 +26,10 @@ describe("lab catalog", () => {
     expect(new Set(LABS.map((l) => l.id)).size).toBe(LABS.length);
   });
 });
+
+describe("hint ladders", () => {
+  it("forge labs ship a three-rung ladder and the linear-fit package is bundled", () => {
+    for (const id of ["linear-gd", "linear-fit"]) expect(labById(id)!.hints).toHaveLength(3);
+    expect(labById("linear-fit")!.functions).toEqual(["fit_linear", "evaluate"]);
+  });
+});

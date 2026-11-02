@@ -7,7 +7,7 @@ import { LABS, labById, labTask, labsByPhase } from "@/lib/labs/catalog";
 import { getSaveManager, useSave } from "@/lib/save/react";
 
 function Rich({ text }: { text: string }) {
-  return <>{text.split("`").map((part, i) => (i % 2 ? <code key={i} className="rounded bg-black/50 px-1 text-indigo-200">{part}</code> : part.replace(/\*+/g, "")))}</>;
+  return <>{text.split("`").map((part, i) => (i % 2 ? <code key={i} className="rounded bg-black/50 px-1 text-indigo-200">{part}</code> : part.replace(/\*\*/g, "")))}</>;
 }
 
 /** Lesson markdown-lite: `# ` title is dropped, blank-line separated paragraphs, `inline code` and **bold** kept simple. */
@@ -18,6 +18,24 @@ function Lesson({ text }: { text: string }) {
       {paras.map((p, i) => (
         <p key={i}><Rich text={p.replace(/\n/g, " ")} /></p>
       ))}
+    </div>
+  );
+}
+
+/** Hint ladder: one rung at a time, so the player chooses how much help to take. */
+function Hints({ hints }: { hints: string[] }) {
+  const [shown, setShown] = useState(0);
+  if (!hints.length) return null;
+  return (
+    <div className="grid gap-2 text-sm" data-testid="lab-hints">
+      {hints.slice(0, shown).map((h, i) => (
+        <p key={i} className="rounded border border-amber-300/30 bg-amber-300/10 p-2 text-amber-100"><b>Hint {i + 1}.</b> <Rich text={h} /></p>
+      ))}
+      {shown < hints.length && (
+        <button className="min-h-11 w-fit rounded border border-white/20 px-3 py-2 text-white/80" onClick={() => setShown(shown + 1)} data-testid="lab-hint-btn">
+          {shown === 0 ? "Need a hint?" : "Another hint"} ({hints.length - shown} left)
+        </button>
+      )}
     </div>
   );
 }
@@ -42,16 +60,17 @@ export default function Labs() {
   const solved = LABS.filter((l) => save.labs[l.id]?.passed).length;
 
   return (
-    <main className="mx-auto grid max-w-5xl gap-4 px-4 py-6" data-testid="labs">
+    <main className="mx-auto grid max-w-5xl grid-cols-[minmax(0,1fr)] gap-4 px-4 py-6" data-testid="labs">
       <nav className="flex items-center justify-between text-sm">
         <Link href="/" className="underline">Title</Link>
         {lab ? <a href="#" className="underline" onClick={() => setId(null)}>All labs</a> : <Link href="/learn" className="underline">Lessons</Link>}
       </nav>
       {lab ? (
-        <article className="grid gap-4" aria-label={lab.title}>
+        <article className="grid grid-cols-[minmax(0,1fr)] gap-4" aria-label={lab.title}>
           <h1 className="font-display text-2xl text-[var(--accent)]">{lab.title}</h1>
           <Lesson text={lab.lesson} />
           {save.labs[lab.id]?.passed && <div className="text-emerald-300" data-testid="lab-solved">Solved: all hidden checks passed.</div>}
+          <Hints key={`h-${lab.id}`} hints={lab.hints} />
           <EditorWorkbench key={lab.id} task={labTask(lab)} hideHeader onResult={(r) => onResult(lab.id, r)} />
         </article>
       ) : (
