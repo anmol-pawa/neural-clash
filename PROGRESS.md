@@ -197,3 +197,12 @@ Append a dated entry after every run: what changed, how it was verified (command
 - CI/Pages: Actions quota note expired (2026-11-01); confirmation attempted after push.
 - Known gaps: only linear-gd has hints; stats mapping weights are a first guess to tune in B7/B8.
 - Next: B7 Training Grounds v1.
+
+## 2026-11-02: B7a Training Grounds trainer core
+- B7 was split: B7a (pure trainer, this run), B7b (UI: worker, live curves, decision boundary, hidden-set battle).
+- `lib/train/datasets.ts`: seeded toys (blobs, xor, circles, moons, noisy line), `makeSplit` with independent train/test streams (the test set is the hidden one), `polyFeatures`. `lib/train/linear.ts`: linear (MSE) and logistic (stable BCE) models with analytic gradients, polynomial features, L2 on non-bias weights, full-batch or seeded mini-batch SGD, per-epoch train (and optional validation) loss, `evaluate`/`score`, and `companionMetrics` feeding `companionStats` from measured hidden-set metrics.
+- Tests (`tests/train.test.ts`, 16 new): finite-difference gradient checks for both models with L2; stability at logit ±1000; bit-for-bit seeded determinism; **equivalence with a native numpy reference** (`tests/helpers/train_ref.py`) on four configs, weights and full loss history within 1e-9; behaviour tests (planted line recovered, logistic fails XOR until degree 2 adds x1·x2, degree-5 overfits a 12-point set and L2 narrows the gap, overfit companion has weaker defence).
+- Verification: lint (warnings only), typecheck, test (186 pass, with `PATH=/usr/bin:$PATH` for numpy and `npm run stage:pyodide`), content:verify, build, build:pages. No visual changes, so no screenshots.
+- CI/Pages: not polled this run (no Actions confirmation attempted).
+- Known gaps: no UI yet; no MLP (arrives with autograd phase); stats weights still a first guess.
+- Next: B7b.

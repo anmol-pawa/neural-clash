@@ -27,6 +27,7 @@ Port Algo Clash's `lib/judge/` (clang→WASM via `@yowasp/clang`, which ships li
 
 ## 5. Training Grounds engine
 - A **fast TS trainer** (`lib/train/`): MLP, a small CNN and a tiny transformer forward/backward in Float32Array with WebGL/WebGPU optional later (ADR). It runs in a worker with live metrics.
+- **Status:** `lib/train/` currently has seeded 2D toys (blobs, xor, circles, moons, line), linear and logistic models (polynomial features, L2, mini-batch SGD) in Float64; MLP/CNN/transformer come later. Equivalence is tested against `tests/helpers/train_ref.py` (numpy, native) to 1e-9.
 - **Equivalence tests:** on fixed seeds, the TS trainer's forward outputs, gradients and N optimisation steps match the Python reference within tolerance.
 - The "Run my code" path trains with the player's Pyodide implementation (slower, smaller budgets).
 - **Datasets** are generated in-repo by seeded scripts (`scripts/data/`) and committed as compact binaries or JSON: toys, Glyphs (16×16), Creature Stats (tabular, with documented leakage/confounder/imbalance), Lore Corpus (original text), and the Lumen Labs Handbook + golden Q&A for RAG.
