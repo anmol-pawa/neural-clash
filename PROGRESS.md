@@ -334,3 +334,12 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Known gaps: one problem only; no Python variant; SRS not fed by problems; the browser perf case is smaller than native, so a borderline-slow solution may pass in-browser; smoke clicks Submit with `dispatchEvent` on iPhone because Playwright reports the editor panel intercepting the scroll-to-click (real touch not reproduced, worth a look); hearts glyphs sit tight to the right edge on small phones.
 - CI/Pages: no `gh` CLI in this session; not confirmed.
 - Next: C6b.
+
+## 2026-11-03: C6b1 Context Stitcher
+- C6b was split: C6b1 (this run), C6b2 (more problems, Python variant, SRS).
+- New package `content/problems/context-stitcher` (interval merge, touching ranges join): reference, brute, 3 wrongs (no sort, no adjacent merge, TLE), seeded generator, hints, strategy question, editorial. `content:verify` passes (reference = brute, all wrongs rejected with expected verdicts); `problems.gen.ts` regenerated.
+- Verification: lint (0 errors), typecheck, test (280 pass), content:verify, build, build:pages, `smoke:dojo` extended to solve the new problem at desktop and iPhone 14; iPhone debrief screenshot inspected (no overflow).
+- Branch note: work was pushed to the session branch `claude/wonderful-goodall-4jan6w` (not main) per session instructions; merge to main to deploy.
+- CI/Pages: not checked (no `gh` CLI).
+- Known gaps: Python variant and SRS for problems still open; ladder has only two problems.
+- Next: C6b2.

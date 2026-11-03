@@ -49,6 +49,24 @@ int main() {
 }
 `;
 
+const GOOD2 = `#include <bits/stdc++.h>
+using namespace std;
+int main() {
+    int n;
+    scanf("%d", &n);
+    vector<pair<long long, long long>> v(n);
+    for (auto& [l, r] : v) scanf("%lld %lld", &l, &r);
+    sort(v.begin(), v.end());
+    long long ranges = 1, covered = 0, cl = v[0].first, cr = v[0].second;
+    for (int i = 1; i < n; i++) {
+        if (v[i].first <= cr + 1) cr = max(cr, v[i].second);
+        else { ranges++; covered += cr - cl + 1; cl = v[i].first; cr = v[i].second; }
+    }
+    covered += cr - cl + 1;
+    printf("%lld\\n%lld\\n", ranges, covered);
+}
+`;
+
 for (const [name, ctxOpts] of [["desktop", { viewport: { width: 1280, height: 900 } }], ["iphone14", { ...devices["iPhone 14"] }]]) {
   const ctx = await browser.newContext(ctxOpts);
   const page = await ctx.newPage();
@@ -78,6 +96,20 @@ for (const [name, ctxOpts] of [["desktop", { viewport: { width: 1280, height: 90
   await page.getByTestId("dojo-debrief").waitFor({ timeout: 120_000 });
   check((await page.getByTestId("dojo-grade").textContent()).startsWith("Accepted"), `${name}: correct solution reaches an Accepted debrief`);
   await page.screenshot({ path: join(shots, `dojo-debrief-${name}.png`), fullPage: true });
+  // second problem: Context Stitcher
+  await page.goto(`${origin}${BASE}/dojo/`);
+  check((await page.getByTestId("dojo-context-stitcher").count()) === 1, `${name}: index lists Context Stitcher`);
+  await page.getByTestId("dojo-context-stitcher").click();
+  await page.getByTestId("dojo-scouted").click();
+  await page.getByTestId("dojo-plan-1").click();
+  await page.locator('[data-testid="workbench"][data-loaded="true"]').waitFor();
+  await page.locator(".cm-content").first().waitFor();
+  await page.waitForTimeout(800);
+  await setCode(page, GOOD2);
+  await page.getByTestId("submit").dispatchEvent("click");
+  await page.getByTestId("dojo-debrief").waitFor({ timeout: 120_000 });
+  check((await page.getByTestId("dojo-grade").textContent()).startsWith("Accepted"), `${name}: Context Stitcher solution is Accepted`);
+  await page.screenshot({ path: join(shots, `dojo-stitcher-${name}.png`), fullPage: true });
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 1);
   check(!overflow, `${name}: no horizontal overflow`);
   check(errors.length === 0, `${name}: no console errors ${errors.join("|")}`);

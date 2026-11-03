@@ -1,0 +1,44 @@
+{
+  "id": "context-stitcher",
+  "title": "Context Stitcher",
+  "difficulty": "M",
+  "language": "cpp",
+  "tags": ["sorting", "intervals", "greedy"],
+  "similar": "LeetCode 56 Merge Intervals",
+  "compare": "lines",
+  "timeLimitMs": 1000,
+  "complexity": { "time": "O(n log n)", "space": "O(n)" },
+  "groups": {
+    "sample": [1],
+    "edge": [1, 2, 3, 4],
+    "random": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+    "perf": [1, 2]
+  },
+  "hints": [
+    "If the chunks were sorted by start position, what would you compare each new chunk against?",
+    "Sort by start, then sweep once, keeping the current merged range [curL, curR]. A chunk joins it when it starts at most one position after curR.",
+    "Sort pairs by l. For each chunk: if l <= curR + 1, set curR = max(curR, r); otherwise close the range (count it, add its length) and start a new one."
+  ],
+  "wrong": {
+    "assume_sorted.cpp": "skips the sort and assumes chunks arrive ordered by start",
+    "no_adjacent_merge.cpp": "merges only chunks that share a position, not chunks that touch end to start",
+    "tle_quadratic.cpp": "repeats pairwise merging until nothing changes (quadratic or worse, fails the perf group)"
+  },
+  "wrongExpect": {
+    "assume_sorted.cpp": "WA",
+    "no_adjacent_merge.cpp": "WA",
+    "tle_quadratic.cpp": "TLE"
+  },
+  "strategy": {
+    "question": "Scout the statement: which plan fits n up to 2*10^5 chunks with positions up to 10^9?",
+    "options": [
+      "Mark every covered position in a boolean array, then count runs",
+      "Sort chunks by start and sweep once, extending the current merged range",
+      "Compare every pair of chunks and merge until nothing changes",
+      "Use a hash set of start positions"
+    ],
+    "answer": 1,
+    "why": "Positions reach 10^9, so a boolean array is far too large. Pairwise merging until stable is quadratic or worse. Sorting by start makes overlaps adjacent, so one linear sweep after an O(n log n) sort finishes the job."
+  },
+  "browserPerfN": 40000
+}
