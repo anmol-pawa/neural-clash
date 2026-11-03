@@ -224,3 +224,10 @@ Append a dated entry after every run: what changed, how it was verified (command
 - CI/Pages confirmation not polled this run.
 - Known gaps: saved stats are not yet used in a battle; save keeps only the latest companion (no best-of).
 - Next: B7b-2b.
+
+## 2026-11-03: B7b-2b Hidden-set reveal battle
+- `lib/train/revealBattle.ts`: pure, deterministic fight vs Overfit's minion driven by measured companion stats (Attack = damage, Defence = absorbs its blow, Speed = initiative; 8-round limit so near-chance models cannot win; lesson keyed to the weakest stat). `/train` shows an "Overfit's minion" panel after the reveal with pixel-stepped HP bars, round-by-round playback, skip and fight-again. GDD §5.3 updated.
+- Tests (`tests/revealBattle.test.ts`, 7): determinism, monotonicity, speed order, consistent log, lessons, and end to end on measured models (XOR: degree 2 wins, a straight line does not). `smoke:train` extended at desktop and iPhone 14; iPhone screenshot inspected.
+- Verification: lint (0 errors), typecheck, test (199 pass), content:verify, build, build:pages, smoke:train.
+- Known gaps: the minion has no sprite or move animation yet (B8 boss art); balance is a first guess; the fight uses the current run's stats, not the saved companion on its own.
+- Next: B8 Python Port guardian battle.

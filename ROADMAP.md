@@ -37,7 +37,7 @@ Work top to bottom: take the **first unchecked box**, and split big boxes into r
 - [x] B7a. **Training Grounds trainer core** (ARCH §5): `lib/train/` seeded 2D toy datasets with a disjoint hidden test set, linear/logistic models (poly features, L2, mini-batch), evaluation, companion-stats bridge; equivalence tests vs numpy.
 - [x] B7b-1. **Training Grounds UI** (done 2026-11-03): `/train` with a worker-run trainer, live pixel boundary canvas and loss curves, hyperparameter controls, sealed hidden score reveal + companion stats.
 - [x] B7b-2a. **Save companion + pixel curves** (done 2026-11-03): `companion` record in the save (sanitised, tested), "Save as my companion" after the reveal, stepped pixel-style loss curves.
-- [ ] B7b-2b. **Hidden-set reveal battle**: turn the reveal into a battle where the measured stats drive the fight (GDD §5.3), using the saved companion.
+- [x] B7b-2b. **Hidden-set reveal battle** (done 2026-11-03): turn the reveal into a battle where the measured stats drive the fight (GDD §5.3), using the saved companion.
 - [ ] B8. **Python Port guardian battle** (96×96 boss, three phases: cards → a Lab mini-task → a Training battle vs *Overfit*'s minion), a badge.
 - [ ] B9. **Audio v1** (port the synth if present).
 - [ ] B10. **Slice polish:** a Playwright playthrough on desktop and iPhone 14, screenshots, fixes, and a slice review in PROGRESS.md.

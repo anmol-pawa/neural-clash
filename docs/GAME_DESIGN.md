@@ -152,6 +152,7 @@ Modules, in order:
   - **Leakage:** a dataset whose suspiciously high validation score collapses on clean test data. You have to find the leaking feature.
   - **Imbalance Swarm:** the accuracy trap. Pick the right metric and threshold.
   - **Adversary:** small perturbations; teaches robustness basics.
+- **Reveal battle (v1, `lib/train/revealBattle.ts`):** after the hidden score, a deterministic fight vs Overfit's minion (120 HP, armoured). Attack = damage (`0.4·ATK − 10`), Defence absorbs its 30-damage blow (up to 85%), Speed ≥ 50 strikes first; it flees after 8 rounds, so only a knockout wins. The lesson shown names the weakest stat. The full boss (96×96 sprite, phases) is B8.
 - **Interactive speed:** for responsive tuning, Training Grounds uses a fast TS trainer whose maths is **verified identical** (on fixed seeds and tolerances) to the reference Python. The "Run my code" button trains with the player's Pyodide implementation for real.
 
 ### 5.4 Data Dojo

@@ -41,6 +41,8 @@ for (const [name, opts] of [["desktop", { viewport: { width: 1280, height: 900 }
   await page.getByTestId("reveal").click();
   const hid1 = parseFloat(await page.getByTestId("hidden-score").innerText());
   check(hid1 < 75, `${name}: XOR with a straight line stays weak (${hid1}%, train ${lin}%)`);
+  await page.getByTestId("skip-fight").click();
+  check((await page.getByTestId("fight-result").innerText()).includes("escaped"), `${name}: a straight line cannot finish the minion`);
   await page.screenshot({ path: join(shots, `train-xor-d1-${name}.png`), fullPage: true });
   await page.getByTestId("degree").selectOption("2");
   await page.getByTestId("train-run").click();
@@ -51,6 +53,10 @@ for (const [name, opts] of [["desktop", { viewport: { width: 1280, height: 900 }
   check((await page.getByTestId("stats").innerText()).includes("Attack"), `${name}: companion stats shown`);
   await page.getByTestId("save-companion").click();
   check((await page.getByTestId("saved-companion").innerText()).includes("ATK"), `${name}: companion saved and shown`);
+  await page.getByTestId("fight").click();
+  await page.getByTestId("fight-log").filter({ hasText: "Round" }).waitFor({ timeout: 5000 });
+  await page.getByTestId("skip-fight").click();
+  check((await page.getByTestId("fight-result").innerText()).includes("Victory"), `${name}: degree 2 beats the minion`);
   await page.screenshot({ path: join(shots, `train-xor-d2-${name}.png`), fullPage: true });
   check(!(await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth)), `${name}: no horizontal overflow`);
   check(errors.length === 0, `${name}: no console errors ${errors.join(" | ")}`);

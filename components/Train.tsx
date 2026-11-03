@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { companionStats } from "@/lib/labs/companion";
+import { companionStats, type CompanionStats } from "@/lib/labs/companion";
+import { FOE_BASE_HP, PLAYER_BASE_HP, fightOverfit } from "@/lib/train/revealBattle";
 import { getSaveManager, useSave } from "@/lib/save/react";
 import type { ToyKind } from "@/lib/train/datasets";
 import { startTraining } from "@/lib/train/client";
@@ -89,6 +90,53 @@ function drawLoss(cv: HTMLCanvasElement, hist: EpochPoint[], epochs: number) {
 interface Done {
   trainAcc: number;
   hidden: { score: number; loss: number; gap: number; params: number; r2: number };
+}
+
+/** Plays the deterministic reveal battle one blow at a time; HP bars are pixel-stepped. */
+function RevealFight({ stats }: { stats: CompanionStats }) {
+  const result = fightOverfit(stats);
+  const [step, setStep] = useState(0);
+  const [playing, setPlaying] = useState(false);
+  const active = playing && step < result.events.length;
+  useEffect(() => {
+    if (!active) return;
+    const id = setTimeout(() => setStep((n) => n + 1), 650);
+    return () => clearTimeout(id);
+  }, [active, step]);
+  const ev = step > 0 ? result.events[step - 1] : null;
+  const you = ev ? ev.youHp : PLAYER_BASE_HP;
+  const foe = ev ? ev.foeHp : FOE_BASE_HP;
+  const finished = step >= result.events.length && step > 0;
+  const bar = (v: number, max: number, color: string, label: string) => (
+    <div className="grid gap-1" aria-label={`${label} HP ${v} of ${max}`}>
+      <div className="flex justify-between text-xs"><span>{label}</span><span>{v}/{max}</span></div>
+      <div className="h-3 border-2 border-black/70 bg-black/50"><div className="h-full" style={{ width: `${Math.round((v / max) * 20) * 5}%`, background: color, transition: "width 300ms steps(6)" }} /></div>
+    </div>
+  );
+  return (
+    <div className="grid gap-2 border-t border-white/10 pt-3" data-testid="reveal-battle">
+      <h2 className="font-display text-xl text-[var(--accent)]">Overfit&apos;s minion</h2>
+      <p className="text-xs text-white/60">Your measured stats decide this fight (simulated, deterministic): Attack = damage, Defence = how much of its blow you absorb, Speed = who strikes first. It flees after 8 rounds.</p>
+      <div className="grid gap-3 sm:grid-cols-2">
+        {bar(you, PLAYER_BASE_HP, "#48d6f0", "You")}
+        {bar(foe, FOE_BASE_HP, "#ff6b9a", "Minion")}
+      </div>
+      <p className="min-h-6 text-sm" data-testid="fight-log" aria-live="polite">
+        {ev ? `Round ${ev.round}: ${ev.actor === "you" ? `you hit for ${ev.damage}` : `the minion hits you for ${ev.damage}`}.` : "Ready."}
+      </p>
+      <div className="flex flex-wrap gap-2">
+        <button type="button" className="px-btn px-btn-primary px-4 py-2" data-testid="fight" onClick={() => { if (finished) setStep(0); setPlaying(true); }} disabled={active}>
+          {finished ? "Fight again" : step > 0 ? "Resume" : "Fight"}
+        </button>
+        <button type="button" className="px-btn px-4 py-2" data-testid="skip-fight" onClick={() => { setPlaying(false); setStep(result.events.length); }}>Skip to result</button>
+      </div>
+      {finished && (
+        <div data-testid="fight-result" className="grid gap-1">
+          <p className="text-sm"><b>{result.won ? "Victory!" : result.foeHp > 0 && result.youHp > 0 ? "It escaped." : "Defeated."}</b> {result.lesson}</p>
+        </div>
+      )}
+    </div>
+  );
 }
 
 export default function Train() {
@@ -256,6 +304,7 @@ export default function Train() {
                 )}
               </div>
             )}
+            {stats && <RevealFight key={`${stats.attack}-${stats.defence}-${stats.speed}`} stats={stats} />}
             <p className="text-xs text-white/60">{done.hidden.gap > 0.1 ? "A big gap means memorising: try fewer features, more data or an L2 penalty." : "Small gap: the model carries over to unseen points."}</p>
           </div>
         )}
