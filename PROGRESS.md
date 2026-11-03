@@ -231,3 +231,12 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Verification: lint (0 errors), typecheck, test (199 pass), content:verify, build, build:pages, smoke:train.
 - Known gaps: the minion has no sprite or move animation yet (B8 boss art); balance is a first guess; the fight uses the current run's stats, not the saved companion on its own.
 - Next: B8 Python Port guardian battle.
+
+## 2026-11-03: B8a Guardian core and Warden Indent art
+- B8 was split: B8a (this run), B8b (guardian UI).
+- `lib/guardian/portGuardian.ts`: pure, deterministic three-phase Python Port guardian (cards duel reusing `lib/battle`, then a judged Lab task, then the hidden-set fight vs Overfit's minion via `fightOverfit`). Phases cannot be skipped; hearts out in phase 1 loses; a weak companion loses phase 3 but can retry with better stats without redoing phases 1-2. Clearing yields the "Indent Badge" (`guardian:python-port`, to be stored in `cleared` by the UI).
+- Art: `scripts/art/warden-indent.mjs` generates `WARDEN_INDENT` (96×96): a hooded serpent on three coils each indented one step further, four floating blocks (Python's four-space indent), fangs and forked tongue; 4 idle, 5 attack (lunge + `>>>` bolt), 3 hurt, 4 faint frames. Registered in the roster (shows on `/dev/sprites`); contact sheet inspected.
+- Verification: lint (0 errors), typecheck, test (212 pass; new `tests/guardian.test.ts`, 7 tests), content:verify, build, build:pages. No UI change, so no Playwright screenshots this run.
+- Env note: after `npm ci`, run `npm run stage:pyodide` before `npm test`, with `PATH=/usr/bin:$PATH`.
+- Known gaps: no UI yet; lab phase uses `np-softmax-rows` by default (id is a parameter); back sprite not needed for a foe.
+- Next: B8b (`/guardian` UI, badge saved to `cleared`, `smoke:guardian`).
