@@ -66,8 +66,8 @@ export default function Labs() {
   return (
     <main className="mx-auto grid max-w-5xl gap-4 px-4 py-6" data-testid="labs">
       <nav className="flex items-center justify-between text-sm">
-        <Link href="/" className="underline">Title</Link>
-        {lab ? <a href="#" className="underline" onClick={() => setId(null)}>All labs</a> : <Link href="/learn" className="underline">Lessons</Link>}
+        <Link href="/" className="underline inline-flex min-h-11 items-center">Title</Link>
+        {lab ? <a href="#" className="underline inline-flex min-h-11 items-center" onClick={() => setId(null)}>All labs</a> : <Link href="/learn" className="underline inline-flex min-h-11 items-center">Lessons</Link>}
       </nav>
       {lab ? (
         <article className="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-4" aria-label={lab.title}>

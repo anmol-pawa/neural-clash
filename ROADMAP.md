@@ -41,7 +41,7 @@ Work top to bottom: take the **first unchecked box**, and split big boxes into r
 - [x] B8a. **Guardian core + art** (done 2026-11-03): pure three-phase state machine `lib/guardian/portGuardian.ts` (cards, Lab mini-task, hidden-set fight; Indent Badge), 96×96 Warden Indent sprite with idle/attack/hurt/faint.
 - [x] B8b. **Guardian UI** (`/guardian`): phase strip, card duel with the Warden sprite, embedded Lab task, training fight using the saved companion, badge saved to `cleared` (`guardian:python-port`), `smoke:guardian`.
 - [x] B9. **Audio v1** (done 2026-11-03): algo-clash had no synth, so a new pure `lib/audio/sfx.ts` (10 effects + looping theme as note data, tested) and a Web Audio `player.ts`; volume + music in the save; SFX in cards, guardian, labs.
-- [ ] B10. **Slice polish:** a Playwright playthrough on desktop and iPhone 14, screenshots, fixes, and a slice review in PROGRESS.md.
+- [x] B10. (done 2026-11-03) **Slice polish:** a Playwright playthrough on desktop and iPhone 14, screenshots, fixes, and a slice review in PROGRESS.md.
 
 ## Phase C: Core systems
 

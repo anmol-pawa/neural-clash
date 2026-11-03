@@ -142,7 +142,7 @@ export default function Guardian() {
   return (
     <main className="mx-auto flex min-h-dvh w-full max-w-4xl flex-col gap-3 px-3 py-3" data-testid="guardian" data-phase={state.phase}>
       <nav className="mx-auto flex w-full max-w-2xl items-center justify-between text-sm">
-        <Link href="/" className="underline">Title</Link>
+        <Link href="/" className="underline inline-flex min-h-11 items-center">Title</Link>
         <h1 className="font-display text-base text-cyan-200">{GUARDIAN_NAME}</h1>
         <span aria-label={`${c.playerHp} hearts`} className="text-lg text-rose-400">{"♥".repeat(c.playerHp)}<span className="text-slate-600">{"♥".repeat(c.config.playerHp - c.playerHp)}</span></span>
       </nav>

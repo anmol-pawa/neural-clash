@@ -23,8 +23,8 @@ export default function Learn() {
   return (
     <main className="mx-auto grid max-w-2xl gap-4 px-4 py-6">
       <nav className="flex items-center justify-between text-sm">
-        <Link href="/" className="underline">Title</Link>
-        {lesson ? <a href="#" className="underline" onClick={() => setId(null)}>All lessons</a> : <Link href="/battle" className="underline">Card battle</Link>}
+        <Link href="/" className="underline inline-flex min-h-11 items-center">Title</Link>
+        {lesson ? <a href="#" className="underline inline-flex min-h-11 items-center" onClick={() => setId(null)}>All lessons</a> : <Link href="/battle" className="underline inline-flex min-h-11 items-center">Card battle</Link>}
       </nav>
       {lesson ? (
         <article className="grid gap-4" aria-label={lesson.title}>

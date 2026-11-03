@@ -257,3 +257,12 @@ Append a dated entry after every run: what changed, how it was verified (command
 - CI/Pages: no `gh` CLI in this session; confirmation not done.
 - Known gaps: sounds need an ear-pass by the owner; no overworld/train sounds yet; music stops at the end of the current bar.
 - Next: B10 Slice polish.
+
+## 2026-11-03: B10 Slice polish and review
+- New `npm run smoke:slice` (`scripts/smoke-slice.mjs`): visits title, /play, /learn, /battle, /labs, /train, /guardian on the static export at desktop 1280×800 and iPhone 14, screenshots each, and fails on console/page errors, horizontal overflow (scrollWidth > clientWidth) and reports buttons/links under 30px tall.
+- Result: 14/14 page loads clean (no console errors, no overflow). Screenshots inspected (title, lessons, overworld): pixel font, nav and cards read well on iPhone; the overworld shows the tile city, NPCs and d-pad.
+- Fix: the "Title / Card battle / Lessons / All labs" header links on /learn, /labs, /guardian were ~20px tall on iPhone; now `min-h-11` (44px). The smoke now reports 0 sub-30px targets.
+- Verification: lint (0 errors), typecheck, test (218 pass), content:verify, build, build:pages, smoke:slice.
+- Slice review (Phase B): the loop works end to end: Python lessons → card battle → numpy/Python Labs judged in Pyodide → Training Grounds (worker trainer, hidden-set reveal, saved companion) → Warden Indent guardian (cards, lab, hidden-set fight, badge) with chiptune SFX. Gaps carried forward: no single guided path linking the stages (the overworld doesn't yet trigger the guardian or Training Grounds), the lesson/lab pages have no mastery or SRS yet (C1), audio untuned by ear, only one guardian and one companion form, saved companion keeps only the latest run.
+- CI/Pages: Actions quota note expired 2026-11-01; no `gh` CLI in this session, so confirmation was done via the commit status API only (see final summary).
+- Next: C1 SRS and mastery with rust; the Daily Sync.
