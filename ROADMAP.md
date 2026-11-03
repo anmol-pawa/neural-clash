@@ -39,7 +39,7 @@ Work top to bottom: take the **first unchecked box**, and split big boxes into r
 - [x] B7b-2a. **Save companion + pixel curves** (done 2026-11-03): `companion` record in the save (sanitised, tested), "Save as my companion" after the reveal, stepped pixel-style loss curves.
 - [x] B7b-2b. **Hidden-set reveal battle** (done 2026-11-03): turn the reveal into a battle where the measured stats drive the fight (GDD §5.3), using the saved companion.
 - [x] B8a. **Guardian core + art** (done 2026-11-03): pure three-phase state machine `lib/guardian/portGuardian.ts` (cards, Lab mini-task, hidden-set fight; Indent Badge), 96×96 Warden Indent sprite with idle/attack/hurt/faint.
-- [ ] B8b. **Guardian UI** (`/guardian`): phase strip, card duel with the Warden sprite, embedded Lab task, training fight using the saved companion, badge saved to `cleared` (`guardian:python-port`), `smoke:guardian`.
+- [x] B8b. **Guardian UI** (`/guardian`): phase strip, card duel with the Warden sprite, embedded Lab task, training fight using the saved companion, badge saved to `cleared` (`guardian:python-port`), `smoke:guardian`.
 - [ ] B9. **Audio v1** (port the synth if present).
 - [ ] B10. **Slice polish:** a Playwright playthrough on desktop and iPhone 14, screenshots, fixes, and a slice review in PROGRESS.md.
 

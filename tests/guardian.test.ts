@@ -3,7 +3,7 @@ import { PYTHON_DECK } from "@/lib/cards/samples";
 import { check } from "@/lib/cards/check";
 import type { Card, Response } from "@/lib/cards/types";
 import {
-  GUARDIAN_ID, guardianAdvanceFromCards, guardianAnswer, guardianFight, guardianLabResult, guardianNext, phaseProgress, startGuardian, summarizeGuardian,
+  GUARDIAN_ID, progressOf, resumeGuardian, guardianAdvanceFromCards, guardianAnswer, guardianFight, guardianLabResult, guardianNext, phaseProgress, startGuardian, summarizeGuardian,
   type GuardianState,
 } from "@/lib/guardian/portGuardian";
 import { labById } from "@/lib/labs/catalog";
@@ -94,5 +94,19 @@ describe("Warden Indent sprite", () => {
     expect(s!.w).toBe(96);
     expect(s!.h).toBe(96);
     for (const a of ["idle", "attack", "hurt", "faint"]) expect(s!.anims[a].length).toBeGreaterThanOrEqual(3);
+  });
+
+  it("resumes a run from saved progress without skipping the training fight", () => {
+    expect(resumeGuardian(mcq, "x", null).phase).toBe("cards");
+    expect(resumeGuardian(mcq, "x", { cards: false, lab: false }).phase).toBe("cards");
+    const inLab = resumeGuardian(mcq, "x", { cards: true, lab: false });
+    expect(inLab.phase).toBe("lab");
+    expect(guardianLabResult(inLab, true).phase).toBe("training");
+    const inTraining = resumeGuardian(mcq, "x", { cards: true, lab: true });
+    expect(inTraining.phase).toBe("training");
+    expect(inTraining.fight).toBeNull();
+    expect(progressOf(inTraining)).toEqual({ cards: true, lab: true });
+    expect(progressOf(inLab)).toEqual({ cards: true, lab: false });
+    expect(progressOf(startGuardian(mcq, "x"))).toEqual({ cards: false, lab: false });
   });
 });

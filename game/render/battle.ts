@@ -116,12 +116,22 @@ function bar(g: CanvasRenderingContext2D, x: number, y: number, w: number, frac:
   g.fillRect(x + 3, y + 9, Math.round((w - 6) * Math.max(0, Math.min(1, frac))), 3);
 }
 
-export function drawBattle(g: CanvasRenderingContext2D, foe: SpriteDef, hero: SpriteDef, fx: StageFx) {
+/** Layout overrides for foes bigger than the 64px Noise minion (96px guardians). */
+export interface StageOpts {
+  foeLabel?: string;
+  foeAt?: { x: number; y: number };
+  foePlatform?: { cx: number; cy: number };
+  foeBarAt?: { x: number; y: number };
+}
+
+export function drawBattle(g: CanvasRenderingContext2D, foe: SpriteDef, hero: SpriteDef, fx: StageFx, opts: StageOpts = {}) {
+  const foeAt = opts.foeAt ?? { x: 144, y: 40 };
+  const fp = opts.foePlatform ?? { cx: 176, cy: 92 };
   g.imageSmoothingEnabled = false;
   g.save();
   if (fx.shake > 0) g.translate(Math.round((Math.random() - 0.5) * 4 * fx.shake), Math.round((Math.random() - 0.5) * 3 * fx.shake));
   backdrop(g, fx.t);
-  platform(g, 176, 92, 40, 7);
+  platform(g, fp.cx, fp.cy, 40, 7);
   platform(g, 62, 122, 46, 8);
 
   // foe (Noise minion): idle bob, hurt flash + recoil, faint sink
@@ -132,7 +142,7 @@ export function drawBattle(g: CanvasRenderingContext2D, foe: SpriteDef, hero: Sp
   const bob = fx.foeDown ? 0 : Math.round(Math.sin(fx.t * 3) * 1.5);
   const recoil = foeHurt ? Math.round(6 * (1 - fx.foeHitAt / 0.35)) : 0;
   g.globalAlpha = 1 - faintT * 0.9;
-  g.drawImage(sprite(foe, foeAnim, fi, foeHurt && Math.floor(fx.foeHitAt * 24) % 2 === 0 ? "white" : "none"), 144 + recoil, 40 + bob + Math.round(faintT * 14));
+  g.drawImage(sprite(foe, foeAnim, fi, foeHurt && Math.floor(fx.foeHitAt * 24) % 2 === 0 ? "white" : "none"), foeAt.x + recoil, foeAt.y + bob + Math.round(faintT * 14));
   g.globalAlpha = 1;
 
   // hero (back sprite): lunge on attack, flash when countered
@@ -152,7 +162,7 @@ export function drawBattle(g: CanvasRenderingContext2D, foe: SpriteDef, hero: Sp
     g.fillRect(Math.round(81 + p * 84), Math.round(91 - p * 30), 2, 1);
   }
 
-  bar(g, 148, 5, 90, fx.foeHp, "NOISE MINION");
+  bar(g, opts.foeBarAt?.x ?? 148, opts.foeBarAt?.y ?? 5, 90, fx.foeHp, opts.foeLabel ?? "NOISE MINION");
   bar(g, 6, 5, 90, fx.playerHp, "NEURON-PUP");
 
   g.font = "bold 10px monospace";

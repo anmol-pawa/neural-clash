@@ -240,3 +240,12 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Env note: after `npm ci`, run `npm run stage:pyodide` before `npm test`, with `PATH=/usr/bin:$PATH`.
 - Known gaps: no UI yet; lab phase uses `np-softmax-rows` by default (id is a parameter); back sprite not needed for a foe.
 - Next: B8b (`/guardian` UI, badge saved to `cleared`, `smoke:guardian`).
+
+## 2026-11-03: B8b Guardian UI
+- `/guardian` (`components/Guardian.tsx`): phase strip (Read / Write / Generalise), Warden Indent (96×96) on the battle stage with a resolve bar that loses a third per trial, the Python Port card duel (reuses `CardForm`), the judged `py-moving-average` lab in the embedded editor, and the hidden-set fight (reuses `RevealFight`) using the saved companion. Winning stores `guardian:python-port` in `cleared`. Title screen links to it.
+- `drawBattle` gained optional `StageOpts` for big foes. Trials already cleared are remembered per browser session (`resumeGuardian`/`progressOf`, tested) so a trip to the Training Grounds does not reset the run; the training fight is never skipped.
+- Fixed a mobile bug: the lab section grew to the editor's width (needed `minmax(0,1fr)`).
+- Verification: lint (0 errors), typecheck, test (213 pass, with `PATH=/usr/bin:$PATH` and `npm run stage:pyodide`), content:verify, build, build:pages, `smoke:guardian` at desktop and iPhone 14 (wrong lab submit stays, resume after training, win, badge persists, no overflow or console errors); screenshots inspected.
+- CI/Pages: not polled this run (no `gh` CLI in this session).
+- Known gaps: the lost-in-cards screen and a failed training fight are covered by unit tests but not screenshotted; the guardian is not yet an overworld encounter.
+- Next: B9 Audio v1.

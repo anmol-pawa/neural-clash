@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { companionStats, type CompanionStats } from "@/lib/labs/companion";
-import { FOE_BASE_HP, PLAYER_BASE_HP, fightOverfit } from "@/lib/train/revealBattle";
+import { FOE_BASE_HP, PLAYER_BASE_HP, fightOverfit, type RevealResult } from "@/lib/train/revealBattle";
 import { getSaveManager, useSave } from "@/lib/save/react";
 import type { ToyKind } from "@/lib/train/datasets";
 import { startTraining } from "@/lib/train/client";
@@ -93,7 +93,7 @@ interface Done {
 }
 
 /** Plays the deterministic reveal battle one blow at a time; HP bars are pixel-stepped. */
-function RevealFight({ stats }: { stats: CompanionStats }) {
+export function RevealFight({ stats, onFinish }: { stats: CompanionStats; onFinish?: (r: RevealResult) => void }) {
   const result = fightOverfit(stats);
   const [step, setStep] = useState(0);
   const [playing, setPlaying] = useState(false);
@@ -107,6 +107,11 @@ function RevealFight({ stats }: { stats: CompanionStats }) {
   const you = ev ? ev.youHp : PLAYER_BASE_HP;
   const foe = ev ? ev.foeHp : FOE_BASE_HP;
   const finished = step >= result.events.length && step > 0;
+  useEffect(() => {
+    if (finished) onFinish?.(fightOverfit(stats));
+    // onFinish is deliberately not a dependency: it fires once per finished fight
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [finished, stats]);
   const bar = (v: number, max: number, color: string, label: string) => (
     <div className="grid gap-1" aria-label={`${label} HP ${v} of ${max}`}>
       <div className="flex justify-between text-xs"><span>{label}</span><span>{v}/{max}</span></div>

@@ -21,6 +21,7 @@
     "smoke:learn": "node scripts/smoke-learn.mjs",
     "smoke:labs": "node scripts/smoke-labs.mjs",
     "smoke:train": "node scripts/smoke-train.mjs",
+    "smoke:guardian": "node scripts/smoke-guardian.mjs",
     "gen:labs": "node scripts/gen-labs.mjs",
     "build:pages": "npm run stage:pyodide && npm run stage:clang && STATIC_EXPORT=1 BASE_PATH=${BASE_PATH-/neural-clash} next build && BASE_PATH=${BASE_PATH-/neural-clash} node scripts/gen-sw.mjs"
   },

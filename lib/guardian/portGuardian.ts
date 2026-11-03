@@ -93,3 +93,21 @@ export function phaseProgress(s: GuardianState): number {
   if (s.phase === "lost") return PHASES.findIndex((p) => p.key === s.lostIn);
   return PHASES.findIndex((p) => p.key === s.phase);
 }
+
+/** What survives leaving the page (e.g. a trip to the Training Grounds): which trials are already behind the player. */
+export interface GuardianProgress {
+  cards: boolean;
+  lab: boolean;
+}
+
+export function progressOf(s: GuardianState): GuardianProgress {
+  return { cards: s.phase === "lab" || s.phase === "training" || s.phase === "won" || s.labPassed, lab: s.labPassed };
+}
+
+/** Rebuilds a run from saved progress. Cleared trials stay cleared; the training fight always has to be fought. */
+export function resumeGuardian(deck: readonly Card[], labId: string, p: GuardianProgress | null): GuardianState {
+  const fresh = startGuardian(deck, labId);
+  if (!p || !p.cards) return fresh;
+  const cards = { ...fresh.cards, foeHp: 0, current: null, phase: "won" as const };
+  return p.lab ? { ...fresh, cards, labPassed: true, phase: "training" } : { ...fresh, cards, phase: "lab" };
+}

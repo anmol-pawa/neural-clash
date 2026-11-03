@@ -10,8 +10,8 @@ import { parseShape } from "@/lib/cards/check";
 import { demoDeck } from "@/lib/cards/samples";
 import type { Card, Response } from "@/lib/cards/types";
 
-const btn = "min-h-11 rounded border-2 border-indigo-300/40 bg-slate-900/80 px-3 py-2 text-left text-sm hover:border-cyan-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300";
-const primary = "min-h-11 rounded border-2 border-cyan-300 bg-cyan-400/20 px-4 py-2 font-semibold text-cyan-100 hover:bg-cyan-400/30";
+export const btn = "min-h-11 rounded border-2 border-indigo-300/40 bg-slate-900/80 px-3 py-2 text-left text-sm hover:border-cyan-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300";
+export const primary = "min-h-11 rounded border-2 border-cyan-300 bg-cyan-400/20 px-4 py-2 font-semibold text-cyan-100 hover:bg-cyan-400/30";
 
 /** Pixel-styled train/validation loss chart; values are already clipped by the card generator. */
 function CurveChart({ train, val }: { train: number[]; val: number[] }) {
@@ -31,7 +31,7 @@ function CurveChart({ train, val }: { train: number[]; val: number[] }) {
 }
 
 /** The answer form for one card. Remounted per card (keyed by id) so its local state resets. */
-function CardForm({ card, onSubmit }: { card: Card; onSubmit: (r: Response) => void }) {
+export function CardForm({ card, onSubmit }: { card: Card; onSubmit: (r: Response) => void }) {
   const [picked, setPicked] = useState<number[]>([]);
   const [text, setText] = useState<string[]>(() => (card.kind === "derive" ? card.fields.map(() => "") : [""]));
   const [err, setErr] = useState("");
