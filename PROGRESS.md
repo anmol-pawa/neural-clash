@@ -364,3 +364,12 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Known gaps: Fewest Tokens is not played in-browser (its expected outputs come from the native reference); browser perf cases use n=40000 so borderline-slow solutions may pass in-browser; no tree problem or second hard yet; no Python variant or SRS for problems.
 - CI/Pages: checked via commit status only (no `gh` CLI).
 - Next: C6b2b2.
+
+## 2026-11-03: C6b2b2a Code Dojo ladder, part 2b-2a
+- C6b2b2 was split into C6b2b2a (this run) and C6b2b2b (second hard, more AI-flavoured problems, play-throughs).
+- `strongest-chain` (M, LC 124 pointer, general tree with a parent array where `parent[i] < i`): best path sum with negative scores. Reference is an O(n) reverse loop keeping the two best non-negative child gains, so no recursion on 2*10^5-deep chains. Brute = all pairs with a parent climb; wrongs: root-only paths (WA), negative child gains added (WA), traversal from every start (TLE). Seeded generator (single/negative/bridge/long-value edge cases, chain and thin-deep perf), 3-rung hints, strategy question, house-style editorial.
+- `tests/dojo.test.ts` checks the sample (13), an all-negative case and a case needing 64-bit sums.
+- Verification: lint (0 errors), typecheck, test (284 pass), content:verify (all `ok`), build, build:pages, smoke:dojo at desktop and iPhone 14. No UI code changed (the `/dojo` index just lists one more card), so no new screenshots.
+- Known gaps: Strongest Chain is not played in-browser; browser perf cases use n=40000, so a borderline-slow solution may pass; no second hard or Python variant yet.
+- CI/Pages: the Actions quota note has expired, but there is no `gh` CLI in this session, so CI/deploy were not confirmed. Work was pushed to the session branch `claude/wonderful-goodall-v8kzxo` (not `main`) as the session rules require, so Pages will not deploy it until merged.
+- Next: C6b2b2b.

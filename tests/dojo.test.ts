@@ -58,7 +58,7 @@ describe("dojo catalog", () => {
 
   it("every bundled problem is a consistent package with the documented samples", () => {
     const ids = dojoProblems().map((p) => p.id);
-    expect(ids).toEqual(expect.arrayContaining(["top-k-tokens", "context-window", "batch-packer", "pipeline-order", "peak-window", "label-consensus", "fewest-tokens"]));
+    expect(ids).toEqual(expect.arrayContaining(["top-k-tokens", "context-window", "batch-packer", "pipeline-order", "peak-window", "label-consensus", "fewest-tokens", "strongest-chain"]));
     for (const p of dojoProblems()) {
       expect(p.hints).toHaveLength(3);
       expect(p.strategy.answer).toBeLessThan(p.strategy.options.length);
@@ -83,6 +83,9 @@ describe("dojo catalog", () => {
     expect(dojoProblem("fewest-tokens")!.sample[0].expected).toBe("2");
     expect(dojoProblem("fewest-tokens")!.hidden.some((h) => h.expected === "-1")).toBe(true);
     expect(dojoProblem("fewest-tokens")!.hidden.some((h) => h.expected !== "-1" && Number(h.expected) > 2)).toBe(true);
+    expect(dojoProblem("strongest-chain")!.sample[0].expected).toBe("13");
+    expect(dojoProblem("strongest-chain")!.hidden.some((h) => Number(h.expected) < 0)).toBe(true); // all-negative tree
+    expect(dojoProblem("strongest-chain")!.hidden.some((h) => Number(h.expected) > 2 ** 31)).toBe(true); // needs 64-bit
   });
 
   it("the ladder lists easier problems first, then by title", () => {
