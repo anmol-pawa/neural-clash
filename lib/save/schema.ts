@@ -1,5 +1,6 @@
 import { validatePath } from "@/lib/editor/workspace";
 import { sanitizeJournal, type JournalEntry } from "@/lib/journal/journal";
+import { isMode, sanitizeOwned, sanitizeWallet, type Mode, type Wallet } from "@/lib/economy/economy";
 import { sanitizeSrs, type SrsTable } from "@/lib/srs/srs";
 
 export const SAVE_VERSION = 1;
@@ -40,6 +41,12 @@ export interface SaveData {
   srs: SrsTable;
   /** Research journal: Training Grounds runs logged after the hidden-set reveal (see `lib/journal`). */
   journal: JournalEntry[];
+  /** Bits balance and paid reward keys (see `lib/economy`). */
+  wallet: Wallet;
+  /** Mart items bought (cosmetics only). */
+  owned: string[];
+  /** Scaffolding mode: how many hints the game offers. */
+  mode: Mode;
   /** Free-form per-system state owned by later features (SRS, journal), kept opaque here. */
   extra: Record<string, unknown>;
   updatedAt: number;
@@ -55,6 +62,9 @@ export const DEFAULT_SAVE: SaveData = {
   companion: null,
   srs: {},
   journal: [],
+  wallet: { bits: 0, paid: [] },
+  owned: [],
+  mode: "standard",
   extra: {},
   updatedAt: 0,
 };
@@ -118,6 +128,9 @@ export function migrate(raw: unknown): SaveData {
     companion: sanitizeCompanion(raw.companion),
     srs: sanitizeSrs(raw.srs),
     journal: sanitizeJournal(raw.journal),
+    wallet: sanitizeWallet(raw.wallet),
+    owned: sanitizeOwned(raw.owned),
+    mode: isMode(raw.mode) ? raw.mode : base.mode,
     extra: isObj(raw.extra) ? { ...raw.extra } : {},
     updatedAt: typeof raw.updatedAt === "number" && Number.isFinite(raw.updatedAt) ? raw.updatedAt : 0,
   };

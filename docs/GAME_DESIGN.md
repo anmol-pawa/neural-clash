@@ -230,7 +230,7 @@ The Code Dojo lets the player solve core problems in Python too (Pyodide judge),
 
 - **Mastery** with the same states as the series, across theory cards, Lab modules, problems, workshops and case studies. Assisted completions never advance mastery. Overdue items rust (the companion's sprite shows rust; Lab modules show "stale").
 - **Badges** per region. The companion evolves at framework milestones (§3).
-- **Bits** currency buys hints, cosmetics and lab decorations. **Never mastery.**
+- **Bits** currency buys hints, cosmetics and lab decorations. **Never mastery.** Three scaffolding modes: *Guided* (free hints), *Standard* (hints cost 5/10/15 Bits per rung), *Interview* (no hints, Bits at 1.5x). Any hint marks the attempt assisted: no Bits, no mastery, no evolution. Bits are paid once per item.
 - **Daily Sync:** due theory cards, one metric drill, one code-reading snippet, one C++ problem at your frontier, and one micro-workshop step.
 - **Research journal:** auto-logged experiments from Training Grounds and the workshops (config → metrics) that you can compare. It teaches experiment hygiene.
 

@@ -297,3 +297,12 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Env note: `python3` here is 3.11 while pip defaulted to 3.13; use `python3 -m pip install --break-system-packages -r requirements-dev.txt`.
 - Known gaps: only Training Grounds runs are logged (workshops later); no charts or export of the journal; the second-run write relies on the 400ms save debounce plus pagehide flush.
 - Next: C4 Hints, Bits, the Mart and scaffolding modes.
+
+## 2026-11-03: C4a Bits, hints and scaffolding modes
+- C4 was split: C4a (this run), C4b (Mart page, Bits from cards/guardian).
+- `lib/economy/economy.ts` (pure, `tests/economy.test.ts`, 9 tests): three modes, rung-priced hints, first-unassisted-pass rewards paid once per item (Lab 25, card 2, guardian 100 Bits; interview 1.5x), Mart catalogue with purchase rules, hostile-data sanitisers. Save gained `wallet`, `owned`, `mode` (old saves migrate to Standard, 0 Bits). Tests prove spending never touches the SRS table.
+- `/labs`: Bits balance and mode picker; the hint ladder is priced per rung, refuses when Bits are short, is off in Interview mode, and a hint marks that attempt assisted (a clean earlier pass keeps its status). Lab passes pay Bits via `reward`.
+- Verification: lint (0 errors), typecheck, test (257 pass), content:verify, build, build:pages, `smoke:economy` (new) and `smoke:labs` (now selects Guided first) and `smoke:slice` at desktop and iPhone 14; iPhone screenshot inspected (picker wraps, no overflow).
+- CI/Pages: not polled (no `gh` CLI in this session).
+- Known gaps: Bits are earned only from Labs so far, so Standard mode starts with no way to afford hints until one lab is passed (only one lab has hints today); prices are a first guess; no Mart UI.
+- Next: C4b.
