@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import CodeEditor from "@/components/CodeEditor";
+import { audio } from "@/lib/audio/player";
+import { useAudioSettings } from "@/lib/audio/useAudio";
 import { PyClient, PyTimeoutError } from "@/lib/py/client";
 import { JudgeClient } from "@/lib/judge/client";
 import type { Diagnostic } from "@/lib/judge/diagnostics";
@@ -49,6 +51,7 @@ function FileTree({ nodes, active, dirty, onOpen, depth = 0 }: { nodes: TreeNode
 }
 
 export default function EditorWorkbench({ task, onResult, hideHeader }: { task: EditorTask; hideHeader?: boolean; onResult?: (r: { mode: Mode; allPassed: boolean }) => void }) {
+  useAudioSettings({ music: false });
   const [ws, setWs] = useState(() => Workspace.fromStarter(task.starter));
   const [active, setActive] = useState(task.entry);
   const [tabs, setTabs] = useState<string[]>([task.entry]);
@@ -136,6 +139,7 @@ export default function EditorWorkbench({ task, onResult, hideHeader }: { task: 
         const r = await py.current.run({ code: ws.files[task.entry] ?? "", tests });
         setOutcome({ kind: "py", report: buildReport(r.tests), stdout: r.stdout, error: r.error, errorLine: r.errorLine, ms: r.ms, mode });
         if (r.errorLine && active === task.entry) setActive(task.entry);
+        if (mode === "submit") audio.play(buildReport(r.tests).allPassed && !r.error ? "pass" : "fail");
         onResult?.({ mode, allPassed: !r.error && buildReport(r.tests).allPassed });
       } else {
         judge.current ??= new JudgeClient();
@@ -149,6 +153,7 @@ export default function EditorWorkbench({ task, onResult, hideHeader }: { task: 
           const n = task.sample.length;
           const rows = buildCppRows(r.summary.cases.slice(0, n), r.summary.cases.slice(n));
           setOutcome({ kind: "cpp", rows, verdict: r.summary.verdict, compileMs: r.compile.ms, mode });
+          if (mode === "submit") audio.play(r.summary.verdict === "AC" ? "pass" : "fail");
         }
       }
     } catch (e) {

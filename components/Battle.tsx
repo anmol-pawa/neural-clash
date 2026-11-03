@@ -5,6 +5,8 @@ import { lessonForTopic } from "@/lib/lessons/lessons";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { drawBattle, STAGE_H, STAGE_W, type StageFx } from "@/game/render/battle";
 import { spriteById } from "@/game/sprites/roster";
+import { audio } from "@/lib/audio/player";
+import { useAudioSettings } from "@/lib/audio/useAudio";
 import { answer, next, startBattle, summarize, type BattleState } from "@/lib/battle/battle";
 import { parseShape } from "@/lib/cards/check";
 import { demoDeck } from "@/lib/cards/samples";
@@ -125,6 +127,7 @@ export function CardForm({ card, onSubmit }: { card: Card; onSubmit: (r: Respons
 }
 
 export default function Battle() {
+  useAudioSettings({ music: false });
   const seed = useMemo(() => 7, []);
   const [state, setState] = useState<BattleState>(() => startBattle(demoDeck(seed)));
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -164,13 +167,16 @@ export default function Battle() {
       if (n.last.correct) {
         fx.attackAt = 0;
         // the hit lands when the bolt arrives
-        setTimeout(() => { fx.foeHitAt = 0; fx.shake = 1; fx.floaters.push({ text: `-${n.last!.damage}`, x: 190, y: 60, age: 0, color: "#fde047" }); }, 280);
-        if (n.phase === "won") setTimeout(() => (fx.foeDown = true), 300);
+        audio.play("correct");
+        setTimeout(() => { audio.play("hit"); fx.foeHitAt = 0; fx.shake = 1; fx.floaters.push({ text: `-${n.last!.damage}`, x: 190, y: 60, age: 0, color: "#fde047" }); }, 280);
+        if (n.phase === "won") { setTimeout(() => (fx.foeDown = true), 300); setTimeout(() => audio.play("win"), 500); }
       } else {
+        audio.play("wrong");
+        setTimeout(() => audio.play("hurt"), 120);
         fx.hurtAt = 0;
         fx.shake = 0.8;
         fx.floaters.push({ text: `-${n.last.taken}♥`, x: 50, y: 70, age: 0, color: "#f87171" });
-        if (n.phase === "lost") fx.playerDown = true;
+        if (n.phase === "lost") { fx.playerDown = true; setTimeout(() => audio.play("lose"), 500); }
       }
       setLive(n.last.correct ? `Correct. ${n.last.damage} damage.` : "Not quite. You take a hit.");
       return n;

@@ -249,3 +249,11 @@ Append a dated entry after every run: what changed, how it was verified (command
 - CI/Pages: not polled this run (no `gh` CLI in this session).
 - Known gaps: the lost-in-cards screen and a failed training fight are covered by unit tests but not screenshotted; the guardian is not yet an overworld encounter.
 - Next: B9 Audio v1.
+
+## 2026-11-03: B9 Audio v1
+- Algo Clash has no audio code yet, so this is a new, original chiptune synth. `lib/audio/sfx.ts` (pure, tested): 10 effects (select, correct, wrong, hit, hurt, win, lose, pass, fail, badge) as oscillator/noise note lists plus a 16-step looping theme; `player.ts` renders them with Web Audio (seeded noise buffer, no assets, never throws). `useAudioSettings` syncs the saved `volume`/`music` settings; `AudioControls` (title screen: volume slider + music toggle, tap targets 44px).
+- Wired: card battle and guardian (correct bolt then hit, wrong + hurt, win/lose, badge), lab Submit (pass/fail, in `EditorWorkbench`). Battle/guardian/lab pages are SFX-only; music plays only from the title toggle. Music waits for the browser's autoplay unlock instead of queueing bars.
+- Verification: lint (0 errors), typecheck, test (218 pass; 5 new in `tests/audio.test.ts`), content:verify, build, build:pages; Playwright on the built static site at desktop and iPhone 14 (title controls work, /battle loads, no console errors or overflow); iPhone title screenshot inspected. Actual audio output cannot be heard in this headless environment, so the sounds are untuned by ear.
+- CI/Pages: no `gh` CLI in this session; confirmation not done.
+- Known gaps: sounds need an ear-pass by the owner; no overworld/train sounds yet; music stops at the end of the current bar.
+- Next: B10 Slice polish.

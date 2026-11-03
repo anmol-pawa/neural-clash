@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { CardForm, primary } from "@/components/Battle";
+import { audio } from "@/lib/audio/player";
+import { useAudioSettings } from "@/lib/audio/useAudio";
 import EditorWorkbench from "@/components/EditorWorkbench";
 import { RevealFight } from "@/components/Train";
 import { drawBattle, STAGE_H, STAGE_W, type StageFx, type StageOpts } from "@/game/render/battle";
@@ -32,6 +34,7 @@ function resolve(s: GuardianState): number {
 
 export default function Guardian() {
   const save = useSave();
+  useAudioSettings({ music: false });
   // fixed order on first render so the static HTML and the client agree; restarts reshuffle
   const [state, setState] = useState<GuardianState>(() => startGuardian(shuffle(rng(7), PYTHON_DECK.cards), LAB_ID));
   useEffect(() => {
@@ -91,6 +94,7 @@ export default function Guardian() {
   // the badge is stored the moment the guardian falls
   useEffect(() => {
     if (state.phase !== "won") return;
+    audio.play("badge");
     getSaveManager().update((s) => (s.cleared.includes(GUARDIAN_ID) ? s : { ...s, cleared: [...s.cleared, GUARDIAN_ID], updatedAt: Date.now() }));
   }, [state.phase]);
 
@@ -102,8 +106,11 @@ export default function Guardian() {
       const fx = fxRef.current;
       if (last.correct) {
         fx.attackAt = 0;
-        setTimeout(() => { fx.foeHitAt = 0; fx.shake = 1; fx.floaters.push({ text: `-${last.damage}`, x: 190, y: 40, age: 0, color: "#fde047" }); }, 280);
+        audio.play("correct");
+        setTimeout(() => { audio.play("hit"); fx.foeHitAt = 0; fx.shake = 1; fx.floaters.push({ text: `-${last.damage}`, x: 190, y: 40, age: 0, color: "#fde047" }); }, 280);
       } else {
+        audio.play("wrong");
+        setTimeout(() => audio.play("hurt"), 120);
         fx.hurtAt = 0;
         fx.shake = 0.8;
         fx.floaters.push({ text: `-${last.taken}♥`, x: 50, y: 70, age: 0, color: "#f87171" });
