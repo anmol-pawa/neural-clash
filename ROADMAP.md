@@ -48,7 +48,7 @@ Work top to bottom: take the **first unchecked box**, and split big boxes into r
 - [x] C1a. (done 2026-11-03) **SRS core:** pure `lib/srs/srs.ts` (Leitner ladder, rust, assisted never advances, daily plan), `srs` in the save, recorded from card battles and Lab passes.
 - [x] C1b. (done 2026-11-03) **Daily Sync UI** (`/sync`): due/rusted reviews + new cards from the deck, mastery summary, rust shown on the companion and "stale" on Labs (GDD §6).
 - [x] C2. (done 2026-11-03) **Companion evolution:** pure `lib/evolution/evolution.ts` (form ladder from unassisted Forge Lab passes, planned Labs shown as coming) and `/companion` page. Stat derivation from metrics already lives in `lib/labs/companion.ts`. Follow-up C2b: art for forms 2-6 and glitch on regressed Labs, as their Labs land.
-- [ ] C3. Research journal (experiment log, comparison view).
+- [x] C3. (done 2026-11-03) Research journal: `lib/journal`, `journal` in the save, auto-logged on hidden-score reveal, `/journal` with notes and A/B comparison.
 - [ ] C4. Hints, Bits, the Mart (never mastery), and scaffolding modes (Guided/Standard/Interview).
 - [ ] C5. Readiness Report mapped to interview loops (CUR D3).
 - [ ] C6. **Code Dojo v1:** port the coding battle from Algo Clash (Scout → Strategise → Code → Judge → Debrief) for C++ and Python problems.

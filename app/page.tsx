@@ -20,6 +20,7 @@ export default function Home() {
         <Link href="/companion" className="px-btn px-4 py-2 text-center">Your Neuron-Pup</Link>
         <Link href="/labs" className="px-btn px-4 py-2 text-center">Labs</Link>
         <Link href="/train" className="px-btn px-4 py-2 text-center">Training Grounds</Link>
+        <Link href="/journal" className="px-btn px-4 py-2 text-center">Research journal</Link>
         <Link href="/guardian" className="px-btn px-4 py-2 text-center">Warden Indent (guardian)</Link>
         <AudioControls />
         <p className="text-xs text-white/50">The Python Port opens soon. Work in progress.</p>

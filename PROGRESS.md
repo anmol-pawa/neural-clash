@@ -289,3 +289,11 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Known gaps: only the Perceptron has art; forms 2-6 need sprites and Labs (autograd, mlp, conv2d, rnn, attention, ...); the "glitch when a Lab regresses" behaviour (GDD 5.2) is not built; Lab ids for later forms are provisional.
 - CI/Pages: not polled (no `gh` CLI in this session).
 - Next: C3 Research journal.
+
+## 2026-11-03: C3 Research journal
+- `lib/journal/journal.ts` (pure, `tests/journal.test.ts`, 6 tests): entry model, hostile-input sanitiser, capped log (100), notes, best run, and `compare(a, b)` which teaches experiment hygiene: one changed knob is "controlled", several is "confounded" (data changes called out), seed-only measures noise, different worlds are incomparable. Save gained a sanitised `journal` (round-trips through export/import).
+- Training Grounds logs each run when the hidden score is revealed (never before). `/journal` lists runs (newest first, best starred), editable notes, pick A/B for the comparison. Title links to it; `smoke:journal` added and `/journal` in `smoke:slice`.
+- Verification: lint (0 errors), typecheck, test (249 pass), content:verify, build, build:pages, `smoke:journal` and `smoke:slice` at desktop and iPhone 14; iPhone screenshot inspected (no overflow, 0 small targets).
+- Env note: `python3` here is 3.11 while pip defaulted to 3.13; use `python3 -m pip install --break-system-packages -r requirements-dev.txt`.
+- Known gaps: only Training Grounds runs are logged (workshops later); no charts or export of the journal; the second-run write relies on the 400ms save debounce plus pagehide flush.
+- Next: C4 Hints, Bits, the Mart and scaffolding modes.

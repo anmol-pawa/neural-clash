@@ -1,4 +1,5 @@
 import { validatePath } from "@/lib/editor/workspace";
+import { sanitizeJournal, type JournalEntry } from "@/lib/journal/journal";
 import { sanitizeSrs, type SrsTable } from "@/lib/srs/srs";
 
 export const SAVE_VERSION = 1;
@@ -37,6 +38,8 @@ export interface SaveData {
   companion: CompanionRecord | null;
   /** Spaced-mastery records by item id (cards, labs); see `lib/srs`. */
   srs: SrsTable;
+  /** Research journal: Training Grounds runs logged after the hidden-set reveal (see `lib/journal`). */
+  journal: JournalEntry[];
   /** Free-form per-system state owned by later features (SRS, journal), kept opaque here. */
   extra: Record<string, unknown>;
   updatedAt: number;
@@ -51,6 +54,7 @@ export const DEFAULT_SAVE: SaveData = {
   latent: {},
   companion: null,
   srs: {},
+  journal: [],
   extra: {},
   updatedAt: 0,
 };
@@ -113,6 +117,7 @@ export function migrate(raw: unknown): SaveData {
     latent: sanitizeLatent(raw.latent),
     companion: sanitizeCompanion(raw.companion),
     srs: sanitizeSrs(raw.srs),
+    journal: sanitizeJournal(raw.journal),
     extra: isObj(raw.extra) ? { ...raw.extra } : {},
     updatedAt: typeof raw.updatedAt === "number" && Number.isFinite(raw.updatedAt) ? raw.updatedAt : 0,
   };

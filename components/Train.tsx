@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { companionStats, type CompanionStats } from "@/lib/labs/companion";
 import { FOE_BASE_HP, PLAYER_BASE_HP, fightOverfit, type RevealResult } from "@/lib/train/revealBattle";
+import { addEntry, type JournalEntry } from "@/lib/journal/journal";
 import { getSaveManager, useSave } from "@/lib/save/react";
 import type { ToyKind } from "@/lib/train/datasets";
 import { startTraining } from "@/lib/train/client";
@@ -212,6 +213,20 @@ export default function Train() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  /** Logs the run to the research journal once the hidden score is revealed (never before: no peeking). */
+  const logRun = () => {
+    if (!done) return;
+    const at = Date.now();
+    const entry: JournalEntry = {
+      id: `${at.toString(36)}-${seed}`,
+      at,
+      config: { world: kind, model: regression ? "linear" : "logistic", lr: regression ? Math.min(lr, 0.3) : lr, epochs, l2, degree, batch, nTrain, noise, seed },
+      metrics: { train: done.trainAcc, hidden: done.hidden.score, gap: done.hidden.gap, params: done.hidden.params },
+      note: "",
+    };
+    getSaveManager().update((s) => ({ ...s, journal: addEntry(s.journal, entry), updatedAt: at }));
+  };
+
   const stats = done ? companionStats({ r2: done.hidden.r2, generalisationGap: done.hidden.gap, params: done.hidden.params }) : null;
   const sel = "min-h-11 rounded border border-white/20 bg-black/40 px-2 text-sm";
   const lab = "grid gap-1 text-xs text-white/70";
@@ -280,7 +295,7 @@ export default function Train() {
         ) : !revealed ? (
           <>
             <p className="text-sm">Run finished. Train {regression ? "R²" : "accuracy"}: <b data-testid="train-score">{(done.trainAcc * 100).toFixed(1)}%</b>. Ready to face the hidden test set?</p>
-            <button type="button" className="px-btn px-btn-primary justify-self-start px-4 py-2" onClick={() => setRevealed(true)} data-testid="reveal">Reveal hidden score</button>
+            <button type="button" className="px-btn px-btn-primary justify-self-start px-4 py-2" onClick={() => { setRevealed(true); logRun(); }} data-testid="reveal">Reveal hidden score</button>
           </>
         ) : (
           <div className="grid gap-2" data-testid="revealed">
