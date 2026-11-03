@@ -1,11 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { companionStats } from "@/lib/labs/companion";
 import type { ToyKind } from "@/lib/train/datasets";
 import { startTraining } from "@/lib/train/client";
 import type { EpochPoint } from "@/lib/train/linear";
+import TrainDuel from "@/components/TrainDuel";
 import { BOUND, GRID, type SessionEvent, type SessionRequest } from "@/lib/train/session";
 
 const KINDS: { id: ToyKind; label: string; hint: string }[] = [
@@ -159,7 +160,7 @@ export default function Train() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const stats = done ? companionStats({ r2: done.hidden.r2, generalisationGap: done.hidden.gap, params: done.hidden.params }) : null;
+  const stats = useMemo(() => (done ? companionStats({ r2: done.hidden.r2, generalisationGap: done.hidden.gap, params: done.hidden.params }) : null), [done]);
   const sel = "min-h-11 rounded border border-white/20 bg-black/40 px-2 text-sm";
   const lab = "grid gap-1 text-xs text-white/70";
 
@@ -235,6 +236,7 @@ export default function Train() {
             {stats && (
               <p className="text-sm" data-testid="stats">Companion stats (from measured results): Attack <b>{stats.attack}</b> · Defence <b>{stats.defence}</b> · Speed <b>{stats.speed}</b></p>
             )}
+            {stats && <TrainDuel key={`${kind}:${stats.attack}:${stats.defence}:${stats.speed}`} stats={stats} world={kind} />}
             <p className="text-xs text-white/60">{done.hidden.gap > 0.1 ? "A big gap means memorising: try fewer features, more data or an L2 penalty." : "Small gap: the model carries over to unseen points."}</p>
           </div>
         )}

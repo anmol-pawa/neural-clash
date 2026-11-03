@@ -49,6 +49,9 @@ for (const [name, opts] of [["desktop", { viewport: { width: 1280, height: 900 }
   const hid2 = parseFloat(await page.getByTestId("hidden-score").innerText());
   check(hid2 > 90, `${name}: degree 2 solves XOR on the hidden set (${hid2}%)`);
   check((await page.getByTestId("stats").innerText()).includes("Attack"), `${name}: companion stats shown`);
+  await page.getByTestId("duel-start").click();
+  await page.getByTestId("duel-result").waitFor({ timeout: 30000 });
+  check((await page.getByTestId("duel-result").innerText()).includes("Victory"), `${name}: degree-2 XOR companion wins the duel`);
   await page.screenshot({ path: join(shots, `train-xor-d2-${name}.png`), fullPage: true });
   check(!(await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth)), `${name}: no horizontal overflow`);
   check(errors.length === 0, `${name}: no console errors ${errors.join(" | ")}`);

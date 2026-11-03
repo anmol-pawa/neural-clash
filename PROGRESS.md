@@ -215,3 +215,11 @@ Append a dated entry after every run: what changed, how it was verified (command
 - CI/Pages: Actions quota note expired 2026-11-01; not polled this run.
 - Known gaps: regression heat-map scale is fixed; no save of trained stats yet; curves are plain canvas lines, not yet pixel-art styled.
 - Next: B7b-2.
+
+## 2026-11-03: B7b-2 Hidden-set reveal duel
+- `lib/train/duel.ts`: pure deterministic duel vs the Overfit minion driven by the measured stats (Attack = hit size, Defence = share of the minion's hit absorbed, Speed = who strikes first; stalemate timeout at 40 rounds). `lib/save/companion.ts`: sanitised `save.extra.companion`, a worse run never overwrites a better companion. `components/TrainDuel.tsx`: canvas duel with the existing Neuron-Pup back sprite and noise minion, HP bars, damage numbers, hit flash/shake, reduced-motion aware; saves the companion when the fight ends. Wired into `/train` after the reveal.
+- Tests (`tests/duel.test.ts`, 11 new): determinism, monotone hit tables, a generaliser beats the minion while a memoriser with identical attack loses, attack 0 cannot win, speed first strike, timeout, HP consistency, save round-trip/hostile data.
+- Verification: lint (0 errors, warnings only), typecheck, test (201 pass), content:verify, build, build:pages, `smoke:train` extended (degree-2 XOR wins the duel) at desktop and iPhone 14; iPhone screenshot inspected (no overflow or console errors).
+- Branch note: committed to the designated branch `claude/wonderful-goodall-ler0q7` per the session instruction rather than `main`.
+- Known gaps: loss curves are still plain canvas lines (pixel polish deferred to B10); the saved companion is not yet shown on the title screen or used by evolutions; only one foe.
+- Next: B8 (Python Port guardian battle).
