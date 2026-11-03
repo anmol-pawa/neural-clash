@@ -11,6 +11,8 @@ import { answer, next, startBattle, summarize, type BattleState } from "@/lib/ba
 import { parseShape } from "@/lib/cards/check";
 import { demoDeck } from "@/lib/cards/samples";
 import type { Card, Response } from "@/lib/cards/types";
+import { getSaveManager } from "@/lib/save/react";
+import { review } from "@/lib/srs/srs";
 
 export const btn = "min-h-11 rounded border-2 border-indigo-300/40 bg-slate-900/80 px-3 py-2 text-left text-sm hover:border-cyan-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300";
 export const primary = "min-h-11 rounded border-2 border-cyan-300 bg-cyan-400/20 px-4 py-2 font-semibold text-cyan-100 hover:bg-cyan-400/30";
@@ -157,10 +159,18 @@ export default function Battle() {
     return () => cancelAnimationFrame(raf);
   }, []);
 
+  const recorded = useRef<BattleState["last"]>(null);
   const submit = useCallback((r: Response) => {
     setState((s) => {
       const n = answer(s, r);
       if (n === s || !n.last) return s;
+      // Spaced mastery counts only the first attempt at each card in a battle (retries after a miss do not).
+      const id = n.last.card.id;
+      if (recorded.current !== n.last && !s.firstTryCorrect.includes(id) && !s.missed.includes(id)) {
+        recorded.current = n.last;
+        const ok = n.last.correct;
+        getSaveManager().update((sv) => ({ ...sv, srs: review(sv.srs, id, { correct: ok }, Date.now()) }));
+      }
       const fx = fxRef.current;
       fx.foeHp = n.foeHp / n.config.foeHp;
       fx.playerHp = n.playerHp / n.config.playerHp;

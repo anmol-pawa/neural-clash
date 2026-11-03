@@ -5,6 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 import EditorWorkbench from "@/components/EditorWorkbench";
 import { LABS, labById, labTask, labsByPhase } from "@/lib/labs/catalog";
 import { getSaveManager, useSave } from "@/lib/save/react";
+import { review } from "@/lib/srs/srs";
 
 function Rich({ text }: { text: string }) {
   return <>{text.split("`").map((part, i) => (i % 2 ? <code key={i} className="rounded bg-black/50 px-1 text-indigo-200">{part}</code> : part.replace(/\*+/g, "")))}</>;
@@ -58,7 +59,12 @@ export default function Labs() {
 
   const onResult = useCallback((labId: string, r: { mode: "run" | "submit"; allPassed: boolean }) => {
     if (r.mode !== "submit" || !r.allPassed) return;
-    getSaveManager().update((s) => ({ ...s, labs: { ...s.labs, [labId]: { passed: true, assisted: s.labs[labId]?.assisted ?? false } }, updatedAt: Date.now() }));
+    getSaveManager().update((s) => ({
+      ...s,
+      labs: { ...s.labs, [labId]: { passed: true, assisted: s.labs[labId]?.assisted ?? false } },
+      srs: review(s.srs, `lab:${labId}`, { correct: true, assisted: s.labs[labId]?.assisted }, Date.now()),
+      updatedAt: Date.now(),
+    }));
   }, []);
 
   const solved = LABS.filter((l) => save.labs[l.id]?.passed).length;

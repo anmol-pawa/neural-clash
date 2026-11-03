@@ -266,3 +266,12 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Slice review (Phase B): the loop works end to end: Python lessons → card battle → numpy/Python Labs judged in Pyodide → Training Grounds (worker trainer, hidden-set reveal, saved companion) → Warden Indent guardian (cards, lab, hidden-set fight, badge) with chiptune SFX. Gaps carried forward: no single guided path linking the stages (the overworld doesn't yet trigger the guardian or Training Grounds), the lesson/lab pages have no mastery or SRS yet (C1), audio untuned by ear, only one guardian and one companion form, saved companion keeps only the latest run.
 - CI/Pages: Actions quota note expired 2026-11-01; no `gh` CLI in this session, so confirmation was done via the commit status API only (see final summary).
 - Next: C1 SRS and mastery with rust; the Daily Sync.
+
+## 2026-11-03: C1a SRS core
+- C1 was split: C1a (this run), C1b (Daily Sync UI, rust display).
+- `lib/srs/srs.ts` (pure, clock-injected): 6-box ladder (6h, 1d, 3d, 7d, 16d, 35d); a miss halves the box and counts a lapse; items rust when overdue past max(1 day, half the interval), and a correct refresher on a rusted item restores its box without promoting it; assisted reviews are ignored entirely (GDD §6); `dailyPlan` (most-overdue reviews first, capped, plus a few new items) and `summarise`. Save gained a sanitised `srs` table (round-trips through export/import).
+- Wired: card battles record the first attempt at each card (retries after a miss do not count; StrictMode-safe); Lab submit passes record `lab:<id>`.
+- Verification: lint (0 errors), typecheck, test (230 pass; 12 new in `tests/srs.test.ts`), content:verify, build, build:pages, smoke:battle at desktop and iPhone 14 (no overflow or console errors). No new UI, so no new screenshots.
+- Intervals are a first guess, not tuned on real recall data.
+- CI/Pages: not polled (no `gh` CLI in this session).
+- Next: C1b.

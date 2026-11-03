@@ -45,7 +45,8 @@ Work top to bottom: take the **first unchecked box**, and split big boxes into r
 
 ## Phase C: Core systems
 
-- [ ] C1. SRS and mastery with rust; the Daily Sync (GDD §6).
+- [x] C1a. (done 2026-11-03) **SRS core:** pure `lib/srs/srs.ts` (Leitner ladder, rust, assisted never advances, daily plan), `srs` in the save, recorded from card battles and Lab passes.
+- [ ] C1b. **Daily Sync UI** (`/sync`): due/rusted reviews + new cards from the deck, mastery summary, rust shown on the companion and "stale" on Labs (GDD §6).
 - [ ] C2. Companion evolution system tied to Forge milestones, plus stat derivation from measured metrics.
 - [ ] C3. Research journal (experiment log, comparison view).
 - [ ] C4. Hints, Bits, the Mart (never mastery), and scaffolding modes (Guided/Standard/Interview).

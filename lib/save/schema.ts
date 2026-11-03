@@ -1,4 +1,5 @@
 import { validatePath } from "@/lib/editor/workspace";
+import { sanitizeSrs, type SrsTable } from "@/lib/srs/srs";
 
 export const SAVE_VERSION = 1;
 export const MAX_LATENT_FILES = 200;
@@ -34,6 +35,8 @@ export interface SaveData {
   latent: Record<string, string>;
   /** Null until the player saves a trained companion. */
   companion: CompanionRecord | null;
+  /** Spaced-mastery records by item id (cards, labs); see `lib/srs`. */
+  srs: SrsTable;
   /** Free-form per-system state owned by later features (SRS, journal), kept opaque here. */
   extra: Record<string, unknown>;
   updatedAt: number;
@@ -47,6 +50,7 @@ export const DEFAULT_SAVE: SaveData = {
   labs: {},
   latent: {},
   companion: null,
+  srs: {},
   extra: {},
   updatedAt: 0,
 };
@@ -108,6 +112,7 @@ export function migrate(raw: unknown): SaveData {
     labs,
     latent: sanitizeLatent(raw.latent),
     companion: sanitizeCompanion(raw.companion),
+    srs: sanitizeSrs(raw.srs),
     extra: isObj(raw.extra) ? { ...raw.extra } : {},
     updatedAt: typeof raw.updatedAt === "number" && Number.isFinite(raw.updatedAt) ? raw.updatedAt : 0,
   };
