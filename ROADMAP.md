@@ -53,7 +53,9 @@ Work top to bottom: take the **first unchecked box**, and split big boxes into r
 - [x] C4b. (done 2026-11-03) **Mart page** (`/mart`: spend Bits on cosmetics, apply tints to the Pup/Forge) and Bits rewards from card battles and the guardian (pass `assisted` through, interview 1.5x).
 - [x] C5. (done 2026-11-03) Readiness Report mapped to interview loops (CUR D3): pure `lib/readiness`, `/readiness` page. Follow-up C5b: take-home simulator (needs Retrieval Reef).
 - [x] C6a. (done 2026-11-03) **Code Dojo core:** pure `lib/dojo` (Scout → Strategise → Code + Judge → Debrief, 3 hearts, grades), `scripts/gen-problems.mjs` → `lib/dojo/problems.gen.ts` (expected outputs from the native reference), `/dojo` and `/dojo/[id]` on the existing clang workbench, Bits for a first unaided solve; Hot Tokens is the first problem.
-- [ ] C6b. **Code Dojo content and Python:** the ladder of C++ problems (each a full package: reference, brute, wrongs incl. TLE, generator, hints, editorial), a Python (Pyodide) variant of the battle, SRS entries for problems, and the AI-flavoured set (GDD §5.6).
+- [x] C6b1. (done 2026-11-03) **Code Dojo ladder, part 1:** two more full packages (Context Window: sliding window; Batch Packer: binary search on the answer) beside Hot Tokens, each with brute, 3 wrongs incl. TLE, generator, hints, editorial.
+- [ ] C6b2. **Code Dojo ladder, part 2:** more C++ problems (hards, trees/graphs/DP, an AI-flavoured set: GDD §5.6), ladder ordering by difficulty on `/dojo`.
+- [ ] C6b3. **Python (Pyodide) variant of the Dojo battle** and SRS entries for solved problems.
 
 ## Phase D: Act I regions (region recipe)
 

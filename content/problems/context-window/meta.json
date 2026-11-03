@@ -1,0 +1,74 @@
+{
+  "id": "context-window",
+  "title": "Context Window",
+  "difficulty": "M",
+  "language": "cpp",
+  "tags": [
+    "sliding-window",
+    "hash-map",
+    "two-pointers"
+  ],
+  "similar": "LeetCode 340 Longest Substring with At Most K Distinct Characters",
+  "compare": "tokens",
+  "timeLimitMs": 1000,
+  "complexity": {
+    "time": "O(n)",
+    "space": "O(k)"
+  },
+  "groups": {
+    "sample": [
+      1
+    ],
+    "edge": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "random": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+    ],
+    "perf": [
+      1,
+      2
+    ]
+  },
+  "hints": [
+    "Cheap spans stay cheap when you cut tokens off either end. What does that let you do with a left pointer?",
+    "Grow the right end one token at a time and track how many distinct ids are inside. When there are too many, what must move?",
+    "Keep a map id -> count. While the map has more than k keys, decrement the left id and erase it at zero. Record right - left + 1 after each fix-up."
+  ],
+  "wrong": {
+    "reset_window.cpp": "restarts the window from the new token instead of shrinking from the left",
+    "no_erase.cpp": "never erases an id whose count reaches zero, so the distinct count never drops",
+    "tle_rescan.cpp": "restarts a set scan at every start index (quadratic, fails the perf group)"
+  },
+  "wrongExpect": {
+    "reset_window.cpp": "WA",
+    "no_erase.cpp": "WA",
+    "tle_rescan.cpp": "TLE"
+  },
+  "strategy": {
+    "question": "Scout the statement: which plan fits n up to 2*10^5 and 'longest consecutive run with at most k distinct ids'?",
+    "options": [
+      "Try every start and extend until the distinct count exceeds k",
+      "Sort the ids, then count distinct values",
+      "Slide a window: grow on the right, shrink from the left while it has too many distinct ids",
+      "Binary search the length and check every span of that length with a fresh set"
+    ],
+    "answer": 2,
+    "why": "Cheap spans stay cheap when shrunk, so one left pointer that only moves forward is enough: O(n). Trying every start is O(n^2). Sorting destroys the consecutive structure. Binary search on length works (cheapness is monotone in length) but a fresh set per span makes the check O(n*len) unless you also slide, so it is more code for no gain."
+  },
+  "browserPerfN": 40000
+}

@@ -1,0 +1,73 @@
+{
+  "id": "batch-packer",
+  "title": "Batch Packer",
+  "difficulty": "M",
+  "language": "cpp",
+  "tags": [
+    "binary-search",
+    "greedy"
+  ],
+  "similar": "LeetCode 410 Split Array Largest Sum",
+  "compare": "tokens",
+  "timeLimitMs": 1000,
+  "complexity": {
+    "time": "O(n log S)",
+    "space": "O(1)"
+  },
+  "groups": {
+    "sample": [
+      1
+    ],
+    "edge": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "random": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+    ],
+    "perf": [
+      1,
+      2
+    ]
+  },
+  "hints": [
+    "The answer is a number between two easy bounds. What are they?",
+    "If someone hands you a capacity, can you check in one pass whether b batches are enough? Is feasibility monotone in the capacity?",
+    "Binary search the capacity between max(len) and sum(len). The check packs greedily, starting a new batch only when the next sequence would overflow."
+  ],
+  "wrong": {
+    "average_cap.cpp": "answers max(longest, ceil(total / b)), ignoring that batches must be consecutive",
+    "low_zero.cpp": "starts the search at 0 instead of the longest sequence, so a too-small capacity is accepted",
+    "tle_linear_cap.cpp": "tries every capacity upward one by one (fails the perf group)"
+  },
+  "wrongExpect": {
+    "average_cap.cpp": "WA",
+    "low_zero.cpp": "WA",
+    "tle_linear_cap.cpp": "TLE"
+  },
+  "strategy": {
+    "question": "Scout the statement: which plan fits n up to 2*10^5, lengths up to 10^9 and 'minimise the largest consecutive-batch sum'?",
+    "options": [
+      "DP over (batches used, sequences placed), trying every last cut",
+      "Binary search the largest-batch cost; check each guess greedily in one pass",
+      "Sort the lengths and deal them round-robin into b batches",
+      "Take ceil(total / b), the perfect average"
+    ],
+    "answer": 1,
+    "why": "The DP is O(b n^2), far too slow. Feasibility of a cost cap is monotone and checkable by a greedy O(n) pass, so binary search gives O(n log(sum)). Sorting breaks the required order, and the average is only a lower bound: consecutive batches rarely split evenly."
+  },
+  "browserPerfN": 40000
+}

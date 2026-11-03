@@ -55,4 +55,17 @@ describe("dojo catalog", () => {
     expect(toTask(p!).hidden.length).toBe(p!.hidden.length);
     expect(dojoProblems().length).toBeGreaterThan(0);
   });
+
+  it("every bundled problem is a consistent package with the documented samples", () => {
+    const ids = dojoProblems().map((p) => p.id);
+    expect(ids).toEqual(expect.arrayContaining(["top-k-tokens", "context-window", "batch-packer"]));
+    for (const p of dojoProblems()) {
+      expect(p.hints).toHaveLength(3);
+      expect(p.strategy.answer).toBeLessThan(p.strategy.options.length);
+      expect(p.sample.length).toBeGreaterThan(0);
+      expect(p.hidden.some((h) => h.name.startsWith("perf"))).toBe(true);
+    }
+    expect(dojoProblem("context-window")!.sample[0].expected).toBe("4");
+    expect(dojoProblem("batch-packer")!.sample[0].expected).toBe("18");
+  });
 });

@@ -334,3 +334,12 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Known gaps: one problem only; no Python variant; SRS not fed by problems; the browser perf case is smaller than native, so a borderline-slow solution may pass in-browser; smoke clicks Submit with `dispatchEvent` on iPhone because Playwright reports the editor panel intercepting the scroll-to-click (real touch not reproduced, worth a look); hearts glyphs sit tight to the right edge on small phones.
 - CI/Pages: no `gh` CLI in this session; not confirmed.
 - Next: C6b.
+
+## 2026-11-03: C6b1 Code Dojo ladder, part 1
+- C6b was split into C6b1 (this run), C6b2 (more problems and ladder order), C6b3 (Python variant, SRS).
+- Added `content/problems/context-window` (longest span with at most k distinct ids: sliding window; LC 340 pointer) and `batch-packer` (minimise the largest consecutive batch sum: binary search on the answer + greedy check; LC 410 pointer). Each: reference, brute (O(n^2) / DP), three documented wrongs (WA x2 + TLE), seeded generator, 4 test groups, 3-rung hints, strategy question, house-style editorial. `content:verify` passes; `gen:problems` regenerated `problems.gen.ts`; new catalog test checks every bundled package.
+- Lesson recorded: my first wrong for Context Window (shrink with `if` instead of `while`) is actually a correct, known non-shrinking-window variant, and `content:verify` correctly flagged it as AC. Replaced with a real bug (reset window).
+- Verification: lint (0 errors), typecheck, test (281), content:verify, build, build:pages, smoke:dojo at desktop and iPhone 14; iPhone `/dojo` screenshot inspected (3 cards, no overflow).
+- Known gaps: `/dojo` lists alphabetically, not by difficulty; both problems are M; the in-browser solve flow of the new problems was not played end to end (the smoke plays Hot Tokens; expected outputs come from the native reference); no SRS or Python yet.
+- CI/Pages: ran after the Actions-quota period but no `gh` CLI here; not confirmed.
+- Next: C6b2.
