@@ -85,6 +85,13 @@ describe("dojo catalog", () => {
     expect(dojoProblem("fewest-tokens")!.hidden.some((h) => h.expected !== "-1" && Number(h.expected) > 2)).toBe(true);
   });
 
+  it("worst-hop: sample from the native reference, deep heavy chains exceed 32 bits", () => {
+    const p = dojoProblem("worst-hop")!;
+    expect(p.sample[0].expected).toBe("14");
+    expect(p.difficulty).toBe("M");
+    expect(p.hidden.some((h) => Number(h.expected) > 2 ** 31)).toBe(true);
+  });
+
   it("the ladder lists easier problems first, then by title", () => {
     const ranks = { E: 0, M: 1, H: 2 } as const;
     const list = dojoProblems();

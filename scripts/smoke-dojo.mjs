@@ -106,6 +106,20 @@ for (const [name, ctxOpts] of [["desktop", { viewport: { width: 1280, height: 90
   await page.getByTestId("submit").dispatchEvent("click");
   await page.getByTestId("dojo-debrief").waitFor({ timeout: 120_000 });
   check((await page.getByTestId("dojo-grade").textContent()).startsWith("Accepted"), `${name}: Label Consensus solved end to end`);
+  // the reference solutions of two more packages (tree DP, prefix DP), plan option 2 is the right one for both
+  for (const [id, title] of [["worst-hop", "Worst Hop"], ["fewest-tokens", "Fewest Tokens"]]) {
+    await page.goto(`${origin}${BASE}/dojo/`);
+    await page.getByTestId(`dojo-${id}`).click();
+    await page.getByTestId("dojo-scouted").click();
+    await page.getByTestId("dojo-plan-2").click();
+    await page.locator('[data-testid="workbench"][data-loaded="true"]').waitFor();
+    await page.locator(".cm-content").first().waitFor();
+    await page.waitForTimeout(800);
+    await setCode(page, readFileSync(join(process.cwd(), "content", "problems", id, "solution.cpp"), "utf8"));
+    await page.getByTestId("submit").dispatchEvent("click");
+    await page.getByTestId("dojo-debrief").waitFor({ timeout: 120_000 });
+    check((await page.getByTestId("dojo-grade").textContent()).startsWith("Accepted"), `${name}: ${title} solved end to end`);
+  }
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 1);
   check(!overflow, `${name}: no horizontal overflow`);
   check(errors.length === 0, `${name}: no console errors ${errors.join("|")}`);

@@ -364,3 +364,14 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Known gaps: Fewest Tokens is not played in-browser (its expected outputs come from the native reference); browser perf cases use n=40000 so borderline-slow solutions may pass in-browser; no tree problem or second hard yet; no Python variant or SRS for problems.
 - CI/Pages: checked via commit status only (no `gh` CLI).
 - Next: C6b2b2.
+
+## 2026-11-03: C6b2b2a Code Dojo ladder, part 2b-2a
+- C6b2b2 was split into C6b2b2a (this run) and C6b2b2b (second hard, more AI-flavoured problems).
+- `worst-hop` (M, LC 543 pointer, weighted general tree): service-latency tree with `p_i < i`, answer = largest pairwise path latency. Reference = reverse-order DP keeping the two best child branches (no recursion, `long long`); brute = DFS from every node; wrongs: root-only paths (WA), 32-bit sums (WA), traversal from every node (TLE). Seeded generator (heavy chain perf case, 10^9 weights), 4 test groups, 3-rung hints, strategy question, house-style editorial. `content:verify` passes; `gen:problems` regenerated the bundle.
+- The native reference corrected my hand-computed sample (12 -> 14) before it shipped; statement, generator comment and test were fixed. A new catalog test pins the sample and checks a hidden answer beyond 32 bits.
+- `smoke:dojo` now plays Worst Hop and Fewest Tokens end to end (right plan, reference solution, Accepted) at desktop and iPhone 14.
+- Verification: lint (0 errors), typecheck, test (285 pass), content:verify, build:pages, build, smoke:dojo at desktop and iPhone 14; iPhone `/dojo` screenshot inspected (8 cards, E first then M's then H, no overflow).
+- Env note: `pip install` with the default `pip` targeted python 3.13 while `python3` is 3.11; use `python3 -m pip install --break-system-packages -r requirements-dev.txt` or the lessons tests fail on numpy.
+- Known gaps: one iPhone smoke run timed out once waiting for `dojo-plan-1` on Label Consensus (passed on rerun; likely a click before hydration, worth hardening); browser perf cases use n=40000; no Python variant or SRS for problems yet.
+- CI/Pages: from 2026-11-01 CI should be confirmed, but this session has no `gh` CLI; checked via commit status only.
+- Next: C6b2b2b.

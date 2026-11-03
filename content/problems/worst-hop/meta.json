@@ -1,0 +1,40 @@
+{
+  "id": "worst-hop",
+  "title": "Worst Hop",
+  "difficulty": "M",
+  "language": "cpp",
+  "tags": ["tree", "dp", "diameter", "ai-serving"],
+  "similar": "LeetCode 543 Diameter of Binary Tree (weighted, general tree)",
+  "compare": "tokens",
+  "timeLimitMs": 1000,
+  "complexity": { "time": "O(n)", "space": "O(n)" },
+  "groups": {
+    "sample": [1],
+    "edge": [1, 2, 3, 4, 5, 6, 7, 8],
+    "random": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
+    "perf": [1, 2]
+  },
+  "hints": [
+    "Any longest path has a highest node, the one closest to the root. What does the path look like from that node's point of view?",
+    "From a node v the path goes down into at most two different child subtrees. If you knew, for every child, the longest downward path starting at that child, what would you combine?",
+    "down[v] = max over children c of down[c] + w(c). The best path with top node v is the sum of the two largest values of (down[c] + w(c)) (or one, or zero). Because every parent index is smaller than its child's, process nodes from n-1 down to 0 and you need no recursion. Use long long."
+  ],
+  "wrong": {
+    "through_root.cpp": "only considers paths through the root (the deepest two branches of node 0)",
+    "int_overflow.cpp": "keeps path sums in 32-bit int, which overflows on long heavy chains",
+    "tle_all_pairs.cpp": "runs a traversal from every node (fails the perf group)"
+  },
+  "wrongExpect": { "through_root.cpp": "WA", "int_overflow.cpp": "WA", "tle_all_pairs.cpp": "TLE" },
+  "strategy": {
+    "question": "Scout the statement: a rooted tree of up to 2*10^5 services with edge latencies up to 10^9; find the largest total latency between any two services. Which plan fits?",
+    "options": [
+      "Run a shortest-path search from every node and take the maximum",
+      "Only look at the two deepest branches under the root",
+      "One bottom-up pass: for each node keep the best downward path, and combine its two best child branches",
+      "Sort the edges by latency and add the largest ones"
+    ],
+    "answer": 2,
+    "why": "Searching from every node is O(n^2), far too slow at 2*10^5. The best path need not pass through the root. Summing the largest edges ignores that the edges must form one connected path. A bottom-up pass looks at each node once, using the two best child branches, so it is O(n)."
+  },
+  "browserPerfN": 40000
+}
