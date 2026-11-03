@@ -4,7 +4,7 @@
   "private": true,
   "description": "Neural Clash: a creature RPG where your companion is a neural network you implement and train",
   "scripts": {
-    "stage:pyodide": "node scripts/fetch-pyodide.mjs",
+    "stage:pyodide": "node scripts/fetch-pyodide.mjs && node scripts/stage-train.mjs",
     "stage:clang": "node scripts/fetch-clang.mjs",
     "dev": "npm run stage:pyodide && npm run stage:clang && next dev",
     "build": "npm run stage:pyodide && npm run stage:clang && next build",
@@ -20,6 +20,7 @@
     "smoke:battle": "node scripts/smoke-battle.mjs",
     "smoke:learn": "node scripts/smoke-learn.mjs",
     "smoke:labs": "node scripts/smoke-labs.mjs",
+    "smoke:train": "node scripts/smoke-train.mjs",
     "gen:labs": "node scripts/gen-labs.mjs",
     "build:pages": "npm run stage:pyodide && npm run stage:clang && STATIC_EXPORT=1 BASE_PATH=${BASE_PATH-/neural-clash} next build && BASE_PATH=${BASE_PATH-/neural-clash} node scripts/gen-sw.mjs"
   },

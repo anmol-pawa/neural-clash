@@ -11,3 +11,4 @@ next-env.d.ts
 __pycache__/
 /public/pyodide/
 /public/clang/
+/public/train/

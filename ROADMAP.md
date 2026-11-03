@@ -35,7 +35,8 @@ Work top to bottom: take the **first unchecked box**, and split big boxes into r
 - [x] B6a. **Lab flow v1:** `/labs` index + lesson + editor for every Lab package (`scripts/gen-labs.mjs` bundle, solved state saved, `smoke:labs`).
 - [x] B6b. **Forge module "linear model + GD"** (extend `linear-gd`: a perceptron/linear regression with train loop, test metrics → companion stats; hint ladder). Original B6 text: **Lab flow v1 + Forge module "linear model + GD"** (a pre-autograd perceptron/linear regression with a hand-derived gradient). The companion stats come from its test metrics.
 - [x] B7a. **Training Grounds trainer core** (ARCH §5): `lib/train/` seeded 2D toy datasets with a disjoint hidden test set, linear/logistic models (poly features, L2, mini-batch), evaluation, companion-stats bridge; equivalence tests vs numpy.
-- [ ] B7b. **Training Grounds UI** (ARCH §5): `/train` page with a worker-run trainer, live loss curves (pixel-styled), decision-boundary canvas, hyperparameter controls, and the hidden test-set reveal battle feeding companion stats.
+- [x] B7b-1. **Training Grounds UI** (done 2026-11-03): `/train` with a worker-run trainer, live pixel boundary canvas and loss curves, hyperparameter controls, sealed hidden score reveal + companion stats.
+- [ ] B7b-2. **Hidden-set reveal battle**: turn the reveal into a battle where the measured stats drive the fight (GDD §5.3); save the companion's stats; pixel-art polish of the curves.
 - [ ] B8. **Python Port guardian battle** (96×96 boss, three phases: cards → a Lab mini-task → a Training battle vs *Overfit*'s minion), a badge.
 - [ ] B9. **Audio v1** (port the synth if present).
 - [ ] B10. **Slice polish:** a Playwright playthrough on desktop and iPhone 14, screenshots, fixes, and a slice review in PROGRESS.md.

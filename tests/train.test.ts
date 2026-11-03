@@ -1,6 +1,7 @@
 import { execFileSync } from "node:child_process";
 import { describe, expect, it } from "vitest";
 import { makeSplit, makeToy, polyFeatures } from "../lib/train/datasets";
+import { BOUND, GRID, boundaryGrid, runSession, splitFor, type SessionEvent, type SessionRequest } from "@/lib/train/session";
 import { design, evaluate, lossGrad, score, sigmoid, train } from "../lib/train/linear";
 
 const py = (job: object) =>
@@ -126,5 +127,54 @@ describe("companion bridge", () => {
     const o = companionStats(companionMetrics(over, s.train, s.test));
     expect(g.defence).toBeGreaterThan(o.defence);
     expect(g.speed).toBeGreaterThan(o.speed);
+  });
+});
+
+
+describe("training session (worker payload)", () => {
+  const req: SessionRequest = { kind: "blobs", nTrain: 60, nTest: 200, noise: 0.5, seed: 5, cfg: { model: "logistic", lr: 0.5, epochs: 40, seed: 5 }, frames: 8 };
+  const run = (r: SessionRequest) => {
+    const ev: SessionEvent[] = [];
+    runSession(r, (e) => ev.push(e));
+    return ev;
+  };
+
+  it("streams a bounded number of frames, then a done event with a final grid", () => {
+    const ev = run(req);
+    const epochs = ev.filter((e) => e.type === "epoch");
+    expect(epochs.length).toBeGreaterThanOrEqual(8);
+    expect(epochs.length).toBeLessThanOrEqual(12);
+    expect(ev[ev.length - 1].type).toBe("done");
+    for (const e of epochs) if (e.type === "epoch") expect(e.grid).toHaveLength(GRID * GRID);
+  });
+
+  it("is deterministic and matches a direct train() call", () => {
+    const a = run(req);
+    const b = run(req);
+    expect(JSON.stringify(a)).toBe(JSON.stringify(b));
+    const { train: tr, val } = splitFor(req);
+    const t = train(tr, req.cfg, val);
+    const first = a.find((e) => e.type === "epoch");
+    expect(first && first.type === "epoch" && first.point.trainLoss).toBeCloseTo(t.history[0].trainLoss, 12);
+  });
+
+  it("the sealed hidden-set score equals evaluate() on the test split, and test/val/train are distinct", () => {
+    const done = run(req).pop();
+    if (!done || done.type !== "done") throw new Error("no done");
+    const s = splitFor(req);
+    expect(s.test.X[0]).not.toEqual(s.val.X[0]);
+    expect(s.train.X[0]).not.toEqual(s.test.X[0]);
+    const t = train(s.train, req.cfg, s.val);
+    expect(done.sealed.test.accuracy).toBeCloseTo(evaluate(t, s.test).accuracy, 12);
+    expect(done.sealed.test.accuracy).toBeGreaterThan(0.85);
+  });
+
+  it("the boundary grid is oriented: x1 grows left to right, x2 grows bottom to top", () => {
+    const t = { config: { model: "logistic" as const, lr: 0, epochs: 0, batchSize: 0, l2: 0, degree: 1, seed: 0 }, w: [0, 1, 1], params: 3 };
+    const g = boundaryGrid(t);
+    const at = (r: number, c: number) => g[r * GRID + c];
+    expect(at(0, GRID - 1)).toBeGreaterThan(0.9); // top-right: x1,x2 large
+    expect(at(GRID - 1, 0)).toBeLessThan(0.1); // bottom-left
+    expect(BOUND).toBeGreaterThan(2);
   });
 });

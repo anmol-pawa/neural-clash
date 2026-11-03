@@ -87,7 +87,8 @@ export function lossGrad(kind: ModelKind, w: number[], A: number[][], y: number[
   return { loss, grad };
 }
 
-export function train(data: Dataset, cfg: TrainConfig, monitor?: Dataset): Trained {
+/** `onEpoch` observes each epoch's point and the weights *before* that epoch's updates (read-only; never alters training). */
+export function train(data: Dataset, cfg: TrainConfig, monitor?: Dataset, onEpoch?: (p: EpochPoint, w: readonly number[]) => void): Trained {
   const config = {
     model: cfg.model,
     lr: cfg.lr,
@@ -109,6 +110,7 @@ export function train(data: Dataset, cfg: TrainConfig, monitor?: Dataset): Train
     const p: EpochPoint = { epoch: e, trainLoss: lossGrad(config.model, w, A, data.y, config.l2).loss };
     if (M && monitor) p.valLoss = lossGrad(config.model, w, M, monitor.y).loss;
     history.push(p);
+    onEpoch?.(p, w);
     const order = bs === n ? null : shuffle(r, Array.from({ length: n }, (_, i) => i));
     for (let s = 0; s < n; s += bs) {
       const idx = order ? order.slice(s, s + bs) : null;

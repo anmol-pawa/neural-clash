@@ -206,3 +206,12 @@ Append a dated entry after every run: what changed, how it was verified (command
 - CI/Pages: not polled this run (no Actions confirmation attempted).
 - Known gaps: no UI yet; no MLP (arrives with autograd phase); stats weights still a first guess.
 - Next: B7b.
+
+## 2026-11-03: B7b-1 Training Grounds UI
+- B7b was split: B7b-1 (this run), B7b-2 (reveal battle, stat saving).
+- `train()` gained an `onEpoch` observer (numerics unchanged). `lib/train/session.ts`: pure `runSession` (train/validation/hidden-test as three independent streams, bounded boundary frames, final sealed hidden metrics). `train.worker.ts` + `client.ts` + `scripts/stage-train.mjs` (esbuild to `public/train/worker.mjs`, chained into `stage:pyodide` so CI/dev/build pick it up).
+- `/train` (`components/Train.tsx`): world picker (blobs/XOR/rings/moons/line), degree, learning rate, epochs, L2, data size, noise, batch, seed; live pixel-block decision boundary with training points, train/validation loss curves, "Reveal hidden score" then measured companion stats. Title screen links to it.
+- Verification: lint (warnings only), typecheck, test (190 pass; 4 new session tests: frame bound, determinism vs `train()`, sealed score equals `evaluate`, grid orientation), content:verify, build, build:pages, `smoke:train` at desktop and iPhone 14 (XOR: line 54.8% vs degree 2 99.5% hidden; sealed before reveal; no overflow/console errors); screenshots inspected. One full-suite run showed a transient failed test file that did not recur on rerun (likely Pyodide worker flake).
+- CI/Pages: Actions quota note expired 2026-11-01; not polled this run.
+- Known gaps: regression heat-map scale is fixed; no save of trained stats yet; curves are plain canvas lines, not yet pixel-art styled.
+- Next: B7b-2.
