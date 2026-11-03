@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { companionStats } from "@/lib/labs/companion";
+import { getSaveManager, useSave } from "@/lib/save/react";
 import type { ToyKind } from "@/lib/train/datasets";
 import { startTraining } from "@/lib/train/client";
 import type { EpochPoint } from "@/lib/train/linear";
@@ -58,32 +59,28 @@ function drawLoss(cv: HTMLCanvasElement, hist: EpochPoint[], epochs: number) {
   const H = cv.height;
   g.fillStyle = "#12142a";
   g.fillRect(0, 0, W, H);
-  g.strokeStyle = "#2a2e50";
-  g.lineWidth = 1;
-  for (let i = 1; i < 4; i++) {
-    g.beginPath();
-    g.moveTo(0, (H * i) / 4);
-    g.lineTo(W, (H * i) / 4);
-    g.stroke();
-  }
+  g.fillStyle = "#2a2e50";
+  for (let i = 1; i < 4; i++) for (let x = 0; x < W; x += 6) g.fillRect(x, Math.round((H * i) / 4 / 3) * 3, 3, 1);
   if (hist.length < 2) return;
   const tr = hist.map((h) => h.trainLoss);
   const top = Math.max(...tr.slice(0, 5), 1e-6) * 1.05;
   const line = (vals: (number | undefined)[], color: string) => {
-    g.strokeStyle = color;
-    g.lineWidth = 3;
-    g.beginPath();
-    let started = false;
+    // Pixel-art style: one 3x3 block per column, snapped to a 3px grid, joined by vertical runs.
+    g.fillStyle = color;
+    let prevY: number | null = null;
+    let prevX = -1;
     hist.forEach((h, i) => {
       const v = vals[i];
       if (v === undefined || !Number.isFinite(v)) return;
-      const x = (h.epoch / Math.max(1, epochs - 1)) * (W - 6) + 3;
-      const y = H - 4 - Math.min(1, Math.max(0, v / top)) * (H - 8);
-      if (!started) g.moveTo(x, y);
-      else g.lineTo(x, y);
-      started = true;
+      const x = Math.round(((h.epoch / Math.max(1, epochs - 1)) * (W - 6)) / 3) * 3;
+      const y = Math.round((H - 6 - Math.min(1, Math.max(0, v / top)) * (H - 9)) / 3) * 3;
+      if (x === prevX) return;
+      const y0 = prevY === null ? y : Math.min(prevY, y);
+      const y1 = prevY === null ? y : Math.max(prevY, y);
+      g.fillRect(x, y0, 3, y1 - y0 + 3);
+      prevY = y;
+      prevX = x;
     });
-    g.stroke();
   };
   line(hist.map((h) => h.valLoss), "#fbbf24");
   line(tr, "#48d6f0");
@@ -115,6 +112,8 @@ export default function Train() {
   const histRef = useRef<EpochPoint[]>([]);
   const ptsRef = useRef<{ X: number[][]; y: number[] } | null>(null);
   const regression = kind === "line";
+  const save = useSave();
+  const [savedNow, setSavedNow] = useState(false);
 
   const run = useCallback(() => {
     cancelRef.current?.();
@@ -122,6 +121,7 @@ export default function Train() {
     ptsRef.current = null;
     setDone(null);
     setRevealed(false);
+    setSavedNow(false);
     setError(null);
     setRunning(true);
     const req: SessionRequest = { kind, nTrain, nTest: 400, noise, seed, frames: 80, cfg: { model: regression ? "linear" : "logistic", lr: regression ? Math.min(lr, 0.3) : lr, epochs, l2, degree, batchSize: batch, seed } };
@@ -234,6 +234,27 @@ export default function Train() {
             <p className="text-sm">Hidden test {regression ? "R²" : "accuracy"}: <b data-testid="hidden-score">{(done.hidden.score * 100).toFixed(1)}%</b> · train-to-test loss gap {done.hidden.gap >= 0 ? "+" : ""}{done.hidden.gap.toFixed(3)} · {done.hidden.params} parameters</p>
             {stats && (
               <p className="text-sm" data-testid="stats">Companion stats (from measured results): Attack <b>{stats.attack}</b> · Defence <b>{stats.defence}</b> · Speed <b>{stats.speed}</b></p>
+            )}
+            {stats && (
+              <div className="flex flex-wrap items-center gap-3">
+                <button
+                  type="button"
+                  className="px-btn px-btn-primary px-4 py-2"
+                  data-testid="save-companion"
+                  disabled={savedNow}
+                  onClick={() => {
+                    getSaveManager().update((s) => ({ ...s, companion: { world: kind, ...stats, score: done.hidden.score, savedAt: Date.now() }, updatedAt: Date.now() }));
+                    setSavedNow(true);
+                  }}
+                >
+                  {savedNow ? "Saved" : "Save as my companion"}
+                </button>
+                {save.companion && (
+                  <span className="text-xs text-white/60" data-testid="saved-companion">
+                    Current companion: {save.companion.world} · ATK {save.companion.attack} · DEF {save.companion.defence} · SPD {save.companion.speed}
+                  </span>
+                )}
+              </div>
             )}
             <p className="text-xs text-white/60">{done.hidden.gap > 0.1 ? "A big gap means memorising: try fewer features, more data or an L2 penalty." : "Small gap: the model carries over to unseen points."}</p>
           </div>

@@ -16,6 +16,18 @@ describe("migrate", () => {
   });
 });
 
+describe("companion record", () => {
+  it("round-trips a valid record and clamps stats", () => {
+    const s = migrate({ companion: { world: "xor", attack: 140.4, defence: -3, speed: 55.5, score: 2, savedAt: 9 } });
+    expect(s.companion).toEqual({ world: "xor", attack: 100, defence: 0, speed: 56, score: 1, savedAt: 9 });
+    expect(importSave(exportSave(s))).toEqual({ ok: true, save: s });
+  });
+  it("rejects malformed records", () => {
+    for (const bad of [null, 3, { world: 1, attack: 1, defence: 1, speed: 1 }, { world: "x", attack: "a", defence: 1, speed: 1 }, { world: "x", attack: NaN, defence: 1, speed: 1 }])
+      expect(migrate({ companion: bad }).companion).toBeNull();
+  });
+});
+
 describe("latent files", () => {
   it("drops unsafe paths, non-python files and non-strings", () => {
     const out = sanitizeLatent({ "latent/value.py": "x=1", "../evil.py": "x", "/abs.py": "x", "a.txt": "x", "b.py": 4 });

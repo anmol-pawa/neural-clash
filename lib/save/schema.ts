@@ -10,6 +10,17 @@ export interface Settings {
   reducedMotion: boolean;
 }
 
+/** The companion the player committed from the Training Grounds: stats come from a measured hidden-set run. */
+export interface CompanionRecord {
+  world: string;
+  attack: number;
+  defence: number;
+  speed: number;
+  /** Hidden-test score in [0, 1] (accuracy, or R² for regression). */
+  score: number;
+  savedAt: number;
+}
+
 export interface SaveData {
   version: typeof SAVE_VERSION;
   /** Player name shown in dialogue. */
@@ -21,6 +32,8 @@ export interface SaveData {
   labs: Record<string, { passed: boolean; assisted: boolean }>;
   /** The player's `latent` framework: path -> source, mounted into Pyodide as a package. */
   latent: Record<string, string>;
+  /** Null until the player saves a trained companion. */
+  companion: CompanionRecord | null;
   /** Free-form per-system state owned by later features (SRS, journal), kept opaque here. */
   extra: Record<string, unknown>;
   updatedAt: number;
@@ -33,6 +46,7 @@ export const DEFAULT_SAVE: SaveData = {
   cleared: [],
   labs: {},
   latent: {},
+  companion: null,
   extra: {},
   updatedAt: 0,
 };
@@ -54,6 +68,20 @@ export function sanitizeLatent(raw: unknown): Record<string, string> {
     out[path] = src;
   }
   return out;
+}
+
+const pct = (v: unknown): number | null => (typeof v === "number" && Number.isFinite(v) ? Math.round(Math.min(100, Math.max(0, v))) : null);
+
+/** Accepts only a well-formed companion record; stats are clamped to 0-100 integers. */
+export function sanitizeCompanion(raw: unknown): CompanionRecord | null {
+  if (!isObj(raw) || typeof raw.world !== "string") return null;
+  const attack = pct(raw.attack);
+  const defence = pct(raw.defence);
+  const speed = pct(raw.speed);
+  if (attack === null || defence === null || speed === null) return null;
+  const score = typeof raw.score === "number" && Number.isFinite(raw.score) ? Math.min(1, Math.max(0, raw.score)) : 0;
+  const savedAt = typeof raw.savedAt === "number" && Number.isFinite(raw.savedAt) ? raw.savedAt : 0;
+  return { world: raw.world.slice(0, 24), attack, defence, speed, score, savedAt };
 }
 
 /** Builds a valid SaveData from anything: unknown input, older versions, partial or hostile data. */
@@ -79,6 +107,7 @@ export function migrate(raw: unknown): SaveData {
     cleared: Array.isArray(raw.cleared) ? [...new Set(raw.cleared.filter((x): x is string => typeof x === "string"))] : [],
     labs,
     latent: sanitizeLatent(raw.latent),
+    companion: sanitizeCompanion(raw.companion),
     extra: isObj(raw.extra) ? { ...raw.extra } : {},
     updatedAt: typeof raw.updatedAt === "number" && Number.isFinite(raw.updatedAt) ? raw.updatedAt : 0,
   };

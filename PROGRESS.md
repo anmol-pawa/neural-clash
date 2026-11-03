@@ -215,3 +215,12 @@ Append a dated entry after every run: what changed, how it was verified (command
 - CI/Pages: Actions quota note expired 2026-11-01; not polled this run.
 - Known gaps: regression heat-map scale is fixed; no save of trained stats yet; curves are plain canvas lines, not yet pixel-art styled.
 - Next: B7b-2.
+
+## 2026-11-03: B7b-2a Save companion and pixel curves
+- B7b-2 was split: B7b-2a (this run), B7b-2b (reveal battle).
+- Save schema gained `companion` (world, attack/defence/speed clamped to 0-100 ints, hidden score, savedAt) with `sanitizeCompanion` (malformed records become null; round-trips through export/import). `/train` shows "Save as my companion" after the reveal and the currently saved companion. Loss curves are now stepped 3px pixel blocks with a dotted grid.
+- Verification: lint (warnings only), typecheck, test (192 pass; 2 new save tests), content:verify, build, build:pages, `smoke:train` at desktop and iPhone 14 (save works, no overflow or console errors); iPhone screenshot inspected.
+- Env note: run `npm run stage:pyodide` (downloads ~340 MB once) and use `PATH=/usr/bin:$PATH` before tests.
+- CI/Pages confirmation not polled this run.
+- Known gaps: saved stats are not yet used in a battle; save keeps only the latest companion (no best-of).
+- Next: B7b-2b.

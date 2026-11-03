@@ -49,6 +49,8 @@ for (const [name, opts] of [["desktop", { viewport: { width: 1280, height: 900 }
   const hid2 = parseFloat(await page.getByTestId("hidden-score").innerText());
   check(hid2 > 90, `${name}: degree 2 solves XOR on the hidden set (${hid2}%)`);
   check((await page.getByTestId("stats").innerText()).includes("Attack"), `${name}: companion stats shown`);
+  await page.getByTestId("save-companion").click();
+  check((await page.getByTestId("saved-companion").innerText()).includes("ATK"), `${name}: companion saved and shown`);
   await page.screenshot({ path: join(shots, `train-xor-d2-${name}.png`), fullPage: true });
   check(!(await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth)), `${name}: no horizontal overflow`);
   check(errors.length === 0, `${name}: no console errors ${errors.join(" | ")}`);
