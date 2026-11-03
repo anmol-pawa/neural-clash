@@ -275,3 +275,10 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Intervals are a first guess, not tuned on real recall data.
 - CI/Pages: not polled (no `gh` CLI in this session).
 - Next: C1b.
+
+## 2026-11-03: C1b Daily Sync UI
+- `lib/sync/sync.ts` (pure, tested: `tests/sync.test.ts`, 6 tests): `buildSync` merges the SRS table with the Python/numpy/strategy decks and the Labs into today's queue (due reviews, then new cards), per-deck mastery, due/stale Labs and a companion `rustLevel` (share of tracked items rusted). `useNow` gives a hydration-safe page-load time.
+- `/sync` (`components/Sync.tsx`): the Neuron-Pup drawn with a rust overlay that grows with `rustLevel` (source-atop tint plus deterministic speckles), queue summary, "Start sync" card session reusing `CardForm`/`check` and recording each first attempt to SRS, mastery bars per deck, due Labs linked. `/labs` marks stale Labs ("stale · redo"). Title screen links to Daily Sync; `/sync` added to `smoke:slice`.
+- Verification: lint (0 errors), typecheck, test (236 pass), content:verify, build, build:pages, `smoke:sync` (fresh queue, 4-card session, seeded overdue save rusts the Pup and flags the Lab on /sync and /labs) at desktop and iPhone 14, `smoke:slice`; screenshots inspected (fresh, rusty iPhone).
+- Known gaps: the daily plan has only cards and Labs (GDD also lists a metric drill, code snippet, C++ problem and micro-workshop step; those need C6/D content); missed cards are not requeued in-session; rust look is a first pass and the Pup has one form.
+- Next: C2 companion evolution tied to Forge milestones.

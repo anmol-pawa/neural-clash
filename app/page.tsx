@@ -16,6 +16,7 @@ export default function Home() {
           Start
         </button>
         <Link href="/learn" className="px-btn px-4 py-2 text-center">Python Port lessons</Link>
+        <Link href="/sync" className="px-btn px-4 py-2 text-center">Daily Sync</Link>
         <Link href="/labs" className="px-btn px-4 py-2 text-center">Labs</Link>
         <Link href="/train" className="px-btn px-4 py-2 text-center">Training Grounds</Link>
         <Link href="/guardian" className="px-btn px-4 py-2 text-center">Warden Indent (guardian)</Link>

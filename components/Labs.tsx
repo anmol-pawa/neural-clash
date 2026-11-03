@@ -6,6 +6,8 @@ import EditorWorkbench from "@/components/EditorWorkbench";
 import { LABS, labById, labTask, labsByPhase } from "@/lib/labs/catalog";
 import { getSaveManager, useSave } from "@/lib/save/react";
 import { review } from "@/lib/srs/srs";
+import { useNow } from "@/lib/sync/useNow";
+import { staleLabIds } from "@/lib/sync/sync";
 
 function Rich({ text }: { text: string }) {
   return <>{text.split("`").map((part, i) => (i % 2 ? <code key={i} className="rounded bg-black/50 px-1 text-indigo-200">{part}</code> : part.replace(/\*+/g, "")))}</>;
@@ -67,6 +69,9 @@ export default function Labs() {
     }));
   }, []);
 
+  // Computed after mount so the static HTML and the first client render agree.
+  const now = useNow();
+  const stale = now === null ? new Set<string>() : staleLabIds(save.srs, LABS, now);
   const solved = LABS.filter((l) => save.labs[l.id]?.passed).length;
 
   return (
@@ -95,7 +100,7 @@ export default function Labs() {
                   <li key={l.id}>
                     <a href={`#${l.id}`} className="panel flex min-h-11 items-center justify-between gap-2 p-3 text-sm hover:bg-white/5" data-testid={`lab-${l.id}`}>
                       <span>{l.title}</span>
-                      <span className={save.labs[l.id]?.passed ? "text-emerald-300" : "text-white/40"}>{save.labs[l.id]?.passed ? "✓ solved" : l.functions.length ? `${l.functions.length} fn` : ""}</span>
+                      <span className={stale.has(l.id) ? "text-amber-300" : save.labs[l.id]?.passed ? "text-emerald-300" : "text-white/40"} data-testid={stale.has(l.id) ? `lab-stale-${l.id}` : undefined}>{stale.has(l.id) ? "stale · redo" : save.labs[l.id]?.passed ? "✓ solved" : l.functions.length ? `${l.functions.length} fn` : ""}</span>
                     </a>
                   </li>
                 ))}
