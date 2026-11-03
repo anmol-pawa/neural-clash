@@ -51,7 +51,7 @@ Work top to bottom: take the **first unchecked box**, and split big boxes into r
 - [x] C3. (done 2026-11-03) Research journal: `lib/journal`, `journal` in the save, auto-logged on hidden-score reveal, `/journal` with notes and A/B comparison.
 - [x] C4a. (done 2026-11-03) **Bits, hint pricing and scaffolding modes:** pure `lib/economy` (rewards once per item and never when assisted, rung-priced hints, Mart catalogue and purchase rules, sanitisers), `wallet`/`owned`/`mode` in the save, mode picker + Bits on `/labs`, hints cost Bits and mark the attempt assisted.
 - [x] C4b. (done 2026-11-03) **Mart page** (`/mart`: spend Bits on cosmetics, apply tints to the Pup/Forge) and Bits rewards from card battles and the guardian (pass `assisted` through, interview 1.5x).
-- [ ] C5. Readiness Report mapped to interview loops (CUR D3).
+- [x] C5. (done 2026-11-03) Readiness Report mapped to interview loops (CUR D3): pure `lib/readiness`, `/readiness` page. Follow-up C5b: take-home simulator (needs Retrieval Reef).
 - [ ] C6. **Code Dojo v1:** port the coding battle from Algo Clash (Scout → Strategise → Code → Judge → Debrief) for C++ and Python problems.
 
 ## Phase D: Act I regions (region recipe)

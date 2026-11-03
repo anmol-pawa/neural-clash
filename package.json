@@ -25,6 +25,7 @@
     "smoke:sync": "node scripts/smoke-sync.mjs",
     "smoke:companion": "node scripts/smoke-companion.mjs",
     "smoke:journal": "node scripts/smoke-journal.mjs",
+    "smoke:readiness": "node scripts/smoke-readiness.mjs",
     "smoke:economy": "node scripts/smoke-economy.mjs",
     "smoke:mart": "node scripts/smoke-mart.mjs",
     "smoke:slice": "node scripts/smoke-slice.mjs",

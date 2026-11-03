@@ -315,3 +315,12 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Known gaps: Forge decor (fern, poster) is purchasable but not yet rendered; tint is not shown on `/companion` or in battles; no daily card cap on Bits (replays pay nothing, so farming is bounded by deck size); prices are a first guess.
 - CI/Pages confirmation: not checked (no `gh` CLI in this session).
 - Next: C5 Readiness Report.
+
+## 2026-11-03: C5 Readiness Report
+- `lib/readiness/readiness.ts` (pure, `tests/readiness.test.ts`, 13 tests): 12 skills and 3 loops (Applied-AI engineer, SDE with AI-enabled round, ML engineer), each loop a set of weighted rounds. Evidence: Labs (unaided 1, assisted 0.5), deck mastery by SRS state (mastered 1, learning/reviewing 0.5, rusted 0.25, assisted reviews never count), guardian, logged experiments, and "planned" evidence (zero, shown as "coming") for content that does not exist yet. Reports coarse bands, loop coverage ("the game can train N% of this loop") and the biggest gap among trainable rounds.
+- `/readiness` page and title link; `smoke:readiness` (fresh = "not started", helped pass < unaided pass, next gap named) and `/readiness` in `smoke:slice`.
+- Verification: lint (0 errors), typecheck, test (273 pass), content:verify, build, build:pages, smoke:readiness and smoke:slice at desktop and iPhone 14; iPhone screenshot inspected (no overflow, readable).
+- Env notes: run only one `npm run build*` at a time (concurrent runs both download the 340 MB Pyodide tarball and corrupt it); numpy for `python3` needs `python3 -m pip install ...`.
+- Known gaps: loop shapes come from CUR D3 (not re-searched this run); most skills are "coming" until Retrieval Reef, Code Dojo, comprehension and pair content land; take-home simulator not built (C5b); weights are a first guess.
+- CI/Pages: Actions quota note expired, but no `gh` CLI here; confirmed via commit status only.
+- Next: C6 Code Dojo v1.

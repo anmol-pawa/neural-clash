@@ -27,7 +27,7 @@ const origin = `http://127.0.0.1:${server.address().port}`;
 let failed = false;
 const check = (ok, msg) => { console.log(`${ok ? "PASS" : "FAIL"} ${msg}`); if (!ok) failed = true; };
 
-const routes = ["/", "/sync", "/companion", "/journal", "/play", "/learn", "/battle", "/labs", "/train", "/guardian", "/mart"];
+const routes = ["/", "/sync", "/readiness", "/companion", "/journal", "/play", "/learn", "/battle", "/labs", "/train", "/guardian", "/mart"];
 const browser = await chromium.launch();
 for (const [name, opts] of [["desktop", { viewport: { width: 1280, height: 800 } }], ["iphone", { ...devices["iPhone 14"] }]]) {
   const ctx = await browser.newContext(opts);

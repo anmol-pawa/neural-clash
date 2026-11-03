@@ -17,6 +17,7 @@ export default function Home() {
         </button>
         <Link href="/learn" className="px-btn px-4 py-2 text-center">Python Port lessons</Link>
         <Link href="/sync" className="px-btn px-4 py-2 text-center">Daily Sync</Link>
+        <Link href="/readiness" className="px-btn px-4 py-2 text-center">Readiness Report</Link>
         <Link href="/companion" className="px-btn px-4 py-2 text-center">Your Neuron-Pup</Link>
         <Link href="/labs" className="px-btn px-4 py-2 text-center">Labs</Link>
         <Link href="/train" className="px-btn px-4 py-2 text-center">Training Grounds</Link>
