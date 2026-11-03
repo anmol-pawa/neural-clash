@@ -65,6 +65,24 @@ int main() {
 }
 `;
 
+const GAIN = `#include <bits/stdc++.h>
+using namespace std;
+int main() {
+    int n;
+    scanf("%d", &n);
+    vector<long long> g(n), down(n);
+    vector<int> l(n), r(n);
+    for (int v = 0; v < n; ++v) scanf("%lld %d %d", &g[v], &l[v], &r[v]);
+    long long best = LLONG_MIN;
+    for (int v = n - 1; v >= 0; --v) {
+        long long a = l[v] >= 0 ? max(0LL, down[l[v]]) : 0, b = r[v] >= 0 ? max(0LL, down[r[v]]) : 0;
+        best = max(best, g[v] + a + b);
+        down[v] = g[v] + max(a, b);
+    }
+    printf("%lld\\n", best);
+}
+`;
+
 for (const [name, ctxOpts] of [["desktop", { viewport: { width: 1280, height: 900 } }], ["iphone14", { ...devices["iPhone 14"] }]]) {
   const ctx = await browser.newContext(ctxOpts);
   const page = await ctx.newPage();
@@ -106,6 +124,20 @@ for (const [name, ctxOpts] of [["desktop", { viewport: { width: 1280, height: 90
   await page.getByTestId("submit").dispatchEvent("click");
   await page.getByTestId("dojo-debrief").waitFor({ timeout: 120_000 });
   check((await page.getByTestId("dojo-grade").textContent()).startsWith("Accepted"), `${name}: Label Consensus solved end to end`);
+  // the hard tree problem (answer option 1: bottom-up pass)
+  await page.goto(`${origin}${BASE}/dojo/`);
+  await page.getByTestId("dojo-gain-path").click();
+  await page.getByTestId("dojo-scouted").click();
+  await page.getByTestId("dojo-plan-1").click();
+  await page.locator('[data-testid="workbench"][data-loaded="true"]').waitFor();
+  await page.locator(".cm-content").first().waitFor();
+  await page.waitForTimeout(800);
+  await setCode(page, GAIN);
+  await page.getByTestId("submit").dispatchEvent("click");
+  await page.getByTestId("dojo-debrief").waitFor({ timeout: 120_000 });
+  check((await page.getByTestId("dojo-grade").textContent()).startsWith("Accepted"), `${name}: Gain Path solved end to end`);
+  await page.goto(`${origin}${BASE}/dojo/`);
+  await page.screenshot({ path: join(shots, `dojo-index-${name}.png`), fullPage: true });
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 1);
   check(!overflow, `${name}: no horizontal overflow`);
   check(errors.length === 0, `${name}: no console errors ${errors.join("|")}`);

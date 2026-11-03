@@ -58,7 +58,7 @@ describe("dojo catalog", () => {
 
   it("every bundled problem is a consistent package with the documented samples", () => {
     const ids = dojoProblems().map((p) => p.id);
-    expect(ids).toEqual(expect.arrayContaining(["top-k-tokens", "context-window", "batch-packer", "pipeline-order", "peak-window", "label-consensus", "fewest-tokens"]));
+    expect(ids).toEqual(expect.arrayContaining(["top-k-tokens", "context-window", "batch-packer", "pipeline-order", "peak-window", "label-consensus", "fewest-tokens", "gain-path"]));
     for (const p of dojoProblems()) {
       expect(p.hints).toHaveLength(3);
       expect(p.strategy.answer).toBeLessThan(p.strategy.options.length);
@@ -83,6 +83,14 @@ describe("dojo catalog", () => {
     expect(dojoProblem("fewest-tokens")!.sample[0].expected).toBe("2");
     expect(dojoProblem("fewest-tokens")!.hidden.some((h) => h.expected === "-1")).toBe(true);
     expect(dojoProblem("fewest-tokens")!.hidden.some((h) => h.expected !== "-1" && Number(h.expected) > 2)).toBe(true);
+  });
+
+  it("gain-path: the sample bends below the root, and all-negative trees return the least-negative node", () => {
+    expect(dojoProblem("gain-path")!.sample[0].expected).toBe("42");
+    expect(dojoProblem("gain-path")!.difficulty).toBe("H");
+    const hidden = dojoProblem("gain-path")!.hidden;
+    expect(hidden.some((h) => h.expected === "-5")).toBe(true);
+    expect(hidden.some((h) => h.expected === "10")).toBe(true);
   });
 
   it("the ladder lists easier problems first, then by title", () => {

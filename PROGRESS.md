@@ -364,3 +364,12 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Known gaps: Fewest Tokens is not played in-browser (its expected outputs come from the native reference); browser perf cases use n=40000 so borderline-slow solutions may pass in-browser; no tree problem or second hard yet; no Python variant or SRS for problems.
 - CI/Pages: checked via commit status only (no `gh` CLI).
 - Next: C6b2b2.
+
+## 2026-11-03: C6b2b2a Code Dojo ladder, part 2b-2a
+- C6b2b2 was split into C6b2b2a (this run) and C6b2b2b.
+- New package `gain-path` (H, tree DP, LC 124 pointer, framed as the best summed-gain path in a decision tree). Children always have larger indices than parents, so the reference is one loop from n-1 to 0 (no recursion, safe at 2*10^5 nodes on a chain). Brute = every node pair via depth climb; wrongs: root-to-leaf only (WA), negative child not clamped (WA), no-memo re-walk (TLE on the chain perf case). Seeded generator with edge cases (all-negative, negative root, start below root), 4 test groups, 3-rung hints, strategy question, house-style editorial.
+- `gen:problems` regenerated the bundle; `tests/dojo.test.ts` checks the sample (42), difficulty and all-negative / bend cases. `smoke:dojo` now plays Gain Path end to end and screenshots `/dojo`.
+- Verification: lint (0 errors), typecheck, test (285 pass; needs numpy on the python3 in PATH, here via /usr/bin/python3), content:verify (all `ok`), build, build:pages, smoke:dojo at desktop and iPhone 14; iPhone `/dojo` screenshot inspected (8 cards, E then M then H, no overflow, no console errors).
+- Known gaps: Fewest Tokens, Pipeline Order, Peak Window, Context Window and Batch Packer are still not played in the browser; browser perf cases use n=40000; no Python variant or SRS for problems.
+- CI/Pages: no `gh` CLI in this session; work is on the session branch `claude/wonderful-goodall-sd9dn9` (not main), so no Pages deploy was triggered.
+- Next: C6b2b2b.
