@@ -343,3 +343,14 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Known gaps: `/dojo` lists alphabetically, not by difficulty; both problems are M; the in-browser solve flow of the new problems was not played end to end (the smoke plays Hot Tokens; expected outputs come from the native reference); no SRS or Python yet.
 - CI/Pages: ran after the Actions-quota period but no `gh` CLI here; not confirmed.
 - Next: C6b2.
+
+## 2026-11-03: C6b2a Code Dojo ladder, part 2a
+- C6b2 was split into C6b2a (this run) and C6b2b (a true Hard, more AI-flavoured and Easy problems).
+- `ladder()` in `lib/dojo/catalog.ts` orders `/dojo` easiest first (E, M, H) then by title; unit-tested.
+- New package `content/problems/fast-lanes` (LC 2093 pointer, Dijkstra over (service, lanes used)): reference, Bellman-Ford brute, four documented wrongs (greedy waive of the heaviest path edges, one distance per service, 32-bit overflow, O(V^2) scan = TLE), seeded generator, 4 test groups, hints, strategy question, house-style editorial. Rated M honestly (not a Hard).
+- Lessons: `content:verify` caught that no test needed 64-bit answers (the overflow wrong passed), so an edge case with answer 4*10^9 was added. My first statement example was wrong (answer is 3, not 10); the sample expected value comes from the native reference, which exposed it.
+- Verification: lint, typecheck, test (282 pass), content:verify (all ok), build, build:pages, smoke:dojo at desktop and iPhone 14 (no overflow, no console errors). Index screenshot taken with an ad-hoc server lacking the base path (unstyled), so the official smoke is the evidence for layout.
+- Env notes: `python3 -m pip install --break-system-packages -r requirements-dev.txt` was needed for numpy; `npm run build` must run before `npm test` on a fresh clone (stages Pyodide). Commands over 2 min need background runs.
+- Known gaps: all four problems are M; the in-browser play-through of Fast Lanes was not run end to end; SRS and Python variant still open (C6b3).
+- CI/Pages: work committed to the session branch `claude/wonderful-goodall-eh99wl` as instructed by the session, not `main`, so no Pages deploy for it; `gh` unavailable here.
+- Next: C6b2b.

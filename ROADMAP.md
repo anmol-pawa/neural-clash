@@ -54,7 +54,8 @@ Work top to bottom: take the **first unchecked box**, and split big boxes into r
 - [x] C5. (done 2026-11-03) Readiness Report mapped to interview loops (CUR D3): pure `lib/readiness`, `/readiness` page. Follow-up C5b: take-home simulator (needs Retrieval Reef).
 - [x] C6a. (done 2026-11-03) **Code Dojo core:** pure `lib/dojo` (Scout → Strategise → Code + Judge → Debrief, 3 hearts, grades), `scripts/gen-problems.mjs` → `lib/dojo/problems.gen.ts` (expected outputs from the native reference), `/dojo` and `/dojo/[id]` on the existing clang workbench, Bits for a first unaided solve; Hot Tokens is the first problem.
 - [x] C6b1. (done 2026-11-03) **Code Dojo ladder, part 1:** two more full packages (Context Window: sliding window; Batch Packer: binary search on the answer) beside Hot Tokens, each with brute, 3 wrongs incl. TLE, generator, hints, editorial.
-- [ ] C6b2. **Code Dojo ladder, part 2:** more C++ problems (hards, trees/graphs/DP, an AI-flavoured set: GDD §5.6), ladder ordering by difficulty on `/dojo`.
+- [x] C6b2a. (done 2026-11-03) **Code Dojo ladder, part 2a:** `ladder()` ordering (E, M, H, then title) on `/dojo` and the Fast Lanes package (layered Dijkstra, AI routing flavour).
+- [ ] C6b2b. **Code Dojo ladder, part 2b:** a real Hard (tree or DP), more AI-flavoured C++ (LRU embedding cache, token bucket, interval merging, trie autocomplete), and Easy warm-ups at the bottom of the ladder.
 - [ ] C6b3. **Python (Pyodide) variant of the Dojo battle** and SRS entries for solved problems.
 
 ## Phase D: Act I regions (region recipe)

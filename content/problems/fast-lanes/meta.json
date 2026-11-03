@@ -1,0 +1,46 @@
+{
+  "id": "fast-lanes",
+  "title": "Fast Lanes",
+  "difficulty": "M",
+  "language": "cpp",
+  "tags": ["graph", "dijkstra", "layered-state"],
+  "similar": "LeetCode 2093 Minimum Cost to Reach City With Discounts",
+  "compare": "tokens",
+  "timeLimitMs": 1500,
+  "complexity": { "time": "O(k (n + m) log(k n))", "space": "O(k n + m)" },
+  "groups": {
+    "sample": [1],
+    "edge": [1, 2, 3, 4, 5],
+    "random": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
+    "perf": [1, 2]
+  },
+  "hints": [
+    "Without express lanes this is plain shortest path. What extra fact about a position do you need once lanes exist?",
+    "Two visits to the same service are different situations if they have used a different number of lanes. Make that count part of the state.",
+    "Run Dijkstra over states (service, lanes used). A normal edge keeps the layer and adds w; an express edge moves to the next layer and adds 0. Answer: the best distance to service n over every layer."
+  ],
+  "wrong": {
+    "greedy_waive.cpp": "finds one shortest path, then waives its k heaviest edges (a different path can be better once lanes exist)",
+    "forget_layers.cpp": "keeps one distance per service, so a cheap early arrival with lanes spent hides a pricier arrival with lanes in hand",
+    "int_overflow.cpp": "stores distances in 32-bit ints, which overflow on long routes",
+    "tle_array_scan.cpp": "Dijkstra that picks the next state by scanning every state (fails the perf group)"
+  },
+  "wrongExpect": {
+    "greedy_waive.cpp": "WA",
+    "forget_layers.cpp": "WA",
+    "int_overflow.cpp": "WA",
+    "tle_array_scan.cpp": "TLE"
+  },
+  "strategy": {
+    "question": "Scout the statement: services form a directed graph with latencies up to 10^9, and you may waive the latency of up to k <= 10 edges on your route. Which plan fits n up to 2*10^4?",
+    "options": [
+      "Plain Dijkstra, then waive the k heaviest edges on the path it finds",
+      "Dijkstra on states (service, lanes used), so each layer is a copy of the graph",
+      "Try all subsets of k edges to waive and run Dijkstra for each",
+      "BFS by edge count, ignoring latencies"
+    ],
+    "answer": 1,
+    "why": "Waiving the heaviest edges of one fixed shortest path is a greedy that a different route can beat. Subsets of edges are far too many. BFS ignores weights. Layering the graph by 'lanes used' turns the problem into an ordinary shortest path on (k+1)n states with non-negative weights, which Dijkstra solves in O(k (n+m) log(kn))."
+  },
+  "browserPerfN": 6000
+}

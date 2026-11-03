@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { dojoProblem, dojoProblems, toTask } from "@/lib/dojo/catalog";
+import { dojoProblem, dojoProblems, ladder, toTask } from "@/lib/dojo/catalog";
 import { MAX_HEARTS, grade, initial, step, type Action, type DojoState } from "@/lib/dojo/dojo";
 
 const run = (actions: Action[], s: DojoState = initial()) => actions.reduce(step, s);
@@ -67,5 +67,15 @@ describe("dojo catalog", () => {
     }
     expect(dojoProblem("context-window")!.sample[0].expected).toBe("4");
     expect(dojoProblem("batch-packer")!.sample[0].expected).toBe("18");
+    expect(ids).toContain("fast-lanes");
+    expect(dojoProblem("fast-lanes")!.sample[0].expected).toBe("3");
+  });
+
+  it("orders the ladder easiest first, then by title", () => {
+    const mk = (id: string, difficulty: "E" | "M" | "H", title: string) => ({ ...dojoProblem("top-k-tokens")!, id, difficulty, title });
+    const order = ladder([mk("h", "H", "A"), mk("m2", "M", "Z"), mk("e", "E", "Q"), mk("m1", "M", "B")]).map((p) => p.id);
+    expect(order).toEqual(["e", "m1", "m2", "h"]);
+    const ranks = dojoProblems().map((p) => "EMH".indexOf(p.difficulty));
+    expect(ranks).toEqual([...ranks].sort((a, b) => a - b));
   });
 });
