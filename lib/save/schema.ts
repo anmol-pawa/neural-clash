@@ -1,6 +1,6 @@
 import { validatePath } from "@/lib/editor/workspace";
 import { sanitizeJournal, type JournalEntry } from "@/lib/journal/journal";
-import { isMode, sanitizeOwned, sanitizeWallet, type Mode, type Wallet } from "@/lib/economy/economy";
+import { isMode, sanitizeEquipped, sanitizeOwned, sanitizeWallet, type Mode, type Wallet } from "@/lib/economy/economy";
 import { sanitizeSrs, type SrsTable } from "@/lib/srs/srs";
 
 export const SAVE_VERSION = 1;
@@ -45,6 +45,8 @@ export interface SaveData {
   wallet: Wallet;
   /** Mart items bought (cosmetics only). */
   owned: string[];
+  /** Worn Mart tint id (must be owned), or null. */
+  equipped: string | null;
   /** Scaffolding mode: how many hints the game offers. */
   mode: Mode;
   /** Free-form per-system state owned by later features (SRS, journal), kept opaque here. */
@@ -64,6 +66,7 @@ export const DEFAULT_SAVE: SaveData = {
   journal: [],
   wallet: { bits: 0, paid: [] },
   owned: [],
+  equipped: null,
   mode: "standard",
   extra: {},
   updatedAt: 0,
@@ -130,6 +133,7 @@ export function migrate(raw: unknown): SaveData {
     journal: sanitizeJournal(raw.journal),
     wallet: sanitizeWallet(raw.wallet),
     owned: sanitizeOwned(raw.owned),
+    equipped: sanitizeEquipped(raw.equipped, sanitizeOwned(raw.owned)),
     mode: isMode(raw.mode) ? raw.mode : base.mode,
     extra: isObj(raw.extra) ? { ...raw.extra } : {},
     updatedAt: typeof raw.updatedAt === "number" && Number.isFinite(raw.updatedAt) ? raw.updatedAt : 0,

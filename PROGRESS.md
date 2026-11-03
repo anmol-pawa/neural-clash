@@ -306,3 +306,12 @@ Append a dated entry after every run: what changed, how it was verified (command
 - CI/Pages: not polled (no `gh` CLI in this session).
 - Known gaps: Bits are earned only from Labs so far, so Standard mode starts with no way to afford hints until one lab is passed (only one lab has hints today); prices are a first guess; no Mart UI.
 - Next: C4b.
+
+## 2026-11-03: C4b Mart page and Bits from cards and the guardian
+- `lib/economy`: `equip`/`sanitizeEquipped`/`tintFor` (two Pup tints; decor items cannot be worn), `payReward` (pays a state carrying wallet + mode; once per item, 1.5x in Interview, nothing when assisted). Save gained `equipped` (must be owned, else null). 3 new tests (260 pass).
+- `/mart`: balance, live Pup preview, Preview/Buy/Wear/Take off, honest notice that nothing affects grading, mastery or evolution. The worn tint shows on the Pup in `/sync` (RustyPup takes a tint). Title links to it.
+- Bits now also come from first-try-correct cards (Battle, Sync; 2 each) and the guardian (100).
+- Verification: lint (0 errors), typecheck, test (260), content:verify, build, build:pages, new `smoke:mart` (buy, wear, persistence, overflow, console) plus `smoke:slice` (now with /mart), `smoke:economy`, `smoke:battle`, `smoke:guardian` at desktop and iPhone 14; iPhone screenshot inspected.
+- Known gaps: Forge decor (fern, poster) is purchasable but not yet rendered; tint is not shown on `/companion` or in battles; no daily card cap on Bits (replays pay nothing, so farming is bounded by deck size); prices are a first guess.
+- CI/Pages confirmation: not checked (no `gh` CLI in this session).
+- Next: C5 Readiness Report.

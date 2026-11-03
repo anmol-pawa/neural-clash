@@ -98,3 +98,37 @@ export function sanitizeWallet(raw: unknown): Wallet {
 export function sanitizeOwned(raw: unknown): string[] {
   return Array.isArray(raw) ? [...new Set(raw.filter((x): x is string => typeof x === "string" && MART.some((m) => m.id === x)))] : [];
 }
+
+/** A tint recolours the opaque pixels of the Pup: `rgb` blended in at `alpha` (source-atop). */
+export interface Tint {
+  rgb: string;
+  alpha: number;
+}
+
+const TINTS: Record<string, Tint> = {
+  "tint-ember": { rgb: "255,140,40", alpha: 0.38 },
+  "tint-mint": { rgb: "60,220,160", alpha: 0.36 },
+};
+
+/** Items that can be worn by the Pup (the others are Forge decor). */
+export const isTintItem = (id: string): boolean => id in TINTS;
+
+export const tintFor = (equipped: string | null): Tint | null => (equipped && TINTS[equipped]) || null;
+
+/** Wears an owned tint, or `null` to take it off. Unowned or non-tint ids are refused. */
+export function equip(owned: readonly string[], equipped: string | null, itemId: string | null): { ok: boolean; equipped: string | null } {
+  if (itemId === null) return { ok: true, equipped: null };
+  if (!owned.includes(itemId) || !isTintItem(itemId)) return { ok: false, equipped };
+  return { ok: true, equipped: itemId };
+}
+
+/** Only an owned tint stays equipped (hostile or edited saves fall back to none). */
+export function sanitizeEquipped(raw: unknown, owned: readonly string[]): string | null {
+  return typeof raw === "string" && isTintItem(raw) && owned.includes(raw) ? raw : null;
+}
+
+/** Pays `reward` into any state carrying a wallet and a mode (the save). Returns the same object when nothing is earned. */
+export function payReward<T extends { wallet: Wallet; mode: Mode }>(s: T, kind: RewardKind, id: string, assisted: boolean): { state: T; earned: number } {
+  const r = reward(s.wallet, kind, id, s.mode, assisted);
+  return r.earned === 0 ? { state: s, earned: 0 } : { state: { ...s, wallet: r.wallet }, earned: r.earned };
+}

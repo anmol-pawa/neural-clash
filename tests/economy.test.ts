@@ -61,3 +61,29 @@ describe("sanitising and save", () => {
     expect(migrate({ mode: "interview", wallet: { bits: 7 } }).wallet.bits).toBe(7);
   });
 });
+
+import { equip, payReward, sanitizeEquipped, tintFor } from "@/lib/economy/economy";
+
+describe("Mart equip and payReward", () => {
+  it("only owned tints can be worn; decor cannot", () => {
+    expect(equip([], null, "tint-ember")).toEqual({ ok: false, equipped: null });
+    expect(equip(["lab-plant"], null, "lab-plant").ok).toBe(false);
+    expect(equip(["tint-mint"], null, "tint-mint")).toEqual({ ok: true, equipped: "tint-mint" });
+    expect(equip(["tint-mint"], "tint-mint", null)).toEqual({ ok: true, equipped: null });
+  });
+  it("sanitizeEquipped drops unowned or unknown ids", () => {
+    expect(sanitizeEquipped("tint-ember", [])).toBeNull();
+    expect(sanitizeEquipped("nope", ["nope"])).toBeNull();
+    expect(sanitizeEquipped("tint-ember", ["tint-ember"])).toBe("tint-ember");
+    expect(tintFor("tint-ember")?.alpha).toBeGreaterThan(0);
+    expect(tintFor(null)).toBeNull();
+  });
+  it("payReward pays once per item, 1.5x in interview, nothing when assisted", () => {
+    const s = { wallet: { bits: 0, paid: [] as string[] }, mode: "interview" as const };
+    const a = payReward(s, "guardian", "g1", false);
+    expect(a.earned).toBe(150);
+    expect(payReward(a.state, "guardian", "g1", false)).toEqual({ state: a.state, earned: 0 });
+    expect(payReward(s, "card", "c1", true).earned).toBe(0);
+    expect(payReward({ ...s, mode: "standard" as const }, "card", "c1", false).state.wallet.bits).toBe(2);
+  });
+});

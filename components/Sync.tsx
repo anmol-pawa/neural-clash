@@ -12,6 +12,7 @@ import { NUMPY_DECK, PYTHON_DECK, STRATEGY_DECK } from "@/lib/cards/samples";
 import type { Card, Response } from "@/lib/cards/types";
 import { LABS } from "@/lib/labs/catalog";
 import { getSaveManager, useSave } from "@/lib/save/react";
+import { payReward, tintFor, type Tint } from "@/lib/economy/economy";
 import { review } from "@/lib/srs/srs";
 import { useNow } from "@/lib/sync/useNow";
 import { buildSync, syncCards, type SyncDeck } from "@/lib/sync/sync";
@@ -27,7 +28,7 @@ const hash = (x: number, y: number) => {
 };
 
 /** The companion with a rust overlay: tinted sprite pixels only (source-atop), speckled orange as rust grows. */
-function RustyPup({ level }: { level: number }) {
+export function RustyPup({ level, tint = null, size = "h-32 w-32" }: { level: number; tint?: Tint | null; size?: string }) {
   const ref = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
     const def = spriteById("neuron-pup-perceptron")!;
@@ -39,6 +40,12 @@ function RustyPup({ level }: { level: number }) {
       g.clearRect(0, 0, def.w, def.h);
       g.globalCompositeOperation = "source-over";
       g.drawImage(frameCanvas(def, "idle", frameAt(def, "idle", (now - t0) / 1000)), 0, 0);
+      if (tint) {
+        g.globalCompositeOperation = "source-atop";
+        g.fillStyle = `rgba(${tint.rgb},${tint.alpha})`;
+        g.fillRect(0, 0, def.w, def.h);
+        g.globalCompositeOperation = "source-over";
+      }
       if (level > 0) {
         g.globalCompositeOperation = "source-atop";
         g.fillStyle = `rgba(120,70,30,${0.45 * level})`;
@@ -54,8 +61,8 @@ function RustyPup({ level }: { level: number }) {
     };
     raf = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(raf);
-  }, [level]);
-  return <canvas ref={ref} width={64} height={64} data-testid="sync-pup" data-rust={level.toFixed(2)} className="h-32 w-32 shrink-0" style={{ imageRendering: "pixelated" }} role="img" aria-label={level > 0 ? `Your Neuron-Pup, ${Math.round(level * 100)}% rusty` : "Your Neuron-Pup, shiny"} />;
+  }, [level, tint]);
+  return <canvas ref={ref} width={64} height={64} data-testid="sync-pup" data-rust={level.toFixed(2)} className={`${size} shrink-0`} style={{ imageRendering: "pixelated" }} role="img" aria-label={level > 0 ? `Your Neuron-Pup, ${Math.round(level * 100)}% rusty` : "Your Neuron-Pup, shiny"} />;
 }
 
 interface Session {
@@ -85,7 +92,10 @@ export default function Sync() {
       const card = s.cards[s.i];
       const correct = check(card, r).correct;
       audio.play(correct ? "correct" : "wrong");
-      getSaveManager().update((sv) => ({ ...sv, srs: review(sv.srs, card.id, { correct }, Date.now()), updatedAt: Date.now() }));
+      getSaveManager().update((sv) => {
+        const next = { ...sv, srs: review(sv.srs, card.id, { correct }, Date.now()), updatedAt: Date.now() };
+        return correct ? payReward(next, "card", card.id, false).state : next;
+      });
       return { ...s, last: { correct, card }, right: s.right + (correct ? 1 : 0) };
     });
   const advance = () => setSess((s) => (s ? { ...s, i: s.i + 1, last: null } : s));
@@ -104,7 +114,7 @@ export default function Sync() {
       {!sess && (
         <>
           <section className="panel flex items-center gap-4 p-3" aria-label="Companion">
-            <RustyPup level={state.rustLevel} />
+            <RustyPup level={state.rustLevel} tint={tintFor(save.equipped)} />
             <div className="grid gap-1 text-sm">
               <p data-testid="sync-rust" className={state.rustLevel > 0 ? "text-amber-300" : "text-emerald-300"}>
                 {state.trackedCount === 0 ? "Nothing reviewed yet." : state.rustLevel > 0 ? `Rusty: ${state.rustedCount} of ${state.trackedCount} reviewed items are overdue.` : "Shiny: nothing is overdue."}

@@ -15,6 +15,7 @@ import type { Response } from "@/lib/cards/types";
 import { lessonForTopic } from "@/lib/lessons/lessons";
 import { labById, labTask } from "@/lib/labs/catalog";
 import { GUARDIAN_ID, GUARDIAN_NAME, PHASES, guardianAdvanceFromCards, guardianAnswer, guardianFight, guardianLabResult, guardianNext, phaseProgress, progressOf, resumeGuardian, startGuardian, summarizeGuardian, type GuardianProgress, type GuardianState } from "@/lib/guardian/portGuardian";
+import { payReward } from "@/lib/economy/economy";
 import { getSaveManager, useSave } from "@/lib/save/react";
 
 const LAB_ID = "py-moving-average";
@@ -95,7 +96,11 @@ export default function Guardian() {
   useEffect(() => {
     if (state.phase !== "won") return;
     audio.play("badge");
-    getSaveManager().update((s) => (s.cleared.includes(GUARDIAN_ID) ? s : { ...s, cleared: [...s.cleared, GUARDIAN_ID], updatedAt: Date.now() }));
+    getSaveManager().update((s) => {
+      if (s.cleared.includes(GUARDIAN_ID)) return s;
+      const base = { ...s, cleared: [...s.cleared, GUARDIAN_ID], updatedAt: Date.now() };
+      return payReward(base, "guardian", GUARDIAN_ID, false).state;
+    });
   }, [state.phase]);
 
   const submit = useCallback((r: Response) => {

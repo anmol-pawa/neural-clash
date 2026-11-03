@@ -12,6 +12,7 @@ import { parseShape } from "@/lib/cards/check";
 import { demoDeck } from "@/lib/cards/samples";
 import type { Card, Response } from "@/lib/cards/types";
 import { getSaveManager } from "@/lib/save/react";
+import { payReward } from "@/lib/economy/economy";
 import { review } from "@/lib/srs/srs";
 
 export const btn = "min-h-11 rounded border-2 border-indigo-300/40 bg-slate-900/80 px-3 py-2 text-left text-sm hover:border-cyan-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300";
@@ -169,7 +170,10 @@ export default function Battle() {
       if (recorded.current !== n.last && !s.firstTryCorrect.includes(id) && !s.missed.includes(id)) {
         recorded.current = n.last;
         const ok = n.last.correct;
-        getSaveManager().update((sv) => ({ ...sv, srs: review(sv.srs, id, { correct: ok }, Date.now()) }));
+        getSaveManager().update((sv) => {
+          const next = { ...sv, srs: review(sv.srs, id, { correct: ok }, Date.now()) };
+          return ok ? payReward(next, "card", id, false).state : next;
+        });
       }
       const fx = fxRef.current;
       fx.foeHp = n.foeHp / n.config.foeHp;
