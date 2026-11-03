@@ -1,0 +1,40 @@
+{
+  "id": "peak-window",
+  "title": "Peak Window",
+  "difficulty": "H",
+  "language": "cpp",
+  "tags": ["monotonic-deque", "sliding-window"],
+  "similar": "LeetCode 239 Sliding Window Maximum",
+  "compare": "tokens",
+  "timeLimitMs": 1000,
+  "complexity": { "time": "O(n)", "space": "O(k)" },
+  "groups": {
+    "sample": [1],
+    "edge": [1, 2, 3, 4, 5],
+    "random": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+    "perf": [1, 2]
+  },
+  "hints": [
+    "When a new value arrives, can an older value that is smaller than it ever be the window maximum again?",
+    "If not, you can throw those older values away. What order are the survivors in, and which end holds the current maximum?",
+    "Keep indices in a deque with decreasing values. Pop from the back while the back value is smaller than the new one, push the new index, pop the front if its index left the window, and read the maximum at the front."
+  ],
+  "wrong": {
+    "no_eviction.cpp": "never removes the front index once it falls out of the window, so a stale maximum is reported",
+    "prefix_max.cpp": "reports the maximum of everything seen so far instead of the last k values",
+    "tle_rescan.cpp": "rescans all k values of every window (fails the perf group)"
+  },
+  "wrongExpect": { "no_eviction.cpp": "WA", "prefix_max.cpp": "WA", "tle_rescan.cpp": "TLE" },
+  "strategy": {
+    "question": "Scout the statement: n up to 2*10^5 load readings, window k up to n, print the maximum of every window. Which plan fits?",
+    "options": [
+      "For each window, scan its k values for the maximum",
+      "Keep a running maximum and reset it every k steps",
+      "Sort each window and take the last value",
+      "Keep a deque of candidate indices with decreasing values; each index enters and leaves once"
+    ],
+    "answer": 3,
+    "why": "Scanning every window is O(nk), up to 10^10. A running maximum reset every k steps mixes up windows that overlap. Sorting is worse than scanning. A monotonic deque discards values that can never be a future maximum, so each index is pushed and popped at most once: O(n)."
+  },
+  "browserPerfN": 40000
+}

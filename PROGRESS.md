@@ -343,3 +343,13 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Known gaps: `/dojo` lists alphabetically, not by difficulty; both problems are M; the in-browser solve flow of the new problems was not played end to end (the smoke plays Hot Tokens; expected outputs come from the native reference); no SRS or Python yet.
 - CI/Pages: ran after the Actions-quota period but no `gh` CLI here; not confirmed.
 - Next: C6b2.
+
+## 2026-11-03: C6b2a Code Dojo ladder, part 2a
+- C6b2 was split into C6b2a (this run) and C6b2b.
+- Two new full packages: `pipeline-order` (M, graph: Kahn's algorithm with a min-heap for the lexicographically smallest order, -1 on a cycle; brute = permutations in order; wrongs: FIFO queue (WA), no cycle check (WA), O(n^2) ready scan (TLE)) and `peak-window` (H, LC 239 pointer: monotonic deque; brute O(nk); wrongs: no front eviction (WA), prefix max (WA), rescan (TLE)). Each has a seeded generator, 4 test groups, 3-rung hints, a strategy question and a house-style editorial. `content:verify` passes; `gen:problems` regenerated the bundle.
+- `lib/dojo/catalog.ts`: `ladder()` orders problems E, M, H then by title; `/dojo` uses it. Tests: new problems present, samples from the native reference, cycle cases print -1, ladder order.
+- Verification: lint (0 errors), typecheck, test (283 pass), content:verify, build, build:pages, smoke:dojo at desktop and iPhone 14; `/dojo` screenshot inspected (5 cards, M's then H, no overflow, no console errors).
+- Env note: a fresh clone needs `npm run build` once (fetches Pyodide) before `npm test` passes py.core tests.
+- Known gaps: the new problems were not played end to end in the browser (smoke plays Hot Tokens; expected outputs come from the native reference); browser perf cases use n=40000, so a quadratic solution on Peak Window might pass in-browser; no easy (E) problem yet; no tree/DP problem yet.
+- CI/Pages: no `gh` CLI in this session; confirm via commit status only.
+- Next: C6b2b.

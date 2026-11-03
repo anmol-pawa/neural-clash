@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { dojoProblem, dojoProblems, toTask } from "@/lib/dojo/catalog";
+import { dojoProblem, dojoProblems, ladder, toTask } from "@/lib/dojo/catalog";
 import { MAX_HEARTS, grade, initial, step, type Action, type DojoState } from "@/lib/dojo/dojo";
 
 const run = (actions: Action[], s: DojoState = initial()) => actions.reduce(step, s);
@@ -58,7 +58,7 @@ describe("dojo catalog", () => {
 
   it("every bundled problem is a consistent package with the documented samples", () => {
     const ids = dojoProblems().map((p) => p.id);
-    expect(ids).toEqual(expect.arrayContaining(["top-k-tokens", "context-window", "batch-packer"]));
+    expect(ids).toEqual(expect.arrayContaining(["top-k-tokens", "context-window", "batch-packer", "pipeline-order", "peak-window"]));
     for (const p of dojoProblems()) {
       expect(p.hints).toHaveLength(3);
       expect(p.strategy.answer).toBeLessThan(p.strategy.options.length);
@@ -67,5 +67,26 @@ describe("dojo catalog", () => {
     }
     expect(dojoProblem("context-window")!.sample[0].expected).toBe("4");
     expect(dojoProblem("batch-packer")!.sample[0].expected).toBe("18");
+  });
+
+  it("the samples of the new packages come from the native reference", () => {
+    expect(dojoProblem("pipeline-order")!.sample[0].expected).toBe("2 3 4 1");
+    expect(dojoProblem("peak-window")!.sample[0].expected).toBe("3 3 5 5 6 7");
+    // cycle and self-loop edge cases print -1
+    expect(dojoProblem("pipeline-order")!.hidden.filter((h) => h.expected === "-1").length).toBeGreaterThanOrEqual(2);
+  });
+
+  it("the ladder lists easier problems first, then by title", () => {
+    const ranks = { E: 0, M: 1, H: 2 } as const;
+    const list = dojoProblems();
+    for (let i = 1; i < list.length; i++) {
+      const a = list[i - 1];
+      const b = list[i];
+      expect(ranks[a.difficulty]).toBeLessThanOrEqual(ranks[b.difficulty]);
+      if (a.difficulty === b.difficulty) expect(a.title.localeCompare(b.title)).toBeLessThan(0);
+    }
+    expect(list[list.length - 1].difficulty).toBe("H");
+    const shuffled = [...list].reverse();
+    expect(ladder(shuffled).map((p) => p.id)).toEqual(list.map((p) => p.id));
   });
 });

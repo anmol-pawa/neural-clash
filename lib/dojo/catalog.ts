@@ -27,7 +27,13 @@ export interface DojoProblem {
   hidden: TestCase[];
 }
 
-export const dojoProblems = (): DojoProblem[] => DOJO_PROBLEMS;
+const RANK = { E: 0, M: 1, H: 2 } as const;
+
+/** The ladder: easiest first, then by title so the order is stable. */
+export const ladder = (problems: readonly DojoProblem[]): DojoProblem[] =>
+  [...problems].sort((a, b) => RANK[a.difficulty] - RANK[b.difficulty] || a.title.localeCompare(b.title));
+
+export const dojoProblems = (): DojoProblem[] => ladder(DOJO_PROBLEMS);
 export const dojoProblem = (id: string): DojoProblem | undefined => DOJO_PROBLEMS.find((p) => p.id === id);
 
 export function toTask(p: DojoProblem): CppTask {

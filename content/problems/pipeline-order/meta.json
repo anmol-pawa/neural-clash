@@ -1,0 +1,40 @@
+{
+  "id": "pipeline-order",
+  "title": "Pipeline Order",
+  "difficulty": "M",
+  "language": "cpp",
+  "tags": ["graph", "topological-sort", "heap"],
+  "similar": "LeetCode 210 Course Schedule II (lexicographically smallest variant)",
+  "compare": "tokens",
+  "timeLimitMs": 1000,
+  "complexity": { "time": "O((n + m) log n)", "space": "O(n + m)" },
+  "groups": {
+    "sample": [1],
+    "edge": [1, 2, 3, 4, 5],
+    "random": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+    "perf": [1, 2]
+  },
+  "hints": [
+    "Which stages can run first? What changes when one of them finishes?",
+    "Keep a count of unfinished prerequisites per stage. A stage with count 0 is ready. Finishing a stage lowers the counts of the stages that need it.",
+    "Kahn's algorithm, but keep the ready stages in a min-heap so you always run the smallest label. If fewer than n stages ever became ready, there is a cycle: print -1."
+  ],
+  "wrong": {
+    "fifo_queue.cpp": "uses a plain FIFO queue of ready stages, so the order is valid but not the smallest",
+    "no_cycle_check.cpp": "prints whatever order it produced, even when a cycle left some stages unscheduled",
+    "tle_scan_ready.cpp": "scans all n stages for the smallest ready one at every step (fails the perf group)"
+  },
+  "wrongExpect": { "fifo_queue.cpp": "WA", "no_cycle_check.cpp": "WA", "tle_scan_ready.cpp": "TLE" },
+  "strategy": {
+    "question": "Scout the statement: n up to 2*10^5 stages, m dependencies, 'smallest valid order or -1'. Which plan fits?",
+    "options": [
+      "Try all permutations and keep the first valid one",
+      "DFS from stage 1 and print the visit order",
+      "Count unfinished prerequisites; repeatedly run the smallest ready stage from a min-heap; -1 if some stage never becomes ready",
+      "Sort the stages by how many prerequisites they have"
+    ],
+    "answer": 2,
+    "why": "Permutations are n!. A plain DFS visit order ignores dependencies. Sorting by prerequisite count is not enough (a stage with 1 prerequisite can still need a late one). Kahn's algorithm with a min-heap schedules the smallest ready label each step in O((n+m) log n), and a cycle shows up as stages that never reach count 0."
+  },
+  "browserPerfN": 40000
+}
