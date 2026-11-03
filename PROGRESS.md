@@ -282,3 +282,10 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Verification: lint (0 errors), typecheck, test (236 pass), content:verify, build, build:pages, `smoke:sync` (fresh queue, 4-card session, seeded overdue save rusts the Pup and flags the Lab on /sync and /labs) at desktop and iPhone 14, `smoke:slice`; screenshots inspected (fresh, rusty iPhone).
 - Known gaps: the daily plan has only cards and Labs (GDD also lists a metric drill, code snippet, C++ problem and micro-workshop step; those need C6/D content); missed cards are not requeued in-session; rust look is a first pass and the Pup has one form.
 - Next: C2 companion evolution tied to Forge milestones.
+
+## 2026-11-03: C2 Companion evolution
+- `lib/evolution/evolution.ts` (pure, `tests/evolution.test.ts`, 7 tests): six forms (GDD §3), each needing specific Labs passed **unassisted**; strictly ordered; requirement ids without a Lab yet are "coming" and block progress. `/companion` shows the ladder (animated sprite for unlocked forms, silhouette or "?" for the rest), current form, next-form progress. Title links to it. Stat derivation from measured metrics was already done (`companionStats`).
+- Verification: lint (0 errors), typecheck, test (243 pass), content:verify, build, build:pages, `smoke:companion` (fresh, assisted pass does not evolve, unassisted pass unlocks Perceptron) at desktop and iPhone 14; iPhone screenshot inspected; `smoke:slice` with `/companion` added.
+- Known gaps: only the Perceptron has art; forms 2-6 need sprites and Labs (autograd, mlp, conv2d, rnn, attention, ...); the "glitch when a Lab regresses" behaviour (GDD 5.2) is not built; Lab ids for later forms are provisional.
+- CI/Pages: not polled (no `gh` CLI in this session).
+- Next: C3 Research journal.
