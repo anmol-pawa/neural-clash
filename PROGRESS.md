@@ -324,3 +324,13 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Known gaps: loop shapes come from CUR D3 (not re-searched this run); most skills are "coming" until Retrieval Reef, Code Dojo, comprehension and pair content land; take-home simulator not built (C5b); weights are a first guess.
 - CI/Pages: Actions quota note expired, but no `gh` CLI here; confirmed via commit status only.
 - Next: C6 Code Dojo v1.
+
+## 2026-11-03: C6a Code Dojo core
+- C6 was split: C6a (this run), C6b (more problems, Python variant, SRS).
+- `lib/dojo/dojo.ts` (pure, `tests/dojo.test.ts`): Scout → Strategise (plan question, wrong picks are free but downgrade the grade) → Code + Judge (3 hearts; a wrong Submit verdict costs one, compile errors are free; hints and a retry mark the attempt assisted) → Debrief (grade, complexity, editorial).
+- `scripts/gen-problems.mjs` bundles `content/problems/*` into `lib/dojo/problems.gen.ts` (no reference or wrong solutions; expected outputs from the native reference; `--check` is a test). The browser perf case is generated at `browserPerfN` (40k) to keep the bundle at ~480 KB; native `content:verify` still uses the full sizes.
+- `/dojo` index and `/dojo/[id]` reuse `EditorWorkbench` (now reports the C++ verdict via `onResult`). A first unassisted solve records `dojo:<id>` in `cleared` and pays 40 Bits (`problem` reward kind, 1.5x in Interview). Hints follow the Labs pricing.
+- Verification: lint (0 errors), typecheck, test (280+), content:verify, build, build:pages, new `smoke:dojo` (wrong plan refused, empty program costs a heart, correct solution accepted) at desktop and iPhone 14; iPhone debrief screenshot inspected (no overflow, readable).
+- Known gaps: one problem only; no Python variant; SRS not fed by problems; the browser perf case is smaller than native, so a borderline-slow solution may pass in-browser; smoke clicks Submit with `dispatchEvent` on iPhone because Playwright reports the editor panel intercepting the scroll-to-click (real touch not reproduced, worth a look); hearts glyphs sit tight to the right edge on small phones.
+- CI/Pages: no `gh` CLI in this session; not confirmed.
+- Next: C6b.

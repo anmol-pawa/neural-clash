@@ -52,7 +52,8 @@ Work top to bottom: take the **first unchecked box**, and split big boxes into r
 - [x] C4a. (done 2026-11-03) **Bits, hint pricing and scaffolding modes:** pure `lib/economy` (rewards once per item and never when assisted, rung-priced hints, Mart catalogue and purchase rules, sanitisers), `wallet`/`owned`/`mode` in the save, mode picker + Bits on `/labs`, hints cost Bits and mark the attempt assisted.
 - [x] C4b. (done 2026-11-03) **Mart page** (`/mart`: spend Bits on cosmetics, apply tints to the Pup/Forge) and Bits rewards from card battles and the guardian (pass `assisted` through, interview 1.5x).
 - [x] C5. (done 2026-11-03) Readiness Report mapped to interview loops (CUR D3): pure `lib/readiness`, `/readiness` page. Follow-up C5b: take-home simulator (needs Retrieval Reef).
-- [ ] C6. **Code Dojo v1:** port the coding battle from Algo Clash (Scout → Strategise → Code → Judge → Debrief) for C++ and Python problems.
+- [x] C6a. (done 2026-11-03) **Code Dojo core:** pure `lib/dojo` (Scout → Strategise → Code + Judge → Debrief, 3 hearts, grades), `scripts/gen-problems.mjs` → `lib/dojo/problems.gen.ts` (expected outputs from the native reference), `/dojo` and `/dojo/[id]` on the existing clang workbench, Bits for a first unaided solve; Hot Tokens is the first problem.
+- [ ] C6b. **Code Dojo content and Python:** the ladder of C++ problems (each a full package: reference, brute, wrongs incl. TLE, generator, hints, editorial), a Python (Pyodide) variant of the battle, SRS entries for problems, and the AI-flavoured set (GDD §5.6).
 
 ## Phase D: Act I regions (region recipe)
 

@@ -28,8 +28,10 @@
     "smoke:readiness": "node scripts/smoke-readiness.mjs",
     "smoke:economy": "node scripts/smoke-economy.mjs",
     "smoke:mart": "node scripts/smoke-mart.mjs",
+    "smoke:dojo": "node scripts/smoke-dojo.mjs",
     "smoke:slice": "node scripts/smoke-slice.mjs",
     "gen:labs": "node scripts/gen-labs.mjs",
+    "gen:problems": "node scripts/gen-problems.mjs",
     "build:pages": "npm run stage:pyodide && npm run stage:clang && STATIC_EXPORT=1 BASE_PATH=${BASE_PATH-/neural-clash} next build && BASE_PATH=${BASE_PATH-/neural-clash} node scripts/gen-sw.mjs"
   },
   "dependencies": {

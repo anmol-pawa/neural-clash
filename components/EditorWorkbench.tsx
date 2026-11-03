@@ -50,7 +50,7 @@ function FileTree({ nodes, active, dirty, onOpen, depth = 0 }: { nodes: TreeNode
   );
 }
 
-export default function EditorWorkbench({ task, onResult, hideHeader }: { task: EditorTask; hideHeader?: boolean; onResult?: (r: { mode: Mode; allPassed: boolean }) => void }) {
+export default function EditorWorkbench({ task, onResult, hideHeader }: { task: EditorTask; hideHeader?: boolean; onResult?: (r: { mode: Mode; allPassed: boolean; verdict?: string }) => void }) {
   useAudioSettings({ music: false });
   const [ws, setWs] = useState(() => Workspace.fromStarter(task.starter));
   const [active, setActive] = useState(task.entry);
@@ -149,11 +149,13 @@ export default function EditorWorkbench({ task, onResult, hideHeader }: { task: 
         if (!r.compile.ok) {
           const errs = r.compile.diagnostics.filter((d) => d.severity === "error");
           setOutcome({ kind: "ce", diagnostics: errs, errorLine: errs[0]?.line });
+          onResult?.({ mode, allPassed: false, verdict: "CE" });
         } else if (r.summary) {
           const n = task.sample.length;
           const rows = buildCppRows(r.summary.cases.slice(0, n), r.summary.cases.slice(n));
           setOutcome({ kind: "cpp", rows, verdict: r.summary.verdict, compileMs: r.compile.ms, mode });
           if (mode === "submit") audio.play(r.summary.verdict === "AC" ? "pass" : "fail");
+          onResult?.({ mode, allPassed: r.summary.verdict === "AC", verdict: r.summary.verdict });
         }
       }
     } catch (e) {

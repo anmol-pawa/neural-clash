@@ -33,8 +33,8 @@ export const EMPTY_WALLET: Wallet = { bits: 0, paid: [] };
 export const MAX_BITS = 1_000_000;
 export const MAX_PAID = 2000;
 
-export type RewardKind = "card" | "lab" | "guardian";
-const BASE_REWARD: Record<RewardKind, number> = { card: 2, lab: 25, guardian: 100 };
+export type RewardKind = "card" | "lab" | "guardian" | "problem";
+const BASE_REWARD: Record<RewardKind, number> = { card: 2, lab: 25, guardian: 100, problem: 40 };
 
 /** Bits for a first, unassisted success. Replays and assisted passes pay nothing. */
 export function reward(w: Wallet, kind: RewardKind, id: string, mode: Mode, assisted: boolean): { wallet: Wallet; earned: number } {

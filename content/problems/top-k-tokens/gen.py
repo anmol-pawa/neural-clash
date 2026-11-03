@@ -1,4 +1,5 @@
 """Seeded generator: python3 gen.py <group> <seed>  ->  one test input on stdout (stdlib only)."""
+import os
 import random
 import sys
 
@@ -28,7 +29,7 @@ if group == "random":
     pool = rng.randint(1, 8)
     a = [rng.randint(0, pool) for _ in range(n)]
 elif group == "perf":
-    n = 100_000 if seed == 1 else 200_000
+    n = int(os.environ.get("NC_PERF_N", 0)) or (100_000 if seed == 1 else 200_000)
     a = rng.sample(range(10**9 + 1), n) if seed == 1 else [rng.randint(0, 10**9) for _ in range(n)]
 else:
     sys.exit(f"unknown group {group}")

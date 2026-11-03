@@ -1,0 +1,58 @@
+import { describe, expect, it } from "vitest";
+import { dojoProblem, dojoProblems, toTask } from "@/lib/dojo/catalog";
+import { MAX_HEARTS, grade, initial, step, type Action, type DojoState } from "@/lib/dojo/dojo";
+
+const run = (actions: Action[], s: DojoState = initial()) => actions.reduce(step, s);
+const toCode: Action[] = [{ type: "scouted" }, { type: "plan", correct: true }];
+
+describe("dojo state machine", () => {
+  it("walks scout → strategise → code → debrief on a clean pass", () => {
+    const s = run([...toCode, { type: "submit", verdict: "AC" }]);
+    expect(s.phase).toBe("debrief");
+    expect(s.hearts).toBe(MAX_HEARTS);
+    expect(grade(s)).toBe("clean");
+  });
+
+  it("a wrong plan stays in Strategise and downgrades a clean pass to good", () => {
+    let s = run([{ type: "scouted" }, { type: "plan", correct: false }]);
+    expect(s.phase).toBe("strategise");
+    s = run([{ type: "plan", correct: true }, { type: "submit", verdict: "AC" }], s);
+    expect(grade(s)).toBe("good");
+  });
+
+  it("compile errors are free; wrong verdicts cost a heart; zero hearts ends the battle", () => {
+    let s = run([...toCode, { type: "submit", verdict: "CE" }]);
+    expect(s.hearts).toBe(MAX_HEARTS);
+    s = run([{ type: "submit", verdict: "WA" }, { type: "submit", verdict: "TLE" }, { type: "submit", verdict: "RE" }], s);
+    expect(s.hearts).toBe(0);
+    expect(s.phase).toBe("debrief");
+    expect(grade(s)).toBe("unsolved");
+    expect(step(s, { type: "submit", verdict: "AC" }).solved).toBe(false);
+  });
+
+  it("a hint marks the pass assisted; a retry after defeat is assisted too", () => {
+    expect(grade(run([...toCode, { type: "hint" }, { type: "submit", verdict: "AC" }]))).toBe("assisted");
+    const lost = run([...toCode, ...Array(3).fill({ type: "submit", verdict: "WA" })]);
+    const again = run([{ type: "retry" }, { type: "submit", verdict: "AC" }], lost);
+    expect(grade(again)).toBe("assisted");
+  });
+
+  it("ignores actions in the wrong phase", () => {
+    expect(step(initial(), { type: "submit", verdict: "AC" })).toEqual(initial());
+    expect(step(initial(), { type: "hint" })).toEqual(initial());
+    expect(step(initial(), { type: "retry" })).toEqual(initial());
+  });
+});
+
+describe("dojo catalog", () => {
+  it("bundles Hot Tokens with a consistent strategy question and sample test", () => {
+    const p = dojoProblem("top-k-tokens");
+    expect(p).toBeDefined();
+    expect(p!.hints).toHaveLength(3);
+    expect(p!.strategy.answer).toBeLessThan(p!.strategy.options.length);
+    expect(p!.sample[0].expected).toBe("5 9");
+    expect(p!.hidden.some((h) => h.name.startsWith("perf"))).toBe(true);
+    expect(toTask(p!).hidden.length).toBe(p!.hidden.length);
+    expect(dojoProblems().length).toBeGreaterThan(0);
+  });
+});
