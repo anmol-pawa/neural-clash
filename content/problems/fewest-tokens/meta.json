@@ -1,0 +1,40 @@
+{
+  "id": "fewest-tokens",
+  "title": "Fewest Tokens",
+  "difficulty": "M",
+  "language": "cpp",
+  "tags": ["dp", "strings", "ai-tokenizer"],
+  "similar": "LeetCode 139 Word Break (minimum-count variant)",
+  "compare": "tokens",
+  "timeLimitMs": 1000,
+  "complexity": { "time": "O(n * L)", "space": "O(n)" },
+  "groups": {
+    "sample": [1],
+    "edge": [1, 2, 3, 4, 5, 6, 7, 8],
+    "random": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
+    "perf": [1, 2]
+  },
+  "hints": [
+    "Try to answer the question for just the first i characters, for every i. How does the answer for i depend on shorter prefixes?",
+    "The last piece of the best split of the first i characters is some vocabulary piece ending at i. What would the rest of the split be?",
+    "best[i] = min over lengths len (1 to the longest piece) with s[i-len..i) in the vocabulary and best[i-len] reachable of best[i-len] + 1; best[0] = 0, and print -1 if best[n] is still unreachable."
+  ],
+  "wrong": {
+    "greedy_longest.cpp": "always takes the longest matching piece, which can strand the rest of the text",
+    "count_zero_start.cpp": "initialises unreachable prefixes to 0 so they look free",
+    "tle_every_piece.cpp": "tries every vocabulary piece at every position (fails the perf group)"
+  },
+  "wrongExpect": { "greedy_longest.cpp": "WA", "count_zero_start.cpp": "WA", "tle_every_piece.cpp": "TLE" },
+  "strategy": {
+    "question": "Scout the statement: a text of up to 2*10^5 letters, up to 2000 pieces of length at most 8, minimise the number of pieces. Which plan fits?",
+    "options": [
+      "At each position take the longest piece that matches",
+      "Recurse over every split without remembering results",
+      "Dynamic programming over prefixes: best[i] from best[i - len] for each piece length up to 8",
+      "Sort the pieces by length and apply them in turn"
+    ],
+    "answer": 2,
+    "why": "Greedy longest-first can strand the tail, so it is not optimal. Plain recursion revisits the same suffix exponentially often. Sorting pieces has nothing to do with order in the text. A prefix DP has n states and at most 8 transitions each, so it is O(n * 8) lookups."
+  },
+  "browserPerfN": 40000
+}

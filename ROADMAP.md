@@ -55,7 +55,8 @@ Work top to bottom: take the **first unchecked box**, and split big boxes into r
 - [x] C6a. (done 2026-11-03) **Code Dojo core:** pure `lib/dojo` (Scout → Strategise → Code + Judge → Debrief, 3 hearts, grades), `scripts/gen-problems.mjs` → `lib/dojo/problems.gen.ts` (expected outputs from the native reference), `/dojo` and `/dojo/[id]` on the existing clang workbench, Bits for a first unaided solve; Hot Tokens is the first problem.
 - [x] C6b1. (done 2026-11-03) **Code Dojo ladder, part 1:** two more full packages (Context Window: sliding window; Batch Packer: binary search on the answer) beside Hot Tokens, each with brute, 3 wrongs incl. TLE, generator, hints, editorial.
 - [x] C6b2a. (done 2026-11-03) **Code Dojo ladder, part 2a:** graph + hard packages (Pipeline Order: Kahn with a min-heap; Peak Window: monotonic deque, H) and `/dojo` ordered by difficulty.
-- [ ] C6b2b. **Code Dojo ladder, part 2b:** more problems (tree and DP, a second hard, an AI-flavoured set: GDD §5.6); an in-browser play-through test of a new problem.
+- [x] C6b2b1. (done 2026-11-03) **Code Dojo ladder, part 2b-1:** an easy AI-flavoured package (Label Consensus: majority vote, E) and a DP package (Fewest Tokens: min-token segmentation, M).
+- [ ] C6b2b2. **Code Dojo ladder, part 2b-2:** a tree problem, a second hard, more AI-flavoured problems (GDD §5.6); a Pyodide-free play-through of every new problem (Label Consensus is played in `smoke:dojo`).
 - [ ] C6b3. **Python (Pyodide) variant of the Dojo battle** and SRS entries for solved problems.
 
 ## Phase D: Act I regions (region recipe)

@@ -353,3 +353,14 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Known gaps: the new problems were not played end to end in the browser (smoke plays Hot Tokens; expected outputs come from the native reference); browser perf cases use n=40000, so a quadratic solution on Peak Window might pass in-browser; no easy (E) problem yet; no tree/DP problem yet.
 - CI/Pages: no `gh` CLI in this session; confirm via commit status only.
 - Next: C6b2b.
+
+## 2026-11-03: C6b2b1 Code Dojo ladder, part 2b-1
+- C6b2b was split into C6b2b1 (this run) and C6b2b2 (tree problem, second hard, more AI-flavoured problems, play-throughs).
+- `label-consensus` (E, LC 169 pointer): majority vote. Reference = Boyer-Moore candidate plus a confirming pass; brute = map count; wrongs: mode only (plurality, WA), no confirm pass (WA), O(n^2) count (TLE). Editorial gives the hash-map baseline, the O(1)-space vote, and an honest note on label aggregation in real ML pipelines.
+- `fewest-tokens` (M, LC 139 pointer, minimum-count variant): prefix DP over a tokenizer vocabulary (up to 2000 pieces, length <= 8). Brute = exhaustive recursion; wrongs: greedy longest-first (WA; edge case `ab abc cd` / `abcd` is the documented trap), unreachable-as-zero (WA), try-every-piece DP (TLE on the 2000-piece perf case). Editorial states that real tokenizers apply learned merges, so this is an efficiency bound, not what they return.
+- Both: seeded generators, 4 test groups, 3-rung hints, strategy question, house-style editorial. `gen:problems` regenerated the bundle; `tests/dojo.test.ts` checks samples from the native reference, tie/impossible cases and difficulty.
+- `smoke:dojo` now also plays Label Consensus end to end (plan, code, submit, Accepted) at desktop and iPhone 14.
+- Verification: lint (0 errors), typecheck, test (284 pass), content:verify (all `ok`), build, build:pages, smoke:dojo at desktop and iPhone 14; iPhone `/dojo` screenshot inspected (7 cards, E first, no overflow, no console errors).
+- Known gaps: Fewest Tokens is not played in-browser (its expected outputs come from the native reference); browser perf cases use n=40000 so borderline-slow solutions may pass in-browser; no tree problem or second hard yet; no Python variant or SRS for problems.
+- CI/Pages: checked via commit status only (no `gh` CLI).
+- Next: C6b2b2.

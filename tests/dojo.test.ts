@@ -58,7 +58,7 @@ describe("dojo catalog", () => {
 
   it("every bundled problem is a consistent package with the documented samples", () => {
     const ids = dojoProblems().map((p) => p.id);
-    expect(ids).toEqual(expect.arrayContaining(["top-k-tokens", "context-window", "batch-packer", "pipeline-order", "peak-window"]));
+    expect(ids).toEqual(expect.arrayContaining(["top-k-tokens", "context-window", "batch-packer", "pipeline-order", "peak-window", "label-consensus", "fewest-tokens"]));
     for (const p of dojoProblems()) {
       expect(p.hints).toHaveLength(3);
       expect(p.strategy.answer).toBeLessThan(p.strategy.options.length);
@@ -74,6 +74,15 @@ describe("dojo catalog", () => {
     expect(dojoProblem("peak-window")!.sample[0].expected).toBe("3 3 5 5 6 7");
     // cycle and self-loop edge cases print -1
     expect(dojoProblem("pipeline-order")!.hidden.filter((h) => h.expected === "-1").length).toBeGreaterThanOrEqual(2);
+  });
+
+  it("the part 2b packages: samples from the native reference, tie and impossible cases covered", () => {
+    expect(dojoProblem("label-consensus")!.sample[0].expected).toBe("3");
+    expect(dojoProblem("label-consensus")!.hidden.filter((h) => h.expected === "-1").length).toBeGreaterThanOrEqual(2);
+    expect(dojoProblem("label-consensus")!.difficulty).toBe("E");
+    expect(dojoProblem("fewest-tokens")!.sample[0].expected).toBe("2");
+    expect(dojoProblem("fewest-tokens")!.hidden.some((h) => h.expected === "-1")).toBe(true);
+    expect(dojoProblem("fewest-tokens")!.hidden.some((h) => h.expected !== "-1" && Number(h.expected) > 2)).toBe(true);
   });
 
   it("the ladder lists easier problems first, then by title", () => {

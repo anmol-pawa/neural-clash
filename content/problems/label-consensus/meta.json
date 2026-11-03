@@ -1,0 +1,40 @@
+{
+  "id": "label-consensus",
+  "title": "Label Consensus",
+  "difficulty": "E",
+  "language": "cpp",
+  "tags": ["majority-vote", "counting", "ai-data"],
+  "similar": "LeetCode 169 Majority Element",
+  "compare": "tokens",
+  "timeLimitMs": 1000,
+  "complexity": { "time": "O(n)", "space": "O(1)" },
+  "groups": {
+    "sample": [1],
+    "edge": [1, 2, 3, 4, 5, 6],
+    "random": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
+    "perf": [1, 2]
+  },
+  "hints": [
+    "How many labels can possibly have strictly more than half of the votes?",
+    "If you cross out two annotators who disagree, does a majority label stay a majority among the rest?",
+    "Keep a candidate and a counter: take a new candidate when the counter hits zero, add one on a match, subtract one otherwise. Then count the survivor in a second pass and print -1 unless it has more than half."
+  ],
+  "wrong": {
+    "mode_only.cpp": "prints the most common label even when it is only a plurality",
+    "no_confirm.cpp": "trusts the Boyer-Moore survivor without a confirming second pass",
+    "tle_count_each.cpp": "counts each label against all others in O(n^2) (fails the perf group)"
+  },
+  "wrongExpect": { "mode_only.cpp": "WA", "no_confirm.cpp": "WA", "tle_count_each.cpp": "TLE" },
+  "strategy": {
+    "question": "Scout the statement: up to 2*10^5 annotator labels, print the label with strictly more than half the votes or -1. Which plan fits?",
+    "options": [
+      "Sort and print the middle label",
+      "Count labels in a hash map, or cancel disagreeing pairs with a candidate/counter and confirm in a second pass",
+      "Count each label by scanning the array once per label",
+      "Print the most frequent label"
+    ],
+    "answer": 1,
+    "why": "The middle of a sorted array is the majority label if one exists, but it is not guaranteed to be one, and sorting costs O(n log n) without a check. Counting each label against the array is O(n^2). The most frequent label is only a plurality. A hash map or the candidate/counter vote with a confirming pass is O(n), and the vote needs only O(1) space."
+  },
+  "browserPerfN": 40000
+}
