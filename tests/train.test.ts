@@ -4,13 +4,21 @@ import { makeSplit, makeToy, polyFeatures } from "../lib/train/datasets";
 import { BOUND, GRID, boundaryGrid, runSession, splitFor, type SessionEvent, type SessionRequest } from "@/lib/train/session";
 import { design, evaluate, lossGrad, score, sigmoid, train } from "../lib/train/linear";
 
+/** First python3 on PATH (or /usr/bin) that can import numpy: CI's setup-python, or the system one locally. */
+const pythonWithNumpy = (() => {
+  for (const bin of ["python3", "/usr/bin/python3"]) {
+    try {
+      execFileSync(bin, ["-I", "-c", "import numpy"], { stdio: "ignore" });
+      return bin;
+    } catch {
+      /* try the next candidate */
+    }
+  }
+  return "python3";
+})();
+
 const py = (job: object) =>
-  JSON.parse(
-    execFileSync("python3", ["-I", "tests/helpers/train_ref.py"], {
-      input: JSON.stringify(job),
-      env: { ...process.env, PATH: `/usr/bin:${process.env.PATH}` },
-    }).toString(),
-  ) as { w: number[]; history: number[] };
+  JSON.parse(execFileSync(pythonWithNumpy, ["-I", "tests/helpers/train_ref.py"], { input: JSON.stringify(job) }).toString()) as { w: number[]; history: number[] };
 
 describe("datasets", () => {
   it("are deterministic per seed and balanced", () => {
