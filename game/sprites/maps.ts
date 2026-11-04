@@ -2,6 +2,7 @@ import { mapSprite, type TileLegend } from "./tilemap";
 import { PYTHON_PORT_TILES } from "./tiles/python-port-tiles";
 import { LAB_TILES } from "./tiles/lab-tiles";
 import { VECTOR_VALE_TILES } from "./tiles/vector-vale-tiles";
+import { GRADIENT_GORGE_TILES } from "./tiles/gradient-gorge-tiles";
 
 /** Python Port, the harbour town where the game starts. */
 export const PORT_LEGEND: TileLegend = {
@@ -64,3 +65,21 @@ export const VALE_GRID: readonly string[] = [
   "wwwwwwwwwwwwwwwwwwww",
 ];
 export const VALE_PREVIEW = mapSprite("vector-vale-preview", "VECTOR VALE (preview)", VECTOR_VALE_TILES, VALE_GRID, VALE_LEGEND);
+
+/** Gradient Gorge: a canyon with a descent river, contour-etched ground, rock spires and the guardian's pad. Same tile names as the Vale. */
+export const GORGE_LEGEND: TileLegend = VALE_LEGEND;
+export const GORGE_GRID: readonly string[] = [
+  "TTgGggfgggTTgggggggg",
+  "ttgggg<==>gggggTTggg",
+  "gggfgg<==>ggfgggttgg",
+  "ggggggWNDWgggggggggg",
+  "FFFgggppppppppppgggg",
+  "gSgggLpgBgpgXgpLgggf",
+  "gggfggpggggpggpgGggg",
+  "ggggggppppppAAppgggg",
+  "gggGgggggggpAAgggfgg",
+  "sssssssssspppsssssss",
+  "wwwwwwwwwwpppwwwwwww",
+  "wwwwwwwwwwwwwwwwwwww",
+];
+export const GORGE_PREVIEW = mapSprite("gradient-gorge-preview", "GRADIENT GORGE (preview)", GRADIENT_GORGE_TILES, GORGE_GRID, GORGE_LEGEND);

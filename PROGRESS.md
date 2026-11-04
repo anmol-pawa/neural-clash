@@ -498,3 +498,12 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Known gaps: Gradient Gorge guardian not yet an evidence item (D2e4); no region art yet (D2e2–D2e3).
 - CI/Pages: no `gh` CLI in this session; not confirmed.
 - Next: D2e2 (Gorge tileset and guardian art).
+
+## 2026-11-04: D2e2 Gradient Gorge tileset and Warden Chain
+- New `scripts/art/gradient-gorge.mjs` -> `game/sprites/tiles/gradient-gorge-tiles.ts`: 20 tiles with the same names as the Vale so maps share a legend (dusk-amber canyon, contour-etched ground, rock spires, meltwater river, sandstone shrine with a nabla door, green/orange descent-arrow signs and obelisks, pulsing arena pad) plus `GORGE_PREVIEW` map.
+- New `scripts/art/warden-chain.mjs` -> `warden-chain.ts`: 96x96 guardian. Bowl-shaped torso with a glowing ball rolling down it (gradient descent), arms are chains of three rings (chain rule), green nabla on the brow. Idle 4, attack 5 (chain whip + shock rings), hurt 3, faint 4.
+- Both registered in the roster and sprite/tileset/map tests.
+- Verification: lint (0 errors), typecheck, test (372 pass), content:verify, build, build:pages; Playwright on `/dev/sprites` at desktop and iPhone 14: no console errors, no overflow; contact sheet and the preview map inspected. Use `PATH=/usr/bin:$PATH` for numpy.
+- Known gaps: the attack whip is small at the sprite edge; no trainers or backdrop yet.
+- CI/Pages: no `gh` CLI in this session; not confirmed.
+- Next: D2e3 (Gorge trainers and battle backdrop).
