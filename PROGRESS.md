@@ -531,3 +531,10 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Verification: lint (0 errors), typecheck, test (402 pass; `node scripts/fetch-pyodide.mjs` first; `PATH=/usr/bin:$PATH` for numpy), content:verify, build, build:pages, smoke:learn and smoke:sync at desktop and iPhone 14 (no console errors or overflow; lesson list screenshot inspected).
 - Known gaps: no Readiness skill, Labs, visualiser or art yet (D3b-D3f).
 - Next: D3b (probability Lab modules).
+
+## 2026-11-04: D3b Probability Peaks Labs
+- New Lab phase `peaks` ("Probability Peaks") with two Python/numpy Labs. `prob-sampling`: `exp_inverse_cdf`, `sample_categorical` (boundary and tail-clipping rules), `rejection_sample` (envelope M, acceptance rate 1/M), `box_muller`. `prob-mle`: `gaussian_mle` (divisor n), `gaussian_nll`, `bernoulli_map` (posterior mode), `bootstrap_means`, `percentile_ci`. All randomness is passed in as uniforms or indices, so tests are deterministic (evenly spaced uniform grids check moments and acceptance rate; a seeded coverage test checks a 90% interval).
+- Hidden tests include value checks, a numerical zero-gradient check of the NLL at the MLE, "MLE minimises the NLL" perturbations, MAP maximising the posterior density on a grid, and bootstrap SE vs sigma/sqrt(n). 8 documented known-wrong versions per Lab; `content:verify` shows no errors for either (every wrong is rejected, the starter fails).
+- Verification: lint (0 errors), typecheck, test (402 pass), build, build:pages, `smoke:labs` at desktop and iPhone 14 (25 labs listed, no console errors or overflow). `gen:labs --check` fresh. Use `PATH=/usr/bin:$PATH` for numpy; `npm ci` and `node scripts/fetch-pyodide.mjs` first.
+- Known gaps: `content:verify` reports `problems/fewest-tokens` failing (`wrong/tle_every_piece.cpp` earned AC, not TLE) in this sandbox; pre-existing and likely timing-dependent, not touched this run. Labs are not yet Readiness evidence (D3d). CI/Pages not confirmed (no `gh` CLI).
+- Next: D3c (`/dev/clt` visualiser).

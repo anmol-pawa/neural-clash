@@ -84,7 +84,7 @@ Work top to bottom: take the **first unchecked box**, and split big boxes into r
   - [x] D2e4. (done 2026-11-04) Gradient Gorge guardian fight (`/guardian/gorge`: calculus deck duel, Forge Lab, hidden-set fight) and its readiness evidence.
 - [ ] D3. Probability Peaks (F4), split into:
   - [x] D3a. (done 2026-11-04) Lessons (4) and a 47-card deck (Bayes and base rates, expectation/variance/CLT, MLE/MAP and losses as likelihoods, entropy/KL, A/B testing, power, peeking, bootstrap), numpy-computed and cross-checked by `lib/solvers/probability.ts`; wired into Learn and Daily Sync.
-  - [ ] D3b. Lab modules: sampling (inverse transform, rejection) and MLE/bootstrap from scratch, with hidden tests and known-wrong versions.
+  - [x] D3b. (done 2026-11-04) Labs `prob-sampling` (inverse CDF, categorical, rejection, Box-Muller) and `prob-mle` (Gaussian MLE/NLL, Beta-Bernoulli MAP, bootstrap means and percentile CI) in a new "Probability Peaks" Lab phase, with hidden tests and 8 known-wrong versions each.
   - [ ] D3c. Interactive visualiser `/dev/clt` (CLT, base-rate frequency tree, peeking simulator; pure maths in `lib/prob/`) with smoke test.
   - [ ] D3d. Readiness skill "probability and statistics" (deck + labs), tested in the theory rounds.
   - [ ] D3e. Region art: Probability Peaks tileset, guardian (96x96), two trainers, battle backdrop.

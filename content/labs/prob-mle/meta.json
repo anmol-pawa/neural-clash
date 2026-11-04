@@ -1,0 +1,22 @@
+{
+  "id": "prob-mle",
+  "title": "MLE, MAP and the bootstrap",
+  "phase": "peaks",
+  "language": "python",
+  "functions": ["gaussian_mle", "gaussian_nll", "bernoulli_map", "bootstrap_means", "percentile_ci"],
+  "wrong": {
+    "mle_unbiased_variance.py": "gaussian_mle divides by n-1 (ddof=1), which is the unbiased estimator, not the maximum-likelihood one",
+    "nll_missing_log_sigma.py": "gaussian_nll drops the n*log(sigma) term, so the minimum over sigma is at infinity",
+    "nll_sigma_squared.py": "gaussian_nll treats sigma as a variance (divides by sigma, not sigma squared)",
+    "map_uses_mean.py": "bernoulli_map returns the posterior mean (k+a)/(n+a+b) instead of the mode",
+    "map_forgets_minus_one.py": "bernoulli_map uses (k+a)/(n+a+b-2): off by one in the numerator",
+    "bootstrap_resamples_rows.py": "bootstrap_means averages the index array instead of the resampled data",
+    "ci_wrong_tail.py": "percentile_ci uses alpha instead of alpha/2 in each tail",
+    "ci_sorted_in_place.py": "percentile_ci sorts the caller's array in place"
+  },
+  "hints": [
+    "Gaussian MLE: setting the derivative of the log-likelihood to zero gives the sample mean and the variance with divisor n (not n-1). The NLL is n*log(sigma) + sum((x-mu)^2)/(2 sigma^2) + n/2 * log(2 pi).",
+    "Bernoulli with a Beta(a, b) prior: the posterior is Beta(k + a, n - k + b). Its mode, the MAP estimate, is (k + a - 1) / (n + a + b - 2).",
+    "Bootstrap: idx is a (B, n) array of row indices, so x[idx] is (B, n) and the mean over axis 1 gives B resampled means. For a (1 - alpha) interval take the alpha/2 and 1 - alpha/2 percentiles; np.percentile does not need a pre-sorted array, so do not sort the caller's data."
+  ]
+}

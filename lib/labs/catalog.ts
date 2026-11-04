@@ -18,6 +18,7 @@ export const PHASE_TITLES: Record<string, string> = {
   "python-port": "Python Port",
   "vector-vale": "Vector Vale",
   forge: "The Forge",
+  peaks: "Probability Peaks",
 };
 
 export const LABS: readonly LabSource[] = LAB_SOURCES;

@@ -1,0 +1,22 @@
+{
+  "id": "prob-sampling",
+  "title": "Sampling from scratch",
+  "phase": "peaks",
+  "language": "python",
+  "functions": ["exp_inverse_cdf", "sample_categorical", "rejection_sample", "box_muller"],
+  "wrong": {
+    "exp_log_u.py": "inverse CDF uses -log(u)/rate, which maps u=0 to infinity and is a reflected, not the same, stream of draws",
+    "exp_forgets_rate.py": "inverse CDF ignores the rate, so every rate gives the mean-1 distribution",
+    "categorical_side_left.py": "searchsorted side='left' sends a uniform that lands exactly on a boundary to the wrong category",
+    "categorical_unclipped.py": "does not guard the tail: float error in the last cumulative sum can index past the last category",
+    "rejection_no_envelope.py": "accepts when u <= f(x) instead of u*M <= f(x): the envelope M is ignored and the distribution is distorted",
+    "rejection_keeps_rejected.py": "returns the proposals unchanged (never filters)",
+    "box_muller_missing_two.py": "radius is sqrt(-log(u1)) instead of sqrt(-2*log(u1)): variance is 1/2",
+    "box_muller_cos_twice.py": "returns cos for both outputs, so the two normals are perfectly correlated"
+  },
+  "hints": [
+    "Inverse transform: if F is the CDF and U is uniform on [0,1), then F^-1(U) has CDF F. For the exponential, F(x) = 1 - exp(-rate*x); solve for x.",
+    "Categorical: build the cumulative sum of the probabilities and find, for each u, the first bucket whose cumulative value is strictly greater than u. np.searchsorted with side='right' does it in one call. Clip the result to len(probs)-1.",
+    "Rejection: keep proposal x when u * M <= f(x), where M >= max f is the envelope height over a uniform proposal. Box-Muller: r = sqrt(-2 ln u1), angle = 2*pi*u2, outputs r*cos and r*sin."
+  ]
+}
