@@ -94,8 +94,10 @@ for (const [name, ctxOpts] of [["desktop", { viewport: { width: 1280, height: 90
   await page.getByTestId("dojo-debrief").waitFor({ timeout: 120_000 });
   check((await page.getByTestId("dojo-grade").textContent()).startsWith("Accepted"), `${name}: correct solution reaches an Accepted debrief`);
   await page.screenshot({ path: join(shots, `dojo-debrief-${name}.png`), fullPage: true });
+  await page.waitForTimeout(1000); // let the debounced save reach IndexedDB before a hard navigation
   // a second problem (easy, majority vote) played end to end
   await page.goto(`${origin}${BASE}/dojo/`);
+  check((await page.getByTestId("dojo-mastery-top-k-tokens").textContent({ timeout: 15000 }).catch(() => "none")) === "learning", `${name}: solved problem shows a spaced-review badge on the index`);
   await page.getByTestId("dojo-label-consensus").click();
   await page.getByTestId("dojo-scouted").click();
   await page.getByTestId("dojo-plan-1").click();

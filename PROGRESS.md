@@ -382,3 +382,12 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Known gaps: browser perf cases use n=40000; no Python variant or SRS for problems yet; only one new problem this run (the box asked for "more").
 - CI/Pages: no `gh` CLI in this session; not confirmed.
 - Next: C6b3.
+
+## 2026-11-04: C6b3a SRS entries for Dojo problems
+- C6b3 was split: C6b3a (this run) and C6b3b (Python variant of the Dojo battle, next).
+- `lib/sync/sync.ts`: `problemKey` (`dojo:<id>`), `buildSync(..., { problems })` returns due Dojo problems (stale when rusted) and includes them in rust level and tracked counts. `components/Dojo.tsx` records one SRS review on reaching the debrief (solve = correct, out of hearts = lapse, assisted = ignored, per `lib/srs`). `/dojo` shows mastery badges (`components/DojoList.tsx`); `/sync` lists "Dojo problems to redo" and counts them in Today.
+- Verification: lint (0 errors), typecheck, test (289 pass; 3 new sync tests), content:verify, build, build:pages, `smoke:dojo` at desktop and iPhone 14 (new badge check; no overflow, no console errors).
+- Env note: use `python3 -m pip install --break-system-packages -r requirements-dev.txt` (bare `pip` targets a different Python, so numpy was missing for `python3`).
+- Known gaps: no Python variant yet; the Sync page itself was not re-screenshotted (list reuses the Labs-due markup).
+- CI/Pages: no `gh` CLI in this session, so not confirmed.
+- Next: C6b3b.

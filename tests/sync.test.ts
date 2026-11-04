@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { Card } from "@/lib/cards/types";
 import { DAY, review, type SrsTable } from "@/lib/srs/srs";
-import { buildSync, labKey, rustLevel, staleLabIds, syncCards } from "@/lib/sync/sync";
+import { buildSync, labKey, problemKey, rustLevel, staleLabIds, syncCards } from "@/lib/sync/sync";
 
 const card = (id: string): Card => ({ id, kind: "mcq", topic: "t", prompt: "p", explanation: "e", choices: ["a", "b"], answer: 0 });
 const decks = [
@@ -68,5 +68,27 @@ describe("buildSync", () => {
     const s = buildSync(t, decks, [], T0 + 2 * DAY, { maxReviews: 2, maxNew: 0 });
     expect(s.plan.reviews).toHaveLength(2);
     expect(s.plan.fresh).toEqual([]);
+  });
+});
+
+describe("Dojo problems in the sync", () => {
+  const problems = [{ id: "P1", title: "Problem one" }, { id: "P2", title: "Problem two" }];
+  it("lists only solved problems that are due, and rusts them like Labs", () => {
+    const t = review({}, problemKey("P1"), { correct: true }, T0); // due +1d
+    expect(buildSync(t, [], [], T0 + 0.5 * DAY, { problems }).problems).toEqual([]);
+    const due = buildSync(t, [], [], T0 + 1.5 * DAY, { problems });
+    expect(due.problems).toEqual([{ id: "P1", title: "Problem one", stale: false }]);
+    const stale = buildSync(t, [], [], T0 + 5 * DAY, { problems });
+    expect(stale.problems[0].stale).toBe(true);
+    expect(stale.rustedCount).toBe(1);
+  });
+  it("ignores assisted solves and counts a failed one as a lapse that returns within the day", () => {
+    expect(review({}, problemKey("P2"), { correct: true, assisted: true }, T0)).toEqual({});
+    const t = review({}, problemKey("P2"), { correct: false }, T0);
+    expect(t[problemKey("P2")].box).toBe(0);
+    expect(buildSync(t, [], [], T0 + 0.3 * DAY, { problems }).problems.map((p) => p.id)).toEqual(["P2"]);
+  });
+  it("does not change card plans when problems are passed", () => {
+    expect(buildSync({}, decks, labs, T0, { problems }).plan.fresh).toEqual(["a", "b", "c", "d"]);
   });
 });
