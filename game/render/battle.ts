@@ -45,7 +45,7 @@ function sprite(def: SpriteDef, anim: string, i: number, tint: Tint): HTMLCanvas
 
 const frameFor = (def: SpriteDef, anim: string, t: number) => Math.floor(t * (def.fps?.[anim] ?? 6));
 
-export type StageTheme = "grid" | "vale";
+export type StageTheme = "grid" | "vale" | "gorge";
 
 /** Vector Vale: a twilight meadow of crystals over a lattice floor, with slowly turning basis axes on the horizon. */
 function valeBackdrop(g: CanvasRenderingContext2D, t: number) {
@@ -127,8 +127,80 @@ function valeBackdrop(g: CanvasRenderingContext2D, t: number) {
   }
 }
 
+/** Gradient Gorge: a dusk canyon with layered contour-etched cliffs, a meltwater stream and a ball rolling down a slope. */
+function gorgeBackdrop(g: CanvasRenderingContext2D, t: number) {
+  const sky = g.createLinearGradient(0, 0, 0, 70);
+  sky.addColorStop(0, "#3a1e3a");
+  sky.addColorStop(0.5, "#b0503a");
+  sky.addColorStop(1, "#f4a85a");
+  g.fillStyle = sky;
+  g.fillRect(0, 0, STAGE_W, STAGE_H);
+  // low sun with a halo
+  g.fillStyle = "rgba(255,226,150,0.25)";
+  g.beginPath();
+  g.arc(172, 58, 24, 0, Math.PI * 2);
+  g.fill();
+  g.fillStyle = "#ffe29a";
+  g.beginPath();
+  g.arc(172, 58, 12, 0, Math.PI * 2);
+  g.fill();
+  // three cliff layers, far to near; each has stepped, contour-like edges
+  const layers: [string, string, number, number][] = [
+    ["#6a3450", "#8a4a60", 44, 3],
+    ["#7a3a30", "#a05a3c", 54, 5],
+    ["#5a2a24", "#8a4a30", 64, 7],
+  ];
+  layers.forEach(([dark, light, base, amp], li) => {
+    g.fillStyle = dark;
+    g.fillRect(0, base, STAGE_W, 80 - base);
+    for (let x = 0; x < STAGE_W; x += 4) {
+      const h = Math.floor(amp * (0.5 + 0.5 * Math.sin(x * 0.045 + li * 2.1) * Math.cos(x * 0.021 + li)));
+      g.fillRect(x, base - h, 4, h);
+      g.fillStyle = light;
+      g.fillRect(x, base - h, 4, 1);
+      g.fillStyle = dark;
+    }
+  });
+  // descent arrows etched into the far wall
+  g.fillStyle = "rgba(124,240,160,0.55)";
+  for (let i = 0; i < 4; i++) {
+    const x = 20 + i * 54;
+    g.fillRect(x, 46, 1, 6);
+    g.fillRect(x - 2, 50, 5, 1);
+    g.fillRect(x - 1, 51, 3, 1);
+  }
+  // canyon floor with contour rings
+  const floor = g.createLinearGradient(0, 78, 0, STAGE_H);
+  floor.addColorStop(0, "#9a5a34");
+  floor.addColorStop(1, "#4a2418");
+  g.fillStyle = floor;
+  g.fillRect(0, 78, STAGE_W, STAGE_H - 78);
+  g.strokeStyle = "rgba(255,200,120,0.28)";
+  for (let k = 1; k <= 4; k++) {
+    g.beginPath();
+    g.ellipse(STAGE_W / 2, 118, k * 34, k * 8, 0, 0, Math.PI * 2);
+    g.stroke();
+  }
+  // meltwater stream shimmering along the back of the floor
+  g.fillStyle = "#1f7a86";
+  g.fillRect(0, 76, STAGE_W, 5);
+  for (let x = 0; x < STAGE_W; x += 8) {
+    g.fillStyle = (Math.floor(t * 4) + x / 8) % 3 === 0 ? "#c8f6f0" : "#4cc0c0";
+    g.fillRect(x + ((x / 8) % 2) * 3, 77 + (x / 8) % 2, 3, 1);
+  }
+  // a glowing ball rolling down a bowl-shaped slope on the horizon, looping
+  const p = (t * 0.35) % 1;
+  const bx = 118 + (p - 0.5) * 70;
+  const by = 52 + Math.pow((p - 0.5) * 2, 2) * -8 + 10;
+  g.fillStyle = "#ff7a3a";
+  g.fillRect(Math.round(bx) - 2, Math.round(by) - 2, 4, 4);
+  g.fillStyle = "#ffd9a0";
+  g.fillRect(Math.round(bx) - 1, Math.round(by) - 2, 2, 1);
+}
+
 function backdrop(g: CanvasRenderingContext2D, t: number, theme: StageTheme = "grid") {
   if (theme === "vale") return valeBackdrop(g, t);
+  if (theme === "gorge") return gorgeBackdrop(g, t);
   const sky = g.createLinearGradient(0, 0, 0, 78);
   sky.addColorStop(0, "#0d1033");
   sky.addColorStop(1, "#2a2a6e");

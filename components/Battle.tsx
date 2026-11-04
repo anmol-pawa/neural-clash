@@ -129,6 +129,11 @@ export function CardForm({ card, onSubmit }: { card: Card; onSubmit: (r: Respons
   );
 }
 
+function stageTheme(): "grid" | "vale" | "gorge" {
+  const q = new URLSearchParams(window.location.search).get("theme");
+  return q === "vale" || q === "gorge" ? q : "grid";
+}
+
 export default function Battle() {
   useAudioSettings({ music: false });
   const seed = useMemo(() => 7, []);
@@ -153,7 +158,7 @@ export default function Battle() {
       if (fx.foeHitAt >= 0) fx.foeHitAt += dt;
       fx.shake = Math.max(0, fx.shake - dt * 5);
       fx.floaters = fx.floaters.map((f) => ({ ...f, age: f.age + dt })).filter((f) => f.age < 1);
-      drawBattle(g, foe, hero, fx, { theme: new URLSearchParams(window.location.search).get("theme") === "vale" ? "vale" : "grid" });
+      drawBattle(g, foe, hero, fx, { theme: stageTheme() });
       raf = requestAnimationFrame(loop);
     };
     raf = requestAnimationFrame(loop);

@@ -80,7 +80,7 @@ Work top to bottom: take the **first unchecked box**, and split big boxes into r
   - [x] D2d. (done 2026-11-04) Gradient descent visualiser (`/dev/descent`: SGD, momentum, Adam on a bowl, ravine and Rosenbrock valley; pure maths in `lib/optim/`, `smoke:descent`).
   - [x] D2e1. (done 2026-11-04) Readiness skill "calculus & optimisation" (calculus deck + `forge-value` + `forge-tensor`), tested in the ML-engineer theory and implement rounds.
   - [x] D2e2. (done 2026-11-04) Gradient Gorge tileset (`scripts/art/gradient-gorge.mjs`, canyon palette, contour-etched ground, descent arrows, preview map) and the 96x96 guardian Warden Chain (idle 4, attack 5, hurt 3, faint 4; `scripts/art/warden-chain.mjs`), reviewed on `/dev/sprites`.
-  - [ ] D2e3. Gorge trainers (walk cycles + portraits) and the battle backdrop theme.
+  - [x] D2e3. (done 2026-11-04) Gorge trainers Climber Delta and Surveyor Hess (16x24 walk cycles + 48x48 portraits, `scripts/art/gorge-trainers.mjs`) and the Gradient Gorge battle backdrop (`theme: "gorge"`, preview at `/battle?theme=gorge`).
   - [ ] D2e4. Gradient Gorge guardian fight (`/guardian/gorge`: calculus deck duel, Forge Lab, hidden-set fight) and its readiness evidence.
 - [ ] D3. Probability Peaks (F4)
 - [ ] D4. Classic Grove (F5), with from-scratch classical ML labs and the Creature Stats dataset

@@ -507,3 +507,11 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Known gaps: the attack whip is small at the sprite edge; no trainers or backdrop yet.
 - CI/Pages: no `gh` CLI in this session; not confirmed.
 - Next: D2e3 (Gorge trainers and battle backdrop).
+
+## 2026-11-04: D2e3 Gorge trainers and battle backdrop
+- New `scripts/art/gorge-trainers.mjs` generates Climber Delta (teal headband, ponytail, sand jacket, rope sash/pack) and Surveyor Hess (orange hard hat, hi-vis vest, level-staff with flag): 16x24 overworld sprites (stand, 4-frame walks in four directions) and 48x48 portraits (idle with blink, talk, smile, think). Registered in the roster; sprite tests extended.
+- `game/render/battle.ts`: `StageTheme` gains `"gorge"` (dusk canyon, three stepped cliff layers, descent arrows on the far wall, contour-ring floor, shimmering meltwater, a ball rolling down a bowl). `/battle?theme=gorge` previews it; `GuardianDef.theme` accepts it for D2e4. Theme parsing moved into `stageTheme()` in `components/Battle.tsx`.
+- Verification: lint (0 errors), typecheck, test (all pass after `node scripts/fetch-pyodide.mjs`; use `PATH=/usr/bin:$PATH` for numpy), content:verify, build, build:pages; Playwright on `/battle?theme=gorge` and `/dev/sprites` at desktop and iPhone 14: no console errors, no overflow; contact sheets and battle screenshots inspected.
+- Known gaps: trainers are not yet placed in a Gorge map or given dialogue; the rolling ball is small.
+- CI/Pages: Actions quota note ended 2026-11-01, but no `gh` CLI here, so CI and deploy are not confirmed.
+- Next: D2e4 (Gradient Gorge guardian fight).
