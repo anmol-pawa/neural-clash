@@ -67,7 +67,7 @@ Work top to bottom: take the **first unchecked box**, and split big boxes into r
 
 - [ ] D1. Vector Vale (CUR F2), split into:
   - [x] D1a. (done 2026-11-04) Lessons (5) and a 41-card deck, all numeric answers computed by numpy and cross-checked by `lib/solvers/linalg.ts`; wired into Learn and Daily Sync.
-  - [ ] D1b. PCA Lab modules (via SVD and via power iteration): reference, visible + hidden tests, known-wrong versions.
+  - [x] D1b. (done 2026-11-04) PCA Lab modules (via SVD and via power iteration): reference, visible + hidden tests, known-wrong versions.
   - [ ] D1c. Interactive 2D transform visualiser (`/dev` or lesson-embedded, pure matrix maths in `lib/`).
   - [ ] D1d. Region art (tileset, 2 trainers, 96x96 guardian, backdrop), guardian fight and readiness skill "linear algebra".
 - [ ] D2. Gradient Gorge (F3), with Forge modules 1–2 (`Value`, `Tensor`) and gradient checks

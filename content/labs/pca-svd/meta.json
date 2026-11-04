@@ -1,0 +1,20 @@
+{
+  "id": "pca-svd",
+  "title": "PCA via SVD",
+  "phase": "vector-vale",
+  "language": "python",
+  "functions": ["pca_fit", "pca_transform", "pca_inverse", "explained_ratio"],
+  "wrong": {
+    "no_centering.py": "SVD of the raw X (components follow the origin, not the data cloud)",
+    "variance_over_n.py": "variances are s^2 / n instead of s^2 / (n - 1)",
+    "returns_u.py": "returns the left singular vectors (n x k) instead of the rows of Vt",
+    "ratio_of_kept.py": "ratio divides by the kept variance, so the top-k always sum to 1",
+    "no_sign_rule.py": "skips the sign convention, so components may point either way",
+    "inverse_forgets_mean.py": "pca_inverse does not add the mean back"
+  },
+  "hints": [
+    "Centre first: Xc = X - mean. PCA describes the spread around the mean, not around the origin.",
+    "np.linalg.svd(Xc, full_matrices=False) gives Xc = U @ diag(s) @ Vt. The principal directions are the rows of Vt, and the variance along each is s**2 / (n - 1).",
+    "Sign rule: for each row of Vt, find the entry with the largest magnitude and flip the row if that entry is negative. Reconstruction is Z @ components + mean."
+  ]
+}

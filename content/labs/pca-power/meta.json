@@ -1,0 +1,20 @@
+{
+  "id": "pca-power",
+  "title": "PCA by power iteration",
+  "phase": "vector-vale",
+  "language": "python",
+  "functions": ["power_iteration", "deflate", "top_k_eigs", "pca_power"],
+  "wrong": {
+    "no_normalise.py": "does not renormalise inside the loop (the vector overflows)",
+    "no_deflation.py": "top_k_eigs never deflates, so every eigenpair is the same",
+    "deflate_without_lambda.py": "deflates with v v^T instead of lambda v v^T",
+    "ones_start.py": "starts from the all-ones vector, which can be orthogonal to the top eigenvector",
+    "eigenvalue_is_norm.py": "eigenvalue is ||A v|| / ||v|| rather than the Rayleigh quotient v A v (differs before convergence)",
+    "no_sign_rule.py": "skips the sign convention"
+  },
+  "hints": [
+    "One iteration: v <- A @ v, then v <- v / norm(v). Repeating this pulls v towards the eigenvector with the largest eigenvalue.",
+    "The eigenvalue is the Rayleigh quotient v @ A @ v for the final unit vector. Start from a random vector (np.random.default_rng(0).normal(size=d)), not the all-ones vector.",
+    "To get the next eigenpair, subtract what you found: A - lam * outer(v, v). pca_power is top_k_eigs on the covariance matrix of the centred data (divide by n - 1)."
+  ]
+}

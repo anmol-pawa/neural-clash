@@ -410,3 +410,11 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Branch note: the harness designated branch `claude/wonderful-goodall-ii2hbu`; repo protocol says main. Pushed to both.
 - CI/Pages: no `gh` CLI in this session; not confirmed.
 - Next: D1b.
+
+## 2026-11-04: D1b PCA Lab modules
+- Two new Lab modules in a new "Vector Vale" phase (listed between Python Port and The Forge): `pca-svd` (`pca_fit`, `pca_transform`, `pca_inverse`, `explained_ratio`; thin SVD of centred data, variance s²/(n-1), sign rule: largest-magnitude entry positive) and `pca-power` (`power_iteration`, `deflate`, `top_k_eigs`, `pca_power` from the covariance matrix).
+- Hidden tests check against `np.linalg.eigh`/`svd`, orthonormality, zero-mean uncorrelated scores, exact full-rank round trip, truncation error = discarded variance, no input mutation, overflow safety and the all-ones-start trap. Six documented known-wrong versions per lab, all rejected by `content:verify`.
+- Verification: lint (0 errors), typecheck, test (300 pass), content:verify (all ok), build, build:pages, smoke:labs at desktop and iPhone 14 (21 labs, reference accepted, no overflow, no console errors).
+- Known gaps: no lesson link from the Vector Vale lessons to these labs yet; PCA labs are not yet part of the readiness skill (D1d).
+- CI/Pages: not polled; none required until Actions quota resets confirmed (no `gh` CLI in this session).
+- Next: D1c (2D transform visualiser).

@@ -5,7 +5,7 @@ import { readFileSync, readdirSync, writeFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
 
 const root = "content/labs";
-const PHASE_ORDER = ["python-port", "forge"];
+const PHASE_ORDER = ["python-port", "vector-vale", "forge"];
 const read = (id, f) => readFileSync(join(root, id, f), "utf8");
 
 export function buildLabs() {
