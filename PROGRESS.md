@@ -462,3 +462,10 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Known gaps: the third trial reuses Overfit's minion; the card duel is not played end to end in the Vale smoke.
 - CI/Pages: no `gh` CLI here, so not confirmed.
 - Next: D2 (Gradient Gorge).
+
+## 2026-11-04: D2a Forge 1 Lab `forge-value`
+- D2 was split into D2a–D2e in ROADMAP. This run: Lab `forge-value` (scalar reverse-mode autodiff `Value`: + - * / ** neg, tanh/relu/exp/log, reverse numbers, topological `backward`), lesson with the cost argument for reverse mode, visible tests, 10 hidden tests (finite-difference checks on diamond, deep chain, pow/div, log/exp, random graphs, relu gating, long chain) and 8 documented known-wrong versions (assign vs accumulate, no topo order, wrong pow/tanh/div/mul derivatives, relu always passes, no seed). Bundled via `gen-labs`.
+- Verification: lint (0 errors), typecheck, test (342 pass; needed `node scripts/fetch-pyodide.mjs` on this fresh image), content:verify (all ok, incl. every wrong version rejected and the starter failing), build, build:pages. No visual change, so no screenshots.
+- Known gaps: not yet wired into Readiness or the world (comes with D2e).
+- CI/Pages: no `gh` CLI in this session; not confirmed.
+- Next: D2b (Forge 2 `Tensor`).

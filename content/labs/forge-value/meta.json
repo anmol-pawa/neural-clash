@@ -1,0 +1,22 @@
+{
+  "id": "forge-value",
+  "title": "Forge 1: a scalar autodiff Value",
+  "phase": "forge",
+  "language": "python",
+  "functions": ["Value"],
+  "wrong": {
+    "overwrite_grad.py": "backward closures use = instead of += (a node used twice loses a gradient path)",
+    "no_topo_order.py": "backward walks the graph depth-first without a topological order (diamond graphs get partial gradients)",
+    "pow_exponent.py": "d(x**n) is n * x**n instead of n * x**(n-1)",
+    "tanh_derivative.py": "d tanh is 1 - t instead of 1 - t**2",
+    "relu_always_passes.py": "relu passes the gradient even when the input is negative",
+    "mul_uses_own_data.py": "d(a*b) multiplies by the output's own value instead of the other operand",
+    "no_seed.py": "backward forgets to seed the root gradient with 1, so every grad is 0",
+    "div_wrong_denominator.py": "d(a/b)/db is -a/b instead of -a/b**2"
+  },
+  "hints": [
+    "Each operation creates a new Value that remembers its inputs and a small closure _backward that pushes out.grad into the inputs' grads using the local derivative.",
+    "A node can feed several consumers, so every closure must ACCUMULATE with += (never assign). Reuse of a value is exactly why.",
+    "backward(): build a topological order of the graph with a visited set, set self.grad = 1.0, then call each node's _backward in reverse order. Division and subtraction can be built from mul, pow and neg."
+  ]
+}
