@@ -1,0 +1,40 @@
+{
+  "id": "steady-latency",
+  "title": "Steady Latency",
+  "difficulty": "H",
+  "language": "cpp",
+  "tags": ["sliding-window", "ordered-multiset", "median", "ai-serving"],
+  "similar": "LeetCode 480 Sliding Window Median (lower median variant)",
+  "compare": "tokens",
+  "timeLimitMs": 1000,
+  "complexity": { "time": "O(n log k)", "space": "O(k)" },
+  "groups": {
+    "sample": [1],
+    "edge": [1, 2, 3, 4, 5],
+    "random": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+    "perf": [1, 2]
+  },
+  "hints": [
+    "A median is just the element at a fixed rank in sorted order. Which structure keeps a changing set sorted and lets you insert and erase in O(log k)?",
+    "Keep the window in an ordered multiset and a single iterator that points at the median. When the window slides by one, how can the iterator move by at most one position?",
+    "Insert the new value; if it is smaller than the median value, step the iterator back one. If the outgoing value is <= the median value, step the iterator forward one. Then erase one copy of the outgoing value with erase(lower_bound(v)), never erase(v), which removes every duplicate."
+  ],
+  "wrong": {
+    "upper_median.cpp": "reports the upper of the two middle values for even k instead of the lower one",
+    "no_insert_adjust.cpp": "forgets to step the median iterator back when the new value lands below it, so the iterator drifts off the true median",
+    "tle_nth_element.cpp": "copies each window and runs nth_element (fails the perf group)"
+  },
+  "wrongExpect": { "upper_median.cpp": "WA", "no_insert_adjust.cpp": "WA", "tle_nth_element.cpp": "TLE" },
+  "strategy": {
+    "question": "Scout the statement: n up to 2*10^5 latency samples, window k up to n, print the median of every window. Which plan fits?",
+    "options": [
+      "Sort each window and read the middle element",
+      "Keep a running average and report the value closest to it",
+      "Keep the window in an ordered multiset with one iterator parked on the median, nudging it by at most one step per slide",
+      "Keep a max-deque of candidates, as for the window maximum"
+    ],
+    "answer": 2,
+    "why": "Sorting every window is O(n k log k). An average is not a median and outliers (the whole point of using a median) break it. A monotonic deque only works for the extreme value, not a middle rank. An ordered multiset gives O(log k) insert and erase, and the median rank is fixed, so one iterator that moves at most one step per slide finds it in O(1): O(n log k) overall."
+  },
+  "browserPerfN": 40000
+}

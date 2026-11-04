@@ -375,3 +375,10 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Known gaps: one iPhone smoke run timed out once waiting for `dojo-plan-1` on Label Consensus (passed on rerun; likely a click before hydration, worth hardening); browser perf cases use n=40000; no Python variant or SRS for problems yet.
 - CI/Pages: from 2026-11-01 CI should be confirmed, but this session has no `gh` CLI; checked via commit status only.
 - Next: C6b2b2b.
+
+## 2026-11-04: C6b2b2b Code Dojo ladder, part 2b-2b
+- `steady-latency` (H, LC 480 pointer, lower-median variant): sliding-window median over inference latencies. Reference = `multiset` plus one median iterator that moves at most one step per slide (`erase(lower_bound(v))`); brute = sort each window; wrongs: upper median for even k (WA), missing step-back on insert (WA), `nth_element` per window (TLE). Seeded generator (duplicates, k=1, k=n, ascending perf), 4 test groups, 3-rung hints, strategy question, house-style editorial with heap and Fenwick alternatives. `content:verify` ok; `gen:problems` regenerated; catalog test added; `smoke:dojo` plays it end to end.
+- Verification: lint (0 errors), typecheck, test (286 pass), content:verify, build, build:pages, smoke:dojo at desktop and iPhone 14 (all PASS, no overflow, no console errors); iPhone debrief screenshot inspected.
+- Known gaps: browser perf cases use n=40000; no Python variant or SRS for problems yet; only one new problem this run (the box asked for "more").
+- CI/Pages: no `gh` CLI in this session; not confirmed.
+- Next: C6b3.

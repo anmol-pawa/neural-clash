@@ -58,7 +58,7 @@ describe("dojo catalog", () => {
 
   it("every bundled problem is a consistent package with the documented samples", () => {
     const ids = dojoProblems().map((p) => p.id);
-    expect(ids).toEqual(expect.arrayContaining(["top-k-tokens", "context-window", "batch-packer", "pipeline-order", "peak-window", "label-consensus", "fewest-tokens"]));
+    expect(ids).toEqual(expect.arrayContaining(["top-k-tokens", "context-window", "batch-packer", "pipeline-order", "peak-window", "label-consensus", "fewest-tokens", "steady-latency"]));
     for (const p of dojoProblems()) {
       expect(p.hints).toHaveLength(3);
       expect(p.strategy.answer).toBeLessThan(p.strategy.options.length);
@@ -90,6 +90,13 @@ describe("dojo catalog", () => {
     expect(p.sample[0].expected).toBe("14");
     expect(p.difficulty).toBe("M");
     expect(p.hidden.some((h) => Number(h.expected) > 2 ** 31)).toBe(true);
+  });
+
+  it("steady-latency: lower median from the native reference, hard", () => {
+    const p = dojoProblem("steady-latency")!;
+    expect(p.sample[0].expected).toBe("4 4 4 2");
+    expect(p.difficulty).toBe("H");
+    expect(p.hidden.length).toBeGreaterThan(10);
   });
 
   it("the ladder lists easier problems first, then by title", () => {
