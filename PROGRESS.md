@@ -491,3 +491,10 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Verification: lint (0 errors), typecheck, test (359 pass), content:verify, build, build:pages, new `smoke:descent` at desktop and iPhone 14; screenshots inspected (no overflow, no console errors). Use `PATH=/usr/bin:$PATH` for numpy.
 - Known gaps: not yet linked from the world or lessons (D2e). CI/Pages not confirmed (no `gh` CLI).
 - Next: D2e (region art, guardian, readiness skill "calculus & optimisation").
+
+## 2026-11-04: D2e1 Readiness skill "calculus & optimisation"
+- D2e was split into D2e1–D2e4 in ROADMAP. This run: new Readiness skill `calculus-optim` (evidence: `calculus` deck, Labs `forge-value` and `forge-tensor`), weighted into the ML-engineer theory (2) and implement (1) rounds. Tests: content exists (coverage 1), lab credit incl. discounted assisted pass, round membership.
+- Verification: lint (0 errors), typecheck, test (362 pass), content:verify, build, build:pages. No visual change, so no screenshots. Use `PATH=/usr/bin:$PATH` for numpy.
+- Known gaps: Gradient Gorge guardian not yet an evidence item (D2e4); no region art yet (D2e2–D2e3).
+- CI/Pages: no `gh` CLI in this session; not confirmed.
+- Next: D2e2 (Gorge tileset and guardian art).

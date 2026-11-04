@@ -78,7 +78,10 @@ Work top to bottom: take the **first unchecked box**, and split big boxes into r
   - [x] D2b. (done 2026-11-04) Forge 2 Lab `forge-tensor`: numpy `Tensor` with broadcasting-aware backward (unbroadcast), matmul, sum/mean, gradient checks.
   - [x] D2c. (done 2026-11-04) Calculus/optimisation deck (38 cards: derivatives, chain rule, GD step sizes, Adam bias correction; numpy-computed, solver-checked) and 4 lessons.
   - [x] D2d. (done 2026-11-04) Gradient descent visualiser (`/dev/descent`: SGD, momentum, Adam on a bowl, ravine and Rosenbrock valley; pure maths in `lib/optim/`, `smoke:descent`).
-  - [ ] D2e. Region art (tileset, trainers, backdrop), guardian, readiness skill "calculus & optimisation".
+  - [x] D2e1. (done 2026-11-04) Readiness skill "calculus & optimisation" (calculus deck + `forge-value` + `forge-tensor`), tested in the ML-engineer theory and implement rounds.
+  - [ ] D2e2. Gradient Gorge tileset and the guardian art (96x96, idle/attack/hurt/faint), reviewed on `/dev/sprites`.
+  - [ ] D2e3. Gorge trainers (walk cycles + portraits) and the battle backdrop theme.
+  - [ ] D2e4. Gradient Gorge guardian fight (`/guardian/gorge`: calculus deck duel, Forge Lab, hidden-set fight) and its readiness evidence.
 - [ ] D3. Probability Peaks (F4)
 - [ ] D4. Classic Grove (F5), with from-scratch classical ML labs and the Creature Stats dataset
 - [ ] D5. Metric Market + Data Dojo (F6, GDD §5.4), with the *Leakage* and *Imbalance Swarm* bosses
