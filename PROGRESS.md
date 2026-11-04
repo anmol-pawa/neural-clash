@@ -453,3 +453,12 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Known gaps: trainers are not yet placed in the Vector Vale map or given dialogue; no trainer battle uses them yet.
 - CI/Pages: no `gh` CLI in this session; not confirmed.
 - Next: D1d3.
+
+## 2026-11-04: D1d3 Vector Vale guardian (D1 complete)
+- New `lib/guardian/defs.ts` (`GuardianDef`: id, route, deck, Lab, sprite, backdrop theme, badge). `components/Guardian.tsx` now takes a `def`; `/guardian` is unchanged (Warden Indent), new `/guardian/vale` fights Warden Basis on the Vale backdrop: Read (41-card linalg deck), Write (`pca-svd` Lab), Generalise (hidden-set fight with the saved companion). Awards the Basis Badge (`guardian:vector-vale`), saved progress is keyed per guardian. `summarizeGuardian` takes the badge name.
+- Readiness: the guardian is now evidence for the `linear-algebra` skill (test updated). Home links to both guardians.
+- Tests: guardian defs point at real content; a full Vale run with a test-only correct-response oracle ends in the Basis Badge.
+- Verification: lint (0 errors), typecheck, test (342 pass; `py.core` flaked once under parallel load, passed on rerun and alone), content:verify, build, build:pages, new `smoke:guardian-vale` at desktop and iPhone 14 (14 checks pass, no overflow, no console errors); screenshots inspected. The full duel is played by `smoke:guardian`; the Vale smoke resumes from saved progress to reach the Lab.
+- Known gaps: the third trial reuses Overfit's minion; the card duel is not played end to end in the Vale smoke.
+- CI/Pages: no `gh` CLI here, so not confirmed.
+- Next: D2 (Gradient Gorge).

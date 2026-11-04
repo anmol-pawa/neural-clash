@@ -100,10 +100,12 @@ describe("linear algebra skill", () => {
     expect(r.coverage).toBe(1);
     expect(r.score).toBe(0);
   });
-  it("gains credit from each PCA lab pass and from the guardian-free evidence only", () => {
+  it("gains credit from each PCA lab pass and, once cleared, from the Vector Vale guardian", () => {
     const labs = { "pca-svd": { passed: true, assisted: false }, "pca-power": { passed: true, assisted: true } };
     const r = scoreSkill(skill, { ...base(), labIds, labs, decks: { linalg: LINALG_DECK.cards.map((c) => c.id) } });
-    expect(r.score).toBeCloseTo((0 + 1 + ASSISTED_LAB_CREDIT) / 3, 5);
+    expect(r.score).toBeCloseTo((0 + 1 + ASSISTED_LAB_CREDIT) / 4, 5);
+    const g = scoreSkill(skill, { ...base(), labIds, labs, cleared: ["guardian:vector-vale"], decks: { linalg: LINALG_DECK.cards.map((c) => c.id) } });
+    expect(g.score).toBeCloseTo((0 + 1 + ASSISTED_LAB_CREDIT + 1) / 4, 5);
   });
   it("is tested in the theory and implement rounds of the ML-engineer loop", () => {
     const loop = LOOPS.find((l) => l.id === "ml-engineer")!;

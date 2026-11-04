@@ -25,6 +25,7 @@ export default function Home() {
         <Link href="/mart" className="px-btn px-4 py-2 text-center">Bit Mart</Link>
         <Link href="/journal" className="px-btn px-4 py-2 text-center">Research journal</Link>
         <Link href="/guardian" className="px-btn px-4 py-2 text-center">Warden Indent (guardian)</Link>
+        <Link href="/guardian/vale" className="px-btn px-4 py-2 text-center">Warden Basis (guardian)</Link>
         <AudioControls />
         <p className="text-xs text-white/50">The Python Port opens soon. Work in progress.</p>
       </div>

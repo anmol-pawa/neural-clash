@@ -9,19 +9,19 @@ import EditorWorkbench from "@/components/EditorWorkbench";
 import { RevealFight } from "@/components/Train";
 import { drawBattle, STAGE_H, STAGE_W, type StageFx, type StageOpts } from "@/game/render/battle";
 import { spriteById } from "@/game/sprites/roster";
-import { PYTHON_DECK } from "@/lib/cards/samples";
+import { LINALG_DECK, PYTHON_DECK } from "@/lib/cards/samples";
+import { PYTHON_GUARDIAN, type GuardianDef } from "@/lib/guardian/defs";
 import { shuffle, rng } from "@/lib/cards/rng";
 import type { Response } from "@/lib/cards/types";
 import { lessonForTopic } from "@/lib/lessons/lessons";
 import { labById, labTask } from "@/lib/labs/catalog";
-import { GUARDIAN_ID, GUARDIAN_NAME, PHASES, guardianAdvanceFromCards, guardianAnswer, guardianFight, guardianLabResult, guardianNext, phaseProgress, progressOf, resumeGuardian, startGuardian, summarizeGuardian, type GuardianProgress, type GuardianState } from "@/lib/guardian/portGuardian";
+import { PHASES, guardianAdvanceFromCards, guardianAnswer, guardianFight, guardianLabResult, guardianNext, phaseProgress, progressOf, resumeGuardian, startGuardian, summarizeGuardian, type GuardianProgress, type GuardianState } from "@/lib/guardian/portGuardian";
 import { payReward } from "@/lib/economy/economy";
 import { getSaveManager, useSave } from "@/lib/save/react";
 
-const LAB_ID = "py-moving-average";
-const PROGRESS_KEY = "neural-clash:guardian-progress";
 /** Large (96px) foe: sits higher on its platform and moves its bar to the foot of the stage. */
-const OPTS: StageOpts = { foeLabel: "WARDEN INDENT", foeAt: { x: 128, y: 8 }, foePlatform: { cx: 176, cy: 100 }, foeBarAt: { x: 148, y: 108 } };
+const stageOpts = (def: GuardianDef): StageOpts => ({ theme: def.theme, foeLabel: def.name.toUpperCase(), foeAt: { x: 128, y: 8 }, foePlatform: { cx: 176, cy: 100 }, foeBarAt: { x: 148, y: 108 } });
+const deckFor = (def: GuardianDef) => (def.id === "guardian:vector-vale" ? LINALG_DECK : PYTHON_DECK);
 const freshFx = (): StageFx => ({ t: 0, attackAt: -1, hurtAt: -1, foeHitAt: -1, foeHp: 1, playerHp: 1, foeDown: false, playerDown: false, shake: 0, floaters: [] });
 
 /** The Warden's remaining resolve: each of the three trials removes a third of its bar. */
@@ -33,17 +33,23 @@ function resolve(s: GuardianState): number {
   return (cardsPart + labPart + trainPart) / 3;
 }
 
-export default function Guardian() {
+export default function Guardian({ def = PYTHON_GUARDIAN }: { def?: GuardianDef }) {
+  const LAB_ID = def.labId;
+  const GUARDIAN_ID = def.id;
+  const GUARDIAN_NAME = def.name;
+  const PROGRESS_KEY = `neural-clash:guardian-progress:${def.slug || "port"}`;
+  const DECK = deckFor(def);
+  const OPTS = useMemo(() => stageOpts(def), [def]);
   const save = useSave();
   useAudioSettings({ music: false });
   // fixed order on first render so the static HTML and the client agree; restarts reshuffle
-  const [state, setState] = useState<GuardianState>(() => startGuardian(shuffle(rng(7), PYTHON_DECK.cards), LAB_ID));
+  const [state, setState] = useState<GuardianState>(() => startGuardian(shuffle(rng(7), DECK.cards), LAB_ID));
   useEffect(() => {
     try {
       const raw = sessionStorage.getItem(PROGRESS_KEY);
       // resume after mount (not in the initial state) so the static HTML and first client render match
       // eslint-disable-next-line react-hooks/set-state-in-effect
-      if (raw) setState(resumeGuardian(shuffle(rng(7), PYTHON_DECK.cards), LAB_ID, JSON.parse(raw) as GuardianProgress));
+      if (raw) setState(resumeGuardian(shuffle(rng(7), DECK.cards), LAB_ID, JSON.parse(raw) as GuardianProgress));
     } catch { /* no storage: start fresh */ }
   }, []);
   useEffect(() => {
@@ -61,7 +67,7 @@ export default function Guardian() {
   const stats = useMemo(() => (companion ? { attack: companion.attack, defence: companion.defence, speed: companion.speed } : null), [companion]);
 
   useEffect(() => {
-    const foe = spriteById("warden-indent")!;
+    const foe = spriteById(def.spriteId)!;
     const hero = spriteById("neuron-pup-perceptron-back")!;
     const g = canvasRef.current!.getContext("2d")!;
     let last = performance.now();
@@ -81,7 +87,7 @@ export default function Guardian() {
     };
     raf = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(raf);
-  }, []);
+  }, [OPTS, def.spriteId]);
 
   // keep the stage bars in step with the state machine
   useEffect(() => {
@@ -136,7 +142,7 @@ export default function Guardian() {
   const restart = () => {
     try { sessionStorage.removeItem(PROGRESS_KEY); } catch { /* ignore */ }
     fxRef.current = freshFx();
-    setState(startGuardian(shuffle(rng(Date.now() % 100000), PYTHON_DECK.cards), LAB_ID));
+    setState(startGuardian(shuffle(rng(Date.now() % 100000), DECK.cards), LAB_ID));
   };
 
   const progress = phaseProgress(state);
@@ -158,21 +164,21 @@ export default function Guardian() {
           </li>
         ))}
       </ol>
-      <canvas ref={canvasRef} width={STAGE_W} height={STAGE_H} data-testid="stage" className="mx-auto w-full max-w-2xl border-4 border-indigo-300/40 bg-black" style={{ imageRendering: "pixelated", aspectRatio: `${STAGE_W}/${STAGE_H}` }} aria-label="Battle stage: your Neuron-Pup against Warden Indent, the Python Port guardian" role="img" />
+      <canvas ref={canvasRef} width={STAGE_W} height={STAGE_H} data-testid="stage" className="mx-auto w-full max-w-2xl border-4 border-indigo-300/40 bg-black" style={{ imageRendering: "pixelated", aspectRatio: `${STAGE_W}/${STAGE_H}` }} aria-label={`Battle stage: your Neuron-Pup against ${GUARDIAN_NAME}, the ${def.region} guardian`} role="img" />
       <div aria-live="polite" className="sr-only">{live}</div>
-      {cleared && state.phase !== "won" && <p className="mx-auto w-full max-w-2xl text-xs text-emerald-300" data-testid="already-cleared">Indent Badge already earned. A rematch is just for practice.</p>}
+      {cleared && state.phase !== "won" && <p className="mx-auto w-full max-w-2xl text-xs text-emerald-300" data-testid="already-cleared">{def.badge} already earned. A rematch is just for practice.</p>}
 
       {state.phase === "lost" && (
         <section className="mx-auto w-full max-w-2xl grid gap-2 rounded border-2 border-rose-400/60 bg-slate-900/80 p-3" aria-label="Result" data-testid="guardian-lost">
           <h2 className="font-display text-lg">Out of hearts.</h2>
-          <p className="text-sm text-slate-300">The Warden holds the Port. Accuracy {Math.round(sum.cards.accuracy * 100)}%{sum.cards.missed.length > 0 && <> · review: {sum.cards.missed.join(", ")}</>}. Read the lessons, then try again.</p>
-          <div className="flex flex-wrap gap-2"><button className={primary} onClick={restart} data-testid="retry">Try again</button><Link href="/learn" className="min-h-11 rounded border-2 border-indigo-300/40 px-4 py-2 text-sm underline">Python Port lessons</Link></div>
+          <p className="text-sm text-slate-300">{GUARDIAN_NAME} holds {def.region}. Accuracy {Math.round(sum.cards.accuracy * 100)}%{sum.cards.missed.length > 0 && <> · review: {sum.cards.missed.join(", ")}</>}. Read the lessons, then try again.</p>
+          <div className="flex flex-wrap gap-2"><button className={primary} onClick={restart} data-testid="retry">Try again</button><Link href={def.lessonsHref} className="min-h-11 rounded border-2 border-indigo-300/40 px-4 py-2 text-sm underline">{def.region} lessons</Link></div>
         </section>
       )}
 
       {state.phase === "cards" && c.phase === "won" && c.last && (
         <section className="mx-auto w-full max-w-2xl grid gap-2 rounded border-2 border-emerald-400/70 p-3" aria-label="Trial one cleared" data-testid="cards-cleared">
-          <h2 className="font-display">Trial 1 cleared: you can read Python.</h2>
+          <h2 className="font-display">Trial 1 cleared: {def.trials.read}.</h2>
           <p className="text-sm text-slate-200">{c.last.card.explanation}</p>
           <button className={primary} onClick={() => setState(guardianAdvanceFromCards)} autoFocus data-testid="to-lab">On to the Write trial</button>
         </section>
@@ -220,8 +226,8 @@ export default function Guardian() {
 
       {state.phase === "won" && (
         <section className="mx-auto w-full max-w-2xl grid gap-2 rounded border-2 border-amber-300 bg-amber-300/10 p-3" aria-label="Victory" data-testid="guardian-won">
-          <h2 className="font-display text-xl text-amber-200">Indent Badge earned!</h2>
-          <p className="text-sm text-slate-200">You read it, wrote it, and built something that generalises. The Python Port is open.</p>
+          <h2 className="font-display text-xl text-amber-200">{def.badge} earned!</h2>
+          <p className="text-sm text-slate-200">You read it, wrote it, and built something that generalises. {def.region} is open.</p>
           <div className="flex flex-wrap gap-2"><Link href="/" className={primary}>Back to title</Link><button className="min-h-11 rounded border-2 border-indigo-300/40 px-4 py-2 text-sm" onClick={restart}>Rematch for practice</button></div>
         </section>
       )}

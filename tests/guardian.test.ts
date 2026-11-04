@@ -110,3 +110,46 @@ describe("Warden Indent sprite", () => {
     expect(progressOf(startGuardian(mcq, "x"))).toEqual({ cards: false, lab: false });
   });
 });
+
+/** Test-only oracle: the response that `check` accepts for any card kind. */
+function correctResponse(c: Card): Response {
+  switch (c.kind) {
+    case "mcq": return { kind: "mcq", choice: c.answer };
+    case "curve": return { kind: "curve", choice: c.answer };
+    case "multi": return { kind: "multi", choices: c.answers };
+    case "derive": return { kind: "derive", values: c.answers };
+    case "shape": return { kind: "shape", shape: c.answer };
+    case "metric": return { kind: "metric", value: c.answer };
+    case "bug": return { kind: "bug", line: c.line };
+  }
+}
+
+describe("guardian definitions", () => {
+  it("each guardian points at real content: deck cards, a Lab, a sprite and a unique id/route", async () => {
+    const { GUARDIANS, VALE_GUARDIAN } = await import("@/lib/guardian/defs");
+    const { spriteById } = await import("@/game/sprites/roster");
+    const { LINALG_DECK } = await import("@/lib/cards/samples");
+    expect(new Set(GUARDIANS.map((g) => g.id)).size).toBe(GUARDIANS.length);
+    expect(new Set(GUARDIANS.map((g) => g.slug)).size).toBe(GUARDIANS.length);
+    for (const g of GUARDIANS) {
+      expect(labById(g.labId), g.id).toBeTruthy();
+      expect(spriteById(g.spriteId), g.id).toBeTruthy();
+    }
+    expect(LINALG_DECK.cards.length).toBeGreaterThanOrEqual(30);
+    expect(VALE_GUARDIAN.labId).toBe("pca-svd");
+  });
+
+  it("Warden Basis runs on the linalg deck and awards the Basis Badge", async () => {
+    const { VALE_GUARDIAN } = await import("@/lib/guardian/defs");
+    const { LINALG_DECK } = await import("@/lib/cards/samples");
+    let g = startGuardian(LINALG_DECK.cards, VALE_GUARDIAN.labId);
+    for (let i = 0; i < 100 && g.phase === "cards" && g.cards.current; i++) {
+      g = guardianAnswer(g, correctResponse(g.cards.current));
+      if (g.phase === "cards") g = guardianNext(g);
+    }
+    expect(g.cards.phase).toBe("won");
+    g = guardianLabResult(guardianAdvanceFromCards(g), true);
+    g = guardianFight(g, { attack: 95, defence: 90, speed: 80 });
+    expect(summarizeGuardian(g, VALE_GUARDIAN.badge).badge).toBe("Basis Badge");
+  });
+});

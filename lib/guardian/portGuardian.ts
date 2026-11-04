@@ -76,9 +76,9 @@ export interface GuardianSummary {
   badge: string | null;
 }
 
-export function summarizeGuardian(s: GuardianState): GuardianSummary {
+export function summarizeGuardian(s: GuardianState, badge = "Indent Badge"): GuardianSummary {
   const cleared = s.phase === "won";
-  return { cleared, cards: summarize(s.cards), badge: cleared ? "Indent Badge" : null };
+  return { cleared, cards: summarize(s.cards), badge: cleared ? badge : null };
 }
 
 /** 1-based phase number and label for the progress strip. */
