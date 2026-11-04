@@ -43,7 +43,7 @@ export const SKILLS: readonly Skill[] = [
   { id: "python", title: "Python fluency", evidence: [{ kind: "deck", id: "python" }, { kind: "guardian", id: "guardian:python-port" }] },
   { id: "numpy", title: "numpy and vectorised thinking", evidence: [{ kind: "deck", id: "numpy" }] },
   { id: "linear-algebra", title: "Linear algebra for ML", evidence: [{ kind: "deck", id: "linalg" }, { kind: "lab", id: "pca-svd" }, { kind: "lab", id: "pca-power" }, { kind: "guardian", id: "guardian:vector-vale" }] },
-  { id: "calculus-optim", title: "Calculus and optimisation for ML", evidence: [{ kind: "deck", id: "calculus" }, { kind: "lab", id: "forge-value" }, { kind: "lab", id: "forge-tensor" }] },
+  { id: "calculus-optim", title: "Calculus and optimisation for ML", evidence: [{ kind: "deck", id: "calculus" }, { kind: "lab", id: "forge-value" }, { kind: "lab", id: "forge-tensor" }, { kind: "guardian", id: "guardian:gradient-gorge" }] },
   { id: "ml-basics", title: "Training and evaluation hygiene", evidence: [{ kind: "deck", id: "strategy" }, { kind: "journal", target: 4 }, { kind: "lab", id: "linear-gd" }] },
   { id: "dl-scratch", title: "Deep learning from scratch", evidence: [{ kind: "lab", id: "autograd" }, { kind: "lab", id: "mlp" }, { kind: "lab", id: "conv2d" }, { kind: "lab", id: "rnn" }] },
   { id: "transformers", title: "Attention and transformers", evidence: [{ kind: "lab", id: "attention" }, { kind: "lab", id: "transformer-block" }, { kind: "lab", id: "tokenizer" }, { kind: "lab", id: "tiny-lm" }] },

@@ -153,3 +153,21 @@ describe("guardian definitions", () => {
     expect(summarizeGuardian(g, VALE_GUARDIAN.badge).badge).toBe("Basis Badge");
   });
 });
+
+describe("Warden Chain", () => {
+  it("runs on the calculus deck with the forge-value Lab and awards the Chain Badge", async () => {
+    const { GORGE_GUARDIAN } = await import("@/lib/guardian/defs");
+    const { CALCULUS_DECK } = await import("@/lib/cards/samples");
+    expect(CALCULUS_DECK.cards.length).toBeGreaterThanOrEqual(30);
+    expect(labById(GORGE_GUARDIAN.labId)).toBeTruthy();
+    let g = startGuardian(CALCULUS_DECK.cards, GORGE_GUARDIAN.labId);
+    for (let i = 0; i < 100 && g.phase === "cards" && g.cards.current; i++) {
+      g = guardianAnswer(g, correctResponse(g.cards.current));
+      if (g.phase === "cards") g = guardianNext(g);
+    }
+    expect(g.cards.phase).toBe("won");
+    g = guardianLabResult(guardianAdvanceFromCards(g), true);
+    g = guardianFight(g, { attack: 95, defence: 90, speed: 80 });
+    expect(summarizeGuardian(g, GORGE_GUARDIAN.badge).badge).toBe("Chain Badge");
+  });
+});

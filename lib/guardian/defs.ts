@@ -43,7 +43,21 @@ export const VALE_GUARDIAN: GuardianDef = {
   lessonsHref: "/learn",
 };
 
-export const GUARDIANS: readonly GuardianDef[] = [PYTHON_GUARDIAN, VALE_GUARDIAN];
+export const GORGE_GUARDIAN: GuardianDef = {
+  id: "guardian:gradient-gorge",
+  slug: "gorge",
+  name: "Warden Chain",
+  badge: "Chain Badge",
+  region: "Gradient Gorge",
+  spriteId: "warden-chain",
+  labId: "forge-value",
+  theme: "gorge",
+  deckLabel: "calculus and optimisation",
+  trials: { read: "you can read a gradient step", write: "build reverse-mode autodiff", generalise: "build something that generalises" },
+  lessonsHref: "/learn",
+};
+
+export const GUARDIANS: readonly GuardianDef[] = [PYTHON_GUARDIAN, VALE_GUARDIAN, GORGE_GUARDIAN];
 
 export const guardianHref = (g: GuardianDef) => (g.slug ? `/guardian/${g.slug}` : "/guardian");
 

@@ -23,6 +23,7 @@
     "smoke:train": "node scripts/smoke-train.mjs",
     "smoke:guardian": "node scripts/smoke-guardian.mjs",
     "smoke:guardian-vale": "node scripts/smoke-guardian-vale.mjs",
+    "smoke:guardian-gorge": "node scripts/smoke-guardian-gorge.mjs",
     "smoke:transform": "node scripts/smoke-transform.mjs",
     "smoke:descent": "node scripts/smoke-descent.mjs",
     "smoke:sync": "node scripts/smoke-sync.mjs",

@@ -73,7 +73,7 @@ Work top to bottom: take the **first unchecked box**, and split big boxes into r
   - [x] D1d2a. (done 2026-11-04) Vector Vale tileset (20 tiles, `scripts/art/vector-vale.mjs`), a preview map and the 96x96 guardian Warden Basis (idle 4, attack 5, hurt 3, faint 4; `scripts/art/warden-basis.mjs`), reviewed on `/dev/sprites`.
   - [x] D1d2b. (done 2026-11-04) Region art, part 2: Cadet Shear and Ranger Axis (16x24 walk cycles + 48x48 portraits, `scripts/art/vale-trainers.mjs`) and the Vector Vale battle backdrop (`theme: "vale"`, preview at `/battle?theme=vale`).
   - [x] D1d3. (done 2026-11-04) Vector Vale guardian fight (`/guardian/vale`: linalg deck duel, `pca-svd` Lab, hidden-set fight) and its readiness evidence.
-- [ ] D2. Gradient Gorge (F3), with Forge modules 1–2 (`Value`, `Tensor`) and gradient checks
+- [x] D2. Gradient Gorge (F3), with Forge modules 1–2 (`Value`, `Tensor`) and gradient checks
   - [x] D2a. (done 2026-11-04) Forge 1 Lab `forge-value`: scalar reverse-mode autodiff `Value` with finite-difference hidden tests and 8 known-wrong versions.
   - [x] D2b. (done 2026-11-04) Forge 2 Lab `forge-tensor`: numpy `Tensor` with broadcasting-aware backward (unbroadcast), matmul, sum/mean, gradient checks.
   - [x] D2c. (done 2026-11-04) Calculus/optimisation deck (38 cards: derivatives, chain rule, GD step sizes, Adam bias correction; numpy-computed, solver-checked) and 4 lessons.
@@ -81,7 +81,7 @@ Work top to bottom: take the **first unchecked box**, and split big boxes into r
   - [x] D2e1. (done 2026-11-04) Readiness skill "calculus & optimisation" (calculus deck + `forge-value` + `forge-tensor`), tested in the ML-engineer theory and implement rounds.
   - [x] D2e2. (done 2026-11-04) Gradient Gorge tileset (`scripts/art/gradient-gorge.mjs`, canyon palette, contour-etched ground, descent arrows, preview map) and the 96x96 guardian Warden Chain (idle 4, attack 5, hurt 3, faint 4; `scripts/art/warden-chain.mjs`), reviewed on `/dev/sprites`.
   - [x] D2e3. (done 2026-11-04) Gorge trainers Climber Delta and Surveyor Hess (16x24 walk cycles + 48x48 portraits, `scripts/art/gorge-trainers.mjs`) and the Gradient Gorge battle backdrop (`theme: "gorge"`, preview at `/battle?theme=gorge`).
-  - [ ] D2e4. Gradient Gorge guardian fight (`/guardian/gorge`: calculus deck duel, Forge Lab, hidden-set fight) and its readiness evidence.
+  - [x] D2e4. (done 2026-11-04) Gradient Gorge guardian fight (`/guardian/gorge`: calculus deck duel, Forge Lab, hidden-set fight) and its readiness evidence.
 - [ ] D3. Probability Peaks (F4)
 - [ ] D4. Classic Grove (F5), with from-scratch classical ML labs and the Creature Stats dataset
 - [ ] D5. Metric Market + Data Dojo (F6, GDD §5.4), with the *Leakage* and *Imbalance Swarm* bosses

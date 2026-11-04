@@ -515,3 +515,10 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Known gaps: trainers are not yet placed in a Gorge map or given dialogue; the rolling ball is small.
 - CI/Pages: Actions quota note ended 2026-11-01, but no `gh` CLI here, so CI and deploy are not confirmed.
 - Next: D2e4 (Gradient Gorge guardian fight).
+
+## 2026-11-04: D2e4 Gradient Gorge guardian fight (D2 complete)
+- `GORGE_GUARDIAN` in `lib/guardian/defs.ts` (Warden Chain, Chain Badge, calculus deck, `forge-value` Lab, gorge backdrop); `/guardian/gorge` reuses `Guardian` with the calculus deck; linked from the title; guardian added as evidence for the `calculus-optim` Readiness skill.
+- Tests: guardian run-through (deck, Lab, hidden-set fight, badge) and readiness credit from the cleared guardian. New `smoke:guardian-gorge` plays the Write trial with the reference autodiff, fights and checks badge persistence; `smoke-slice` includes the route.
+- Verification: lint (0 errors), typecheck, test (393 pass; run `node scripts/fetch-pyodide.mjs` first), content:verify, build, build:pages, smoke at desktop and iPhone 14: no console errors or overflow; screenshots inspected.
+- Known gaps: no Gorge overworld map or trainer dialogue yet. CI/Pages not confirmed (no `gh` CLI; MCP actions not checked).
+- Next: D3 (Probability Peaks).

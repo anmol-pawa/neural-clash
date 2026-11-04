@@ -125,7 +125,9 @@ describe("calculus and optimisation skill", () => {
   it("gains credit from each Forge lab pass, with assisted passes discounted", () => {
     const labs = { "forge-value": { passed: true, assisted: false }, "forge-tensor": { passed: true, assisted: true } };
     const r = scoreSkill(skill, { ...base(), labIds, labs, decks });
-    expect(r.score).toBeCloseTo((0 + 1 + ASSISTED_LAB_CREDIT) / 3, 5);
+    expect(r.score).toBeCloseTo((0 + 1 + ASSISTED_LAB_CREDIT) / 4, 5);
+    const g = scoreSkill(skill, { ...base(), labIds, labs, cleared: ["guardian:gradient-gorge"], decks });
+    expect(g.score).toBeCloseTo((0 + 1 + ASSISTED_LAB_CREDIT + 1) / 4, 5);
   });
   it("is tested in the theory and implement rounds of the ML-engineer loop", () => {
     const loop = LOOPS.find((l) => l.id === "ml-engineer")!;
