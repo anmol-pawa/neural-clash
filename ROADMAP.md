@@ -69,7 +69,9 @@ Work top to bottom: take the **first unchecked box**, and split big boxes into r
   - [x] D1a. (done 2026-11-04) Lessons (5) and a 41-card deck, all numeric answers computed by numpy and cross-checked by `lib/solvers/linalg.ts`; wired into Learn and Daily Sync.
   - [x] D1b. (done 2026-11-04) PCA Lab modules (via SVD and via power iteration): reference, visible + hidden tests, known-wrong versions.
   - [x] D1c. (done 2026-11-04) Interactive 2D transform visualiser at `/dev/transform` (pure matrix maths in `lib/linalg/transform.ts`). Lesson embedding is a follow-up.
-  - [ ] D1d. Region art (tileset, 2 trainers, 96x96 guardian, backdrop), guardian fight and readiness skill "linear algebra".
+  - [x] D1d1. (done 2026-11-04) Readiness skill "linear algebra" (linalg deck + both PCA labs), tested in the ML-engineer theory and implement rounds.
+  - [ ] D1d2. Region art: tileset, 2 trainers, 96x96 guardian sprite set and backdrop (review on `/dev/sprites`).
+  - [ ] D1d3. Vector Vale guardian fight (cards on the linalg deck, PCA lab, a training phase) and its readiness evidence.
 - [ ] D2. Gradient Gorge (F3), with Forge modules 1–2 (`Value`, `Tensor`) and gradient checks
 - [ ] D3. Probability Peaks (F4)
 - [ ] D4. Classic Grove (F5), with from-scratch classical ML labs and the Creature Stats dataset

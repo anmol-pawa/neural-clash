@@ -42,6 +42,7 @@ export interface Loop {
 export const SKILLS: readonly Skill[] = [
   { id: "python", title: "Python fluency", evidence: [{ kind: "deck", id: "python" }, { kind: "guardian", id: "guardian:python-port" }] },
   { id: "numpy", title: "numpy and vectorised thinking", evidence: [{ kind: "deck", id: "numpy" }] },
+  { id: "linear-algebra", title: "Linear algebra for ML", evidence: [{ kind: "deck", id: "linalg" }, { kind: "lab", id: "pca-svd" }, { kind: "lab", id: "pca-power" }] },
   { id: "ml-basics", title: "Training and evaluation hygiene", evidence: [{ kind: "deck", id: "strategy" }, { kind: "journal", target: 4 }, { kind: "lab", id: "linear-gd" }] },
   { id: "dl-scratch", title: "Deep learning from scratch", evidence: [{ kind: "lab", id: "autograd" }, { kind: "lab", id: "mlp" }, { kind: "lab", id: "conv2d" }, { kind: "lab", id: "rnn" }] },
   { id: "transformers", title: "Attention and transformers", evidence: [{ kind: "lab", id: "attention" }, { kind: "lab", id: "transformer-block" }, { kind: "lab", id: "tokenizer" }, { kind: "lab", id: "tiny-lm" }] },
@@ -85,8 +86,8 @@ export const LOOPS: readonly Loop[] = [
     title: "ML engineer / applied scientist (lite)",
     blurb: "Weights classical ML and deep-learning theory more heavily; expects you to derive and implement.",
     rounds: [
-      { id: "theory", title: "ML and DL theory", what: "Bias/variance, regularisation, backprop, attention, evaluation.", skills: [{ skill: "ml-basics", weight: 3 }, { skill: "dl-scratch", weight: 2 }, { skill: "transformers", weight: 2 }] },
-      { id: "implement", title: "Implement from scratch", what: "A layer, loss or optimiser in numpy, with gradients that check out.", skills: [{ skill: "dl-scratch", weight: 3 }, { skill: "numpy", weight: 2 }, { skill: "python", weight: 1 }] },
+      { id: "theory", title: "ML and DL theory", what: "Bias/variance, regularisation, backprop, attention, evaluation.", skills: [{ skill: "ml-basics", weight: 3 }, { skill: "dl-scratch", weight: 2 }, { skill: "transformers", weight: 2 }, { skill: "linear-algebra", weight: 2 }] },
+      { id: "implement", title: "Implement from scratch", what: "A layer, loss or optimiser in numpy, with gradients that check out.", skills: [{ skill: "dl-scratch", weight: 3 }, { skill: "numpy", weight: 2 }, { skill: "linear-algebra", weight: 1 }, { skill: "python", weight: 1 }] },
       { id: "coding", title: "Coding round", what: "A DSA problem in C++ or Python.", skills: [{ skill: "dsa-cpp", weight: 2 }, { skill: "python", weight: 1 }] },
       { id: "design", title: "ML system design", what: "Data, training, serving and monitoring for an ML feature.", skills: [{ skill: "ai-design", weight: 2 }, { skill: "ml-basics", weight: 1 }] },
     ],

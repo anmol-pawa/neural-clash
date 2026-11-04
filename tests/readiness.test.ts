@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { DAY, review, type SrsTable } from "@/lib/srs/srs";
+import { LINALG_DECK } from "@/lib/cards/samples";
 import { ASSISTED_LAB_CREDIT, LOOPS, SKILLS, band, readiness, scoreSkill, type Loop, type ReadinessInput, type Skill } from "@/lib/readiness/readiness";
 import { LABS } from "@/lib/labs/catalog";
 
@@ -88,6 +89,25 @@ describe("shipped catalogue", () => {
     // evolution Labs not yet written must be unavailable (coverage < 1), never silently scored
     const dl = scoreSkill(SKILLS.find((s) => s.id === "dl-scratch")!, { ...base(), labIds, labs: { autograd: { passed: true, assisted: false } } });
     expect(dl.score).toBe(0);
+  });
+});
+
+describe("linear algebra skill", () => {
+  const skill = SKILLS.find((s) => s.id === "linear-algebra")!;
+  const labIds = new Set(LABS.map((l) => l.id));
+  it("is backed by real content only: the deck and both PCA labs exist", () => {
+    const r = scoreSkill(skill, { ...base(), labIds, decks: { linalg: LINALG_DECK.cards.map((c) => c.id) } });
+    expect(r.coverage).toBe(1);
+    expect(r.score).toBe(0);
+  });
+  it("gains credit from each PCA lab pass and from the guardian-free evidence only", () => {
+    const labs = { "pca-svd": { passed: true, assisted: false }, "pca-power": { passed: true, assisted: true } };
+    const r = scoreSkill(skill, { ...base(), labIds, labs, decks: { linalg: LINALG_DECK.cards.map((c) => c.id) } });
+    expect(r.score).toBeCloseTo((0 + 1 + ASSISTED_LAB_CREDIT) / 3, 5);
+  });
+  it("is tested in the theory and implement rounds of the ML-engineer loop", () => {
+    const loop = LOOPS.find((l) => l.id === "ml-engineer")!;
+    for (const id of ["theory", "implement"]) expect(loop.rounds.find((r) => r.id === id)!.skills.some((s) => s.skill === "linear-algebra")).toBe(true);
   });
 });
 

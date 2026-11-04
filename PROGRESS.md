@@ -426,3 +426,12 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Known gaps: not yet linked from the Vector Vale lessons; no touch-drag of basis vectors (sliders only); text labels on the canvas omitted for legibility.
 - Branch note: harness branch `claude/wonderful-goodall-j5moxf`; pushed to it and to main.
 - Next: D1d (region art, guardian, readiness skill "linear algebra").
+
+## 2026-11-04: D1d1 Readiness skill "linear algebra"
+- D1d was split into D1d1 (this run), D1d2 (region art) and D1d3 (guardian fight) in ROADMAP.
+- New readiness skill `linear-algebra` (evidence: `linalg` deck mastery, Labs `pca-svd` and `pca-power`), weighted into the ML-engineer loop's theory (2) and implement (1) rounds; Readiness page passes the linalg deck ids. Tests in `tests/readiness.test.ts` (full coverage, zero score at start, assisted-lab half credit, round wiring).
+- Verification: lint (0 errors), typecheck, test (310 pass), content:verify (all ok), build, build:pages, smoke:readiness at desktop and iPhone 14 (all PASS, no overflow, no console errors).
+- Known gaps: the guardian is not yet evidence for this skill (D1d3); no art yet (D1d2); no screenshot inspected since the page layout is unchanged (a skill row was added).
+- Branch note: harness branch `claude/wonderful-goodall-5igaz0`; pushed to it and to main.
+- CI/Pages: Actions quota note has lapsed (after 2026-11-01) but this session has no `gh` CLI; not confirmed.
+- Next: D1d2.
