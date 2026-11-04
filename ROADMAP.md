@@ -58,7 +58,8 @@ Work top to bottom: take the **first unchecked box**, and split big boxes into r
 - [x] C6b2b1. (done 2026-11-03) **Code Dojo ladder, part 2b-1:** an easy AI-flavoured package (Label Consensus: majority vote, E) and a DP package (Fewest Tokens: min-token segmentation, M).
 - [x] C6b2b2a. (done 2026-11-03) **Code Dojo ladder, part 2b-2a:** a tree package (Worst Hop: weighted tree diameter, bottom-up DP) and play-throughs of Worst Hop and Fewest Tokens in `smoke:dojo`.
 - [x] C6b2b2b. (done 2026-11-04) **Code Dojo ladder, part 2b-2b:** a second hard package (Steady Latency: sliding-window median with an ordered multiset), played end to end in `smoke:dojo`.
-- [ ] C6b3. **Python (Pyodide) variant of the Dojo battle** and SRS entries for solved problems.
+- [x] C6b3a. (done 2026-11-04) **SRS entries for Dojo problems:** every unaided debrief is a spaced review under `dojo:<id>`; Daily Sync lists "Problems to redo" and problems count toward the Pup's rust.
+- [ ] C6b3b. **Python (Pyodide) variant of the Dojo battle:** same Scout → Strategise → Code → Debrief on the Pyodide runner for numpy-flavoured problems, with a language note explaining why Python is used.
 
 ## Phase D: Act I regions (region recipe)
 

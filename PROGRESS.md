@@ -382,3 +382,13 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Known gaps: browser perf cases use n=40000; no Python variant or SRS for problems yet; only one new problem this run (the box asked for "more").
 - CI/Pages: no `gh` CLI in this session; not confirmed.
 - Next: C6b3.
+
+## 2026-11-04: C6b3a SRS entries for Dojo problems
+- C6b3 was split into C6b3a (this run) and C6b3b (Python variant of the Dojo battle).
+- `lib/sync`: `problemKey` (`dojo:<id>`), `SyncProblem`, and `buildSync(..., { problems })` now returns `problems` (due, most overdue first, `stale` when rusted) and counts them in tracked/rusted/`rustLevel`. `components/Dojo.tsx` records one SRS review each time a debrief is reached (solved = correct; defeated = a lapse that returns within the day; hinted or retried runs are `assisted` and ignored). `/sync` shows a "Problems to redo" section and a problem count in the queue line.
+- Tests: 3 new sync tests (stale/due ordering and rust share, assisted ignored, failed attempt due within the day). `smoke:dojo` now checks the saved SRS table gains a `dojo:` key after an unaided solve.
+- Verification: lint (0 errors, 10 pre-existing warnings), typecheck, test (289 pass), content:verify, build, build:pages, smoke:dojo and smoke:sync at desktop and iPhone 14 (all PASS, no overflow, no console errors). No screenshot inspected: the only visible change is one line of text plus a list that appears only when problems are due.
+- Env note: the first `npm test` on a fresh clone failed 1 file until `npm run build` had staged Pyodide; the rerun passed.
+- Known gaps: the "Problems to redo" section was not seen rendered with real due data; readiness does not yet weigh Dojo mastery; still no Python variant.
+- CI/Pages: today is after 2026-11-01 but this session has no `gh` CLI; not confirmed (commit status only).
+- Next: C6b3b.

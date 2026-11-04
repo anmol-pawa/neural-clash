@@ -94,6 +94,14 @@ for (const [name, ctxOpts] of [["desktop", { viewport: { width: 1280, height: 90
   await page.getByTestId("dojo-debrief").waitFor({ timeout: 120_000 });
   check((await page.getByTestId("dojo-grade").textContent()).startsWith("Accepted"), `${name}: correct solution reaches an Accepted debrief`);
   await page.screenshot({ path: join(shots, `dojo-debrief-${name}.png`), fullPage: true });
+  await page.waitForTimeout(1200); // save debounce
+  const srsKeys = await page.evaluate(async () => {
+    const db = await new Promise((res, rej) => { const r = indexedDB.open("neural-clash-save", 1); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); });
+    const cur = await new Promise((res) => { const q = db.transaction("save", "readonly").objectStore("save").get("current"); q.onsuccess = () => res(q.result); });
+    const v = cur?.state ?? cur;
+    return Object.keys(v?.srs ?? {});
+  });
+  check(srsKeys.some((k) => k.startsWith("dojo:")), `${name}: an unaided solve is recorded in the spaced-review table`);
   // a second problem (easy, majority vote) played end to end
   await page.goto(`${origin}${BASE}/dojo/`);
   await page.getByTestId("dojo-label-consensus").click();

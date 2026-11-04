@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { Card } from "@/lib/cards/types";
 import { DAY, review, type SrsTable } from "@/lib/srs/srs";
-import { buildSync, labKey, rustLevel, staleLabIds, syncCards } from "@/lib/sync/sync";
+import { buildSync, labKey, problemKey, rustLevel, staleLabIds, syncCards } from "@/lib/sync/sync";
 
 const card = (id: string): Card => ({ id, kind: "mcq", topic: "t", prompt: "p", explanation: "e", choices: ["a", "b"], answer: 0 });
 const decks = [
@@ -68,5 +68,26 @@ describe("buildSync", () => {
     const s = buildSync(t, decks, [], T0 + 2 * DAY, { maxReviews: 2, maxNew: 0 });
     expect(s.plan.reviews).toHaveLength(2);
     expect(s.plan.fresh).toEqual([]);
+  });
+});
+
+describe("dojo problems in the sync", () => {
+  const problems = [{ id: "p1", title: "Problem one" }, { id: "p2", title: "Problem two" }];
+  it("queues due problems, flags stale ones and counts them towards rust", () => {
+    let t: SrsTable = review({}, problemKey("p1"), { correct: true }, T0);
+    t = review(t, problemKey("p2"), { correct: true }, T0 + 5 * DAY);
+    const s = buildSync(t, decks, labs, T0 + 6 * DAY, { problems });
+    expect(s.problems.map((p) => [p.id, p.stale])).toEqual([["p1", true], ["p2", false]]);
+    expect(s.trackedCount).toBe(2);
+    expect(s.rustedCount).toBe(1);
+    expect(s.rustLevel).toBeCloseTo(0.5);
+  });
+  it("ignores assisted solves and never lists unseen problems", () => {
+    const t = review({}, problemKey("p1"), { correct: true, assisted: true }, T0);
+    expect(buildSync(t, decks, labs, T0 + 40 * DAY, { problems }).problems).toEqual([]);
+  });
+  it("a failed unaided attempt is due within the day", () => {
+    const t = review({}, problemKey("p1"), { correct: false }, T0);
+    expect(buildSync(t, decks, labs, T0 + 0.3 * DAY, { problems }).problems.map((p) => p.id)).toEqual(["p1"]);
   });
 });

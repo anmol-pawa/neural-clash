@@ -7,6 +7,8 @@ import { dojoProblem, toTask } from "@/lib/dojo/catalog";
 import { MAX_HEARTS, grade, initial, step, type Phase } from "@/lib/dojo/dojo";
 import { buyHint, hintCost, payReward } from "@/lib/economy/economy";
 import { getSaveManager, useSave } from "@/lib/save/react";
+import { review } from "@/lib/srs/srs";
+import { problemKey } from "@/lib/sync/sync";
 
 const PHASES: { id: Phase; label: string }[] = [
   { id: "scout", label: "Scout" },
@@ -79,6 +81,16 @@ export default function Dojo({ id }: { id: string }) {
       return payReward(base, "problem", id, s.assisted).state;
     });
   }, [s.solved, s.assisted, id]);
+
+  // spaced review: every arrival at a debrief is one unaided attempt (assisted ones are ignored by `review`)
+  const reviewed = useRef("");
+  useEffect(() => {
+    if (s.phase !== "debrief") return;
+    const mark = `${s.solved}:${s.failedSubmits}:${s.assisted}`;
+    if (reviewed.current === mark) return;
+    reviewed.current = mark;
+    getSaveManager().update((st) => ({ ...st, srs: review(st.srs, problemKey(id), { correct: s.solved, assisted: s.assisted }, Date.now()), updatedAt: Date.now() }));
+  }, [s.phase, s.solved, s.failedSubmits, s.assisted, id]);
 
   const phaseIdx = PHASES.findIndex((p) => p.id === s.phase);
   const g = grade(s);
