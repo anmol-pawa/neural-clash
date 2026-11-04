@@ -45,7 +45,90 @@ function sprite(def: SpriteDef, anim: string, i: number, tint: Tint): HTMLCanvas
 
 const frameFor = (def: SpriteDef, anim: string, t: number) => Math.floor(t * (def.fps?.[anim] ?? 6));
 
-function backdrop(g: CanvasRenderingContext2D, t: number) {
+export type StageTheme = "grid" | "vale";
+
+/** Vector Vale: a twilight meadow of crystals over a lattice floor, with slowly turning basis axes on the horizon. */
+function valeBackdrop(g: CanvasRenderingContext2D, t: number) {
+  const sky = g.createLinearGradient(0, 0, 0, 78);
+  sky.addColorStop(0, "#1b1040");
+  sky.addColorStop(0.55, "#4a2a7a");
+  sky.addColorStop(1, "#b0507e");
+  g.fillStyle = sky;
+  g.fillRect(0, 0, STAGE_W, STAGE_H);
+  // twinkling stars
+  for (let i = 0; i < 26; i++) {
+    g.globalAlpha = 0.3 + 0.5 * Math.abs(Math.sin(t * 1.5 + i * 1.7));
+    g.fillStyle = i % 4 === 0 ? "#ffd9a0" : "#e8e0ff";
+    g.fillRect((i * 47) % STAGE_W, 4 + ((i * 23) % 40), 1, 1);
+  }
+  g.globalAlpha = 1;
+  // a big pale moon with a basis cross that slowly turns
+  g.fillStyle = "#f3e6ff";
+  g.beginPath();
+  g.arc(50, 30, 15, 0, Math.PI * 2);
+  g.fill();
+  g.fillStyle = "#d8c4f2";
+  g.beginPath();
+  g.arc(45, 26, 5, 0, Math.PI * 2);
+  g.fill();
+  const a = t * 0.35;
+  g.lineWidth = 2;
+  g.strokeStyle = "#f2b84b";
+  g.beginPath();
+  g.moveTo(50, 30);
+  g.lineTo(50 + Math.cos(a) * 22, 30 + Math.sin(a) * 22);
+  g.stroke();
+  g.strokeStyle = "#ff7aa8";
+  g.beginPath();
+  g.moveTo(50, 30);
+  g.lineTo(50 + Math.cos(a + 1.2) * 22, 30 + Math.sin(a + 1.2) * 22);
+  g.stroke();
+  g.lineWidth = 1;
+  // distant crystal ridge
+  for (let i = 0; i < 12; i++) {
+    const bx = i * 22 - 6;
+    const h = 12 + ((i * 11) % 7) * 4;
+    g.fillStyle = "#2b1a56";
+    g.beginPath();
+    g.moveTo(bx, 78);
+    g.lineTo(bx + 5, 78 - h);
+    g.lineTo(bx + 11, 78 - h * 0.7);
+    g.lineTo(bx + 18, 78);
+    g.fill();
+    g.fillStyle = "#6a4cc0";
+    g.fillRect(bx + 5, 78 - h, 1, h - 4);
+  }
+  // meadow floor with lattice lines
+  const floor = g.createLinearGradient(0, 78, 0, STAGE_H);
+  floor.addColorStop(0, "#26406a");
+  floor.addColorStop(1, "#0f1d3c");
+  g.fillStyle = floor;
+  g.fillRect(0, 78, STAGE_W, STAGE_H - 78);
+  g.strokeStyle = "rgba(242,184,75,0.35)";
+  for (let i = -6; i <= 14; i++) {
+    g.beginPath();
+    g.moveTo(STAGE_W / 2 + (i - 4) * 10, 78);
+    g.lineTo(STAGE_W / 2 + (i - 4) * 34, STAGE_H);
+    g.stroke();
+  }
+  g.strokeStyle = "rgba(255,122,168,0.35)";
+  for (let k = 0; k < 5; k++) {
+    const y = 78 + (k * k * 2.2 + 4 + ((t * 5) % 4));
+    if (y < STAGE_H) g.fillRect(0, Math.floor(y), STAGE_W, 1);
+  }
+  // glow-bells swaying on the horizon
+  for (let i = 0; i < 9; i++) {
+    const x = 8 + i * 27;
+    const sway = Math.round(Math.sin(t * 2 + i) * 1);
+    g.fillStyle = "#3d7a5a";
+    g.fillRect(x, 74, 1, 5);
+    g.fillStyle = i % 2 ? "#7be0ff" : "#ffd36e";
+    g.fillRect(x - 1 + sway, 72, 3, 3);
+  }
+}
+
+function backdrop(g: CanvasRenderingContext2D, t: number, theme: StageTheme = "grid") {
+  if (theme === "vale") return valeBackdrop(g, t);
   const sky = g.createLinearGradient(0, 0, 0, 78);
   sky.addColorStop(0, "#0d1033");
   sky.addColorStop(1, "#2a2a6e");
@@ -118,6 +201,7 @@ function bar(g: CanvasRenderingContext2D, x: number, y: number, w: number, frac:
 
 /** Layout overrides for foes bigger than the 64px Noise minion (96px guardians). */
 export interface StageOpts {
+  theme?: StageTheme;
   foeLabel?: string;
   foeAt?: { x: number; y: number };
   foePlatform?: { cx: number; cy: number };
@@ -130,7 +214,7 @@ export function drawBattle(g: CanvasRenderingContext2D, foe: SpriteDef, hero: Sp
   g.imageSmoothingEnabled = false;
   g.save();
   if (fx.shake > 0) g.translate(Math.round((Math.random() - 0.5) * 4 * fx.shake), Math.round((Math.random() - 0.5) * 3 * fx.shake));
-  backdrop(g, fx.t);
+  backdrop(g, fx.t, opts.theme);
   platform(g, fp.cx, fp.cy, 40, 7);
   platform(g, 62, 122, 46, 8);
 

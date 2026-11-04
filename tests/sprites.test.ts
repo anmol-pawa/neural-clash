@@ -7,7 +7,7 @@ import { VECTOR_VALE_TILES } from "@/game/sprites/tiles/vector-vale-tiles";
 import { composeMap, TILE, validateMap } from "@/game/sprites/tilemap";
 import { LAB_GRID, LAB_LEGEND, PORT_GRID, PORT_LEGEND, VALE_GRID, VALE_LEGEND } from "@/game/sprites/maps";
 
-const isCharacter = (d: { id: string }) => d.id === "player" || d.id === "okafor" || d.id.endsWith("-portrait");
+const isCharacter = (d: { id: string }) => d.id === "player" || d.id === "okafor" || d.id === "cadet-shear" || d.id === "ranger-axis" || d.id.endsWith("-portrait");
 const isWorld = (d: { id: string }) => d.id.endsWith("-tiles") || d.id.endsWith("-preview");
 const CREATURES = SPRITES.filter((d) => !isCharacter(d) && !isWorld(d));
 const CHARACTERS = SPRITES.filter(isCharacter);

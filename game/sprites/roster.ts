@@ -8,12 +8,16 @@ import { PLAYER } from "./characters/player";
 import { PLAYER_PORTRAIT } from "./characters/player-portrait";
 import { OKAFOR } from "./characters/okafor";
 import { OKAFOR_PORTRAIT } from "./characters/okafor-portrait";
+import { CADET_SHEAR } from "./characters/cadet-shear";
+import { CADET_SHEAR_PORTRAIT } from "./characters/cadet-shear-portrait";
+import { RANGER_AXIS } from "./characters/ranger-axis";
+import { RANGER_AXIS_PORTRAIT } from "./characters/ranger-axis-portrait";
 import { PYTHON_PORT_TILES } from "./tiles/python-port-tiles";
 import { LAB_TILES } from "./tiles/lab-tiles";
 import { VECTOR_VALE_TILES } from "./tiles/vector-vale-tiles";
 import { PORT_PREVIEW, LAB_PREVIEW, VALE_PREVIEW } from "./maps";
 
 /** Every sprite in the game, in review order (the /dev/sprites page lists these). */
-export const SPRITES: readonly SpriteDef[] = [NEURON_PUP_PERCEPTRON, NEURON_PUP_PERCEPTRON_BACK, NOISE_MINION, WARDEN_INDENT, WARDEN_BASIS, PLAYER, PLAYER_PORTRAIT, OKAFOR, OKAFOR_PORTRAIT, PYTHON_PORT_TILES, LAB_TILES, VECTOR_VALE_TILES, PORT_PREVIEW, LAB_PREVIEW, VALE_PREVIEW];
+export const SPRITES: readonly SpriteDef[] = [NEURON_PUP_PERCEPTRON, NEURON_PUP_PERCEPTRON_BACK, NOISE_MINION, WARDEN_INDENT, WARDEN_BASIS, PLAYER, PLAYER_PORTRAIT, OKAFOR, OKAFOR_PORTRAIT, CADET_SHEAR, CADET_SHEAR_PORTRAIT, RANGER_AXIS, RANGER_AXIS_PORTRAIT, PYTHON_PORT_TILES, LAB_TILES, VECTOR_VALE_TILES, PORT_PREVIEW, LAB_PREVIEW, VALE_PREVIEW];
 
 export const spriteById = (id: string): SpriteDef | undefined => SPRITES.find((s) => s.id === id);

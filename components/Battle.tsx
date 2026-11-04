@@ -153,7 +153,7 @@ export default function Battle() {
       if (fx.foeHitAt >= 0) fx.foeHitAt += dt;
       fx.shake = Math.max(0, fx.shake - dt * 5);
       fx.floaters = fx.floaters.map((f) => ({ ...f, age: f.age + dt })).filter((f) => f.age < 1);
-      drawBattle(g, foe, hero, fx);
+      drawBattle(g, foe, hero, fx, { theme: new URLSearchParams(window.location.search).get("theme") === "vale" ? "vale" : "grid" });
       raf = requestAnimationFrame(loop);
     };
     raf = requestAnimationFrame(loop);

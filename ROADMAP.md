@@ -71,7 +71,7 @@ Work top to bottom: take the **first unchecked box**, and split big boxes into r
   - [x] D1c. (done 2026-11-04) Interactive 2D transform visualiser at `/dev/transform` (pure matrix maths in `lib/linalg/transform.ts`). Lesson embedding is a follow-up.
   - [x] D1d1. (done 2026-11-04) Readiness skill "linear algebra" (linalg deck + both PCA labs), tested in the ML-engineer theory and implement rounds.
   - [x] D1d2a. (done 2026-11-04) Vector Vale tileset (20 tiles, `scripts/art/vector-vale.mjs`), a preview map and the 96x96 guardian Warden Basis (idle 4, attack 5, hurt 3, faint 4; `scripts/art/warden-basis.mjs`), reviewed on `/dev/sprites`.
-  - [ ] D1d2b. Region art, part 2: two trainer sprites with portraits and the Vector Vale battle backdrop.
+  - [x] D1d2b. (done 2026-11-04) Region art, part 2: Cadet Shear and Ranger Axis (16x24 walk cycles + 48x48 portraits, `scripts/art/vale-trainers.mjs`) and the Vector Vale battle backdrop (`theme: "vale"`, preview at `/battle?theme=vale`).
   - [ ] D1d3. Vector Vale guardian fight (cards on the linalg deck, PCA lab, a training phase) and its readiness evidence.
 - [ ] D2. Gradient Gorge (F3), with Forge modules 1–2 (`Value`, `Tensor`) and gradient checks
 - [ ] D3. Probability Peaks (F4)
