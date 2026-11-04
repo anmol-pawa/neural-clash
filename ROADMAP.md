@@ -77,7 +77,7 @@ Work top to bottom: take the **first unchecked box**, and split big boxes into r
   - [x] D2a. (done 2026-11-04) Forge 1 Lab `forge-value`: scalar reverse-mode autodiff `Value` with finite-difference hidden tests and 8 known-wrong versions.
   - [x] D2b. (done 2026-11-04) Forge 2 Lab `forge-tensor`: numpy `Tensor` with broadcasting-aware backward (unbroadcast), matmul, sum/mean, gradient checks.
   - [x] D2c. (done 2026-11-04) Calculus/optimisation deck (38 cards: derivatives, chain rule, GD step sizes, Adam bias correction; numpy-computed, solver-checked) and 4 lessons.
-  - [ ] D2d. Gradient descent visualiser (`/dev/descent`: step size, momentum, Adam on a quadratic/ravine; pure maths in `lib/optim/`).
+  - [x] D2d. (done 2026-11-04) Gradient descent visualiser (`/dev/descent`: SGD, momentum, Adam on a bowl, ravine and Rosenbrock valley; pure maths in `lib/optim/`, `smoke:descent`).
   - [ ] D2e. Region art (tileset, trainers, backdrop), guardian, readiness skill "calculus & optimisation".
 - [ ] D3. Probability Peaks (F4)
 - [ ] D4. Classic Grove (F5), with from-scratch classical ML labs and the Creature Stats dataset

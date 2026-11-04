@@ -484,3 +484,10 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Known gaps: deck not yet tied to a Readiness skill or the world (D2e).
 - CI/Pages: skipped (Actions quota note does not apply after 2026-11-01, but no `gh` CLI in this session; not confirmed).
 - Next: D2d (gradient descent visualiser).
+
+## 2026-11-04: D2d Gradient descent visualiser
+- New pure `lib/optim/descent.ts` (surfaces with analytic gradients: round bowl, narrow ravine with condition number 20, Rosenbrock valley; SGD, momentum and Adam trajectories; divergence detection; plain-language verdict) and `/dev/descent` (`components/DescentLab.tsx`): pixel-banded contour canvas, three optimisers on one landscape, learning-rate / momentum / steps sliders, per-optimiser readout.
+- `tests/descent.test.ts` (10): gradients vs finite differences, zero gradient at the optimum, SGD matches `gdQuadratic`, the 2/L bound (0.099 stable, 0.101 diverges), momentum beats SGD at its best stable rate, Adam's first step matches `adamStep` and moves about lr per coordinate.
+- Verification: lint (0 errors), typecheck, test (359 pass), content:verify, build, build:pages, new `smoke:descent` at desktop and iPhone 14; screenshots inspected (no overflow, no console errors). Use `PATH=/usr/bin:$PATH` for numpy.
+- Known gaps: not yet linked from the world or lessons (D2e). CI/Pages not confirmed (no `gh` CLI).
+- Next: D2e (region art, guardian, readiness skill "calculus & optimisation").

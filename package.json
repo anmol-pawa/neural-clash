@@ -24,6 +24,7 @@
     "smoke:guardian": "node scripts/smoke-guardian.mjs",
     "smoke:guardian-vale": "node scripts/smoke-guardian-vale.mjs",
     "smoke:transform": "node scripts/smoke-transform.mjs",
+    "smoke:descent": "node scripts/smoke-descent.mjs",
     "smoke:sync": "node scripts/smoke-sync.mjs",
     "smoke:companion": "node scripts/smoke-companion.mjs",
     "smoke:journal": "node scripts/smoke-journal.mjs",
