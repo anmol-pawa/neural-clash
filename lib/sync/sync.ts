@@ -17,6 +17,8 @@ export interface SyncLab {
 }
 
 export const labKey = (labId: string): string => `lab:${labId}`;
+/** Code Dojo problems share the `dojo:<id>` key with the `cleared` list. */
+export const problemKey = (problemId: string): string => `dojo:${problemId}`;
 
 export interface DeckSummary {
   id: string;
@@ -30,7 +32,9 @@ export interface SyncState {
   decks: DeckSummary[];
   /** Labs whose spaced review is due, most overdue first. `stale` ones have also rusted. */
   labs: { id: string; title: string; stale: boolean }[];
-  /** Every tracked item that has rusted (cards and Labs). */
+  /** Dojo problems due for a redo, most overdue first (same shape as `labs`). */
+  problems: { id: string; title: string; stale: boolean }[];
+  /** Every tracked item that has rusted (cards, Labs and problems). */
   rustedCount: number;
   trackedCount: number;
   /** 0 (shiny) to 1 (every tracked item rusted): drives the companion's rust overlay. */
@@ -56,23 +60,27 @@ export function rustLevel(table: SrsTable, ids: readonly string[], now: number):
   return tracked === 0 ? 0 : rusted / tracked;
 }
 
-export function buildSync(table: SrsTable, decks: readonly SyncDeck[], labs: readonly SyncLab[], now: number, opts: { maxReviews?: number; maxNew?: number } = {}): SyncState {
+/** Items with a spaced-review key that are due now, most overdue first; `stale` means also rusted. */
+function dueItems(table: SrsTable, items: readonly SyncLab[], key: (id: string) => string, now: number) {
+  return items
+    .filter((l) => isDue(table[key(l.id)], now))
+    .sort((a, b) => table[key(a.id)].due - table[key(b.id)].due || (a.id < b.id ? -1 : 1))
+    .map((l) => ({ id: l.id, title: l.title, stale: stateOf(table[key(l.id)], now) === "rusted" }));
+}
+
+export function buildSync(table: SrsTable, decks: readonly SyncDeck[], labs: readonly SyncLab[], now: number, opts: { maxReviews?: number; maxNew?: number } = {}, problems: readonly SyncLab[] = []): SyncState {
   // A card id can appear in several decks only by mistake; the first deck wins.
   const seen = new Set<string>();
   const cardIds: string[] = [];
   for (const d of decks) for (const c of d.cards) if (!seen.has(c.id)) { seen.add(c.id); cardIds.push(c.id); }
   const labIds = labs.map((l) => labKey(l.id));
-  const all = [...cardIds, ...labIds];
-  const stale = staleLabIds(table, labs, now);
-  const dueLabs = labs
-    .filter((l) => isDue(table[labKey(l.id)], now))
-    .sort((a, b) => table[labKey(a.id)].due - table[labKey(b.id)].due || (a.id < b.id ? -1 : 1))
-    .map((l) => ({ id: l.id, title: l.title, stale: stale.has(l.id) }));
+  const all = [...cardIds, ...labIds, ...problems.map((p) => problemKey(p.id))];
   const tracked = all.filter((id) => table[id]);
   return {
     plan: dailyPlan(table, cardIds, now, opts),
     decks: decks.map((d) => ({ id: d.id, title: d.title, total: d.cards.length, mastery: summarise(table, d.cards.map((c) => c.id), now) })),
-    labs: dueLabs,
+    labs: dueItems(table, labs, labKey, now),
+    problems: dueItems(table, problems, problemKey, now),
     rustedCount: tracked.filter((id) => stateOf(table[id], now) === "rusted").length,
     trackedCount: tracked.length,
     rustLevel: rustLevel(table, all, now),

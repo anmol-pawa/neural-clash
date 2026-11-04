@@ -92,6 +92,7 @@ for (const [name, ctxOpts] of [["desktop", { viewport: { width: 1280, height: 90
   await setCode(page, GOOD);
   await page.getByTestId("submit").dispatchEvent("click");
   await page.getByTestId("dojo-debrief").waitFor({ timeout: 120_000 });
+  await page.waitForTimeout(1200); // a full-page goto next would otherwise beat the debounced IndexedDB save
   check((await page.getByTestId("dojo-grade").textContent()).startsWith("Accepted"), `${name}: correct solution reaches an Accepted debrief`);
   await page.screenshot({ path: join(shots, `dojo-debrief-${name}.png`), fullPage: true });
   // a second problem (easy, majority vote) played end to end
@@ -105,6 +106,7 @@ for (const [name, ctxOpts] of [["desktop", { viewport: { width: 1280, height: 90
   await setCode(page, VOTE);
   await page.getByTestId("submit").dispatchEvent("click");
   await page.getByTestId("dojo-debrief").waitFor({ timeout: 120_000 });
+  await page.waitForTimeout(1200); // a full-page goto next would otherwise beat the debounced IndexedDB save
   check((await page.getByTestId("dojo-grade").textContent()).startsWith("Accepted"), `${name}: Label Consensus solved end to end`);
   // the reference solutions of two more packages (tree DP, prefix DP), plan option 2 is the right one for all three
   for (const [id, title] of [["worst-hop", "Worst Hop"], ["fewest-tokens", "Fewest Tokens"], ["steady-latency", "Steady Latency"]]) {
@@ -118,8 +120,16 @@ for (const [name, ctxOpts] of [["desktop", { viewport: { width: 1280, height: 90
     await setCode(page, readFileSync(join(process.cwd(), "content", "problems", id, "solution.cpp"), "utf8"));
     await page.getByTestId("submit").dispatchEvent("click");
     await page.getByTestId("dojo-debrief").waitFor({ timeout: 120_000 });
+    await page.waitForTimeout(1200); // a full-page goto next would otherwise beat the debounced IndexedDB save
     check((await page.getByTestId("dojo-grade").textContent()).startsWith("Accepted"), `${name}: ${title} solved end to end`);
   }
+  // unassisted solves enter spaced review: the ladder shows them as "learning"
+  await page.waitForTimeout(1500); // let the debounced save reach IndexedDB before leaving the page
+  await page.goto(`${origin}${BASE}/dojo/`);
+  const st = page.getByTestId("dojo-state-label-consensus");
+  await st.waitFor({ timeout: 10_000 });
+  check((await st.textContent()) === "learning", `${name}: solved problem shows its mastery state on the ladder`);
+  await page.screenshot({ path: join(shots, `dojo-index-${name}.png`), fullPage: true });
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 1);
   check(!overflow, `${name}: no horizontal overflow`);
   check(errors.length === 0, `${name}: no console errors ${errors.join("|")}`);

@@ -382,3 +382,13 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Known gaps: browser perf cases use n=40000; no Python variant or SRS for problems yet; only one new problem this run (the box asked for "more").
 - CI/Pages: no `gh` CLI in this session; not confirmed.
 - Next: C6b3.
+
+## 2026-11-04: C6b3a Dojo problems in spaced review
+- C6b3 was split into C6b3a (this run) and C6b3b (Python variant).
+- `lib/sync/sync.ts`: `problemKey` (`dojo:<id>`), `buildSync(..., opts, problems)` returns `problems` due/stale (shared `dueItems` helper with Labs) and counts them in rust/tracked totals. Tests added in `tests/sync.test.ts`.
+- `Dojo.tsx` records `review()` once on entering the debrief (solve = correct, unassisted defeat = lapse, assisted ignored by `review`); a retry re-arms the recorder. `/dojo` is now `DojoIndex` with mastery badges; Daily Sync lists "Problems to redo".
+- Verification: lint (0 errors), typecheck, test (288 pass), content:verify, build, build:pages, smoke:dojo (new ladder-badge check) at desktop and iPhone 14; iPhone ladder screenshot inspected (no overflow, badges readable).
+- Known gaps: a full-page navigation right after a debrief can beat the debounced IndexedDB save (pagehide flush is async); smoke waits 1.2s, but real hard-reloads within ~1s could lose a record. Worth a sturdier flush (e.g. shorter debounce for rewards). Python variant still pending.
+- Branch note: the session mandated branch `claude/wonderful-goodall-4pfpbg`, so work was pushed there, not `main`; Pages deploys only from `main`, so it needs merging.
+- CI/Pages: no `gh` CLI here; not confirmed.
+- Next: C6b3b.

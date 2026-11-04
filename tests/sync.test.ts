@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { Card } from "@/lib/cards/types";
 import { DAY, review, type SrsTable } from "@/lib/srs/srs";
-import { buildSync, labKey, rustLevel, staleLabIds, syncCards } from "@/lib/sync/sync";
+import { buildSync, labKey, problemKey, rustLevel, staleLabIds, syncCards } from "@/lib/sync/sync";
 
 const card = (id: string): Card => ({ id, kind: "mcq", topic: "t", prompt: "p", explanation: "e", choices: ["a", "b"], answer: 0 });
 const decks = [
@@ -68,5 +68,23 @@ describe("buildSync", () => {
     const s = buildSync(t, decks, [], T0 + 2 * DAY, { maxReviews: 2, maxNew: 0 });
     expect(s.plan.reviews).toHaveLength(2);
     expect(s.plan.fresh).toEqual([]);
+  });
+
+  it("tracks Dojo problems: due, stale, and counted towards rust", () => {
+    const problems = [{ id: "P1", title: "Problem one" }, { id: "P2", title: "Problem two" }];
+    const t = review({}, problemKey("P1"), { correct: true }, T0);
+    expect(problemKey("P1")).toBe("dojo:P1");
+    expect(buildSync(t, decks, labs, T0, {}, problems).problems).toEqual([]);
+    const due = buildSync(t, decks, labs, T0 + 1.5 * DAY, {}, problems);
+    expect(due.problems).toEqual([{ id: "P1", title: "Problem one", stale: false }]);
+    const old = buildSync(t, decks, labs, T0 + 30 * DAY, {}, problems);
+    expect(old.problems[0].stale).toBe(true);
+    expect(old.trackedCount).toBe(1);
+    expect(old.rustedCount).toBe(1);
+  });
+
+  it("assisted solves do not create a problem record", () => {
+    const t = review({}, problemKey("P1"), { correct: true, assisted: true }, T0);
+    expect(t).toEqual({});
   });
 });

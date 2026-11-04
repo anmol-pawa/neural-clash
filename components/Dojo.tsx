@@ -7,6 +7,8 @@ import { dojoProblem, toTask } from "@/lib/dojo/catalog";
 import { MAX_HEARTS, grade, initial, step, type Phase } from "@/lib/dojo/dojo";
 import { buyHint, hintCost, payReward } from "@/lib/economy/economy";
 import { getSaveManager, useSave } from "@/lib/save/react";
+import { review } from "@/lib/srs/srs";
+import { problemKey } from "@/lib/sync/sync";
 
 const PHASES: { id: Phase; label: string }[] = [
   { id: "scout", label: "Scout" },
@@ -69,16 +71,21 @@ export default function Dojo({ id }: { id: string }) {
   const paid = useRef(false);
   const [task] = useState(() => toTask(problem));
 
-  // record the clear + Bits once, on the transition into a solved debrief
+  // Record the clear, Bits and spaced review once, on the transition into the debrief.
+  // A solve advances mastery (assisted ones are ignored by `review`); an unassisted defeat is a lapse.
   useEffect(() => {
-    if (!s.solved || paid.current) return;
+    if (s.phase !== "debrief") { paid.current = false; return; } // a retry re-arms the recorder
+    if (paid.current) return;
     paid.current = true;
-    const key = `dojo:${id}`;
+    const key = problemKey(id);
+    const now = Date.now();
     getSaveManager().update((st) => {
-      const base = { ...st, cleared: st.cleared.includes(key) ? st.cleared : [...st.cleared, key], updatedAt: Date.now() };
+      const srs = review(st.srs, key, { correct: s.solved, assisted: s.assisted }, now);
+      if (!s.solved) return { ...st, srs, updatedAt: now };
+      const base = { ...st, srs, cleared: st.cleared.includes(key) ? st.cleared : [...st.cleared, key], updatedAt: now };
       return payReward(base, "problem", id, s.assisted).state;
     });
-  }, [s.solved, s.assisted, id]);
+  }, [s.phase, s.solved, s.assisted, id]);
 
   const phaseIdx = PHASES.findIndex((p) => p.id === s.phase);
   const g = grade(s);
