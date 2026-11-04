@@ -92,6 +92,13 @@ describe("dojo catalog", () => {
     expect(p.hidden.some((h) => Number(h.expected) > 2 ** 31)).toBe(true);
   });
 
+  it("attention-block: a hard whose sample is a non-square rectangle, with an all-blocked case", () => {
+    const p = dojoProblem("attention-block")!;
+    expect(p.sample[0].expected).toBe("6");
+    expect(p.difficulty).toBe("H");
+    expect(p.hidden.some((h) => h.expected === "0")).toBe(true);
+  });
+
   it("the ladder lists easier problems first, then by title", () => {
     const ranks = { E: 0, M: 1, H: 2 } as const;
     const list = dojoProblems();

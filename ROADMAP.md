@@ -57,7 +57,7 @@ Work top to bottom: take the **first unchecked box**, and split big boxes into r
 - [x] C6b2a. (done 2026-11-03) **Code Dojo ladder, part 2a:** graph + hard packages (Pipeline Order: Kahn with a min-heap; Peak Window: monotonic deque, H) and `/dojo` ordered by difficulty.
 - [x] C6b2b1. (done 2026-11-03) **Code Dojo ladder, part 2b-1:** an easy AI-flavoured package (Label Consensus: majority vote, E) and a DP package (Fewest Tokens: min-token segmentation, M).
 - [x] C6b2b2a. (done 2026-11-03) **Code Dojo ladder, part 2b-2a:** a tree package (Worst Hop: weighted tree diameter, bottom-up DP) and play-throughs of Worst Hop and Fewest Tokens in `smoke:dojo`.
-- [ ] C6b2b2b. **Code Dojo ladder, part 2b-2b:** a second hard and more AI-flavoured problems (GDD §5.6), each played end to end in `smoke:dojo`.
+- [x] C6b2b2b. **Code Dojo ladder, part 2b-2b:** a second hard (Attention Block) played end to end in `smoke:dojo`. A DP problem and further AI-flavoured problems can follow as small boxes later.
 - [ ] C6b3. **Python (Pyodide) variant of the Dojo battle** and SRS entries for solved problems.
 
 ## Phase D: Act I regions (region recipe)

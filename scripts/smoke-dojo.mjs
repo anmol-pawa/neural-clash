@@ -35,6 +35,15 @@ const setCode = async (page, text) => {
   await page.keyboard.press("Delete");
   await page.keyboard.insertText(text);
 };
+// The first click can land before hydration: retry the scouting click until the plan options show.
+const choosePlan = async (page, idx) => {
+  await page.getByTestId("dojo-scouted").waitFor();
+  for (let attempt = 0; attempt < 5 && (await page.getByTestId(`dojo-plan-${idx}`).count()) === 0; attempt++) {
+    await page.getByTestId("dojo-scouted").click({ timeout: 2000 }).catch(() => {});
+    await page.waitForTimeout(600);
+  }
+  await page.getByTestId(`dojo-plan-${idx}`).click();
+};
 const GOOD = `#include <bits/stdc++.h>
 using namespace std;
 int main() {
@@ -97,8 +106,7 @@ for (const [name, ctxOpts] of [["desktop", { viewport: { width: 1280, height: 90
   // a second problem (easy, majority vote) played end to end
   await page.goto(`${origin}${BASE}/dojo/`);
   await page.getByTestId("dojo-label-consensus").click();
-  await page.getByTestId("dojo-scouted").click();
-  await page.getByTestId("dojo-plan-1").click();
+  await choosePlan(page, 1);
   await page.locator('[data-testid="workbench"][data-loaded="true"]').waitFor();
   await page.locator(".cm-content").first().waitFor();
   await page.waitForTimeout(800);
@@ -106,12 +114,11 @@ for (const [name, ctxOpts] of [["desktop", { viewport: { width: 1280, height: 90
   await page.getByTestId("submit").dispatchEvent("click");
   await page.getByTestId("dojo-debrief").waitFor({ timeout: 120_000 });
   check((await page.getByTestId("dojo-grade").textContent()).startsWith("Accepted"), `${name}: Label Consensus solved end to end`);
-  // the reference solutions of two more packages (tree DP, prefix DP), plan option 2 is the right one for both
-  for (const [id, title] of [["worst-hop", "Worst Hop"], ["fewest-tokens", "Fewest Tokens"]]) {
+  // the reference solutions of more packages (tree DP, prefix DP, monotonic stack), plan option 2 is the right one for both
+  for (const [id, title] of [["worst-hop", "Worst Hop"], ["fewest-tokens", "Fewest Tokens"], ["attention-block", "Attention Block"]]) {
     await page.goto(`${origin}${BASE}/dojo/`);
     await page.getByTestId(`dojo-${id}`).click();
-    await page.getByTestId("dojo-scouted").click();
-    await page.getByTestId("dojo-plan-2").click();
+    await choosePlan(page, 2);
     await page.locator('[data-testid="workbench"][data-loaded="true"]').waitFor();
     await page.locator(".cm-content").first().waitFor();
     await page.waitForTimeout(800);

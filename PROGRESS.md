@@ -375,3 +375,12 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Known gaps: one iPhone smoke run timed out once waiting for `dojo-plan-1` on Label Consensus (passed on rerun; likely a click before hydration, worth hardening); browser perf cases use n=40000; no Python variant or SRS for problems yet.
 - CI/Pages: from 2026-11-01 CI should be confirmed, but this session has no `gh` CLI; checked via commit status only.
 - Next: C6b2b2b.
+
+## 2026-11-04: C6b2b2b Code Dojo ladder, part 2b-2b
+- New full package `attention-block` (H, LC 85 pointer): largest all-allowed rectangle in an R x C attention mask (up to 1500 x 1500). Reference = row histograms plus a monotonic stack, O(R*C); brute = every rectangle with a 2D prefix sum; wrongs: square DP only (WA), row runs / single columns only (WA), upward scan per corner O(R^2 C) (TLE). Seeded generator (edge cases incl. all blocked, rectangle taller than a square; perf 1500x1500 natively, side = sqrt(browserPerfN) in the bundle), 4 test groups, 3-rung hints, strategy question, house-style editorial. `content:verify` passes natively; `gen:problems` regenerated the bundle; `tests/dojo.test.ts` pins the sample (6) and an all-blocked hidden case.
+- `smoke:dojo` plays Attention Block end to end and now uses a `choosePlan` helper that retries the scouting click until the plan options appear. This hardens the pre-hydration click flake noted in earlier entries; two consecutive full runs were clean.
+- Verification: lint (0 errors), typecheck, test (286 pass), content:verify (all ok), build, build:pages, smoke:dojo x2 at desktop and iPhone 14; iPhone `/dojo` screenshot inspected (9 cards, E, M's, then two H's, no overflow).
+- Known gaps: the browser perf case is 200x200, so the O(R^2 C) scan may pass in-browser (it fails natively); no DP-on-grid problem yet; no Python variant or SRS for problems.
+- Branch note: this session was told to push to `claude/wonderful-goodall-w5k4ib` (equal to main at start), not to main, so Pages deploy needs a merge.
+- CI/Pages: Actions quota note has expired, but there is no `gh` CLI here and the work is not on main; not confirmed.
+- Next: C6b3 (Python variant of the Dojo battle, SRS for solved problems).
