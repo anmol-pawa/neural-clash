@@ -6,6 +6,8 @@ import EditorWorkbench from "@/components/EditorWorkbench";
 import { dojoProblem, toTask } from "@/lib/dojo/catalog";
 import { MAX_HEARTS, grade, initial, step, type Phase } from "@/lib/dojo/dojo";
 import { buyHint, hintCost, payReward } from "@/lib/economy/economy";
+import { review } from "@/lib/srs/srs";
+import { problemKey } from "@/lib/sync/sync";
 import { getSaveManager, useSave } from "@/lib/save/react";
 
 const PHASES: { id: Phase; label: string }[] = [
@@ -76,7 +78,9 @@ export default function Dojo({ id }: { id: string }) {
     const key = `dojo:${id}`;
     getSaveManager().update((st) => {
       const base = { ...st, cleared: st.cleared.includes(key) ? st.cleared : [...st.cleared, key], updatedAt: Date.now() };
-      return payReward(base, "problem", id, s.assisted).state;
+      // spaced mastery: only an unaided solve counts (assisted reviews are ignored by `review`)
+      const srs = review(base.srs, problemKey(id), { correct: true, assisted: s.assisted }, Date.now());
+      return payReward({ ...base, srs }, "problem", id, s.assisted).state;
     });
   }, [s.solved, s.assisted, id]);
 

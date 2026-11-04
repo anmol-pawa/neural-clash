@@ -11,6 +11,7 @@ import { check } from "@/lib/cards/check";
 import { NUMPY_DECK, PYTHON_DECK, STRATEGY_DECK } from "@/lib/cards/samples";
 import type { Card, Response } from "@/lib/cards/types";
 import { LABS } from "@/lib/labs/catalog";
+import { dojoProblems } from "@/lib/dojo/catalog";
 import { getSaveManager, useSave } from "@/lib/save/react";
 import { payReward, tintFor, type Tint } from "@/lib/economy/economy";
 import { review } from "@/lib/srs/srs";
@@ -18,6 +19,7 @@ import { useNow } from "@/lib/sync/useNow";
 import { buildSync, syncCards, type SyncDeck } from "@/lib/sync/sync";
 
 const DECKS: SyncDeck[] = [PYTHON_DECK, NUMPY_DECK, STRATEGY_DECK].map((d) => ({ id: d.id, title: d.title, cards: d.cards }));
+const PROBLEM_LIST = dojoProblems().map((p) => ({ id: p.id, title: p.title }));
 const LAB_LIST = LABS.map((l) => ({ id: l.id, title: l.title }));
 
 /** Deterministic 0-1 hash so the rust speckles do not flicker between frames. */
@@ -79,7 +81,7 @@ export default function Sync() {
   const [refreshed, setNow] = useState<number | null>(null);
   const now = refreshed ?? base;
   // The queue is fixed when the page opens (and when the save finishes loading); reviews done in a session do not reshuffle it.
-  const state = useMemo(() => (now === null ? null : buildSync(save.srs, DECKS, LAB_LIST, now)), [now, save.srs]);
+  const state = useMemo(() => (now === null ? null : buildSync(save.srs, DECKS, LAB_LIST, now, { problems: PROBLEM_LIST })), [now, save.srs]);
   const [sess, setSess] = useState<Session | null>(null);
 
   if (!state) return <main className="mx-auto max-w-3xl px-4 py-6 text-sm text-white/60">Loading your sync…</main>;
@@ -125,7 +127,7 @@ export default function Sync() {
 
           <section className="panel grid gap-2 p-3" aria-label="Today">
             <h2 className="font-display text-lg">Today</h2>
-            <p className="text-sm" data-testid="sync-queue">{state.plan.reviews.length} to review · {state.plan.fresh.length} new · {state.labs.length} Lab{state.labs.length === 1 ? "" : "s"} due</p>
+            <p className="text-sm" data-testid="sync-queue">{state.plan.reviews.length} to review · {state.plan.fresh.length} new · {state.labs.length} Lab{state.labs.length === 1 ? "" : "s"} due · {state.problems.length} Dojo problem{state.problems.length === 1 ? "" : "s"} due</p>
             <button type="button" className={`${primary} justify-self-start`} onClick={start} disabled={queued === 0} data-testid="sync-start">
               {queued === 0 ? "All caught up" : "Start sync"}
             </button>
@@ -141,6 +143,22 @@ export default function Sync() {
                     <Link href={`/labs#${l.id}`} className="panel flex min-h-11 items-center justify-between gap-2 p-3 text-sm hover:bg-white/5" data-testid={`sync-lab-${l.id}`}>
                       <span>{l.title}</span>
                       <span className={l.stale ? "text-amber-300" : "text-white/50"}>{l.stale ? "stale" : "due"}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+
+          {state.problems.length > 0 && (
+            <section className="grid gap-2" aria-label="Dojo problems due">
+              <h2 className="font-display text-lg">Dojo problems to re-solve</h2>
+              <ul className="grid gap-2 sm:grid-cols-2">
+                {state.problems.map((p) => (
+                  <li key={p.id}>
+                    <Link href={`/dojo/${p.id}`} className="panel flex min-h-11 items-center justify-between gap-2 p-3 text-sm hover:bg-white/5" data-testid={`sync-problem-${p.id}`}>
+                      <span>{p.title}</span>
+                      <span className={p.stale ? "text-amber-300" : "text-white/50"}>{p.stale ? "stale" : "due"}</span>
                     </Link>
                   </li>
                 ))}

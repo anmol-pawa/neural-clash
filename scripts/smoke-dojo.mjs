@@ -119,7 +119,15 @@ for (const [name, ctxOpts] of [["desktop", { viewport: { width: 1280, height: 90
     await page.getByTestId("submit").dispatchEvent("click");
     await page.getByTestId("dojo-debrief").waitFor({ timeout: 120_000 });
     check((await page.getByTestId("dojo-grade").textContent()).startsWith("Accepted"), `${name}: ${title} solved end to end`);
+    await page.waitForTimeout(900); // debounced save -> IndexedDB before the next hard navigation
   }
+  // an unaided solve is now tracked for spaced mastery and shown on the ladder
+  await page.waitForTimeout(900); // let the debounced save reach IndexedDB before a hard navigation
+  await page.goto(`${origin}${BASE}/dojo/`);
+  await page.getByTestId("dojo-mastery-worst-hop").waitFor();
+  check((await page.getByTestId("dojo-mastery-worst-hop").textContent()) === "learning", `${name}: solved problem shows its mastery state`);
+  check((await page.getByTestId("dojo-mastery-peak-window").count()) === 0, `${name}: unsolved problem shows none`);
+  await page.screenshot({ path: join(shots, `dojo-ladder-${name}.png`), fullPage: true });
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 1);
   check(!overflow, `${name}: no horizontal overflow`);
   check(errors.length === 0, `${name}: no console errors ${errors.join("|")}`);

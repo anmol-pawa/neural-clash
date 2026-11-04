@@ -382,3 +382,13 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Known gaps: browser perf cases use n=40000; no Python variant or SRS for problems yet; only one new problem this run (the box asked for "more").
 - CI/Pages: no `gh` CLI in this session; not confirmed.
 - Next: C6b3.
+
+## 2026-11-04: C6b3a SRS entries for solved Dojo problems
+- C6b3 was split into C6b3a (this run) and C6b3b (Python/Pyodide variant of the Dojo battle).
+- Pure: `problemKey` and an optional `problems` list in `buildSync` (due and stale problems, included in companion rust); tests added in `tests/sync.test.ts` (due, stale, assisted ignored, rust).
+- UI: `Dojo.tsx` records an SRS review on an unaided solve (assisted ones are ignored by `review`); `/dojo` ladder (new `DojoList`) shows learning/reviewing/mastered/"rusty: re-solve"; Daily Sync lists "Dojo problems to re-solve".
+- Verification: lint (0 errors), typecheck, test (289 pass), content:verify, build, build:pages, smoke:dojo at desktop and iPhone 14 (new checks for mastery labels, all PASS); iPhone ladder screenshot inspected (no overflow, labels readable).
+- Env note: run `npm run stage:pyodide` before `npm test` on a fresh clone (py.core test needs the staged assets).
+- Known gaps: a hard navigation right after a solve can lose the debounced (400 ms) save, so the smoke waits 900 ms; worth a sturdier flush later. No Python variant yet.
+- CI/Pages: no `gh` CLI in this session; not confirmed.
+- Next: C6b3b.
