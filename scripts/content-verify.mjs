@@ -90,6 +90,17 @@ function runBinary(bin, input, limitMs) {
 
 const norm = (s, mode) => (mode === "tokens" ? s.split(/\s+/).filter(Boolean).join(" ") : s.replace(/\s+$/, "").split("\n").map((l) => l.replace(/\s+$/, "")).join("\n"));
 
+const PY_SOLVE = "import sys, runpy; sys.stdout.write(runpy.run_path(sys.argv[1])['solve'](sys.stdin.read()))";
+const PY_LIMIT_MS = 3000;
+
+/** Runs a Python Dojo variant (`solve(text) -> str`) on one input; same result shape as runBinary. */
+function runPySolve(python, file, input, limitMs) {
+  const r = sh(python, ["-I", "-c", PY_SOLVE, file], { input, timeout: limitMs });
+  if (r.error?.code === "ETIMEDOUT") return { tle: true };
+  if (r.status !== 0) return { crash: (r.stderr || "").trim().split("\n").pop() || `exit ${r.status}` };
+  return { out: r.stdout };
+}
+
 export function verifyProblem(python, dir) {
   const errors = [];
   const meta = readJson(join(dir, "meta.json"));
@@ -103,6 +114,14 @@ export function verifyProblem(python, dir) {
   need(errors, wrongs.length >= 2, `${id}: needs at least two wrong/*.cpp`);
   need(errors, !(meta.difficulty === "M" || meta.difficulty === "H") || Object.values(meta.wrongExpect ?? {}).includes("TLE"), `${id}: mediums and hards need a wrong solution that must TLE`);
   for (const w of wrongs) need(errors, meta.wrongExpect?.[w], `${id}: wrong/${w} has no wrongExpect entry`);
+  const pyMeta = meta.python;
+  if (pyMeta) {
+    for (const f of ["solution.py", "starter.py"]) need(errors, existsSync(join(dir, f)), `${id}: python variant is missing ${f}`);
+    const pyWrongs = listFiles(join(dir, "wrong_py"), ".py");
+    need(errors, pyWrongs.length >= 1, `${id}: python variant needs at least one wrong_py/*.py`);
+    for (const w of pyWrongs) need(errors, pyMeta.wrong?.[w], `${id}: wrong_py/${w} has no python.wrong entry`);
+    for (const w of Object.keys(pyMeta.wrong ?? {})) need(errors, pyWrongs.includes(w), `${id}: python.wrong lists ${w} but the file is missing`);
+  }
   if (errors.length) return errors;
 
   const tmp = mkdtempSync(join(tmpdir(), "nc-verify-"));
@@ -116,6 +135,8 @@ export function verifyProblem(python, dir) {
 
     const limit = meta.timeLimitMs ?? 1000;
     const verdicts = Object.fromEntries(wrongs.map((w) => [w, new Set()]));
+    const pyWrongs = pyMeta ? Object.keys(pyMeta.wrong ?? {}) : [];
+    const pyVerdicts = Object.fromEntries(pyWrongs.map((w) => [w, new Set()]));
     for (const [group, seeds] of Object.entries(meta.groups)) {
       for (const seed of seeds) {
         const gen = sh(python, ["-I", join(dir, "gen.py"), group, String(seed)]);
@@ -134,12 +155,22 @@ export function verifyProblem(python, dir) {
           const brute = runBinary(join(tmp, "brute"), input, 20_000);
           if (norm(brute.out ?? "", meta.compare) !== norm(expected.out, meta.compare)) errors.push(`${label}: reference and brute force disagree`);
         }
+        if (pyMeta) {
+          const pyLimit = pyMeta.timeLimitMs ?? PY_LIMIT_MS;
+          const got = runPySolve(python, join(dir, "solution.py"), input, pyLimit);
+          if (norm(got.out ?? "", meta.compare) !== norm(expected.out, meta.compare)) errors.push(`${label}: python reference ${got.tle ? "exceeded the time limit" : (got.crash ?? "disagrees with the C++ reference")}`);
+          for (const w of pyWrongs) {
+            const g = runPySolve(python, join(dir, "wrong_py", w), input, pyLimit);
+            pyVerdicts[w].add(g.tle ? "TLE" : g.crash ? "RE" : norm(g.out, meta.compare) === norm(expected.out, meta.compare) ? "AC" : "WA");
+          }
+        }
         for (const w of wrongBins.filter(Boolean)) {
           const got = runBinary(join(tmp, w), input, limit);
           verdicts[w].add(got.tle ? "TLE" : got.crash ? "RE" : norm(got.out, meta.compare) === norm(expected.out, meta.compare) ? "AC" : "WA");
         }
       }
     }
+    for (const w of pyWrongs) need(errors, pyVerdicts[w].has(pyMeta.wrong[w]), `${id}: wrong_py/${w} should earn ${pyMeta.wrong[w]} on some case but got {${[...pyVerdicts[w]].join(", ")}}`);
     for (const w of wrongs) {
       const want = meta.wrongExpect[w];
       need(errors, verdicts[w].has(want), `${id}: wrong/${w} should earn ${want} on some case but got {${[...verdicts[w]].join(", ")}}`);

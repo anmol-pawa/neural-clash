@@ -190,6 +190,8 @@ The coding battle from Algo Clash: Scout → Strategise → Code → Judge → D
   - C++: top-k with a heap, an LRU embedding cache, a token-bucket limiter, a request-batching scheduler, interval merging for chunk spans, a trie for prefix autocomplete, Dijkstra for routing
   - Python/numpy: stable softmax, attention, k-means, cosine top-k search, a BPE merge step, beam search, the reservoir sampler, metric computations, the JSON-schema validator, a chunker
 
+**Python variant (shipped for core problems):** a language toggle in Scout, C++ by default. The Python contract is `solve(text: str) -> str` (the whole stdin text in, the stdout text out), run in Pyodide against the same cases as the C++ judge, 3 s per case (a wall-clock check fails quadratic solutions). `content:verify` runs each `solution.py` against the C++ reference on every group and requires each `wrong_py/*.py` to fail.
+
 ### 5.7 Comprehension Catacombs (code-comprehension round)
 A Google-style round. You get a **multi-file codebase** (300–1,200 lines; Python for ML/RAG/agent services, C++ for systems pieces), all original and written in-repo, with a file explorer, search and jump-to-definition (a symbol index built at content build time). Task types:
 - explain what a function or module does (MCQ with plausible distractors)

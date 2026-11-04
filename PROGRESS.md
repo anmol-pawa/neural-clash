@@ -392,3 +392,12 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Known gaps: a hard navigation right after a solve can lose the debounced (400 ms) save, so the smoke waits 900 ms; worth a sturdier flush later. No Python variant yet.
 - CI/Pages: no `gh` CLI in this session; not confirmed.
 - Next: C6b3b.
+
+## 2026-11-04: C6b3b Python variant of the Dojo battle
+- Added a Python (Pyodide) variant for three core problems: `label-consensus`, `context-window`, `batch-packer`. Each has `solution.py`, `starter.py`, a documented `wrong_py/*.py` (WA) and a `python.wrong` entry in `meta.json`. Contract: `solve(text: str) -> str`.
+- Pure `lib/dojo/pyTests.ts` turns the bundled cases into nc_test source (token-wise compare, 3 s wall-clock check per case). `catalog.ts` gains `starterPy`, `hasPython`, `toPythonTask`; `gen-problems.mjs` bundles `starterPy`; `Dojo.tsx` shows a C++ (default) / Python toggle in Scout and maps Python results to AC/WA for hearts, grades, Bits and SRS.
+- `content:verify` now runs every `solution.py` against the C++ reference output on all groups (including native-size perf) and requires each `wrong_py` to earn its expected verdict. GDD §5.6 documents the contract.
+- Verification: lint (0 errors), typecheck, test (294 pass, incl. new `tests/dojo-python.test.ts`), content:verify (all ok), build, build:pages, smoke:dojo at desktop and iPhone 14 (new Python checks: wrong solve costs a heart, reference Accepted; no overflow, no console errors); iPhone Scout screenshot with the toggle inspected.
+- Known gaps: Python wall-clock limits are checked after a case finishes (a truly infinite loop is stopped by the worker timeout instead); a Python exception outside the tests counts as WA; only 3 of 9 problems have Python variants; the smoke's first iPhone run flaked once on a pre-hydration click (passed on rerun).
+- CI/Pages: no `gh` CLI in this session; not confirmed via Actions.
+- Next: D1 (Vector Vale).

@@ -45,6 +45,7 @@ export function buildProblems() {
           statement: readFileSync(join(dir, "statement.md"), "utf8"),
           editorial: readFileSync(join(dir, "editorial.md"), "utf8"),
           starter: readFileSync(join(dir, "starter.cpp"), "utf8"),
+          ...(existsSync(join(dir, "starter.py")) ? { starterPy: readFileSync(join(dir, "starter.py"), "utf8") } : {}),
           sample: cases("sample", "sample"),
           hidden: [...cases("edge", "edge"), ...cases("random", "random"), ...cases("perf", "perf", perfEnv).slice(0, 1)],
         };

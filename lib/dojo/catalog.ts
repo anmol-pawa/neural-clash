@@ -1,4 +1,5 @@
-import type { CppTask } from "@/lib/editor/tasks";
+import type { CppTask, PythonTask } from "@/lib/editor/tasks";
+import { pythonCaseTests } from "./pyTests";
 import type { TestCase } from "@/lib/judge/verdict";
 import { DOJO_PROBLEMS } from "./problems.gen";
 
@@ -23,6 +24,8 @@ export interface DojoProblem {
   statement: string;
   editorial: string;
   starter: string;
+  /** present when the problem also has a Python variant: `solve(text: str) -> str` */
+  starterPy?: string;
   sample: TestCase[];
   hidden: TestCase[];
 }
@@ -47,5 +50,21 @@ export function toTask(p: DojoProblem): CppTask {
     sample: p.sample,
     hidden: p.hidden,
     timeLimitMs: p.timeLimitMs,
+  };
+}
+
+export const hasPython = (p: DojoProblem): boolean => typeof p.starterPy === "string";
+
+/** The Python variant: same cases as the C++ judge, run as `solve(text) -> str` in Pyodide. */
+export function toPythonTask(p: DojoProblem): PythonTask {
+  return {
+    kind: "python",
+    key: `dojo-py-${p.id}`,
+    title: `${p.title} (Python)`,
+    brief: `${p.title} (${p.difficulty}). Implement solve(text) -> str: text is the whole stdin, return the stdout text.`,
+    starter: { "main.py": p.starterPy ?? "" },
+    entry: "main.py",
+    visibleTests: pythonCaseTests(p.sample),
+    hiddenTests: pythonCaseTests(p.hidden),
   };
 }

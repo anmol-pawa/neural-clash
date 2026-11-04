@@ -69,5 +69,6 @@
     "answer": 1,
     "why": "The DP is O(b n^2), far too slow. Feasibility of a cost cap is monotone and checkable by a greedy O(n) pass, so binary search gives O(n log(sum)). Sorting breaks the required order, and the average is only a lower bound: consecutive batches rarely split evenly."
   },
-  "browserPerfN": 40000
+  "browserPerfN": 40000,
+  "python": { "wrong": { "greedy_average.py": "WA" } }
 }

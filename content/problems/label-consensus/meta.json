@@ -36,5 +36,6 @@
     "answer": 1,
     "why": "The middle of a sorted array is the majority label if one exists, but it is not guaranteed to be one, and sorting costs O(n log n) without a check. Counting each label against the array is O(n^2). The most frequent label is only a plurality. A hash map or the candidate/counter vote with a confirming pass is O(n), and the vote needs only O(1) space."
   },
-  "browserPerfN": 40000
+  "browserPerfN": 40000,
+  "python": { "wrong": { "mode_only.py": "WA" } }
 }

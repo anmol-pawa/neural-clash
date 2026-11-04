@@ -70,5 +70,6 @@
     "answer": 2,
     "why": "Cheap spans stay cheap when shrunk, so one left pointer that only moves forward is enough: O(n). Trying every start is O(n^2). Sorting destroys the consecutive structure. Binary search on length works (cheapness is monotone in length) but a fresh set per span makes the check O(n*len) unless you also slide, so it is more code for no gain."
   },
-  "browserPerfN": 40000
+  "browserPerfN": 40000,
+  "python": { "wrong": { "reset_window.py": "WA" } }
 }

@@ -121,6 +121,25 @@ for (const [name, ctxOpts] of [["desktop", { viewport: { width: 1280, height: 90
     check((await page.getByTestId("dojo-grade").textContent()).startsWith("Accepted"), `${name}: ${title} solved end to end`);
     await page.waitForTimeout(900); // debounced save -> IndexedDB before the next hard navigation
   }
+  // the Python variant: a wrong solve costs a heart, the reference is Accepted (Pyodide, solve(text) -> str)
+  await page.goto(`${origin}${BASE}/dojo/context-window/`);
+  check((await page.getByTestId("dojo-lang-python").count()) === 1, `${name}: Python variant offered`);
+  check((await page.getByTestId("dojo-lang-cpp").getAttribute("aria-pressed")) === "true", `${name}: C++ stays the default`);
+  await page.getByTestId("dojo-lang-python").click();
+  await page.getByTestId("dojo-scouted").click();
+  await page.getByTestId("dojo-plan-2").click();
+  await page.locator('[data-testid="workbench"][data-loaded="true"]').waitFor();
+  await page.locator(".cm-content").first().waitFor();
+  await page.waitForTimeout(800);
+  await setCode(page, readFileSync(join(process.cwd(), "content", "problems", "context-window", "wrong_py", "reset_window.py"), "utf8"));
+  await page.getByTestId("submit").dispatchEvent("click");
+  await page.getByTestId("dojo-hearts").filter({ hasText: "♥ ♥ ♡" }).waitFor({ timeout: 120_000 });
+  check(true, `${name}: wrong Python solution costs a heart`);
+  await setCode(page, readFileSync(join(process.cwd(), "content", "problems", "context-window", "solution.py"), "utf8"));
+  await page.getByTestId("submit").dispatchEvent("click");
+  await page.getByTestId("dojo-debrief").waitFor({ timeout: 120_000 });
+  check((await page.getByTestId("dojo-grade").textContent()).startsWith("Accepted"), `${name}: Python Context Window solved end to end`);
+  await page.waitForTimeout(900);
   // an unaided solve is now tracked for spaced mastery and shown on the ladder
   await page.waitForTimeout(900); // let the debounced save reach IndexedDB before a hard navigation
   await page.goto(`${origin}${BASE}/dojo/`);

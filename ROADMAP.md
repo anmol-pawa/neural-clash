@@ -59,7 +59,7 @@ Work top to bottom: take the **first unchecked box**, and split big boxes into r
 - [x] C6b2b2a. (done 2026-11-03) **Code Dojo ladder, part 2b-2a:** a tree package (Worst Hop: weighted tree diameter, bottom-up DP) and play-throughs of Worst Hop and Fewest Tokens in `smoke:dojo`.
 - [x] C6b2b2b. (done 2026-11-04) **Code Dojo ladder, part 2b-2b:** a second hard package (Steady Latency: sliding-window median with an ordered multiset), played end to end in `smoke:dojo`.
 - [x] C6b3a. (done 2026-11-04) **SRS entries for solved Dojo problems:** unaided solves are tracked (`problem:<id>`), shown on the ladder, queued in Daily Sync and counted for companion rust.
-- [ ] C6b3b. **Python (Pyodide) variant of the Dojo battle** (GDD §5.6): Python reference + judge for core problems; C++ stays the default.
+- [x] C6b3b. (done 2026-11-04) **Python (Pyodide) variant of the Dojo battle** (GDD §5.6): Python reference + judge for core problems; C++ stays the default. Done for Label Consensus, Context Window, Batch Packer; follow-up C6b3c: more problems get a Python variant as they are added.
 
 ## Phase D: Act I regions (region recipe)
 

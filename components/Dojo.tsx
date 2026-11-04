@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useReducer, useRef, useState } from "react";
+import { useEffect, useMemo, useReducer, useRef, useState } from "react";
 import EditorWorkbench from "@/components/EditorWorkbench";
-import { dojoProblem, toTask } from "@/lib/dojo/catalog";
+import { dojoProblem, hasPython, toPythonTask, toTask } from "@/lib/dojo/catalog";
 import { MAX_HEARTS, grade, initial, step, type Phase } from "@/lib/dojo/dojo";
 import { buyHint, hintCost, payReward } from "@/lib/economy/economy";
 import { review } from "@/lib/srs/srs";
@@ -69,7 +69,9 @@ export default function Dojo({ id }: { id: string }) {
   const [s, dispatch] = useReducer(step, undefined, initial);
   const [pick, setPick] = useState<number | null>(null);
   const paid = useRef(false);
-  const [task] = useState(() => toTask(problem));
+  // C++ is the default (GDD §5.6); a Python variant exists for core problems. The choice is locked once the code phase starts.
+  const [lang, setLang] = useState<"cpp" | "python">("cpp");
+  const task = useMemo(() => (lang === "python" ? toPythonTask(problem) : toTask(problem)), [lang, problem]);
 
   // record the clear + Bits once, on the transition into a solved debrief
   useEffect(() => {
@@ -108,6 +110,23 @@ export default function Dojo({ id }: { id: string }) {
         <section className="panel grid gap-3 p-3" data-testid="dojo-scout">
           <Md text={problem.statement} />
           <p className="text-xs text-white/60">Limits matter: read them before you choose a plan. Similar to {problem.similar}.</p>
+          {hasPython(problem) && (
+            <div className="grid gap-1 text-sm" role="group" aria-label="Language" data-testid="dojo-lang">
+              <div className="flex gap-2">
+                {(["cpp", "python"] as const).map((l) => (
+                  <button key={l} type="button" aria-pressed={lang === l} data-testid={`dojo-lang-${l}`} onClick={() => setLang(l)}
+                    className={`px-btn min-h-11 px-4 py-2 ${lang === l ? "outline outline-2 outline-[var(--accent)]" : ""}`}>
+                    {l === "cpp" ? "C++ (default)" : "Python"}
+                  </button>
+                ))}
+              </div>
+              <p className="text-xs text-white/60">
+                {lang === "cpp"
+                  ? "C++ is what most coding rounds expect, and it runs on the real clang judge."
+                  : "Python: write solve(text) -> str (text is the whole input, return the output). It runs in Pyodide, with a 3 s limit per case. Interviews usually let you pick; C++ is the better habit for DSA."}
+              </p>
+            </div>
+          )}
           <button type="button" className="px-btn min-h-11 px-4 py-2" onClick={() => dispatch({ type: "scouted" })} data-testid="dojo-scouted">I have read it. Choose a plan</button>
         </section>
       )}
@@ -129,7 +148,11 @@ export default function Dojo({ id }: { id: string }) {
         <>
           <details className="panel p-3 text-sm"><summary className="min-h-11 cursor-pointer py-2">Statement</summary><Md text={problem.statement} /></details>
           <Hints hints={problem.hints} onTake={() => dispatch({ type: "hint" })} />
-          <EditorWorkbench key={task.key} task={task} hideHeader onResult={(r) => { if (r.mode === "submit" && r.verdict) dispatch({ type: "submit", verdict: r.verdict as "AC" }); }} />
+          <EditorWorkbench key={task.key} task={task} hideHeader onResult={(r) => {
+            if (r.mode !== "submit") return;
+            const verdict = r.verdict ?? (r.allPassed ? "AC" : "WA");
+            dispatch({ type: "submit", verdict: verdict as "AC" });
+          }} />
           <p className="text-xs text-white/60">Run checks the sample. Submit runs the hidden tests and costs a heart on a wrong verdict (compile errors are free).</p>
         </>
       )}
