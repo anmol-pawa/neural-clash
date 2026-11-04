@@ -476,3 +476,11 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Verification: lint (0 errors), typecheck, content:verify (all ok), build, build:pages, vitest 342 pass. Note: this image's `python3` is 3.11 without numpy; the numpy-based tests need `PATH=/usr/bin:$PATH` (`/usr/bin/python3` has numpy). No visual change, no screenshots.
 - Known gaps: not yet wired into Readiness or the world (D2e). No `gh` CLI in this session; CI/Pages not confirmed.
 - Next: D2c (calculus/optimisation deck).
+
+## 2026-11-04: D2c Gradient Gorge calculus and optimisation deck
+- New `scripts/gen-calculus.mjs` generates `content/decks/calculus.json` (38 cards, topics cal-derivatives / cal-chain / cal-gd / cal-adam; predict, shape, derive, mcq, multi, bug) and `content/lessons/calculus.json` (4 lessons). Every predict, shape, derive answer and lesson output is computed by running numpy natively; bug cards are checked to change behaviour when fixed.
+- New `lib/solvers/calculus.ts` (central difference, quadratic GD with momentum, stable-lr bound, Adam step with bias correction, norm clipping) cross-checks the deck in `tests/calculus.test.ts`. Deck wired into `samples.ts`, lessons, Daily Sync and the Readiness deck map (skill comes in D2e).
+- Verification: lint (0 errors), typecheck, test (349 pass), content:verify, build, build:pages. No visual change, so no screenshots. Use `PATH=/usr/bin:$PATH` so python3 has numpy.
+- Known gaps: deck not yet tied to a Readiness skill or the world (D2e).
+- CI/Pages: skipped (Actions quota note does not apply after 2026-11-01, but no `gh` CLI in this session; not confirmed).
+- Next: D2d (gradient descent visualiser).

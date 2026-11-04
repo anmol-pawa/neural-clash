@@ -1,0 +1,169 @@
+{
+  "id": "calculus-lessons",
+  "title": "Gradient Gorge lessons",
+  "lessons": [
+    {
+      "id": "cal-derivatives-lesson",
+      "title": "Derivatives and gradient checking",
+      "topics": [
+        "cal-derivatives"
+      ],
+      "intro": "A derivative is the slope of a function at a point; a gradient stacks one slope per input. Training is nothing more than following those slopes, so the first skill is being able to trust a gradient you computed.",
+      "takeaways": [
+        "A gradient is one slope per parameter; the Jacobian generalises it to vector outputs.",
+        "Central differences (error h squared) in float64 are the standard independent check.",
+        "Compare with relative error and avoid kinks such as ReLU at 0."
+      ],
+      "trap": "Gradient-checking a function exactly at a non-differentiable point, or with an h so small that rounding error dominates.",
+      "sections": [
+        {
+          "heading": "The slope, numerically",
+          "text": "Nudge the input both ways and divide the change by the gap. The central difference has error proportional to h squared, so a modest h such as 1e-5 is accurate.",
+          "code": [
+            "f = lambda x: x ** 3 - 2 * x",
+            "h = 1e-5",
+            "print(round((f(2 + h) - f(2 - h)) / (2 * h), 4))"
+          ],
+          "output": "10.0"
+        },
+        {
+          "heading": "Check analytic against numeric",
+          "text": "Your hand-derived f'(x) = 3x^2 - 2 and the finite difference must agree to several digits. This is the single best test for a backward pass, and the Forge labs rely on it.",
+          "code": [
+            "x = 2.0",
+            "analytic = 3 * x ** 2 - 2",
+            "numeric = ((x + 1e-5) ** 3 - 2 * (x + 1e-5) - ((x - 1e-5) ** 3 - 2 * (x - 1e-5))) / 2e-5",
+            "print(analytic, round(numeric, 4), abs(analytic - numeric) / max(1, abs(analytic)) < 1e-6)"
+          ],
+          "output": "10.0 10.0 True"
+        }
+      ]
+    },
+    {
+      "id": "cal-chain-lesson",
+      "title": "The chain rule and backprop",
+      "topics": [
+        "cal-chain"
+      ],
+      "intro": "A network is a composition of simple functions. The chain rule multiplies the local slope of each link, and backprop is that multiplication organised from the loss backwards so every parameter's gradient is found in one sweep.",
+      "takeaways": [
+        "Backprop is the chain rule evaluated from the loss backwards, reusing intermediate results.",
+        "Softmax + cross-entropy has gradient p - y.",
+        "Gradients multiply, so slopes below 1 vanish and above 1 explode with depth."
+      ],
+      "trap": "Forgetting an inner factor, such as the 2 in tanh(2x), or mixing up whether a gradient needs a transpose.",
+      "sections": [
+        {
+          "heading": "Multiply local slopes",
+          "text": "For a neuron L = 0.5 (sigmoid(w x + b) - y)^2 the gradient to w is the product of three local derivatives: loss to activation, activation to pre-activation, pre-activation to weight.",
+          "code": [
+            "w, x, b, y = 2.0, 3.0, -5.0, 1.0",
+            "a = 1 / (1 + np.exp(-(w * x + b)))",
+            "dz = (a - y) * a * (1 - a)",
+            "print(round(a, 4), round(dz, 4), round(dz * x, 4))"
+          ],
+          "output": "0.7311 -0.0529 -0.1586"
+        },
+        {
+          "heading": "Softmax plus cross-entropy collapses",
+          "text": "The two derivatives combine into p - y, which is why frameworks fuse them. It is cheap and numerically stable, and the shape lesson is that every gradient has the shape of its variable.",
+          "code": [
+            "z = np.array([2.0, 1.0, 0.0])",
+            "p = np.exp(z) / np.exp(z).sum()",
+            "y = np.array([1.0, 0.0, 0.0])",
+            "print(np.round(p - y, 4))"
+          ],
+          "output": "[-0.3348  0.2447  0.09  ]"
+        },
+        {
+          "heading": "Slopes below 1 vanish",
+          "text": "The sigmoid's slope is at most 0.25, so a stack of them multiplies many small numbers. This is why early layers of deep sigmoid networks barely learn.",
+          "code": [
+            "s = np.linspace(-6, 6, 7)",
+            "slope = 1 / (1 + np.exp(-s)) * (1 - 1 / (1 + np.exp(-s)))",
+            "print(np.round(slope, 4), 0.25 ** 10)"
+          ],
+          "output": "[0.0025 0.0177 0.105  0.25   0.105  0.0177 0.0025] 9.5367431640625e-07"
+        }
+      ]
+    },
+    {
+      "id": "cal-gd-lesson",
+      "title": "Gradient descent, step size and curvature",
+      "topics": [
+        "cal-gd"
+      ],
+      "intro": "Gradient descent repeatedly steps against the gradient. How far to step is the whole art: curvature, the second derivative, tells you the largest step that is safe.",
+      "takeaways": [
+        "lr must stay below 2 / curvature along the steepest direction.",
+        "The condition number sets how slow the shallow direction is.",
+        "Momentum, adaptive methods and feature standardisation all attack ill-conditioning."
+      ],
+      "trap": "Raising the learning rate to speed up a loss that is already oscillating.",
+      "sections": [
+        {
+          "heading": "Stable step sizes",
+          "text": "On a quadratic with curvature c each step multiplies the distance by 1 - lr c. It converges only when |1 - lr c| < 1, that is lr < 2/c. Just below the limit it oscillates; far below it crawls.",
+          "code": [
+            "for lr in (0.1, 0.5, 1.1):",
+            "    w = 1.0",
+            "    for _ in range(5):",
+            "        w -= lr * 2 * w",
+            "    print(lr, round(w, 4))"
+          ],
+          "output": "0.1 0.3277\n0.5 0.0\n1.1 -2.4883"
+        },
+        {
+          "heading": "Ravines and momentum",
+          "text": "When curvature differs a lot between directions (a big condition number) the steepest one caps lr and the shallow one crawls. Momentum accumulates velocity along the consistent direction (here the shallow one, with the same learning rate) and cancels the zig-zag across the steep one.",
+          "code": [
+            "w = u = 1.0; v = 0.0",
+            "for _ in range(20):",
+            "    w -= 0.05 * w",
+            "    v = 0.9 * v - 0.05 * u; u += v",
+            "print(round(w, 4), round(abs(u), 4))"
+          ],
+          "output": "0.3585 0.1211"
+        }
+      ]
+    },
+    {
+      "id": "cal-adam-lesson",
+      "title": "Adam and bias correction",
+      "topics": [
+        "cal-adam"
+      ],
+      "intro": "Adam keeps a running mean of gradients (m) and of squared gradients (v) and divides one by the root of the other. That gives each parameter its own step size, and a small correction makes the early steps honest.",
+      "takeaways": [
+        "Adam = momentum on the gradient plus per-parameter scaling by the root of a running squared gradient.",
+        "Bias correction divides by 1 - beta^t, with t the step count.",
+        "AdamW decouples weight decay from the adaptive scaling."
+      ],
+      "trap": "Reading the correction as a constant 1 - beta, or setting epsilon so large that it, rather than the gradient, controls the step.",
+      "sections": [
+        {
+          "heading": "Per-parameter scaling",
+          "text": "The step is about lr times a ratio close to plus or minus 1 when gradients are consistent, so the update size is set by lr, not by how large the gradient happens to be.",
+          "code": [
+            "b1, b2, lr, eps = 0.9, 0.999, 0.001, 1e-8",
+            "for g in (0.01, 1.0, 250.0):",
+            "    m, v = (1 - b1) * g, (1 - b2) * g * g",
+            "    mh, vh = m / (1 - b1), v / (1 - b2)",
+            "    print(g, round(lr * mh / (np.sqrt(vh) + eps), 6))"
+          ],
+          "output": "0.01 0.001\n1.0 0.001\n250.0 0.001"
+        },
+        {
+          "heading": "Why the correction",
+          "text": "m and v start at 0, so early on they underestimate the true averages. Dividing by 1 - β^t cancels that bias. Without it the very first step is about three times too large.",
+          "code": [
+            "g = 250.0",
+            "m, v = 0.1 * g, 0.001 * g * g",
+            "print(round(0.001 * m / np.sqrt(v), 5), round(0.001 * (m / 0.1) / np.sqrt(v / 0.001), 5))"
+          ],
+          "output": "0.00316 0.001"
+        }
+      ]
+    }
+  ]
+}

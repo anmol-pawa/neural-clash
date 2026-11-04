@@ -1,0 +1,637 @@
+{
+  "id": "calculus",
+  "title": "Gradient Gorge: calculus and optimisation",
+  "cards": [
+    {
+      "id": "cal-central-diff",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "cal-derivatives",
+      "prompt": "What does this print?",
+      "code": [
+        "f = lambda x: x ** 2",
+        "h = 1e-5",
+        "print(round((f(3 + h) - f(3 - h)) / (2 * h), 4))"
+      ],
+      "choices": [
+        "9.0",
+        "6.0",
+        "3.0",
+        "2.0"
+      ],
+      "answer": 1,
+      "explanation": "A central difference estimates f'(3) = 2 x 3 = 6. It is not f(3) = 9, and not the slope of the line through the origin. Its error shrinks like h squared, which is why it is the default for gradient checks."
+    },
+    {
+      "id": "cal-batch-mse-grad",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "cal-derivatives",
+      "prompt": "What does this print?",
+      "code": [
+        "x = np.array([1.0, 2.0])",
+        "y = np.array([2.0, 4.0])",
+        "w = 1.0",
+        "print(np.mean(2 * (w * x - y) * x))"
+      ],
+      "choices": [
+        "-5.0",
+        "-10.0",
+        "5.0",
+        "-2.5"
+      ],
+      "answer": 0,
+      "explanation": "L = mean((w x - y)^2), so dL/dw = mean(2 (w x - y) x) = (-2 - 8) / 2 = -5. Note the mean: a mean loss gives a mean gradient. Using a sum instead would double it and silently rescale the learning rate."
+    },
+    {
+      "id": "cal-tanh-chain",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "cal-chain",
+      "prompt": "What does this print?",
+      "code": [
+        "x = 0.0",
+        "t = np.tanh(2 * x)",
+        "print(2 * (1 - t ** 2))"
+      ],
+      "choices": [
+        "1.0",
+        "0.0",
+        "4.0",
+        "2.0"
+      ],
+      "answer": 3,
+      "explanation": "The chain rule gives d/dx tanh(2x) = 2 (1 - tanh(2x)^2). At x = 0 the tanh is 0, so the slope is 2: the inner factor 2 must not be forgotten."
+    },
+    {
+      "id": "cal-sigmoid-slope",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "cal-chain",
+      "prompt": "What does this print?",
+      "code": [
+        "s = 1 / (1 + np.exp(-0.0))",
+        "print(s * (1 - s))"
+      ],
+      "choices": [
+        "0.5",
+        "1.0",
+        "0.25",
+        "0.0"
+      ],
+      "answer": 2,
+      "explanation": "The sigmoid's derivative is s (1 - s). At z = 0, s = 0.5 so the slope is 0.25, its maximum. Every sigmoid layer therefore shrinks gradients by at least 4x, the root of the vanishing-gradient problem."
+    },
+    {
+      "id": "cal-softmax-ce-grad",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "cal-chain",
+      "prompt": "What does this print?",
+      "code": [
+        "z = np.array([2.0, 1.0, 0.0])",
+        "p = np.exp(z) / np.exp(z).sum()",
+        "y = np.array([1.0, 0.0, 0.0])",
+        "print(np.round(p - y, 4).tolist())"
+      ],
+      "choices": [
+        "[0.6652, 0.2447, 0.09]",
+        "[-0.3348, 0.2447, 0.09]",
+        "[-0.6652, 0.2447, 0.09]",
+        "[0.3348, -0.2447, -0.09]"
+      ],
+      "answer": 1,
+      "explanation": "For softmax followed by cross-entropy the gradient with respect to the logits collapses to p - y. The true class is pushed up by 1 - p = 0.3348 and each wrong class is pushed down in proportion to its probability."
+    },
+    {
+      "id": "cal-gd-step",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "cal-gd",
+      "prompt": "What does this print?",
+      "code": [
+        "w = 5.0",
+        "lr = 0.1",
+        "grad = 2 * w",
+        "w -= lr * grad",
+        "print(w)"
+      ],
+      "choices": [
+        "4.0",
+        "4.9",
+        "6.0",
+        "5.0"
+      ],
+      "answer": 0,
+      "explanation": "f(w) = w^2 has gradient 2w = 10, so one step moves w by -0.1 x 10 = -1, to 4. Gradient descent steps against the gradient, scaled by the learning rate."
+    },
+    {
+      "id": "cal-gd-overshoot",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "cal-gd",
+      "prompt": "What does this print?",
+      "code": [
+        "w = 3.0",
+        "w -= 0.5 * 2 * w",
+        "print(w)"
+      ],
+      "choices": [
+        "1.5",
+        "-3.0",
+        "3.0",
+        "0.0"
+      ],
+      "answer": 3,
+      "explanation": "On f(w) = w^2 each step multiplies w by (1 - 2 lr). With lr = 0.5 that factor is 0, so a single step lands exactly on the minimum. This is a special case: it works only because the curvature is exactly 2."
+    },
+    {
+      "id": "cal-gd-diverge",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "cal-gd",
+      "prompt": "What does this print?",
+      "code": [
+        "w = 1.0",
+        "for _ in range(3):",
+        "    w -= 1.1 * 2 * w",
+        "print(round(w, 4))"
+      ],
+      "choices": [
+        "0.0",
+        "0.512",
+        "-1.728",
+        "1.0"
+      ],
+      "answer": 2,
+      "explanation": "The factor per step is 1 - 2 x 1.1 = -1.2, and |-1.2| > 1, so w oscillates and grows: (-1.2)^3 = -1.728. Stable learning rates on a quadratic satisfy lr < 2 / curvature."
+    },
+    {
+      "id": "cal-ravine",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "cal-gd",
+      "prompt": "What does this print?",
+      "code": [
+        "w = np.array([1.0, 1.0])",
+        "curv = np.array([1.0, 10.0])",
+        "print((w - 0.1 * curv * w).tolist())"
+      ],
+      "choices": [
+        "[0.9, 0.9]",
+        "[0.9, 0.0]",
+        "[0.0, 0.0]",
+        "[0.1, 1.0]"
+      ],
+      "answer": 1,
+      "explanation": "For f = 0.5 (x^2 + 10 y^2) the gradient is (x, 10 y). One step at lr = 0.1 kills y but only shaves 10% off x. A single learning rate must be small enough for the steepest direction, which makes the shallow direction crawl: the ravine problem."
+    },
+    {
+      "id": "cal-momentum",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "cal-gd",
+      "prompt": "What does this print?",
+      "code": [
+        "w, v = 1.0, 0.0",
+        "for _ in range(2):",
+        "    v = 0.9 * v - 0.1 * (2 * w)",
+        "    w += v",
+        "print(round(w, 4))"
+      ],
+      "choices": [
+        "0.46",
+        "0.64",
+        "0.8",
+        "0.2"
+      ],
+      "answer": 0,
+      "explanation": "Momentum keeps a running velocity. Step 1: v = -0.2, w = 0.8. Step 2: v = 0.9(-0.2) - 0.1(1.6) = -0.34, w = 0.46. Plain gradient descent would be at 0.64; momentum has built up speed and is already further along."
+    },
+    {
+      "id": "cal-clip",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "cal-gd",
+      "prompt": "What does this print?",
+      "code": [
+        "g = np.array([3.0, 4.0])",
+        "scale = min(1.0, 1.0 / np.linalg.norm(g))",
+        "print(np.round(g * scale, 4).tolist())"
+      ],
+      "choices": [
+        "[1.0, 1.0]",
+        "[3.0, 4.0]",
+        "[0.0, 1.0]",
+        "[0.6, 0.8]"
+      ],
+      "answer": 3,
+      "explanation": "Clipping by global norm rescales the whole gradient to length 1 while keeping its direction: (3, 4) / 5 = (0.6, 0.8). Clipping each element separately would change the direction."
+    },
+    {
+      "id": "cal-adam-first-step",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "cal-adam",
+      "prompt": "What does this print?",
+      "code": [
+        "g = 250.0",
+        "b1, b2, lr, eps = 0.9, 0.999, 0.001, 1e-8",
+        "m, v = (1 - b1) * g, (1 - b2) * g ** 2",
+        "mh, vh = m / (1 - b1), v / (1 - b2)",
+        "print(round(lr * mh / (np.sqrt(vh) + eps), 4))"
+      ],
+      "choices": [
+        "0.25",
+        "0.0001",
+        "0.001",
+        "250.0"
+      ],
+      "answer": 2,
+      "explanation": "After bias correction m-hat = g and v-hat = g^2, so the first step is lr x g / |g| = lr, whatever the gradient's scale. That scale-invariance is what makes Adam forgiving to tune."
+    },
+    {
+      "id": "cal-adam-no-bias",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "cal-adam",
+      "prompt": "What does this print?",
+      "code": [
+        "g = 250.0",
+        "b1, b2, lr, eps = 0.9, 0.999, 0.001, 1e-8",
+        "m, v = (1 - b1) * g, (1 - b2) * g ** 2",
+        "print(round(lr * m / (np.sqrt(v) + eps), 5))"
+      ],
+      "choices": [
+        "0.001",
+        "0.00316",
+        "0.01",
+        "0.0001"
+      ],
+      "answer": 1,
+      "explanation": "Without bias correction, m starts at (1 - b1) g = 0.1 g and sqrt(v) at about 0.0316 |g|, a ratio of 3.16, so the first step is 3x too big. The zero initialisation of m and v is what bias correction removes."
+    },
+    {
+      "id": "cal-shape-dW",
+      "kind": "shape",
+      "topic": "cal-chain",
+      "prompt": "With `X = np.zeros((32, 10))` and `dY = np.zeros((32, 4))`, what is the shape of `X.T @ dY`? Type \"error\" if it raises.",
+      "answer": [
+        10,
+        4
+      ],
+      "explanation": "Result shape (10, 4). Every gradient has the shape of the thing it differentiates: dW matches W, dX matches X, db matches b. A bias gradient is a sum over the batch axis because the bias is broadcast across it."
+    },
+    {
+      "id": "cal-shape-dX",
+      "kind": "shape",
+      "topic": "cal-chain",
+      "prompt": "With `W = np.zeros((10, 4))` and `dY = np.zeros((32, 4))`, what is the shape of `dY @ W.T`? Type \"error\" if it raises.",
+      "answer": [
+        32,
+        10
+      ],
+      "explanation": "Result shape (32, 10). Every gradient has the shape of the thing it differentiates: dW matches W, dX matches X, db matches b. A bias gradient is a sum over the batch axis because the bias is broadcast across it."
+    },
+    {
+      "id": "cal-shape-db",
+      "kind": "shape",
+      "topic": "cal-chain",
+      "prompt": "With `dY = np.zeros((32, 4))`, what is the shape of `dY.sum(axis=0)`? Type \"error\" if it raises.",
+      "answer": [
+        4
+      ],
+      "explanation": "Result shape (4,). Every gradient has the shape of the thing it differentiates: dW matches W, dX matches X, db matches b. A bias gradient is a sum over the batch axis because the bias is broadcast across it."
+    },
+    {
+      "id": "cal-shape-grad-fail",
+      "kind": "shape",
+      "topic": "cal-chain",
+      "prompt": "With `X = np.zeros((32, 10))` and `dY = np.zeros((32, 4))`, what is the shape of `X @ dY`? Type \"error\" if it raises.",
+      "answer": null,
+      "explanation": "The inner sizes do not match, so numpy raises. For a linear layer Y = X W the gradients are dW = X^T dY and dX = dY W^T: transpose so the shared (batch) axis is the one summed away."
+    },
+    {
+      "id": "cal-shape-jac",
+      "kind": "shape",
+      "topic": "cal-derivatives",
+      "prompt": "With `J = np.zeros((3, 5))` and `g = np.zeros(3)`, what is the shape of `g @ J`? Type \"error\" if it raises.",
+      "answer": [
+        5
+      ],
+      "explanation": "Result shape (5,). Every gradient has the shape of the thing it differentiates: dW matches W, dX matches X, db matches b. A bias gradient is a sum over the batch axis because the bias is broadcast across it."
+    },
+    {
+      "id": "cal-derive-poly",
+      "kind": "derive",
+      "topic": "cal-derivatives",
+      "prompt": "For f(x) = x^3 - 2x at x = 2, enter f'(2), f''(2), and the value of x after one gradient-descent step with learning rate 0.05.",
+      "fields": [
+        "f'(2)",
+        "f''(2)",
+        "x after one step"
+      ],
+      "answers": [
+        10,
+        12,
+        1.5
+      ],
+      "tol": 0.01,
+      "explanation": "f'(x) = 3x^2 - 2 gives 10 and f''(x) = 6x gives 12. One step moves x by -0.05 x 10 = -0.5, to 1.5. The second derivative (curvature) is what limits a safe step size."
+    },
+    {
+      "id": "cal-derive-chain",
+      "kind": "derive",
+      "topic": "cal-chain",
+      "prompt": "A neuron has z = w x + b with w = 2, x = 3, b = -5, activation a = sigmoid(z), target y = 1 and loss L = 0.5 (a - y)^2. Enter a, dL/dz and dL/dw.",
+      "fields": [
+        "a",
+        "dL/dz",
+        "dL/dw"
+      ],
+      "answers": [
+        0.731059,
+        -0.052877,
+        -0.158631
+      ],
+      "tol": 0.001,
+      "explanation": "z = 1 so a = 0.7311. Chain: dL/da = a - y = -0.2689, da/dz = a(1 - a) = 0.1966, so dL/dz = -0.0529. Since dz/dw = x = 3, dL/dw = -0.1586. The gradient is small mostly because the sigmoid's slope is small."
+    },
+    {
+      "id": "cal-derive-stable-lr",
+      "kind": "derive",
+      "topic": "cal-gd",
+      "prompt": "For f(x, y) = 0.5 (x^2 + 10 y^2), enter the largest stable learning rate 2 / λmax, the condition number κ, and the per-step contraction factors of x and y at lr = 0.15.",
+      "fields": [
+        "2 / λmax",
+        "κ",
+        "x factor",
+        "y factor"
+      ],
+      "answers": [
+        0.2,
+        10,
+        0.85,
+        -0.5
+      ],
+      "tol": 0.01,
+      "explanation": "The Hessian eigenvalues are 1 and 10, so lr must stay below 2/10 = 0.2 and κ = 10. At lr = 0.15 the factors are 1 - 0.15 = 0.85 (slow) and 1 - 1.5 = -0.5 (fast, flipping sign). The slow direction sets the total number of steps."
+    },
+    {
+      "id": "cal-derive-steps",
+      "kind": "derive",
+      "topic": "cal-gd",
+      "prompt": "Gradient descent on f(w) = w^2 from w = 1 with lr = 0.1. Enter the factor w is multiplied by each step, and the number of steps until |w| < 0.001.",
+      "fields": [
+        "factor",
+        "steps"
+      ],
+      "answers": [
+        0.8,
+        31
+      ],
+      "tol": 0.01,
+      "explanation": "Each step multiplies w by 1 - 2 lr = 0.8. We need 0.8^n < 0.001, so n > ln(0.001) / ln(0.8) = 30.96, i.e. 31 steps. Convergence on a quadratic is geometric, and the rate is set by lr x curvature."
+    },
+    {
+      "id": "cal-derive-adam",
+      "kind": "derive",
+      "topic": "cal-adam",
+      "prompt": "Adam (β1 = 0.9, β2 = 0.999, lr = 0.1, ε = 1e-8) sees gradients g1 = 4 then g2 = 2. After step 2 enter the bias-corrected m-hat, v-hat and the step size taken.",
+      "fields": [
+        "m-hat",
+        "v-hat",
+        "step"
+      ],
+      "answers": [
+        2.947368,
+        9.996998,
+        0.093218
+      ],
+      "tol": 0.01,
+      "explanation": "m-hat is a weighted average of the gradients (about 2.95) and v-hat a weighted average of their squares (about 10.0), both divided by (1 - β^t) to undo the zero start. The step is lr x m-hat / sqrt(v-hat), about 0.093: close to lr when gradients are consistent."
+    },
+    {
+      "id": "cal-neg-gradient",
+      "kind": "mcq",
+      "topic": "cal-gd",
+      "prompt": "Why does gradient descent move along the negative gradient?",
+      "choices": [
+        "The gradient always points at the minimum",
+        "Negative numbers are numerically more stable",
+        "The gradient points toward the steepest increase of the loss, so its negative is the steepest local decrease",
+        "It makes the loss convex"
+      ],
+      "answer": 2,
+      "explanation": "The gradient is the direction of fastest local increase. It says nothing about where the minimum is: it only describes the slope here, which is why steps must be small and repeated."
+    },
+    {
+      "id": "cal-lr-too-big",
+      "kind": "mcq",
+      "topic": "cal-gd",
+      "prompt": "Training loss jumps around, then becomes NaN after a few hundred steps. What is the most likely first fix?",
+      "choices": [
+        "Add more layers",
+        "Lower the learning rate (and consider gradient clipping)",
+        "Train for more epochs",
+        "Remove the validation set"
+      ],
+      "answer": 1,
+      "explanation": "Divergence means steps overshoot the valley and amplify. A smaller learning rate is the first lever; clipping the global gradient norm and a warm-up schedule are the next. More epochs only gives it more time to blow up."
+    },
+    {
+      "id": "cal-reverse-mode",
+      "kind": "mcq",
+      "topic": "cal-chain",
+      "prompt": "Why do deep-learning frameworks use reverse-mode differentiation (backprop) rather than forward-mode?",
+      "choices": [
+        "There is one scalar loss and millions of parameters: one reverse pass gives all the gradients, forward mode needs one pass per parameter",
+        "Reverse mode is less accurate but faster",
+        "Forward mode cannot handle matrices",
+        "Reverse mode uses no memory"
+      ],
+      "answer": 0,
+      "explanation": "Cost scales with the number of inputs for forward mode and the number of outputs for reverse mode. Here outputs = 1. The price of reverse mode is memory: activations must be kept for the backward pass, which is why checkpointing exists."
+    },
+    {
+      "id": "cal-fd-use",
+      "kind": "mcq",
+      "topic": "cal-derivatives",
+      "prompt": "Why use finite differences to check gradients but not to train a network?",
+      "choices": [
+        "It is less accurate than backprop for every function",
+        "It cannot be computed in float64",
+        "It only works for linear layers",
+        "It needs two loss evaluations per parameter, far too slow at scale, but it is an independent check of the analytic gradient"
+      ],
+      "answer": 3,
+      "explanation": "Finite differences cost O(parameters) forward passes per gradient, so they are only for small tests. Their value is independence: they share no code with your backward pass, so a bug in one shows up as disagreement."
+    },
+    {
+      "id": "cal-central-vs-forward",
+      "kind": "mcq",
+      "topic": "cal-derivatives",
+      "prompt": "A forward difference (f(x+h) - f(x))/h has error O(h). Why is the central difference usually preferred?",
+      "choices": [
+        "It needs only one evaluation",
+        "It is exact for all functions",
+        "Its error is O(h^2), so a moderate h such as 1e-5 gives much better accuracy for the same two evaluations",
+        "It avoids floating-point error entirely"
+      ],
+      "answer": 2,
+      "explanation": "The first-order error terms of f(x+h) and f(x-h) cancel in the central difference. Too small an h brings back rounding error (catastrophic cancellation), so there is a sweet spot around 1e-5 to 1e-6 in float64."
+    },
+    {
+      "id": "cal-vanishing",
+      "kind": "mcq",
+      "topic": "cal-chain",
+      "prompt": "Why do deep stacks of sigmoid layers train slowly?",
+      "choices": [
+        "Sigmoid outputs are negative",
+        "Each layer multiplies the gradient by a slope of at most 0.25, so early layers receive vanishing gradients",
+        "Sigmoid cannot be differentiated",
+        "Sigmoid layers have no weights"
+      ],
+      "answer": 1,
+      "explanation": "By the chain rule the gradient to an early layer is a product of per-layer factors. If each is below 1 the product shrinks exponentially with depth. ReLU, careful initialisation, normalisation and residual connections all fight this."
+    },
+    {
+      "id": "cal-dead-relu",
+      "kind": "mcq",
+      "topic": "cal-chain",
+      "prompt": "What is a 'dead ReLU'?",
+      "choices": [
+        "A unit whose input is negative for every example, so its gradient is zero and it stops learning",
+        "A ReLU with a huge positive output",
+        "A ReLU in the output layer",
+        "A ReLU that returns NaN"
+      ],
+      "answer": 0,
+      "explanation": "The ReLU gradient is 0 for negative inputs. If a large update pushes a unit's pre-activation negative for all data, no gradient flows back and it can never recover. Leaky variants and smaller learning rates help."
+    },
+    {
+      "id": "cal-adam-why",
+      "kind": "mcq",
+      "topic": "cal-adam",
+      "prompt": "What problem does Adam's division by sqrt(v-hat) address?",
+      "choices": [
+        "It removes the need for a loss function",
+        "It guarantees convergence to a global minimum",
+        "It makes gradients exact",
+        "It gives each parameter its own effective step size, normalising gradients whose scales differ widely"
+      ],
+      "answer": 3,
+      "explanation": "Parameters with consistently large gradients get smaller effective steps, rarely-updated ones larger. It is a cheap diagonal preconditioner. It does not guarantee a global minimum, and on some problems well-tuned SGD with momentum generalises better."
+    },
+    {
+      "id": "cal-sgd-noise",
+      "kind": "mcq",
+      "topic": "cal-gd",
+      "prompt": "Compared with full-batch gradient descent, what does a minibatch gradient give you?",
+      "choices": [
+        "An exact gradient with less memory",
+        "A guaranteed lower final loss",
+        "A noisy but unbiased estimate of the full gradient at a fraction of the cost per step",
+        "A larger learning-rate limit in every case"
+      ],
+      "answer": 2,
+      "explanation": "The expectation of the minibatch gradient equals the full gradient, so on average it points the right way; the variance falls as the batch grows. The noise can help escape sharp minima, but it also sets a floor you cut through with learning-rate decay."
+    },
+    {
+      "id": "cal-adamw",
+      "kind": "mcq",
+      "topic": "cal-adam",
+      "prompt": "What distinguishes AdamW from Adam with an L2 penalty added to the loss?",
+      "choices": [
+        "AdamW has no momentum",
+        "AdamW applies weight decay directly to the weights, decoupled from the adaptive scaling by sqrt(v-hat)",
+        "AdamW needs no learning rate",
+        "AdamW only works for transformers"
+      ],
+      "answer": 1,
+      "explanation": "With a plain L2 term the penalty's gradient is divided by sqrt(v-hat) like any other, so the decay strength varies per parameter. Decoupling it (Loshchilov & Hutter) restores the intended behaviour, and AdamW is the common default for transformer training."
+    },
+    {
+      "id": "cal-ravine-help",
+      "kind": "multi",
+      "topic": "cal-gd",
+      "prompt": "A loss surface is a long narrow ravine (condition number around 1000). Which changes typically help? Pick all that apply.",
+      "choices": [
+        "Momentum",
+        "An adaptive optimiser such as Adam",
+        "Standardising the input features",
+        "Making the learning rate 10x larger",
+        "Using float16 for the loss"
+      ],
+      "answers": [
+        0,
+        1,
+        2
+      ],
+      "explanation": "Momentum averages out the oscillation across the ravine, adaptive scaling approximates a per-parameter preconditioner, and standardised inputs make the problem better conditioned in the first place. A larger learning rate is exactly what a steep direction cannot tolerate."
+    },
+    {
+      "id": "cal-gradcheck-rules",
+      "kind": "multi",
+      "topic": "cal-derivatives",
+      "prompt": "Which practices make a gradient check trustworthy? Pick all that apply.",
+      "choices": [
+        "Use central differences",
+        "Run in float64",
+        "Compare with a relative error, not an absolute one",
+        "Test exactly at a ReLU kink such as x = 0",
+        "Check only the loss value, not the gradient"
+      ],
+      "answers": [
+        0,
+        1,
+        2
+      ],
+      "explanation": "Central differences in float64 reduce the check's own error, and a relative error copes with gradients of very different sizes. Kinks are non-differentiable, so a finite difference there is meaningless; avoid them or move the point slightly."
+    },
+    {
+      "id": "cal-bug-sign",
+      "kind": "bug",
+      "topic": "cal-gd",
+      "prompt": "`step(w, lr)` should do one gradient-descent step on f(w) = w^2, moving toward 0. The loss grows instead. Which line is wrong?",
+      "code": [
+        "import numpy as np",
+        "def step(w, lr):",
+        "    grad = 2 * w",
+        "    return w + lr * grad"
+      ],
+      "line": 4,
+      "explanation": "Descent subtracts the gradient. Adding it is gradient ascent: the loss now grows geometrically. A one-step unit test that checks the loss goes down catches this immediately."
+    },
+    {
+      "id": "cal-bug-adam-bias",
+      "kind": "bug",
+      "topic": "cal-adam",
+      "prompt": "`adam_step` should apply the standard bias correction on step t, but the first steps come out far too large. Which line is wrong?",
+      "code": [
+        "import numpy as np",
+        "def adam_step(g, m, v, t, lr=0.001, b1=0.9, b2=0.999, eps=1e-8):",
+        "    m = b1 * m + (1 - b1) * g",
+        "    v = b2 * v + (1 - b2) * g * g",
+        "    mh = m / (1 - b1)",
+        "    vh = v / (1 - b2 ** t)",
+        "    return lr * mh / (np.sqrt(vh) + eps), m, v"
+      ],
+      "line": 5,
+      "explanation": "The correction divides by 1 - β^t, where t is the step number, not by the constant 1 - β. Only at t = 1 do they agree; as t grows, m has warmed up on its own but the wrong version still divides it by 0.1, so m-hat overshoots by up to 10x."
+    },
+    {
+      "id": "cal-bug-numgrad",
+      "kind": "bug",
+      "topic": "cal-derivatives",
+      "prompt": "`num_grad(f, x)` should return a central-difference estimate of f'(x), but it returns twice the right answer. Which line is wrong?",
+      "code": [
+        "import numpy as np",
+        "def num_grad(f, x, h=1e-5):",
+        "    return (f(x + h) - f(x - h)) / h"
+      ],
+      "line": 3,
+      "explanation": "The two evaluation points are 2h apart, so the denominator must be 2h. A gradient check with this bug fails on every correct backward pass, with a ratio of exactly 2, a useful clue."
+    }
+  ]
+}
