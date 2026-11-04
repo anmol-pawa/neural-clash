@@ -1,0 +1,29 @@
+{
+  "id": "forge-tensor",
+  "title": "Forge 2: a numpy Tensor with broadcasting-aware backward",
+  "phase": "forge",
+  "language": "python",
+  "functions": [
+    "Tensor",
+    "unbroadcast"
+  ],
+  "wrong": {
+    "no_unbroadcast.py": "add's backward passes out.grad straight through, so a broadcast bias keeps the big shape (shape error / wrong gradient)",
+    "mul_no_unbroadcast.py": "mul's backward forgets to unbroadcast to each operand's shape",
+    "unbroadcast_leading_only.py": "unbroadcast drops leading axes but not size-1 axes ((n,1) columns and (1,m) rows keep the wrong shape)",
+    "matmul_wrong_transpose.py": "dB = dC.T @ A instead of A.T @ dC",
+    "sum_no_expand_dims.py": "sum(axis=k) backward does not re-insert the reduced axis before broadcasting back",
+    "mean_divides_by_rows.py": "mean divides by shape[0] instead of the number of elements averaged",
+    "overwrite_grad.py": "tanh backward assigns instead of accumulating (reused tensors lose a path)",
+    "tanh_derivative.py": "d tanh is 1 - t instead of 1 - t**2",
+    "pow_exponent.py": "d(x**n) is n * x**n instead of n * x**(n-1)",
+    "relu_always_passes.py": "relu passes the gradient where the input is negative",
+    "no_seed.py": "backward seeds the root with zeros, so every grad stays 0",
+    "no_topo_order.py": "backward visits nodes in a plain depth-first order instead of a topological order (diamonds break)"
+  },
+  "hints": [
+    "Same recipe as Value: every op returns a new Tensor that remembers its inputs and a _backward closure that ACCUMULATES (+=) into the inputs' grads.",
+    "Broadcasting is the new trap: if a (3,) bias was stretched to (5,3) in the forward pass, its gradient is the SUM of the 5 rows. unbroadcast(grad, shape) removes the extra leading axes (sum axis 0) and sums over axes where shape has size 1 (keepdims=True). Call it for every elementwise binary op.",
+    "matmul: for C = A @ B, dA = dC @ B.T and dB = A.T @ dC. sum(axis=k) backward must expand_dims back to the reduced axis (unless keepdims) and broadcast_to the input shape; mean is sum times 1/count."
+  ]
+}

@@ -469,3 +469,10 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Known gaps: not yet wired into Readiness or the world (comes with D2e).
 - CI/Pages: no `gh` CLI in this session; not confirmed.
 - Next: D2b (Forge 2 `Tensor`).
+
+## 2026-11-04: D2b Forge 2 Lab `forge-tensor`
+- New Lab `forge-tensor`: numpy `Tensor` with broadcasting-aware backward (`unbroadcast`), `@`, `.T`, `sum`/`mean` with axis and keepdims, tanh/relu/exp/log/pow, iterative topological `backward`. Lesson (shape invariant, why bias gradients are sums, matmul/sum derivations, interview signal), visible tests, 16 hidden tests (finite-difference checks via `grad_check` on bias/column/scalar/leading-axis broadcasts, matmul, linear layer, softmax cross-entropy, diamonds, reuse; value assertions for mean) and 12 documented known-wrong versions, all rejected.
+- Lesson learned: a finite-difference check cannot catch a wrong *forward* (mean dividing by the wrong count), so value assertions sit beside the gradient checks.
+- Verification: lint (0 errors), typecheck, content:verify (all ok), build, build:pages, vitest 342 pass. Note: this image's `python3` is 3.11 without numpy; the numpy-based tests need `PATH=/usr/bin:$PATH` (`/usr/bin/python3` has numpy). No visual change, no screenshots.
+- Known gaps: not yet wired into Readiness or the world (D2e). No `gh` CLI in this session; CI/Pages not confirmed.
+- Next: D2c (calculus/optimisation deck).

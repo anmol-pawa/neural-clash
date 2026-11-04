@@ -75,7 +75,7 @@ Work top to bottom: take the **first unchecked box**, and split big boxes into r
   - [x] D1d3. (done 2026-11-04) Vector Vale guardian fight (`/guardian/vale`: linalg deck duel, `pca-svd` Lab, hidden-set fight) and its readiness evidence.
 - [ ] D2. Gradient Gorge (F3), with Forge modules 1–2 (`Value`, `Tensor`) and gradient checks
   - [x] D2a. (done 2026-11-04) Forge 1 Lab `forge-value`: scalar reverse-mode autodiff `Value` with finite-difference hidden tests and 8 known-wrong versions.
-  - [ ] D2b. Forge 2 Lab `forge-tensor`: numpy `Tensor` with broadcasting-aware backward (unbroadcast), matmul, sum/mean, gradient checks.
+  - [x] D2b. (done 2026-11-04) Forge 2 Lab `forge-tensor`: numpy `Tensor` with broadcasting-aware backward (unbroadcast), matmul, sum/mean, gradient checks.
   - [ ] D2c. Calculus/optimisation deck (derivatives, chain rule, GD step sizes, Adam bias correction; solver-checked) and lessons.
   - [ ] D2d. Gradient descent visualiser (`/dev/descent`: step size, momentum, Adam on a quadratic/ravine; pure maths in `lib/optim/`).
   - [ ] D2e. Region art (tileset, trainers, backdrop), guardian, readiness skill "calculus & optimisation".
