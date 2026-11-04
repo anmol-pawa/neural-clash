@@ -8,7 +8,7 @@ import { spriteById } from "@/game/sprites/roster";
 import { audio } from "@/lib/audio/player";
 import { useAudioSettings } from "@/lib/audio/useAudio";
 import { check } from "@/lib/cards/check";
-import { CALCULUS_DECK, LINALG_DECK, NUMPY_DECK, PYTHON_DECK, STRATEGY_DECK } from "@/lib/cards/samples";
+import { CALCULUS_DECK, LINALG_DECK, NUMPY_DECK, PROBABILITY_DECK, PYTHON_DECK, STRATEGY_DECK } from "@/lib/cards/samples";
 import type { Card, Response } from "@/lib/cards/types";
 import { LABS } from "@/lib/labs/catalog";
 import { dojoProblems } from "@/lib/dojo/catalog";
@@ -18,7 +18,7 @@ import { review } from "@/lib/srs/srs";
 import { useNow } from "@/lib/sync/useNow";
 import { buildSync, syncCards, type SyncDeck } from "@/lib/sync/sync";
 
-const DECKS: SyncDeck[] = [PYTHON_DECK, NUMPY_DECK, LINALG_DECK, CALCULUS_DECK, STRATEGY_DECK].map((d) => ({ id: d.id, title: d.title, cards: d.cards }));
+const DECKS: SyncDeck[] = [PYTHON_DECK, NUMPY_DECK, LINALG_DECK, CALCULUS_DECK, PROBABILITY_DECK, STRATEGY_DECK].map((d) => ({ id: d.id, title: d.title, cards: d.cards }));
 const PROBLEM_LIST = dojoProblems().map((p) => ({ id: p.id, title: p.title }));
 const LAB_LIST = LABS.map((l) => ({ id: l.id, title: l.title }));
 

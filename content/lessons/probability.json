@@ -1,0 +1,218 @@
+{
+  "id": "probability-lessons",
+  "title": "Probability Peaks lessons",
+  "lessons": [
+    {
+      "id": "prob-bayes-lesson",
+      "title": "Conditional probability, Bayes and base rates",
+      "topics": [
+        "prob-bayes"
+      ],
+      "intro": "Probability is the language every model speaks: a classifier outputs P(label | input) and a spam filter, a fraud alert and a medical test all answer questions of the form 'given this evidence, how likely is that?'. The skill is conditioning on the right thing and remembering how rare the thing is.",
+      "takeaways": [
+        "P(A | B) and P(B | A) are different numbers; Bayes' rule converts between them using the base rate.",
+        "Precision of an alert depends on how rare the event is, not just on the error rates.",
+        "Odds form: posterior odds = prior odds x likelihood ratio.",
+        "Uncorrelated does not mean independent; independence means the joint factorises."
+      ],
+      "trap": "Reading the sensitivity of a test as the probability of disease given a positive result (the prosecutor's fallacy in a lab coat).",
+      "sections": [
+        {
+          "heading": "Count people, not percentages",
+          "text": "Imagine 10,000 people. The base rate says how many are sick; the sensitivity and false-positive rate say how many of each group test positive. Counting bodies makes the surprising answer obvious: most positives come from the large healthy group.",
+          "code": [
+            "n = 10000",
+            "sick = n * 0.01",
+            "true_pos = sick * 0.9",
+            "false_pos = (n - sick) * 0.05",
+            "print(round(true_pos, 1), round(false_pos, 1))",
+            "print(round(true_pos / (true_pos + false_pos), 4))"
+          ],
+          "output": "90.0 495.0\n0.1538"
+        },
+        {
+          "heading": "The odds form",
+          "text": "Posterior odds equal prior odds times the likelihood ratio. It turns Bayes' rule into one multiplication and makes stacking independent evidence trivial: multiply the ratios.",
+          "code": [
+            "prior_odds = 0.01 / 0.99",
+            "lr = 0.9 / 0.05",
+            "post_odds = prior_odds * lr",
+            "print(round(post_odds, 4), round(post_odds / (1 + post_odds), 4))"
+          ],
+          "output": "0.1818 0.1538"
+        },
+        {
+          "heading": "Joint tables: marginal, conditional, independent",
+          "text": "A joint table holds everything. Summing a row or column gives a marginal, dividing a row by its sum gives a conditional, and independence means the joint equals the product of its marginals in every cell.",
+          "code": [
+            "joint = np.array([[0.3, 0.2], [0.1, 0.4]])",
+            "print(joint.sum(axis=1), joint.sum(axis=0))",
+            "print(joint[1] / joint[1].sum())",
+            "print(np.allclose(joint, np.outer(joint.sum(axis=1), joint.sum(axis=0))))"
+          ],
+          "output": "[0.5 0.5] [0.4 0.6]\n[0.2 0.8]\nFalse"
+        }
+      ]
+    },
+    {
+      "id": "prob-dist-lesson",
+      "title": "Expectation, variance, distributions and the CLT",
+      "topics": [
+        "prob-dist"
+      ],
+      "intro": "A random variable turns uncertainty into numbers you can average. Expectation and variance summarise it, a handful of distributions cover most practical cases, and the central limit theorem explains why averages behave so well.",
+      "takeaways": [
+        "Expectation is linear; variance scales with the square and adds for independent variables.",
+        "Standard error = sigma / sqrt(n): four times the data, half the error.",
+        "The CLT is about the distribution of averages (normal, given finite variance), not of the data itself.",
+        "np.var divides by n by default; ddof=1 gives the unbiased estimate."
+      ],
+      "trap": "Assuming the CLT rescues heavy-tailed data: with infinite variance (a Cauchy, or some latency and revenue tails) the sample mean never settles.",
+      "sections": [
+        {
+          "heading": "Expectation is linear, variance is not",
+          "text": "E[aX + b] = a E[X] + b always. Variance ignores shifts and squares scales: Var(aX + b) = a^2 Var(X). For independent variables variances add.",
+          "code": [
+            "vals = np.array([0.0, 1.0, 5.0])",
+            "pr = np.array([0.5, 0.3, 0.2])",
+            "mean = (vals * pr).sum()",
+            "var = (vals ** 2 * pr).sum() - mean ** 2",
+            "y = 3 * vals + 2",
+            "print(round(mean, 2), round(var, 2))",
+            "print(round((y * pr).sum(), 2), round((y ** 2 * pr).sum() - (y * pr).sum() ** 2, 2))"
+          ],
+          "output": "1.3 3.61\n5.9 32.49"
+        },
+        {
+          "heading": "Standard error shrinks like 1 / sqrt(n)",
+          "text": "The mean of n independent draws has standard deviation sigma / sqrt(n). Quadrupling the data only halves the noise, which is why each extra digit of precision costs a hundred times more data.",
+          "code": [
+            "for n in (1, 4, 100, 10000):",
+            "    print(n, round(2.0 / np.sqrt(n), 3))"
+          ],
+          "output": "1 2.0\n4 1.0\n100 0.2\n10000 0.02"
+        },
+        {
+          "heading": "Averages go normal",
+          "text": "Draw from a skewed exponential distribution, average 50 values at a time, and repeat. The averages cluster around the true mean 1 with spread close to 1 / sqrt(50) = 0.141, and their histogram is already near-normal.",
+          "code": [
+            "rng = np.random.default_rng(0)",
+            "means = rng.exponential(1.0, size=(20000, 50)).mean(axis=1)",
+            "print(round(float(means.mean()), 2), round(float(means.std()), 2))"
+          ],
+          "output": "1.0 0.14"
+        }
+      ]
+    },
+    {
+      "id": "prob-mle-lesson",
+      "title": "Maximum likelihood, MAP and losses as likelihoods",
+      "topics": [
+        "prob-mle"
+      ],
+      "intro": "Choosing a loss is choosing a noise model. Mean squared error is a Gaussian likelihood, cross-entropy is a categorical one, and a regulariser is a prior. Entropy, cross-entropy and KL divergence then measure how well a model's distribution matches the data's.",
+      "takeaways": [
+        "Loss = negative log-likelihood under an assumed noise model; regulariser = negative log prior.",
+        "MSE assumes constant-variance Gaussian noise; cross-entropy is the categorical NLL.",
+        "KL(p || q) >= 0, zero only at p = q, and is not symmetric.",
+        "Perplexity = exp(mean NLL), an effective number of equally likely choices."
+      ],
+      "trap": "Treating KL as a distance (it is asymmetric), or evaluating log(0) because a probability was never smoothed or clipped.",
+      "sections": [
+        {
+          "heading": "MLE picks the parameter that makes the data likeliest",
+          "text": "For coin flips the log-likelihood is k log p + (n - k) log(1 - p). Scanning a grid of p shows the peak at the sample mean, and a Beta prior (MAP) pulls that peak toward the prior.",
+          "code": [
+            "data = np.array([1, 0, 1, 1, 0, 1, 1, 1])",
+            "k, n = data.sum(), len(data)",
+            "grid = np.linspace(0.01, 0.99, 99)",
+            "loglik = k * np.log(grid) + (n - k) * np.log(1 - grid)",
+            "logpost = loglik + np.log(grid) + np.log(1 - grid)",
+            "print(round(float(grid[loglik.argmax()]), 2), round(float(grid[logpost.argmax()]), 2))"
+          ],
+          "output": "0.75 0.7"
+        },
+        {
+          "heading": "MSE is a Gaussian likelihood",
+          "text": "With Gaussian noise of fixed variance the negative log-likelihood is a constant plus the sum of squared errors, so both are minimised by the same parameter.",
+          "code": [
+            "y = np.array([1.0, 2.0, 4.0, 5.0])",
+            "mus = np.linspace(0, 6, 601)",
+            "sse = ((y[None, :] - mus[:, None]) ** 2).sum(axis=1)",
+            "nll = sse / (2 * 1.5 ** 2) + len(y) * np.log(1.5 * np.sqrt(2 * np.pi))",
+            "print(round(float(mus[sse.argmin()]), 2), round(float(mus[nll.argmin()]), 2), y.mean())"
+          ],
+          "output": "3.0 3.0 3.0"
+        },
+        {
+          "heading": "Cross-entropy = entropy + KL",
+          "text": "H(p, q) = H(p) + KL(p || q). Because H(p) is fixed by the data, minimising cross-entropy is minimising the KL divergence from the data distribution to the model.",
+          "code": [
+            "p = np.array([0.5, 0.25, 0.25])",
+            "q = np.array([0.7, 0.2, 0.1])",
+            "h = -(p * np.log(p)).sum()",
+            "ce = -(p * np.log(q)).sum()",
+            "kl = (p * np.log(p / q)).sum()",
+            "print(round(float(ce), 4), round(float(h + kl), 4))"
+          ],
+          "output": "1.1563 1.1563"
+        }
+      ]
+    },
+    {
+      "id": "prob-ab-lesson",
+      "title": "Hypothesis tests, A/B experiments and the bootstrap",
+      "topics": [
+        "prob-ab"
+      ],
+      "intro": "An A/B test asks whether a difference is bigger than chance could produce. The mechanics are simple; the interview signal is knowing how experiments go wrong: peeking, many metrics, underpowered tests and broken randomisation.",
+      "takeaways": [
+        "A p-value is P(data this extreme | null), not the probability the null is true.",
+        "Fix the sample size and metric in advance, or use a sequential method; peeking inflates false positives.",
+        "Many metrics need a correction (Bonferroni, or Benjamini-Hochberg for false discovery rate).",
+        "Check the sample-ratio mismatch before you read any metric.",
+        "Sample size scales with variance / effect^2: halving the detectable lift quadruples the traffic."
+      ],
+      "trap": "Declaring victory the first time p < 0.05, or reading a 'significant' result from an underpowered test as the true effect size.",
+      "sections": [
+        {
+          "heading": "A two-proportion z-test",
+          "text": "Under the null both arms share one conversion rate. The standard error of the difference uses that pooled rate, and the z statistic says how many standard errors the observed lift is from zero.",
+          "code": [
+            "import math",
+            "x1, n1, x2, n2 = 200, 2000, 240, 2000",
+            "pool = (x1 + x2) / (n1 + n2)",
+            "se = math.sqrt(pool * (1 - pool) * (1 / n1 + 1 / n2))",
+            "z = (x2 / n2 - x1 / n1) / se",
+            "print(round(z, 3), round(math.erfc(z / math.sqrt(2)), 4))"
+          ],
+          "output": "2.021 0.0432"
+        },
+        {
+          "heading": "Peeking inflates false positives",
+          "text": "Simulate 2,000 experiments with no real effect and check the z statistic at five equally spaced looks. Stopping at the first |z| > 1.96 gives a false-positive rate far above the nominal 5%.",
+          "code": [
+            "rng = np.random.default_rng(0)",
+            "x = rng.normal(size=(2000, 1000)).cumsum(axis=1)",
+            "looks = np.array([200, 400, 600, 800, 1000])",
+            "z = x[:, looks - 1] / np.sqrt(looks)",
+            "print(round(float((np.abs(z[:, -1]) > 1.96).mean()), 2), round(float((np.abs(z) > 1.96).any(axis=1).mean()), 2))"
+          ],
+          "output": "0.05 0.15"
+        },
+        {
+          "heading": "Bootstrap an interval for a median",
+          "text": "Resample the data with replacement many times, take the median of each resample, and read off the 2.5th and 97.5th percentiles. No formula needed, which is why it is the go-to for ratios and medians.",
+          "code": [
+            "rng = np.random.default_rng(0)",
+            "x = np.array([3, 5, 6, 7, 9, 12, 14, 30.0])",
+            "idx = rng.integers(0, len(x), size=(5000, len(x)))",
+            "meds = np.median(x[idx], axis=1)",
+            "print(np.percentile(meds, [2.5, 97.5]).round(1))"
+          ],
+          "output": "[ 5. 14.]"
+        }
+      ]
+    }
+  ]
+}

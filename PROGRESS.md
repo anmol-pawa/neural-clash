@@ -522,3 +522,12 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Verification: lint (0 errors), typecheck, test (393 pass; run `node scripts/fetch-pyodide.mjs` first), content:verify, build, build:pages, smoke at desktop and iPhone 14: no console errors or overflow; screenshots inspected.
 - Known gaps: no Gorge overworld map or trainer dialogue yet. CI/Pages not confirmed (no `gh` CLI; MCP actions not checked).
 - Next: D3 (Probability Peaks).
+
+## 2026-11-04: D3a Probability Peaks lessons and deck
+- D3 was split into D3a-D3f in ROADMAP. This run: `scripts/gen-probability.mjs` generates `content/decks/probability.json` (47 cards over prob-bayes / prob-dist / prob-mle / prob-ab: 17 predict, 4 shape, 6 derive, 15 concept, 2 multi, 3 bug) and `content/lessons/probability.json` (4 lessons incl. seeded CLT, peeking and bootstrap simulations). Every predict, shape and derive answer and every lesson output is computed natively with numpy; bug cards are checked to change behaviour when fixed; `--check` guards staleness.
+- New `lib/solvers/probability.ts` (Bayes posterior, moments, erf/p-values, two-proportion z, sample size, family-wise error, entropy/cross-entropy/KL, perplexity, log-loss, Bernoulli MLE/MAP) and `tests/probability.test.ts` (9 tests cross-checking the deck; erf checked against known values). Deck wired into samples, lessons and Daily Sync (Readiness skill comes in D3d).
+- Honesty notes in content: the peeking card states the independent-looks figure (22.6%) and that real correlated looks inflate less (about 14-15%, confirmed by the lesson's seeded simulation: 0.15); the sample-size card is labelled the simplified formula and gives the exact figure.
+- Also fixed `smoke:learn`, which hard-coded the lesson count (now `>= 28`).
+- Verification: lint (0 errors), typecheck, test (402 pass; `node scripts/fetch-pyodide.mjs` first; `PATH=/usr/bin:$PATH` for numpy), content:verify, build, build:pages, smoke:learn and smoke:sync at desktop and iPhone 14 (no console errors or overflow; lesson list screenshot inspected).
+- Known gaps: no Readiness skill, Labs, visualiser or art yet (D3b-D3f).
+- Next: D3b (probability Lab modules).

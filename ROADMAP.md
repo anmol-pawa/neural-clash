@@ -82,7 +82,13 @@ Work top to bottom: take the **first unchecked box**, and split big boxes into r
   - [x] D2e2. (done 2026-11-04) Gradient Gorge tileset (`scripts/art/gradient-gorge.mjs`, canyon palette, contour-etched ground, descent arrows, preview map) and the 96x96 guardian Warden Chain (idle 4, attack 5, hurt 3, faint 4; `scripts/art/warden-chain.mjs`), reviewed on `/dev/sprites`.
   - [x] D2e3. (done 2026-11-04) Gorge trainers Climber Delta and Surveyor Hess (16x24 walk cycles + 48x48 portraits, `scripts/art/gorge-trainers.mjs`) and the Gradient Gorge battle backdrop (`theme: "gorge"`, preview at `/battle?theme=gorge`).
   - [x] D2e4. (done 2026-11-04) Gradient Gorge guardian fight (`/guardian/gorge`: calculus deck duel, Forge Lab, hidden-set fight) and its readiness evidence.
-- [ ] D3. Probability Peaks (F4)
+- [ ] D3. Probability Peaks (F4), split into:
+  - [x] D3a. (done 2026-11-04) Lessons (4) and a 47-card deck (Bayes and base rates, expectation/variance/CLT, MLE/MAP and losses as likelihoods, entropy/KL, A/B testing, power, peeking, bootstrap), numpy-computed and cross-checked by `lib/solvers/probability.ts`; wired into Learn and Daily Sync.
+  - [ ] D3b. Lab modules: sampling (inverse transform, rejection) and MLE/bootstrap from scratch, with hidden tests and known-wrong versions.
+  - [ ] D3c. Interactive visualiser `/dev/clt` (CLT, base-rate frequency tree, peeking simulator; pure maths in `lib/prob/`) with smoke test.
+  - [ ] D3d. Readiness skill "probability and statistics" (deck + labs), tested in the theory rounds.
+  - [ ] D3e. Region art: Probability Peaks tileset, guardian (96x96), two trainers, battle backdrop.
+  - [ ] D3f. Guardian fight `/guardian/peaks` and its readiness evidence.
 - [ ] D4. Classic Grove (F5), with from-scratch classical ML labs and the Creature Stats dataset
 - [ ] D5. Metric Market + Data Dojo (F6, GDD §5.4), with the *Leakage* and *Imbalance Swarm* bosses
 - [ ] D6. Neuron Nest (F7), with Forge modules 3–8 (split across runs) and the companion → Multilayer
