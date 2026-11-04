@@ -1,3 +1,4 @@
 export * from "./math";
 export * from "./shapes";
 export * from "./metrics";
+export * from "./linalg";

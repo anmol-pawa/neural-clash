@@ -36,11 +36,11 @@ for (const [name, opts] of [["desktop", { viewport: { width: 1280, height: 800 }
   page.on("console", (m) => m.type() === "error" && errors.push(m.text()));
   page.on("pageerror", (e) => errors.push(String(e)));
   await page.goto(`${origin}${BASE}/learn`);
-  await page.getByText("Python Port lessons").first().waitFor();
+  await page.getByRole("heading", { name: "Lessons" }).waitFor();
   const n = await page.locator("ul li a").count();
-  check(n === 15, `${name}: 15 lessons listed (${n})`);
+  check(n === 20, `${name}: 20 lessons listed (${n})`);
   await page.screenshot({ path: join(shots, `learn-list-${name}.png`) });
-  await page.locator("ul li a").nth(2).click();
+  await page.locator("ul li a").nth(19).click();
   await page.getByText("Common trap").waitFor();
   check((await page.locator("pre[aria-label=Output]").count()) >= 3, `${name}: lesson shows output blocks`);
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth);

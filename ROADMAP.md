@@ -65,7 +65,11 @@ Work top to bottom: take the **first unchecked box**, and split big boxes into r
 
 **Region recipe:** art (tileset, 2 trainers, guardian 96×96, backdrop, companion form if due) → lessons with full maths → about 40 cards (solver-generated where numeric) → Lab modules → Training/Data battles → guardian → music.
 
-- [ ] D1. Vector Vale (CUR F2), with PCA labs and the transform visualiser
+- [ ] D1. Vector Vale (CUR F2), split into:
+  - [x] D1a. (done 2026-11-04) Lessons (5) and a 41-card deck, all numeric answers computed by numpy and cross-checked by `lib/solvers/linalg.ts`; wired into Learn and Daily Sync.
+  - [ ] D1b. PCA Lab modules (via SVD and via power iteration): reference, visible + hidden tests, known-wrong versions.
+  - [ ] D1c. Interactive 2D transform visualiser (`/dev` or lesson-embedded, pure matrix maths in `lib/`).
+  - [ ] D1d. Region art (tileset, 2 trainers, 96x96 guardian, backdrop), guardian fight and readiness skill "linear algebra".
 - [ ] D2. Gradient Gorge (F3), with Forge modules 1–2 (`Value`, `Tensor`) and gradient checks
 - [ ] D3. Probability Peaks (F4)
 - [ ] D4. Classic Grove (F5), with from-scratch classical ML labs and the Creature Stats dataset

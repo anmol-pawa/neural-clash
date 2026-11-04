@@ -54,8 +54,8 @@ export default function Learn() {
         </article>
       ) : (
         <>
-          <h1 className="font-display text-2xl text-[var(--accent)]">Python Port lessons</h1>
-          <p className="text-sm text-slate-300">Short lessons for every topic in the Python and numpy decks. Every example output was produced by running the code.</p>
+          <h1 className="font-display text-2xl text-[var(--accent)]">Lessons</h1>
+          <p className="text-sm text-slate-300">Short lessons for every topic in the Python, numpy and linear-algebra decks. Every example output was produced by running the code.</p>
           <ul className="grid gap-2">
             {LESSONS.map((l) => (
               <li key={l.id}>

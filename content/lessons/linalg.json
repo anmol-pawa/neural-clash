@@ -1,0 +1,254 @@
+{
+  "id": "linalg-lessons",
+  "title": "Vector Vale lessons",
+  "lessons": [
+    {
+      "id": "la-vectors-lesson",
+      "title": "Vectors, norms and cosine",
+      "topics": [
+        "la-vectors"
+      ],
+      "intro": "A vector is an ordered list of numbers read as a point or an arrow. Everything in ML, from a feature row to a word embedding, is a vector, and the first question about two of them is how alike they are.",
+      "takeaways": [
+        "The dot product is length x length x cos(angle); zero means orthogonal.",
+        "Cosine removes length; normalise once and a dot product is a cosine.",
+        "L1, L2 and L-infinity measure size differently, and the choice matters for regularisation."
+      ],
+      "trap": "Using raw dot products to rank by similarity when vector norms vary: long vectors win regardless of direction.",
+      "sections": [
+        {
+          "heading": "Length and dot product",
+          "text": "The L2 norm is the arrow's length. The dot product sums products of matching entries, and equals length times length times the cosine of the angle between the arrows.",
+          "code": [
+            "u = np.array([3.0, 4.0])",
+            "v = np.array([4.0, -3.0])",
+            "print(np.linalg.norm(u), u @ v)"
+          ],
+          "output": "5.0 0.0"
+        },
+        {
+          "heading": "Cosine similarity",
+          "text": "Divide the dot product by both lengths to keep the angle only. Doubling a vector changes its dot products but not its cosine, so cosine compares direction, which is usually what an embedding encodes.",
+          "code": [
+            "u = np.array([1.0, 2.0])",
+            "cos = lambda a, b: a @ b / (np.linalg.norm(a) * np.linalg.norm(b))",
+            "print(round(cos(u, 5 * u), 6), round(cos(u, np.array([-2.0, 1.0])), 6))"
+          ],
+          "output": "1.0 0.0"
+        },
+        {
+          "heading": "Norms measure different things",
+          "text": "L1 adds absolute values, L2 is the straight-line length, L-infinity is the largest entry. Regularisers use them because their balls have different shapes: L1 corners favour exact zeros.",
+          "code": [
+            "x = np.array([3.0, -4.0, 0.0])",
+            "print(np.linalg.norm(x, 1), np.linalg.norm(x, 2), np.linalg.norm(x, np.inf))"
+          ],
+          "output": "7.0 5.0 4.0"
+        }
+      ]
+    },
+    {
+      "id": "la-matrices-lesson",
+      "title": "Matrices as linear maps, and their shapes",
+      "topics": [
+        "la-matmul"
+      ],
+      "intro": "A matrix is a machine that turns vectors into vectors. Its columns say where the basis vectors land, and a matrix product is the machine you get by running one after another.",
+      "takeaways": [
+        "Columns of a matrix are the images of the basis vectors.",
+        "Check (m, k) @ (k, n) -> (m, n) before running anything.",
+        "AB is not BA; (AB)^T = B^T A^T."
+      ],
+      "trap": "Swapping the operands of a matmul that happens to be shape-legal both ways: it runs, and gives the wrong thing.",
+      "sections": [
+        {
+          "heading": "Columns are destinations",
+          "text": "Multiplying R by (1, 0) picks out R's first column. So a rotation, a stretch or a shear can be read straight off the matrix.",
+          "code": [
+            "R = np.array([[0, -1], [1, 0]])",
+            "print((R @ np.array([1, 0])).tolist(), (R @ np.array([0, 1])).tolist())"
+          ],
+          "output": "[0, 1] [-1, 0]"
+        },
+        {
+          "heading": "Shapes are the type system",
+          "text": "(m, k) @ (k, n) gives (m, n). Write the shapes before the code. A neural-network layer is X @ W with X (batch, in) and W (in, out).",
+          "code": [
+            "X = np.ones((100, 5))",
+            "W = np.ones((5, 3))",
+            "print((X @ W).shape, (X @ W).sum(axis=1)[:2])"
+          ],
+          "output": "(100, 3) [15. 15.]"
+        },
+        {
+          "heading": "Order matters",
+          "text": "Products are associative but not commutative, and the transpose of a product reverses the order. Backprop leans on exactly this: gradients flow through W^T.",
+          "code": [
+            "A = np.array([[0, 1], [0, 0]])",
+            "B = np.array([[0, 0], [1, 0]])",
+            "print((A @ B).tolist(), (B @ A).tolist())"
+          ],
+          "output": "[[1, 0], [0, 0]] [[0, 0], [0, 1]]"
+        }
+      ]
+    },
+    {
+      "id": "la-inverse-lesson",
+      "title": "Inverses, rank and solving systems",
+      "topics": [
+        "la-inverse"
+      ],
+      "intro": "Solving A x = b asks which input the map A sent to b. Whether there is exactly one answer depends on rank: how many independent directions A keeps.",
+      "takeaways": [
+        "Rank is the number of independent rows (or columns); full rank means invertible.",
+        "Prefer `solve` to `inv`.",
+        "Check the condition number before trusting a solution; regularise if it is huge."
+      ],
+      "trap": "Calling `inv` on a nearly singular matrix and trusting the output: no error is raised, the numbers are just meaningless.",
+      "sections": [
+        {
+          "heading": "Rank counts independent directions",
+          "text": "If a row is a combination of others, the map flattens space and loses information. Rank less than the size means singular: no inverse, and either no solution or infinitely many.",
+          "code": [
+            "A = np.array([[1, 2], [2, 4]])",
+            "B = np.array([[1, 2], [3, 4]])",
+            "print(np.linalg.matrix_rank(A), np.linalg.matrix_rank(B), round(np.linalg.det(B), 3))"
+          ],
+          "output": "1 2 -2.0"
+        },
+        {
+          "heading": "Solve, do not invert",
+          "text": "Forming A^-1 and multiplying is slower and less accurate than a factorisation-based solve. You almost never need the inverse itself.",
+          "code": [
+            "A = np.array([[3.0, 1.0], [1.0, 2.0]])",
+            "b = np.array([9.0, 8.0])",
+            "x = np.linalg.solve(A, b)",
+            "print(x, np.allclose(A @ x, b))"
+          ],
+          "output": "[2. 3.] True"
+        },
+        {
+          "heading": "Nearly singular is the real danger",
+          "text": "The condition number says how much input error is amplified. A huge value means a tiny wiggle in b swings x wildly, even though the matrix is technically invertible. Ridge regression adds λI to fix exactly this.",
+          "code": [
+            "A = np.array([[1.0, 1.0], [1.0, 1.0000001]])",
+            "print(f'{np.linalg.cond(A):.1e}')"
+          ],
+          "output": "4.0e+07"
+        }
+      ]
+    },
+    {
+      "id": "la-orthogonality-lesson",
+      "title": "Orthogonality and projections",
+      "topics": [
+        "la-orthogonality"
+      ],
+      "intro": "Orthogonal directions do not interfere, which is why they make clean coordinates. Projection asks for the part of a vector that lies along a direction, and it is the geometry behind least squares.",
+      "takeaways": [
+        "Projection keeps the part along a direction; the residual is orthogonal.",
+        "Least squares leaves a residual orthogonal to every feature column.",
+        "Orthonormal columns: Q^T Q = I, no inverse needed."
+      ],
+      "trap": "Forgetting that the projection formula needs the denominator u . u: it is only the plain dot product when u has length 1.",
+      "sections": [
+        {
+          "heading": "Projecting onto a line",
+          "text": "The component of v along u is (v . u / u . u) u. What is left over, the residual, is orthogonal to u.",
+          "code": [
+            "v = np.array([3.0, 4.0])",
+            "u = np.array([1.0, 1.0])",
+            "p = (v @ u) / (u @ u) * u",
+            "print(p, v - p, round((v - p) @ u, 12))"
+          ],
+          "output": "[3.5 3.5] [-0.5  0.5] 0.0"
+        },
+        {
+          "heading": "Least squares is a projection",
+          "text": "Fitting y with the columns of X finds the point of the column space closest to y. The error is orthogonal to every column, so X^T (y - X w) = 0: those are the normal equations.",
+          "code": [
+            "X = np.array([[1.0, 0.0], [1.0, 1.0], [1.0, 2.0]])",
+            "y = np.array([1.0, 2.0, 2.0])",
+            "w = np.linalg.lstsq(X, y, rcond=None)[0]",
+            "print(np.round(w, 4), np.round(X.T @ (y - X @ w), 10))"
+          ],
+          "output": "[1.1667 0.5   ] [0. 0.]"
+        },
+        {
+          "heading": "Orthonormal bases are free to invert",
+          "text": "If Q has orthonormal columns then Q^T Q = I, so Q^T is the inverse on its span. Rotations are the square case. Work in an orthonormal basis whenever you can.",
+          "code": [
+            "c, s = np.cos(0.5), np.sin(0.5)",
+            "Q = np.array([[c, -s], [s, c]])",
+            "print(np.round(Q.T @ Q, 12).tolist())"
+          ],
+          "output": "[[1.0, 0.0], [0.0, 1.0]]"
+        }
+      ]
+    },
+    {
+      "id": "la-svd-lesson",
+      "title": "Eigenvectors, SVD and PCA",
+      "topics": [
+        "la-svd"
+      ],
+      "intro": "Most matrices rotate and bend space. Eigenvectors are directions a symmetric matrix only stretches, and the SVD is the all-purpose version that works for any matrix. PCA, LSA and low-rank compression are all the SVD in different clothes.",
+      "takeaways": [
+        "Covariance matrices are symmetric positive semi-definite: real eigenvalues, none negative.",
+        "The top-k SVD is the best rank-k approximation; the error is the dropped singular values.",
+        "PCA = centre, SVD, read variance shares from s^2.",
+        "Power iteration gets the top direction with only matrix-vector products."
+      ],
+      "trap": "Running PCA on uncentred data, or on features with wildly different units, and then reading the components as if they meant something.",
+      "sections": [
+        {
+          "heading": "Eigenvectors and the covariance matrix",
+          "text": "A symmetric matrix has real eigenvalues and orthogonal eigenvectors. For a covariance matrix they are the principal axes and the variance along each. Because v^T C v is a variance, every eigenvalue is at least 0: the matrix is positive semi-definite.",
+          "code": [
+            "C = np.array([[4.0, 1.0], [1.0, 4.0]])",
+            "w, V = np.linalg.eigh(C)",
+            "print(w, np.round(np.abs(V), 4).tolist())"
+          ],
+          "output": "[3. 5.] [[0.7071, 0.7071], [0.7071, 0.7071]]"
+        },
+        {
+          "heading": "SVD and low-rank approximation",
+          "text": "A = U S V^T with orthonormal U and V and non-negative S. Keeping only the top k singular values gives the best rank-k approximation (Eckart-Young); the error is the discarded values.",
+          "code": [
+            "rng = np.random.default_rng(0)",
+            "A = rng.normal(size=(6, 4))",
+            "U, S, Vt = np.linalg.svd(A, full_matrices=False)",
+            "A1 = S[0] * np.outer(U[:, 0], Vt[0])",
+            "print(np.round(S, 3), round(float(np.linalg.norm(A - A1)), 6) == round(float(np.sqrt(np.sum(S[1:] ** 2))), 6))"
+          ],
+          "output": "[3.036 2.034 1.856 0.895] True"
+        },
+        {
+          "heading": "PCA is SVD on centred data",
+          "text": "Subtract each column's mean, take the SVD, and the rows of Vt are the principal directions. The share of variance of component i is s_i^2 over the sum of all s^2.",
+          "code": [
+            "X = np.array([[2.0, 1.0], [-2.0, -1.0], [1.0, 2.0], [-1.0, -2.0]])",
+            "S = np.linalg.svd(X - X.mean(axis=0), compute_uv=False)",
+            "print(np.round(S ** 2 / np.sum(S ** 2), 4))"
+          ],
+          "output": "[0.9 0.1]"
+        },
+        {
+          "heading": "Power iteration finds the top direction",
+          "text": "Multiply a random vector by A^T A over and over, normalising each time: it converges to the top right-singular vector. It needs only matrix-vector products, which is how huge sparse matrices are handled.",
+          "code": [
+            "rng = np.random.default_rng(1)",
+            "A = rng.normal(size=(30, 5)) * np.array([5.0, 2.0, 1.0, 1.0, 0.5])",
+            "v = rng.normal(size=5)",
+            "for _ in range(60):",
+            "    v = A.T @ (A @ v)",
+            "    v /= np.linalg.norm(v)",
+            "top = np.linalg.svd(A)[2][0]",
+            "print(round(abs(float(v @ top)), 6))"
+          ],
+          "output": "1.0"
+        }
+      ]
+    }
+  ]
+}

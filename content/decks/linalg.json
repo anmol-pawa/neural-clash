@@ -1,0 +1,657 @@
+{
+  "id": "linalg",
+  "title": "Vector Vale: linear algebra",
+  "cards": [
+    {
+      "id": "la-norm",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "la-vectors",
+      "prompt": "What does this print?",
+      "code": [
+        "print(np.linalg.norm(np.array([3.0, 4.0])))"
+      ],
+      "choices": [
+        "7.0",
+        "5.0",
+        "25.0",
+        "12.0"
+      ],
+      "answer": 1,
+      "explanation": "The Euclidean (L2) norm is the square root of the sum of squares: sqrt(9 + 16) = 5. It is the length of the vector, not the sum of its entries (that would be the L1 norm, 7) and not the squared length (25)."
+    },
+    {
+      "id": "la-dot",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "la-vectors",
+      "prompt": "What does this print?",
+      "code": [
+        "print(np.dot([1, 2, 3], [4, -5, 6]))"
+      ],
+      "choices": [
+        "12",
+        "[  4 -10  18]",
+        "32",
+        "0"
+      ],
+      "answer": 0,
+      "explanation": "The dot product multiplies matching entries and **sums** them: 4 - 10 + 18 = 12. The list of products is the element-wise product `*`, which is not the dot product."
+    },
+    {
+      "id": "la-cos-orthogonal",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "la-vectors",
+      "prompt": "What does this print?",
+      "code": [
+        "u = np.array([1.0, 2.0])",
+        "v = np.array([-2.0, 1.0])",
+        "print(u @ v / (np.linalg.norm(u) * np.linalg.norm(v)))"
+      ],
+      "choices": [
+        "1.0",
+        "-1.0",
+        "0.5",
+        "0.0"
+      ],
+      "answer": 3,
+      "explanation": "u · v = -2 + 2 = 0, so the cosine similarity is 0: the vectors are orthogonal. Cosine measures the angle only, so 0 means 'unrelated direction', not 'opposite'."
+    },
+    {
+      "id": "la-cos-scale",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "la-vectors",
+      "prompt": "What does this print?",
+      "code": [
+        "u = np.array([1.0, 2.0])",
+        "v = np.array([2.0, 4.0])",
+        "print(round(float(u @ v / (np.linalg.norm(u) * np.linalg.norm(v))), 6))"
+      ],
+      "choices": [
+        "2.0",
+        "0.5",
+        "1.0",
+        "0.0"
+      ],
+      "answer": 2,
+      "explanation": "v is just 2u, so the directions are identical and the cosine is 1 however long v is. That scale invariance is why cosine similarity compares embeddings by direction, while a raw dot product also rewards length."
+    },
+    {
+      "id": "la-noncommute",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "la-matmul",
+      "prompt": "What does this print?",
+      "code": [
+        "A = np.array([[0, 1], [0, 0]])",
+        "B = np.array([[0, 0], [1, 0]])",
+        "print((A @ B).tolist(), (B @ A).tolist())"
+      ],
+      "choices": [
+        "[[0, 0], [0, 0]] [[0, 0], [0, 0]]",
+        "[[1, 0], [0, 0]] [[0, 0], [0, 1]]",
+        "[[1, 0], [0, 0]] [[1, 0], [0, 0]]",
+        "[[0, 1], [1, 0]] [[0, 1], [1, 0]]"
+      ],
+      "answer": 1,
+      "explanation": "Matrix multiplication is **not commutative**: AB and BA differ here. It is associative, so (AB)C = A(BC), which is what lets a network be evaluated layer by layer."
+    },
+    {
+      "id": "la-rotate",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "la-matmul",
+      "prompt": "What does this print?",
+      "code": [
+        "R = np.array([[0, -1], [1, 0]])",
+        "print((R @ np.array([1, 0])).tolist())"
+      ],
+      "choices": [
+        "[0, 1]",
+        "[0, -1]",
+        "[1, 0]",
+        "[-1, 0]"
+      ],
+      "answer": 0,
+      "explanation": "The columns of R are where the basis vectors land: (1, 0) goes to the first column (0, 1). R is a 90 degree anticlockwise rotation, a matrix as a linear map."
+    },
+    {
+      "id": "la-transpose-product",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "la-matmul",
+      "prompt": "What does this print?",
+      "code": [
+        "A = np.arange(6).reshape(2, 3)",
+        "B = np.arange(6).reshape(3, 2)",
+        "print(((A @ B).T == B.T @ A.T).all())"
+      ],
+      "choices": [
+        "False",
+        "ValueError",
+        "[[True, True], [True, True]]",
+        "True"
+      ],
+      "answer": 3,
+      "explanation": "(AB)^T = B^T A^T: the transpose reverses the order. `.all()` collapses the 2x2 boolean grid to a single bool."
+    },
+    {
+      "id": "la-elementwise-vs-dot",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "la-matmul",
+      "prompt": "What does this print?",
+      "code": [
+        "a = np.array([1, 2])",
+        "b = np.array([3, 4])",
+        "print((a * b).tolist(), a @ b)"
+      ],
+      "choices": [
+        "11 [3, 8]",
+        "[3, 8] [3, 8]",
+        "[3, 8] 11",
+        "11 11"
+      ],
+      "answer": 2,
+      "explanation": "`*` is element-wise and keeps the shape: [3, 8]. `@` on two vectors is the dot product: 3 + 8 = 11. Mixing them up is the most common first bug when writing a layer by hand."
+    },
+    {
+      "id": "la-det-diag",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "la-inverse",
+      "prompt": "What does this print?",
+      "code": [
+        "print(round(np.linalg.det(np.diag([2.0, 3.0])), 3))"
+      ],
+      "choices": [
+        "5.0",
+        "6.0",
+        "1.0",
+        "0.0"
+      ],
+      "answer": 1,
+      "explanation": "The determinant of a diagonal matrix is the product of the diagonal, 2 x 3 = 6: the factor by which the map scales area. A determinant of 0 would mean the map squashes space flat and has no inverse."
+    },
+    {
+      "id": "la-inv-diag",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "la-inverse",
+      "prompt": "What does this print?",
+      "code": [
+        "print(np.linalg.inv(np.diag([2.0, 4.0])).tolist())"
+      ],
+      "choices": [
+        "[[0.5, 0.0], [0.0, 0.25]]",
+        "[[2.0, 0.0], [0.0, 4.0]]",
+        "[[-2.0, 0.0], [0.0, -4.0]]",
+        "[[0.5, 0.0], [0.0, 0.5]]"
+      ],
+      "answer": 0,
+      "explanation": "Inverting a diagonal matrix inverts each diagonal entry: 1/2 and 1/4. Undo 'stretch x by 2 and y by 4' by stretching by 1/2 and 1/4."
+    },
+    {
+      "id": "la-rank-dependent",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "la-inverse",
+      "prompt": "What does this print?",
+      "code": [
+        "print(np.linalg.matrix_rank(np.array([[1, 2], [2, 4]])))"
+      ],
+      "choices": [
+        "2",
+        "0",
+        "4",
+        "1"
+      ],
+      "answer": 3,
+      "explanation": "Row 2 is twice row 1, so the rows span only a line: rank 1. A rank-deficient square matrix is singular (determinant 0) and cannot be inverted."
+    },
+    {
+      "id": "la-rank-3x3",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "la-inverse",
+      "prompt": "What does this print?",
+      "code": [
+        "print(np.linalg.matrix_rank(np.arange(1, 10).reshape(3, 3)))"
+      ],
+      "choices": [
+        "3",
+        "1",
+        "2",
+        "0"
+      ],
+      "answer": 2,
+      "explanation": "The rows 1..3, 4..6, 7..9 satisfy row3 = 2 x row2 - row1, so they are dependent and span only a plane: rank 2. A 3x3 grid of 'random-looking' numbers is not automatically rank 3."
+    },
+    {
+      "id": "la-rank-outer",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "la-inverse",
+      "prompt": "What does this print?",
+      "code": [
+        "print(np.linalg.matrix_rank(np.outer([1, 2, 3], [4, 5])))"
+      ],
+      "choices": [
+        "2",
+        "1",
+        "3",
+        "6"
+      ],
+      "answer": 1,
+      "explanation": "An outer product u v^T has every row proportional to v, so its rank is 1. Low-rank matrices are sums of a few outer products, which is exactly what the SVD finds."
+    },
+    {
+      "id": "la-project",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "la-orthogonality",
+      "prompt": "What does this print?",
+      "code": [
+        "v = np.array([3.0, 4.0])",
+        "u = np.array([2.0, 0.0])",
+        "print(((v @ u) / (u @ u) * u).tolist())"
+      ],
+      "choices": [
+        "[3.0, 0.0]",
+        "[6.0, 0.0]",
+        "[3.0, 4.0]",
+        "[0.0, 4.0]"
+      ],
+      "answer": 0,
+      "explanation": "The projection of v onto the line through u is (v . u / u . u) u = (6/4) u = (3, 0). Only the part of v along u survives; the residual (0, 4) is orthogonal to u."
+    },
+    {
+      "id": "la-svd-values",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "la-svd",
+      "prompt": "What does this print?",
+      "code": [
+        "s = np.linalg.svd(np.diag([3.0, -2.0]))[1]",
+        "print(s.tolist())"
+      ],
+      "choices": [
+        "[3.0, -2.0]",
+        "[2.0, 3.0]",
+        "[1.0, 1.0]",
+        "[3.0, 2.0]"
+      ],
+      "answer": 3,
+      "explanation": "Singular values are never negative and come back sorted largest first. The sign of -2 is absorbed into the singular vectors; the stretch factor is 2."
+    },
+    {
+      "id": "la-eig-sym",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "la-svd",
+      "prompt": "What does this print?",
+      "code": [
+        "A = np.array([[2.0, 1.0], [1.0, 2.0]])",
+        "print(np.round(np.linalg.eigvalsh(A), 6).tolist())"
+      ],
+      "choices": [
+        "[2.0, 2.0]",
+        "[3.0, 1.0]",
+        "[1.0, 3.0]",
+        "[0.0, 4.0]"
+      ],
+      "answer": 2,
+      "explanation": "For a symmetric matrix, `eigvalsh` returns real eigenvalues in ascending order: 1 (direction (1,-1)) and 3 (direction (1,1)). The trace 4 and the determinant 3 both check out."
+    },
+    {
+      "id": "la-trace",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "la-svd",
+      "prompt": "What does this print?",
+      "code": [
+        "print(np.trace(2 * np.eye(3)))"
+      ],
+      "choices": [
+        "2.0",
+        "6.0",
+        "8.0",
+        "3.0"
+      ],
+      "answer": 1,
+      "explanation": "The trace is the sum of the diagonal: 2 + 2 + 2 = 6. It also equals the sum of the eigenvalues, a useful sanity check on any decomposition."
+    },
+    {
+      "id": "la-shape-layer",
+      "kind": "shape",
+      "topic": "la-matmul",
+      "prompt": "With `X = np.zeros((100, 5))` and `W = np.zeros((5, 3))`, what is the shape of `X @ W`? Type \"error\" if it raises.",
+      "answer": [
+        100,
+        3
+      ],
+      "explanation": "Result shape (100, 3). Inner sizes cancel, outer sizes remain: (m, k) @ (k, n) -> (m, n); extra leading axes are batch axes; a thin SVD returns U (m, r), S (r,), Vt (r, n) with r = min(m, n)."
+    },
+    {
+      "id": "la-shape-gram",
+      "kind": "shape",
+      "topic": "la-matmul",
+      "prompt": "With `X = np.zeros((6, 2))`, what is the shape of `X @ X.T`? Type \"error\" if it raises.",
+      "answer": [
+        6,
+        6
+      ],
+      "explanation": "Result shape (6, 6). Inner sizes cancel, outer sizes remain: (m, k) @ (k, n) -> (m, n); extra leading axes are batch axes; a thin SVD returns U (m, r), S (r,), Vt (r, n) with r = min(m, n)."
+    },
+    {
+      "id": "la-shape-cov",
+      "kind": "shape",
+      "topic": "la-svd",
+      "prompt": "With `Xc = np.zeros((50, 4))`, what is the shape of `Xc.T @ Xc`? Type \"error\" if it raises.",
+      "answer": [
+        4,
+        4
+      ],
+      "explanation": "Result shape (4, 4). Inner sizes cancel, outer sizes remain: (m, k) @ (k, n) -> (m, n); extra leading axes are batch axes; a thin SVD returns U (m, r), S (r,), Vt (r, n) with r = min(m, n)."
+    },
+    {
+      "id": "la-shape-outer",
+      "kind": "shape",
+      "topic": "la-matmul",
+      "prompt": "With `u = np.zeros(3)` and `v = np.zeros(5)`, what is the shape of `np.outer(u, v)`? Type \"error\" if it raises.",
+      "answer": [
+        3,
+        5
+      ],
+      "explanation": "Result shape (3, 5). Inner sizes cancel, outer sizes remain: (m, k) @ (k, n) -> (m, n); extra leading axes are batch axes; a thin SVD returns U (m, r), S (r,), Vt (r, n) with r = min(m, n)."
+    },
+    {
+      "id": "la-shape-batch",
+      "kind": "shape",
+      "topic": "la-matmul",
+      "prompt": "With `X = np.zeros((8, 10, 4))` and `W = np.zeros((4, 6))`, what is the shape of `X @ W`? Type \"error\" if it raises.",
+      "answer": [
+        8,
+        10,
+        6
+      ],
+      "explanation": "Result shape (8, 10, 6). Inner sizes cancel, outer sizes remain: (m, k) @ (k, n) -> (m, n); extra leading axes are batch axes; a thin SVD returns U (m, r), S (r,), Vt (r, n) with r = min(m, n)."
+    },
+    {
+      "id": "la-shape-svd-u",
+      "kind": "shape",
+      "topic": "la-svd",
+      "prompt": "With `A = np.zeros((8, 3))`, what is the shape of `np.linalg.svd(A, full_matrices=False)[0]`? Type \"error\" if it raises.",
+      "answer": [
+        8,
+        3
+      ],
+      "explanation": "Result shape (8, 3). Inner sizes cancel, outer sizes remain: (m, k) @ (k, n) -> (m, n); extra leading axes are batch axes; a thin SVD returns U (m, r), S (r,), Vt (r, n) with r = min(m, n)."
+    },
+    {
+      "id": "la-shape-svd-vt",
+      "kind": "shape",
+      "topic": "la-svd",
+      "prompt": "With `A = np.zeros((8, 3))`, what is the shape of `np.linalg.svd(A, full_matrices=False)[2]`? Type \"error\" if it raises.",
+      "answer": [
+        3,
+        3
+      ],
+      "explanation": "Result shape (3, 3). Inner sizes cancel, outer sizes remain: (m, k) @ (k, n) -> (m, n); extra leading axes are batch axes; a thin SVD returns U (m, r), S (r,), Vt (r, n) with r = min(m, n)."
+    },
+    {
+      "id": "la-shape-matmul-fail",
+      "kind": "shape",
+      "topic": "la-matmul",
+      "prompt": "With `A = np.zeros((4, 3))` and `B = np.zeros((4, 3))`, what is the shape of `A @ B`? Type \"error\" if it raises.",
+      "answer": null,
+      "explanation": "A matrix product needs the inner sizes to match: (m, k) @ (k, n). Here they differ, so numpy raises. Writing the shapes as (m, k) @ (k, n) -> (m, n) before coding catches this instantly."
+    },
+    {
+      "id": "la-shape-matvec-fail",
+      "kind": "shape",
+      "topic": "la-matmul",
+      "prompt": "With `A = np.zeros((3, 4))` and `x = np.zeros(3)`, what is the shape of `A @ x`? Type \"error\" if it raises.",
+      "answer": null,
+      "explanation": "A matrix product needs the inner sizes to match: (m, k) @ (k, n). Here they differ, so numpy raises. Writing the shapes as (m, k) @ (k, n) -> (m, n) before coding catches this instantly."
+    },
+    {
+      "id": "la-derive-cos",
+      "kind": "derive",
+      "topic": "la-vectors",
+      "prompt": "For u = (1, 2, 2) and v = (2, 0, 1), enter the three values (3 decimals is fine).",
+      "fields": [
+        "u · v",
+        "‖u‖",
+        "cos θ"
+      ],
+      "answers": [
+        4,
+        3,
+        0.596285
+      ],
+      "tol": 0.01,
+      "explanation": "u · v = 2 + 0 + 2 = 4, ‖u‖ = sqrt(1 + 4 + 4) = 3, ‖v‖ = sqrt(5), so cos θ = 4 / (3 sqrt 5) is about 0.596. An angle of about 53 degrees: same general direction, far from identical."
+    },
+    {
+      "id": "la-derive-proj",
+      "kind": "derive",
+      "topic": "la-orthogonality",
+      "prompt": "Project v = (3, 4) onto the line through u = (1, 1). Enter the coefficient c in the projection c·u and the length of the leftover residual v − c·u.",
+      "fields": [
+        "c",
+        "‖v − c·u‖"
+      ],
+      "answers": [
+        3.5,
+        0.707107
+      ],
+      "tol": 0.01,
+      "explanation": "c = (v . u) / (u . u) = 7/2. The residual (-0.5, 0.5) is orthogonal to u and has length about 0.707. The projection is the closest point on the line to v, and the residual is the distance."
+    },
+    {
+      "id": "la-derive-eig",
+      "kind": "derive",
+      "topic": "la-svd",
+      "prompt": "Find the eigenvalues of the symmetric matrix [[4, 1], [1, 4]]. Enter the smaller first.",
+      "fields": [
+        "λ small",
+        "λ large"
+      ],
+      "answers": [
+        3,
+        5
+      ],
+      "tol": 0.01,
+      "explanation": "Eigenvectors (1, -1) and (1, 1) give 4 - 1 = 3 and 4 + 1 = 5. Check: trace 8 = 3 + 5 and determinant 15 = 3 x 5."
+    },
+    {
+      "id": "la-derive-lowrank",
+      "kind": "derive",
+      "topic": "la-svd",
+      "prompt": "For A = [[3, 0], [0, -4]], enter its two singular values (largest first) and the Frobenius error ‖A − A₁‖ of the best rank-1 approximation A₁.",
+      "fields": [
+        "σ1",
+        "σ2",
+        "‖A − A₁‖"
+      ],
+      "answers": [
+        4,
+        3,
+        3
+      ],
+      "tol": 0.01,
+      "explanation": "The singular values are 4 and 3. By Eckart-Young the best rank-1 approximation keeps σ1, and its Frobenius error is the root-sum-of-squares of the discarded values: here just 3."
+    },
+    {
+      "id": "la-derive-pca",
+      "kind": "derive",
+      "topic": "la-svd",
+      "prompt": "Four centred points (2,1), (-2,-1), (1,2), (-1,-2). Using the sample covariance (divide by n − 1), enter the two covariance eigenvalues (larger first) and the fraction of variance on the first principal component.",
+      "fields": [
+        "λ1",
+        "λ2",
+        "PC1 share"
+      ],
+      "answers": [
+        6,
+        0.666667,
+        0.9
+      ],
+      "tol": 0.01,
+      "explanation": "The covariance is [[10/3, 8/3], [8/3, 10/3]] with eigenvalues 6 and 2/3. PC1 captures 6 / (6 + 2/3) = 90.0% of the variance, which is why the points lie close to the line y = x."
+    },
+    {
+      "id": "la-dot-geometry",
+      "kind": "mcq",
+      "topic": "la-vectors",
+      "prompt": "Two non-zero vectors have a dot product of exactly 0. What does that tell you?",
+      "choices": [
+        "They are identical",
+        "They have the same length",
+        "They are orthogonal: they meet at 90 degrees",
+        "One is a scaled copy of the other"
+      ],
+      "answer": 2,
+      "explanation": "u . v = ‖u‖‖v‖cos θ, so a zero dot product with non-zero vectors forces cos θ = 0, i.e. θ = 90 degrees. Orthogonal does not mean uncorrelated in general, but for centred data it does."
+    },
+    {
+      "id": "la-cosine-vs-dot",
+      "kind": "mcq",
+      "topic": "la-vectors",
+      "prompt": "You rank documents against a query using embeddings. Why is cosine similarity often preferred over the raw dot product?",
+      "choices": [
+        "It is always faster to compute",
+        "It ignores vector length, so a long document is not favoured just for having a large norm",
+        "It works only on integer vectors",
+        "It makes every similarity positive"
+      ],
+      "answer": 1,
+      "explanation": "The dot product equals ‖u‖‖v‖cos θ, so a large norm inflates it. Cosine divides the norms out. If the vectors are already normalised to length 1, the two are identical, which is why many vector stores normalise once at insert time."
+    },
+    {
+      "id": "la-avoid-inverse",
+      "kind": "mcq",
+      "topic": "la-inverse",
+      "prompt": "To solve A x = b for x, why do practitioners prefer `np.linalg.solve(A, b)` to `np.linalg.inv(A) @ b`?",
+      "choices": [
+        "Solving directly is faster and more numerically accurate than forming the inverse explicitly",
+        "The inverse does not exist for square matrices",
+        "`solve` returns a matrix and `inv` returns a vector",
+        "`inv` can only handle 2x2 matrices"
+      ],
+      "answer": 0,
+      "explanation": "A factorisation (LU) solves the system in about one third the work of forming the inverse, and avoids amplifying rounding error through an explicit inverse. For ill-conditioned A neither is magic: check the condition number."
+    },
+    {
+      "id": "la-svd-pca",
+      "kind": "mcq",
+      "topic": "la-svd",
+      "prompt": "You run PCA on a data matrix X (rows are samples) through the SVD. What must you do to X first?",
+      "choices": [
+        "Normalise each row to unit length",
+        "Take the logarithm of every entry",
+        "Sort the rows",
+        "Subtract each column's mean so the data is centred"
+      ],
+      "answer": 3,
+      "explanation": "PCA finds directions of maximum variance about the mean. Without centring, the first singular vector mostly points at the data's mean offset rather than at its spread. Scaling features is a separate choice that depends on their units."
+    },
+    {
+      "id": "la-psd",
+      "kind": "mcq",
+      "topic": "la-svd",
+      "prompt": "Why is every covariance matrix positive semi-definite?",
+      "choices": [
+        "Because all its entries are positive",
+        "Because it is always diagonal",
+        "Because v^T C v is the variance of the data projected onto v, and a variance cannot be negative",
+        "Because it has full rank"
+      ],
+      "answer": 2,
+      "explanation": "v^T C v = (1/(n-1)) sum of (x_i . v)^2 for centred data: a sum of squares, so never below 0. Equivalently, all eigenvalues are at least 0. This is the property that makes the quadratic bowl of least squares convex."
+    },
+    {
+      "id": "la-jacobian",
+      "kind": "mcq",
+      "topic": "la-svd",
+      "prompt": "A layer maps R^4 to R^3 via f(x). What is the shape of its Jacobian, and what does it do?",
+      "choices": [
+        "4 x 3; it lists the weights",
+        "3 x 4; it is the matrix that best linearly approximates how small input changes move the outputs",
+        "3 x 3; it contains the output gradients",
+        "4 x 4; it is the Hessian"
+      ],
+      "answer": 1,
+      "explanation": "Entry (i, j) is d f_i / d x_j, so there is one row per output and one column per input. Backprop multiplies Jacobians along the chain, usually without ever forming them (vector-Jacobian products)."
+    },
+    {
+      "id": "la-invertible",
+      "kind": "multi",
+      "topic": "la-inverse",
+      "prompt": "A square matrix A is invertible. Which statements must also be true? Pick all that apply.",
+      "choices": [
+        "Its determinant is not 0",
+        "Its columns are linearly independent",
+        "Its rank equals its size",
+        "All its entries are non-zero",
+        "It is symmetric"
+      ],
+      "answers": [
+        0,
+        1,
+        2
+      ],
+      "explanation": "Invertible, full rank, independent columns and non-zero determinant are four views of the same fact. Entries being non-zero or the matrix being symmetric are unrelated: the identity has zeros and an invertible rotation is not symmetric."
+    },
+    {
+      "id": "la-svd-facts",
+      "kind": "multi",
+      "topic": "la-svd",
+      "prompt": "Which statements about the SVD A = U S V^T are correct? Pick all that apply.",
+      "choices": [
+        "The singular values are non-negative",
+        "It exists for every real matrix, square or not",
+        "The number of non-zero singular values equals the rank",
+        "It only exists for symmetric matrices",
+        "U and V have orthonormal columns"
+      ],
+      "answers": [
+        0,
+        1,
+        2,
+        4
+      ],
+      "explanation": "The SVD always exists, with orthonormal U and V and non-negative singular values; the non-zero ones count the rank. Only the eigendecomposition into real eigenvalues needs symmetry."
+    },
+    {
+      "id": "la-bug-cosine",
+      "kind": "bug",
+      "topic": "la-vectors",
+      "prompt": "`cosine(u, v)` should return 1.0 for any two vectors pointing in the same direction. Which line is wrong?",
+      "code": [
+        "import numpy as np",
+        "def cosine(u, v):",
+        "    return u @ v / np.linalg.norm(u) * np.linalg.norm(v)"
+      ],
+      "line": 3,
+      "explanation": "Operator precedence: `a / b * c` is `(a / b) * c`, so the second norm multiplies instead of dividing. Wrap the whole denominator in parentheses and test with a pair that must give exactly 1."
+    },
+    {
+      "id": "la-bug-center",
+      "kind": "bug",
+      "topic": "la-svd",
+      "prompt": "`top_direction(X)` should return the first principal direction of the rows of X. It returns a poor answer when the data sits far from the origin. Which line is wrong?",
+      "code": [
+        "import numpy as np",
+        "def top_direction(X):",
+        "    _, _, Vt = np.linalg.svd(X)",
+        "    return Vt[0]"
+      ],
+      "line": 3,
+      "explanation": "PCA works on centred data. Without subtracting the column means the SVD's top direction is dominated by the offset of the whole cloud from the origin, here (1, 1), not the line (1, 2) along which the points actually vary."
+    }
+  ]
+}

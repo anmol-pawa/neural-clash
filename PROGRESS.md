@@ -401,3 +401,12 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Known gaps: Python wall-clock limits are checked after a case finishes (a truly infinite loop is stopped by the worker timeout instead); a Python exception outside the tests counts as WA; only 3 of 9 problems have Python variants; the smoke's first iPhone run flaked once on a pre-hydration click (passed on rerun).
 - CI/Pages: no `gh` CLI in this session; not confirmed via Actions.
 - Next: D1 (Vector Vale).
+
+## 2026-11-04: D1a Vector Vale lessons and deck
+- D1 split into D1a-D1d (ROADMAP). D1a: `scripts/gen-linalg.mjs` generates `content/decks/linalg.json` (41 cards: 17 predict, 9 shape, 5 derive, concept/multi, 2 proven bug cards) and `content/lessons/linalg.json` (5 lessons: vectors/cosine, matrices as maps, inverse/rank/solve, orthogonality/projection/least squares, eigen/SVD/PCA/power iteration). Every output and numeric answer comes from native numpy.
+- New pure `lib/solvers/linalg.ts` (dot, norm, cosine, project, 2x2 eigen/singular values, 2-D PCA) cross-checks the derive and shape cards in `tests/linalg.test.ts`. Deck added to Daily Sync; lessons listed on `/learn` (heading now "Lessons", smoke expects 20).
+- Verification: lint (0 errors), typecheck, test (300 pass), content:verify, build, build:pages, smoke:learn and smoke:sync at desktop and iPhone 14 (pass); iPhone lesson screenshot inspected (readable, no overflow).
+- Known gaps: Readiness report has no linear-algebra skill yet (D1d); no Battle deck picker for the new deck; no Lab, visualiser or art yet.
+- Branch note: the harness designated branch `claude/wonderful-goodall-ii2hbu`; repo protocol says main. Pushed to both.
+- CI/Pages: no `gh` CLI in this session; not confirmed.
+- Next: D1b.
