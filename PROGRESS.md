@@ -418,3 +418,11 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Known gaps: no lesson link from the Vector Vale lessons to these labs yet; PCA labs are not yet part of the readiness skill (D1d).
 - CI/Pages: not polled; none required until Actions quota resets confirmed (no `gh` CLI in this session).
 - Next: D1c (2D transform visualiser).
+
+## 2026-11-04: D1c 2D transform visualiser
+- New pure `lib/linalg/transform.ts` (apply, det, trace, compose, inverse, rotation, general 2x2 `eigen` incl. repeated/defective/complex cases, `classify`, unit-square image) with `tests/transform.test.ts` (eigenvalues cross-checked against numpy on 30 random matrices, A·v = λ·v, det = product of eigenvalues, |det| = product of singular values, composition order).
+- New `/dev/transform` (`components/TransformLab.tsx`): canvas with the warped grid, teal unit square, red/green basis arrows (the matrix columns), dashed gold eigen-directions; presets, four entry sliders, "then apply" composition; readouts for det, trace, eigenvalues, singular values, inverse and a plain-language classification (collapse = det 0, shear = defective, etc.). `npm run smoke:transform` covers desktop and iPhone 14.
+- Env note: on this image `python3` resolved to 3.11 without numpy; run with `PATH=/usr/bin:$PATH` (3.13 + numpy) for tests and content:verify.
+- Known gaps: not yet linked from the Vector Vale lessons; no touch-drag of basis vectors (sliders only); text labels on the canvas omitted for legibility.
+- Branch note: harness branch `claude/wonderful-goodall-j5moxf`; pushed to it and to main.
+- Next: D1d (region art, guardian, readiness skill "linear algebra").

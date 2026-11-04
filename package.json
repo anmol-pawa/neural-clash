@@ -22,6 +22,7 @@
     "smoke:labs": "node scripts/smoke-labs.mjs",
     "smoke:train": "node scripts/smoke-train.mjs",
     "smoke:guardian": "node scripts/smoke-guardian.mjs",
+    "smoke:transform": "node scripts/smoke-transform.mjs",
     "smoke:sync": "node scripts/smoke-sync.mjs",
     "smoke:companion": "node scripts/smoke-companion.mjs",
     "smoke:journal": "node scripts/smoke-journal.mjs",
