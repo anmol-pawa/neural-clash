@@ -87,7 +87,10 @@ Work top to bottom: take the **first unchecked box**, and split big boxes into r
   - [x] D3b. (done 2026-11-04) Labs `prob-sampling` (inverse CDF, categorical, rejection, Box-Muller) and `prob-mle` (Gaussian MLE/NLL, Beta-Bernoulli MAP, bootstrap means and percentile CI) in a new "Probability Peaks" Lab phase, with hidden tests and 8 known-wrong versions each.
   - [x] D3c. (done 2026-11-05) Interactive visualiser `/dev/clt` (CLT, base-rate frequency tree, peeking simulator; pure maths in `lib/prob/clt.ts`) with `smoke:clt`.
   - [x] D3d. (done 2026-11-05) Readiness skill "probability and statistics" (deck + labs), tested in the theory rounds.
-  - [ ] D3e. Region art: Probability Peaks tileset, guardian (96x96), two trainers, battle backdrop.
+  - [ ] D3e. Region art, split into:
+    - [x] D3e1. (done 2026-11-05) Probability Peaks tileset (`scripts/art/probability-peaks.mjs`, 20 tiles, preview map).
+    - [ ] D3e2. Guardian (96x96, idle 4, attack 5, hurt 3, faint 4).
+    - [ ] D3e3. Two trainers (16x24 walk cycles + 48x48 portraits) and the `peaks` battle backdrop.
   - [ ] D3f. Guardian fight `/guardian/peaks` and its readiness evidence.
 - [ ] D4. Classic Grove (F5), with from-scratch classical ML labs and the Creature Stats dataset
 - [ ] D5. Metric Market + Data Dojo (F6, GDD §5.4), with the *Leakage* and *Imbalance Swarm* bosses

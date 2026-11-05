@@ -5,8 +5,9 @@ import { PYTHON_PORT_TILES } from "@/game/sprites/tiles/python-port-tiles";
 import { LAB_TILES } from "@/game/sprites/tiles/lab-tiles";
 import { VECTOR_VALE_TILES } from "@/game/sprites/tiles/vector-vale-tiles";
 import { GRADIENT_GORGE_TILES } from "@/game/sprites/tiles/gradient-gorge-tiles";
+import { PROBABILITY_PEAKS_TILES } from "@/game/sprites/tiles/probability-peaks-tiles";
 import { composeMap, TILE, validateMap } from "@/game/sprites/tilemap";
-import { LAB_GRID, LAB_LEGEND, PORT_GRID, PORT_LEGEND, VALE_GRID, VALE_LEGEND, GORGE_GRID, GORGE_LEGEND } from "@/game/sprites/maps";
+import { LAB_GRID, LAB_LEGEND, PORT_GRID, PORT_LEGEND, VALE_GRID, VALE_LEGEND, GORGE_GRID, GORGE_LEGEND, PEAKS_GRID, PEAKS_LEGEND } from "@/game/sprites/maps";
 
 const isCharacter = (d: { id: string }) => d.id === "player" || d.id === "okafor" || d.id === "cadet-shear" || d.id === "ranger-axis" || d.id === "climber-delta" || d.id === "surveyor-hess" || d.id.endsWith("-portrait");
 const isWorld = (d: { id: string }) => d.id.endsWith("-tiles") || d.id.endsWith("-preview");
@@ -97,8 +98,9 @@ describe("tilesets", () => {
     "lab-tiles": ["window", "board-left", "board-right", "monitor", "server", "plant", "rig", "door", "coffee"],
     "vector-vale-tiles": ["grass", "flowers", "water", "shore", "tree-top", "sign", "lamp", "window", "door", "statue", "pad"],
     "gradient-gorge-tiles": ["grass", "flowers", "water", "shore", "tree-top", "sign", "lamp", "window", "door", "statue", "pad"],
+    "probability-peaks-tiles": ["grass", "flowers", "water", "shore", "tree-top", "sign", "lamp", "window", "door", "statue", "pad"],
   };
-  for (const def of [PYTHON_PORT_TILES, LAB_TILES, VECTOR_VALE_TILES, GRADIENT_GORGE_TILES]) {
+  for (const def of [PYTHON_PORT_TILES, LAB_TILES, VECTOR_VALE_TILES, GRADIENT_GORGE_TILES, PROBABILITY_PEAKS_TILES]) {
     describe(def.id, () => {
       it("is a valid sprite definition of 16×16 tiles", () => {
         expect(validateSprite(def)).toEqual([]);
@@ -137,6 +139,7 @@ describe("tile maps", () => {
     expect(validateMap(LAB_TILES, LAB_GRID, LAB_LEGEND)).toEqual([]);
     expect(validateMap(VECTOR_VALE_TILES, VALE_GRID, VALE_LEGEND)).toEqual([]);
     expect(validateMap(GRADIENT_GORGE_TILES, GORGE_GRID, GORGE_LEGEND)).toEqual([]);
+    expect(validateMap(PROBABILITY_PEAKS_TILES, PEAKS_GRID, PEAKS_LEGEND)).toEqual([]);
   });
   it("validateMap reports unknown codes, unknown tiles and ragged rows", () => {
     const errs = validateMap(LAB_TILES, ["fz", "f"], { f: "floor", z: "nope" });

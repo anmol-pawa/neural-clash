@@ -551,3 +551,9 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Verification: lint (0 errors), typecheck, test (417 pass), content:verify (all ok in the full run), build, build:pages. No visual change, so no screenshots. Use `PATH=/usr/bin:$PATH` for numpy.
 - Known gaps: Peaks guardian not yet evidence (D3f). CI/Pages not confirmed (no `gh` CLI in this session).
 - Next: D3e (Probability Peaks region art).
+
+## 2026-11-05: D3e1 Probability Peaks tileset
+- D3e split into D3e1-D3e3 in ROADMAP. New `scripts/art/probability-peaks.mjs` -> `game/sprites/tiles/probability-peaks-tiles.ts`: 20 tiles, same names as the Vale (twilight snowfield dusted with dice-pip scatter, ice-crag "trees", glacier-melt stream, flagstone path, plum roofs, sigma-glyph shrine door, bell-curve trail signs, die-topped obelisks with two faces, pulsing arena pad) plus `PEAKS_PREVIEW` map. Registered in the roster; sprite tests cover validity, opacity, animation and map validation.
+- Verification: lint (0 errors), typecheck, test (421 pass), content:verify (all ok), build, build:pages; Playwright on `/dev/sprites` at desktop and iPhone 14: no console errors, no overflow; preview map inspected.
+- Known gaps: crags are small; no guardian, trainers or backdrop yet. Work was pushed to the session branch `claude/wonderful-goodall-3gyh5o`, not `main`, per the session's branch instruction. CI/Pages not confirmed (no `gh` CLI here).
+- Next: D3e2 (Peaks guardian sprite).

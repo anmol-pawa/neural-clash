@@ -3,6 +3,7 @@ import { PYTHON_PORT_TILES } from "./tiles/python-port-tiles";
 import { LAB_TILES } from "./tiles/lab-tiles";
 import { VECTOR_VALE_TILES } from "./tiles/vector-vale-tiles";
 import { GRADIENT_GORGE_TILES } from "./tiles/gradient-gorge-tiles";
+import { PROBABILITY_PEAKS_TILES } from "./tiles/probability-peaks-tiles";
 
 /** Python Port, the harbour town where the game starts. */
 export const PORT_LEGEND: TileLegend = {
@@ -83,3 +84,21 @@ export const GORGE_GRID: readonly string[] = [
   "wwwwwwwwwwwwwwwwwwww",
 ];
 export const GORGE_PREVIEW = mapSprite("gradient-gorge-preview", "GRADIENT GORGE (preview)", GRADIENT_GORGE_TILES, GORGE_GRID, GORGE_LEGEND);
+
+/** Probability Peaks: a snow ridge with a glacier-melt stream, ice crags, bell-curve trail signs and the guardian's pad. Same tile names as the Vale. */
+export const PEAKS_LEGEND: TileLegend = VALE_LEGEND;
+export const PEAKS_GRID: readonly string[] = [
+  "TTTgggggggggggggTTTg",
+  "ttTggfggg<==>gggttTg",
+  "gggggggggg<==>ggggfg",
+  "gfggggggWNDWgggggggg",
+  "gggLppppppppppppLggg",
+  "FFFgpgggBgggggpgggFF",
+  "gSggpggfggGgggpggSgg",
+  "ggggppppppAAppppgggg",
+  "gGgggggfgpAAgggggfgg",
+  "sssssssssspppsssssss",
+  "wwwwwwwwwwpppwwwwwww",
+  "wwwwwwwwwwwwwwwwwwww",
+];
+export const PEAKS_PREVIEW = mapSprite("probability-peaks-preview", "PROBABILITY PEAKS (preview)", PROBABILITY_PEAKS_TILES, PEAKS_GRID, PEAKS_LEGEND);
