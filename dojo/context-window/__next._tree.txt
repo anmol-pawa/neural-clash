@@ -1,0 +1,8 @@
+:HL["/neural-clash/_next/static/chunks/1qavgm12ah8hb.css","style"]
+:HL["/neural-clash/_next/static/media/07c7676b89ed2778-s.p.2bn3s6zvc0dyp.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+:HL["/neural-clash/_next/static/media/486a103cae33528f-s.p.309ilb452anpd.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+:HL["/neural-clash/_next/static/media/53897e768d329f66-s.p.3t6q91iet4nsy.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+3:[["children",{"s":"__PAGE__","h":160}]]
+2:[["children",{"s":{"n":"id","t":"d","k":"context-window","s":[]},"h":65632,"c":"$Q3"}]]
+1:[["children",{"s":"dojo","h":131168,"c":"$Q2"}]]
+0:{"b":"yXNrXeRfQ-IpyFWZ-Jq1t","t":{"t":{"s":"","h":131152,"c":"$Q1"}}}
