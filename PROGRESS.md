@@ -538,3 +538,11 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Verification: lint (0 errors), typecheck, test (402 pass), build, build:pages, `smoke:labs` at desktop and iPhone 14 (25 labs listed, no console errors or overflow). `gen:labs --check` fresh. Use `PATH=/usr/bin:$PATH` for numpy; `npm ci` and `node scripts/fetch-pyodide.mjs` first.
 - Known gaps: `content:verify` reports `problems/fewest-tokens` failing (`wrong/tle_every_piece.cpp` earned AC, not TLE) in this sandbox; pre-existing and likely timing-dependent, not touched this run. Labs are not yet Readiness evidence (D3d). CI/Pages not confirmed (no `gh` CLI).
 - Next: D3c (`/dev/clt` visualiser).
+
+## 2026-11-05: D3c Probability visualiser
+- New pure `lib/prob/sim.ts` (seeded CLT sampler over four sources with histogram, SE, skewness and 95% coverage; natural-frequency Bayes tree; A/A peeking simulator comparing fixed-horizon vs stop-at-first-significant) and `/dev/clt` (`components/CltLab.tsx`, three tabs). `tests/prob-sim.test.ts` (13): SE = sigma/sqrt(n), skew shrinks, SE halves when n quadruples, tree adds up and PPV matches `bayesPosterior`, one look holds 5%, peeking over 10 looks inflates to well above 5% but stays under the independent-looks bound (about 21% in the UI vs 40% bound).
+- Verification: lint (0 errors), typecheck, test (415 pass), content:verify (all ok), build:pages, new `smoke:clt` at desktop and iPhone 14; screenshots inspected (no overflow, no console errors). `PATH=/usr/bin:$PATH` for numpy; `node scripts/fetch-pyodide.mjs` first. `npm run build` not run separately (build:pages covers the same Next build).
+- Branch note: committed to `claude/wonderful-goodall-lzc9fa` (session-designated), not `main`, so Pages is not redeployed until merged.
+- Known gaps: Base-rate bars wrap on narrow screens when a bar is very wide; not linked from lessons yet.
+- CI/Pages: not confirmed (no `gh` CLI).
+- Next: D3d (Readiness skill "probability and statistics").
