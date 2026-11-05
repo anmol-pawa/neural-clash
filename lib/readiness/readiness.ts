@@ -44,6 +44,7 @@ export const SKILLS: readonly Skill[] = [
   { id: "numpy", title: "numpy and vectorised thinking", evidence: [{ kind: "deck", id: "numpy" }] },
   { id: "linear-algebra", title: "Linear algebra for ML", evidence: [{ kind: "deck", id: "linalg" }, { kind: "lab", id: "pca-svd" }, { kind: "lab", id: "pca-power" }, { kind: "guardian", id: "guardian:vector-vale" }] },
   { id: "calculus-optim", title: "Calculus and optimisation for ML", evidence: [{ kind: "deck", id: "calculus" }, { kind: "lab", id: "forge-value" }, { kind: "lab", id: "forge-tensor" }, { kind: "guardian", id: "guardian:gradient-gorge" }] },
+  { id: "probability-stats", title: "Probability and statistics for ML", evidence: [{ kind: "deck", id: "probability" }, { kind: "lab", id: "prob-sampling" }, { kind: "lab", id: "prob-mle" }] },
   { id: "ml-basics", title: "Training and evaluation hygiene", evidence: [{ kind: "deck", id: "strategy" }, { kind: "journal", target: 4 }, { kind: "lab", id: "linear-gd" }] },
   { id: "dl-scratch", title: "Deep learning from scratch", evidence: [{ kind: "lab", id: "autograd" }, { kind: "lab", id: "mlp" }, { kind: "lab", id: "conv2d" }, { kind: "lab", id: "rnn" }] },
   { id: "transformers", title: "Attention and transformers", evidence: [{ kind: "lab", id: "attention" }, { kind: "lab", id: "transformer-block" }, { kind: "lab", id: "tokenizer" }, { kind: "lab", id: "tiny-lm" }] },
@@ -63,7 +64,7 @@ export const LOOPS: readonly Loop[] = [
     blurb: "Evals are the most emphasised skill. Expect a take-home that builds and measures an LLM pipeline.",
     rounds: [
       { id: "screen", title: "Technical screen", what: "Retrieval and prompting basics, fluent Python.", skills: [{ skill: "python", weight: 2 }, { skill: "retrieval-evals", weight: 2 }] },
-      { id: "takehome", title: "Take-home", what: "Build and measure a pipeline with an eval set and retrieval metrics.", skills: [{ skill: "retrieval-evals", weight: 3 }, { skill: "ml-basics", weight: 2 }, { skill: "python", weight: 1 }] },
+      { id: "takehome", title: "Take-home", what: "Build and measure a pipeline with an eval set and retrieval metrics.", skills: [{ skill: "retrieval-evals", weight: 3 }, { skill: "ml-basics", weight: 2 }, { skill: "probability-stats", weight: 1 }, { skill: "python", weight: 1 }] },
       { id: "live", title: "Live coding or debugging", what: "Agent loops, tool calls and retrieval bugs without framework shortcuts.", skills: [{ skill: "agents-safety", weight: 2 }, { skill: "comprehension", weight: 2 }, { skill: "python", weight: 1 }] },
       { id: "design", title: "System design", what: "Systems around models you do not control: observability, cost and latency caps, routing.", skills: [{ skill: "ai-design", weight: 3 }, { skill: "retrieval-evals", weight: 1 }] },
       { id: "product", title: "Product sense", what: "Diagnose a feature that feels dumb, using dashboards and eval slices.", skills: [{ skill: "ai-design", weight: 2 }, { skill: "ml-basics", weight: 1 }] },
@@ -87,8 +88,8 @@ export const LOOPS: readonly Loop[] = [
     title: "ML engineer / applied scientist (lite)",
     blurb: "Weights classical ML and deep-learning theory more heavily; expects you to derive and implement.",
     rounds: [
-      { id: "theory", title: "ML and DL theory", what: "Bias/variance, regularisation, backprop, attention, evaluation.", skills: [{ skill: "ml-basics", weight: 3 }, { skill: "dl-scratch", weight: 2 }, { skill: "transformers", weight: 2 }, { skill: "linear-algebra", weight: 2 }, { skill: "calculus-optim", weight: 2 }] },
-      { id: "implement", title: "Implement from scratch", what: "A layer, loss or optimiser in numpy, with gradients that check out.", skills: [{ skill: "dl-scratch", weight: 3 }, { skill: "numpy", weight: 2 }, { skill: "linear-algebra", weight: 1 }, { skill: "calculus-optim", weight: 1 }, { skill: "python", weight: 1 }] },
+      { id: "theory", title: "ML and DL theory", what: "Bias/variance, regularisation, backprop, attention, evaluation.", skills: [{ skill: "ml-basics", weight: 3 }, { skill: "dl-scratch", weight: 2 }, { skill: "transformers", weight: 2 }, { skill: "linear-algebra", weight: 2 }, { skill: "calculus-optim", weight: 2 }, { skill: "probability-stats", weight: 2 }] },
+      { id: "implement", title: "Implement from scratch", what: "A layer, loss or optimiser in numpy, with gradients that check out.", skills: [{ skill: "dl-scratch", weight: 3 }, { skill: "numpy", weight: 2 }, { skill: "linear-algebra", weight: 1 }, { skill: "calculus-optim", weight: 1 }, { skill: "probability-stats", weight: 1 }, { skill: "python", weight: 1 }] },
       { id: "coding", title: "Coding round", what: "A DSA problem in C++ or Python.", skills: [{ skill: "dsa-cpp", weight: 2 }, { skill: "python", weight: 1 }] },
       { id: "design", title: "ML system design", what: "Data, training, serving and monitoring for an ML feature.", skills: [{ skill: "ai-design", weight: 2 }, { skill: "ml-basics", weight: 1 }] },
     ],
