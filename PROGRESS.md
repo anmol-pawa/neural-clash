@@ -538,3 +538,10 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Verification: lint (0 errors), typecheck, test (402 pass), build, build:pages, `smoke:labs` at desktop and iPhone 14 (25 labs listed, no console errors or overflow). `gen:labs --check` fresh. Use `PATH=/usr/bin:$PATH` for numpy; `npm ci` and `node scripts/fetch-pyodide.mjs` first.
 - Known gaps: `content:verify` reports `problems/fewest-tokens` failing (`wrong/tle_every_piece.cpp` earned AC, not TLE) in this sandbox; pre-existing and likely timing-dependent, not touched this run. Labs are not yet Readiness evidence (D3d). CI/Pages not confirmed (no `gh` CLI).
 - Next: D3c (`/dev/clt` visualiser).
+
+## 2026-11-05: D3c Probability visualiser
+- New pure `lib/prob/clt.ts`: seeded sampling distributions (uniform, exponential, two-spike, rare-event) with sample-mean generator, summary/skew, CLT prediction (mu, sigma/sqrt(n)), histogram, natural-frequency Bayes tree, and a Monte-Carlo peeking simulator (A/A tests, stop at first |z|>1.96) with the independent-looks bound for comparison. `tests/clt.test.ts` (12 tests): measured sd matches sigma/sqrt(n) per distribution, skew fades like 2/sqrt(n), tree agrees with `bayesPosterior`, one look holds ~5%, ten looks inflate to ~18% (below the 40% independent bound).
+- New `/dev/clt` (`components/CltLab.tsx`): three tabs (CLT histogram vs normal curve, base-rate tree with sliders, peeking slider). `npm run smoke:clt` checks all three at desktop and iPhone 14.
+- Verification: lint (0 errors), typecheck, test (414 pass), build, build:pages, smoke:clt at desktop and iPhone 14 (no console errors or overflow; screenshots inspected). content:verify result noted in the commit run below.
+- Known gaps: visualiser is a dev page, not yet linked from lessons. CI/Pages not confirmed (no `gh` CLI in this session).
+- Next: D3d (Readiness skill "probability and statistics").
