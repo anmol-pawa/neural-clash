@@ -558,3 +558,9 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Known gaps: the tree-top tile shows only the top of the bell; no guardian, trainers or backdrop yet.
 - CI/Pages: not confirmed (no `gh` CLI in this session).
 - Next: D3e2 (Peaks guardian art).
+
+## 2026-11-05: D3e2 Probability Peaks guardian art
+- New `scripts/art/warden-peaks.mjs` -> `game/sprites/creatures/warden-peaks.ts` (id `warden-peaks`, "WARDEN MEAN"), 96x96. A glacier golem whose body is a bell curve of nine stacked ice bars (heights 10..46..10) with a magenta mean line and sigma ticks; the head is a floating die whose two pips are the eyes (top face carries pips for a cube read); fists are small dice tied on by dotted links and "rolled" in the attack with scattered pips. Idle 4 (bars re-sample, blink), attack 5 (wind-up, throw, flash), hurt 3 (red eyes, white flash), faint 4 (bars collapse, die drops, ice shards). Registered in the roster; new test in `tests/guardian.test.ts`.
+- Verification (with `PATH=/usr/bin:$PATH` for numpy and `node scripts/fetch-pyodide.mjs`): lint (0 errors), typecheck, test (428 pass), build, build:pages. Playwright on `/dev/sprites` at desktop and iPhone 14: no console errors, no overflow; contact sheet and page inspected. content:verify not run (no content touched).
+- Known gaps: the guardian is not wired to a fight yet (D3f). Pushed to the session branch `claude/wonderful-goodall-tlcrbj` rather than main, as instructed for this session. CI/Pages: Actions quota note has expired (today 2026-11-05) but there is no `gh` CLI here, so deploy was not confirmed.
+- Next: D3e3 (two Peaks trainers and the Peaks battle backdrop).

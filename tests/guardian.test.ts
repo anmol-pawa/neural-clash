@@ -87,6 +87,15 @@ describe("Python Port guardian", () => {
 });
 
 import { spriteById } from "@/game/sprites/roster";
+describe("Warden Mean sprite (Probability Peaks guardian)", () => {
+  it("is a registered 96×96 boss with idle 4, attack 5, hurt 3, faint 4", () => {
+    const s = spriteById("warden-peaks");
+    expect(s).toBeDefined();
+    expect([s!.w, s!.h]).toEqual([96, 96]);
+    expect(Object.fromEntries(Object.entries(s!.anims).map(([k, v]) => [k, v.length]))).toEqual({ idle: 4, attack: 5, hurt: 3, faint: 4 });
+  });
+});
+
 describe("Warden Indent sprite", () => {
   it("is a registered 96×96 boss sprite with the full animation set", () => {
     const s = spriteById("warden-indent");
