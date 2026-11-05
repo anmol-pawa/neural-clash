@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { DAY, review, type SrsTable } from "@/lib/srs/srs";
-import { CALCULUS_DECK, LINALG_DECK } from "@/lib/cards/samples";
+import { CALCULUS_DECK, LINALG_DECK, PROBABILITY_DECK } from "@/lib/cards/samples";
 import { ASSISTED_LAB_CREDIT, LOOPS, SKILLS, band, readiness, scoreSkill, type Loop, type ReadinessInput, type Skill } from "@/lib/readiness/readiness";
 import { LABS } from "@/lib/labs/catalog";
 
@@ -132,6 +132,28 @@ describe("calculus and optimisation skill", () => {
   it("is tested in the theory and implement rounds of the ML-engineer loop", () => {
     const loop = LOOPS.find((l) => l.id === "ml-engineer")!;
     for (const id of ["theory", "implement"]) expect(loop.rounds.find((r) => r.id === id)!.skills.some((s) => s.skill === "calculus-optim")).toBe(true);
+  });
+});
+
+describe("probability and statistics skill", () => {
+  const skill = SKILLS.find((s) => s.id === "probability-stats")!;
+  const labIds = new Set(LABS.map((l) => l.id));
+  const decks = { probability: PROBABILITY_DECK.cards.map((c) => c.id) };
+  it("is backed by real content only: the deck and both Peaks labs exist", () => {
+    const r = scoreSkill(skill, { ...base(), labIds, decks });
+    expect(r.coverage).toBe(1);
+    expect(r.score).toBe(0);
+  });
+  it("gains credit from each Peaks lab pass, with assisted passes discounted", () => {
+    const labs = { "prob-sampling": { passed: true, assisted: false }, "prob-mle": { passed: true, assisted: true } };
+    const r = scoreSkill(skill, { ...base(), labIds, labs, decks });
+    expect(r.score).toBeCloseTo((0 + 1 + ASSISTED_LAB_CREDIT) / 3, 5);
+  });
+  it("is tested in the ML-engineer theory and implement rounds and the applied-AI take-home", () => {
+    const ml = LOOPS.find((l) => l.id === "ml-engineer")!;
+    for (const id of ["theory", "implement"]) expect(ml.rounds.find((r) => r.id === id)!.skills.some((s) => s.skill === "probability-stats")).toBe(true);
+    const ai = LOOPS.find((l) => l.id === "applied-ai")!;
+    expect(ai.rounds.find((r) => r.id === "takehome")!.skills.some((s) => s.skill === "probability-stats")).toBe(true);
   });
 });
 

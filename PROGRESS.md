@@ -545,3 +545,9 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Verification: lint (0 errors), typecheck, test (414 pass), build, build:pages, smoke:clt at desktop and iPhone 14 (no console errors or overflow; screenshots inspected). content:verify result noted in the commit run below.
 - Known gaps: visualiser is a dev page, not yet linked from lessons. CI/Pages not confirmed (no `gh` CLI in this session).
 - Next: D3d (Readiness skill "probability and statistics").
+
+## 2026-11-05: D3d Readiness skill "probability and statistics"
+- New Readiness skill `probability-stats` (evidence: `probability` deck, Labs `prob-sampling` and `prob-mle`), weighted into the ML-engineer theory (2) and implement (1) rounds and the applied-AI take-home (1, where A/B tests and confidence intervals on eval sets matter). Tests: content exists (coverage 1), lab credit incl. discounted assisted pass, round membership.
+- Verification: lint (0 errors), typecheck, test (417 pass), content:verify (no failures), build, build:pages, `smoke:readiness` at desktop and iPhone 14 (no console errors or overflow). No visual redesign, so no new screenshots.
+- Known gaps: the Peaks guardian is not yet evidence (D3f); no region art yet (D3e). Pushed to the session branch `claude/wonderful-goodall-kdn00u` (not main) per the session's branch rule. CI/Pages not confirmed (no `gh` CLI; MCP actions not checked).
+- Next: D3e (Probability Peaks region art).
