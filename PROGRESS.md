@@ -558,3 +558,9 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Known gaps: the tree-top tile shows only the top of the bell; no guardian, trainers or backdrop yet.
 - CI/Pages: not confirmed (no `gh` CLI in this session).
 - Next: D3e2 (Peaks guardian art).
+
+## 2026-11-09: D3e2 Probability Peaks guardian art
+- New `scripts/art/warden-bell.mjs` -> `game/sprites/creatures/warden-bell.ts`: Warden Bell, 96x96 ice golem whose body is a bell curve (silhouette follows 1-exp(-t^2)); etched sigma bands, teal curve, magenta mean line and crown star; two floating dice are its fists and re-roll every frame. Idle 4, attack 5 (a die is thrown with pip bursts), hurt 3, faint 4 (sinks, ice shards). Registered in the roster, so the roster-driven sprite tests cover it.
+- Verification: lint (0 errors), typecheck, test (427 pass), build, build:pages; Playwright on `/dev/sprites` (static export) at desktop and iPhone 14: no console errors, no overflow; contact sheet and the page inspected. content:verify: only the known timing-dependent `fewest-tokens/wrong/tle_every_piece.cpp` failure (pre-existing, sandbox CPU speed).
+- Known gaps: no Peaks trainers or backdrop yet. CI/Pages not confirmed (no `gh` CLI in this session).
+- Next: D3e3 (Peaks trainers and battle backdrop).
