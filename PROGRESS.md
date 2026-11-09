@@ -572,3 +572,10 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Known gaps: trainers are not yet placed in a Peaks map or given dialogue; Quill's hood reads slightly beret-like at 16x24.
 - CI/Pages: no `gh` CLI here; not confirmed.
 - Next: D3f (guardian fight `/guardian/peaks` and its readiness evidence).
+
+## 2026-11-09: D3f Probability Peaks guardian fight (D3 complete)
+- `PEAKS_GUARDIAN` in `lib/guardian/defs.ts` (Warden Bell, Bell Badge, probability deck, `prob-mle` Lab, peaks backdrop); `/guardian/peaks` reuses `Guardian`; linked from the title; guardian added as evidence for the `probability-stats` Readiness skill.
+- Tests: guardian run-through (deck, Lab, hidden-set fight, badge) and readiness credit from the cleared guardian. New `smoke:guardian-peaks` plays the Write trial with the reference MLE/bootstrap, fights and checks badge persistence; `smoke-slice` includes the route.
+- Verification: lint (0 errors), typecheck, test (448 pass), build, build:pages, smoke:guardian-peaks and smoke:slice at desktop and iPhone 14: no console errors or overflow; screenshots inspected. content:verify: all ok.
+- Known gaps: no Peaks overworld map or trainer dialogue yet. CI/Pages not confirmed (no `gh` CLI here).
+- Next: D4 (Classic Grove).

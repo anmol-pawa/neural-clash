@@ -171,3 +171,21 @@ describe("Warden Chain", () => {
     expect(summarizeGuardian(g, GORGE_GUARDIAN.badge).badge).toBe("Chain Badge");
   });
 });
+
+describe("Warden Bell", () => {
+  it("runs on the probability deck with the prob-mle Lab and awards the Bell Badge", async () => {
+    const { PEAKS_GUARDIAN } = await import("@/lib/guardian/defs");
+    const { PROBABILITY_DECK } = await import("@/lib/cards/samples");
+    expect(PROBABILITY_DECK.cards.length).toBeGreaterThanOrEqual(30);
+    expect(labById(PEAKS_GUARDIAN.labId)).toBeTruthy();
+    let g = startGuardian(PROBABILITY_DECK.cards, PEAKS_GUARDIAN.labId);
+    for (let i = 0; i < 100 && g.phase === "cards" && g.cards.current; i++) {
+      g = guardianAnswer(g, correctResponse(g.cards.current));
+      if (g.phase === "cards") g = guardianNext(g);
+    }
+    expect(g.cards.phase).toBe("won");
+    g = guardianLabResult(guardianAdvanceFromCards(g), true);
+    g = guardianFight(g, { attack: 95, defence: 90, speed: 80 });
+    expect(summarizeGuardian(g, PEAKS_GUARDIAN.badge).badge).toBe("Bell Badge");
+  });
+});

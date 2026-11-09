@@ -82,16 +82,16 @@ Work top to bottom: take the **first unchecked box**, and split big boxes into r
   - [x] D2e2. (done 2026-11-04) Gradient Gorge tileset (`scripts/art/gradient-gorge.mjs`, canyon palette, contour-etched ground, descent arrows, preview map) and the 96x96 guardian Warden Chain (idle 4, attack 5, hurt 3, faint 4; `scripts/art/warden-chain.mjs`), reviewed on `/dev/sprites`.
   - [x] D2e3. (done 2026-11-04) Gorge trainers Climber Delta and Surveyor Hess (16x24 walk cycles + 48x48 portraits, `scripts/art/gorge-trainers.mjs`) and the Gradient Gorge battle backdrop (`theme: "gorge"`, preview at `/battle?theme=gorge`).
   - [x] D2e4. (done 2026-11-04) Gradient Gorge guardian fight (`/guardian/gorge`: calculus deck duel, Forge Lab, hidden-set fight) and its readiness evidence.
-- [ ] D3. Probability Peaks (F4), split into:
+- [x] D3. Probability Peaks (F4), split into:
   - [x] D3a. (done 2026-11-04) Lessons (4) and a 47-card deck (Bayes and base rates, expectation/variance/CLT, MLE/MAP and losses as likelihoods, entropy/KL, A/B testing, power, peeking, bootstrap), numpy-computed and cross-checked by `lib/solvers/probability.ts`; wired into Learn and Daily Sync.
   - [x] D3b. (done 2026-11-04) Labs `prob-sampling` (inverse CDF, categorical, rejection, Box-Muller) and `prob-mle` (Gaussian MLE/NLL, Beta-Bernoulli MAP, bootstrap means and percentile CI) in a new "Probability Peaks" Lab phase, with hidden tests and 8 known-wrong versions each.
   - [x] D3c. (done 2026-11-05) Interactive visualiser `/dev/clt` (CLT, base-rate frequency tree, peeking simulator; pure maths in `lib/prob/clt.ts`) with `smoke:clt`.
   - [x] D3d. (done 2026-11-05) Readiness skill "probability and statistics" (deck + labs), tested in the theory rounds.
-  - [ ] D3e. Region art, split into:
+  - [x] D3e. Region art, split into:
     - [x] D3e1. (done 2026-11-05) Probability Peaks tileset (`scripts/art/probability-peaks.mjs`: snowy slate ground with dice-pip scatter, ice histogram columns as trees, bell-curve signs/door/obelisks, glacial stream, arena pad) and preview map.
     - [x] D3e2. (done 2026-11-09) Guardian Warden Bell (96x96, idle 4, attack 5, hurt 3, faint 4; `scripts/art/warden-bell.mjs`): a bell-curve ice golem with sigma bands, a mean line and two re-rolling dice.
     - [x] D3e3. (done 2026-11-09) Two trainers, Analyst Quill and Analyst Brun (16x24 walks + 48x48 portraits; `scripts/art/peaks-trainers.mjs`) and the Peaks battle backdrop (`theme: "peaks"`, bell-curve mountain with sigma bands).
-  - [ ] D3f. Guardian fight `/guardian/peaks` and its readiness evidence.
+  - [x] D3f. (done 2026-11-09) Guardian fight `/guardian/peaks` (Warden Bell: probability deck duel, `prob-mle` Lab, hidden-set fight, Bell Badge) and its readiness evidence.
 - [ ] D4. Classic Grove (F5), with from-scratch classical ML labs and the Creature Stats dataset
 - [ ] D5. Metric Market + Data Dojo (F6, GDD §5.4), with the *Leakage* and *Imbalance Swarm* bosses
 - [ ] D6. Neuron Nest (F7), with Forge modules 3–8 (split across runs) and the companion → Multilayer
