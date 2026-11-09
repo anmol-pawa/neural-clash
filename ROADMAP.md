@@ -89,7 +89,7 @@ Work top to bottom: take the **first unchecked box**, and split big boxes into r
   - [x] D3d. (done 2026-11-05) Readiness skill "probability and statistics" (deck + labs), tested in the theory rounds.
   - [ ] D3e. Region art, split into:
     - [x] D3e1. (done 2026-11-05) Probability Peaks tileset (`scripts/art/probability-peaks.mjs`: snowy slate ground with dice-pip scatter, ice histogram columns as trees, bell-curve signs/door/obelisks, glacial stream, arena pad) and preview map.
-    - [ ] D3e2. Guardian (96x96, idle 4, attack 5, hurt 3, faint 4).
+    - [x] D3e2. Guardian (96x96, idle 4, attack 5, hurt 3, faint 4).
     - [ ] D3e3. Two trainers (16x24 walks + 48x48 portraits) and the Peaks battle backdrop (`theme: "peaks"`).
   - [ ] D3f. Guardian fight `/guardian/peaks` and its readiness evidence.
 - [ ] D4. Classic Grove (F5), with from-scratch classical ML labs and the Creature Stats dataset

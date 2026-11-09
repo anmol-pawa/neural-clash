@@ -558,3 +558,9 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Known gaps: the tree-top tile shows only the top of the bell; no guardian, trainers or backdrop yet.
 - CI/Pages: not confirmed (no `gh` CLI in this session).
 - Next: D3e2 (Peaks guardian art).
+
+## 2026-11-09: D3e2 Probability Peaks guardian art
+- New `scripts/art/warden-bell.mjs` -> `game/sprites/creatures/warden-bell.ts`: Warden Bell, 96x96 ice golem. Torso is a 13-bar histogram rising into a bell curve (CLT) with a traced teal curve and a magenta mean marker; head is a die; arms are indigo and hold dice, which tumble out on the attack. Idle 4, attack 5, hurt 3 (bars scatter), faint 4 (bars collapse). Registered in the roster; the existing sprite tests cover it (127 pass).
+- Verification: lint (0 errors), typecheck, test (427 pass), build, build:pages; Playwright on `/dev/sprites` at desktop and iPhone 14: no console errors, no overflow; guardian frames inspected.
+- Known gaps: arms float beside the torso (same style as Warden Chain); attack dice only show on later frames. Work pushed to the session branch `claude/wonderful-goodall-fptx2b` as instructed, not `main`. CI/Pages not confirmed (no `gh` CLI).
+- Next: D3e3 (Peaks trainers and battle backdrop).
