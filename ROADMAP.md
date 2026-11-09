@@ -90,7 +90,7 @@ Work top to bottom: take the **first unchecked box**, and split big boxes into r
   - [ ] D3e. Region art, split into:
     - [x] D3e1. (done 2026-11-05) Probability Peaks tileset (`scripts/art/probability-peaks.mjs`: snowy slate ground with dice-pip scatter, ice histogram columns as trees, bell-curve signs/door/obelisks, glacial stream, arena pad) and preview map.
     - [x] D3e2. (done 2026-11-09) Guardian Warden Bell (96x96, idle 4, attack 5, hurt 3, faint 4; `scripts/art/warden-bell.mjs`): a bell-curve ice golem with sigma bands, a mean line and two re-rolling dice.
-    - [ ] D3e3. Two trainers (16x24 walks + 48x48 portraits) and the Peaks battle backdrop (`theme: "peaks"`).
+    - [x] D3e3. (done 2026-11-09) Trainers Skier Tally and Analyst Prior (16x24 walks + 48x48 portraits, `scripts/art/peaks-trainers.mjs`) and the Peaks battle backdrop (`theme: "peaks"`, preview at `/battle?theme=peaks`).
   - [ ] D3f. Guardian fight `/guardian/peaks` and its readiness evidence.
 - [ ] D4. Classic Grove (F5), with from-scratch classical ML labs and the Creature Stats dataset
 - [ ] D5. Metric Market + Data Dojo (F6, GDD §5.4), with the *Leakage* and *Imbalance Swarm* bosses

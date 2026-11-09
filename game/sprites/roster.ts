@@ -18,6 +18,10 @@ import { CLIMBER_DELTA } from "./characters/climber-delta";
 import { CLIMBER_DELTA_PORTRAIT } from "./characters/climber-delta-portrait";
 import { SURVEYOR_HESS } from "./characters/surveyor-hess";
 import { SURVEYOR_HESS_PORTRAIT } from "./characters/surveyor-hess-portrait";
+import { SKIER_TALLY } from "./characters/skier-tally";
+import { SKIER_TALLY_PORTRAIT } from "./characters/skier-tally-portrait";
+import { ANALYST_PRIOR } from "./characters/analyst-prior";
+import { ANALYST_PRIOR_PORTRAIT } from "./characters/analyst-prior-portrait";
 import { PYTHON_PORT_TILES } from "./tiles/python-port-tiles";
 import { LAB_TILES } from "./tiles/lab-tiles";
 import { VECTOR_VALE_TILES } from "./tiles/vector-vale-tiles";
@@ -26,6 +30,6 @@ import { PROBABILITY_PEAKS_TILES } from "./tiles/probability-peaks-tiles";
 import { PORT_PREVIEW, LAB_PREVIEW, VALE_PREVIEW, GORGE_PREVIEW, PEAKS_PREVIEW } from "./maps";
 
 /** Every sprite in the game, in review order (the /dev/sprites page lists these). */
-export const SPRITES: readonly SpriteDef[] = [NEURON_PUP_PERCEPTRON, NEURON_PUP_PERCEPTRON_BACK, NOISE_MINION, WARDEN_INDENT, WARDEN_BASIS, WARDEN_CHAIN, WARDEN_BELL, PLAYER, PLAYER_PORTRAIT, OKAFOR, OKAFOR_PORTRAIT, CADET_SHEAR, CADET_SHEAR_PORTRAIT, RANGER_AXIS, RANGER_AXIS_PORTRAIT, CLIMBER_DELTA, CLIMBER_DELTA_PORTRAIT, SURVEYOR_HESS, SURVEYOR_HESS_PORTRAIT, PYTHON_PORT_TILES, LAB_TILES, VECTOR_VALE_TILES, GRADIENT_GORGE_TILES, PROBABILITY_PEAKS_TILES, PORT_PREVIEW, LAB_PREVIEW, VALE_PREVIEW, GORGE_PREVIEW, PEAKS_PREVIEW];
+export const SPRITES: readonly SpriteDef[] = [NEURON_PUP_PERCEPTRON, NEURON_PUP_PERCEPTRON_BACK, NOISE_MINION, WARDEN_INDENT, WARDEN_BASIS, WARDEN_CHAIN, WARDEN_BELL, PLAYER, PLAYER_PORTRAIT, OKAFOR, OKAFOR_PORTRAIT, CADET_SHEAR, CADET_SHEAR_PORTRAIT, RANGER_AXIS, RANGER_AXIS_PORTRAIT, CLIMBER_DELTA, CLIMBER_DELTA_PORTRAIT, SURVEYOR_HESS, SURVEYOR_HESS_PORTRAIT, SKIER_TALLY, SKIER_TALLY_PORTRAIT, ANALYST_PRIOR, ANALYST_PRIOR_PORTRAIT, PYTHON_PORT_TILES, LAB_TILES, VECTOR_VALE_TILES, GRADIENT_GORGE_TILES, PROBABILITY_PEAKS_TILES, PORT_PREVIEW, LAB_PREVIEW, VALE_PREVIEW, GORGE_PREVIEW, PEAKS_PREVIEW];
 
 export const spriteById = (id: string): SpriteDef | undefined => SPRITES.find((s) => s.id === id);

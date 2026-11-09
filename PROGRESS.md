@@ -564,3 +564,10 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Verification: lint (0 errors), typecheck, test (427 pass), build, build:pages; Playwright on `/dev/sprites` (static export) at desktop and iPhone 14: no console errors, no overflow; contact sheet and the page inspected. content:verify: only the known timing-dependent `fewest-tokens/wrong/tle_every_piece.cpp` failure (pre-existing, sandbox CPU speed).
 - Known gaps: no Peaks trainers or backdrop yet. CI/Pages not confirmed (no `gh` CLI in this session).
 - Next: D3e3 (Peaks trainers and battle backdrop).
+
+## 2026-11-09: D3e3 Probability Peaks trainers and battle backdrop
+- `scripts/art/peaks-trainers.mjs` -> Skier Tally (red beanie with pom-pom, ice-blue parka, scarf sash) and Analyst Prior (cream fur trapper hat, round glasses, indigo parka, pennant pole): 16x24 overworld sheets (stand, 4-frame walks in four directions) and 48x48 portraits (idle/talk/smile/think); registered in the roster and the character-test exemptions.
+- New battle backdrop `theme: "peaks"` (`game/render/battle.ts`, query `/battle?theme=peaks`): blue-hour glacier range, a bell-curve snow mountain with a magenta mean line and sigma ticks, histogram ice shelf, die-pip stars, drifting snow.
+- Verification: lint (0 errors), typecheck, test (447 pass, with `PATH=/usr/bin:$PATH` for numpy), build, build:pages; Playwright (static export) on `/battle?theme=peaks` and `/dev/sprites` at desktop and iPhone 14: no console errors, no overflow; backdrop and all trainer sheets/portraits inspected. content:verify not re-run (art-only change).
+- Known gaps: Skier Tally's hair ramp is close to Climber Delta's. Work was committed on the session's designated branch `claude/wonderful-goodall-w7zbvm`, not `main`, per session branch rules. CI/Pages: not checked (no `gh` CLI; this branch does not deploy).
+- Next: D3f (`/guardian/peaks` fight and its readiness evidence).

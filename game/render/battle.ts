@@ -45,7 +45,7 @@ function sprite(def: SpriteDef, anim: string, i: number, tint: Tint): HTMLCanvas
 
 const frameFor = (def: SpriteDef, anim: string, t: number) => Math.floor(t * (def.fps?.[anim] ?? 6));
 
-export type StageTheme = "grid" | "vale" | "gorge";
+export type StageTheme = "grid" | "vale" | "gorge" | "peaks";
 
 /** Vector Vale: a twilight meadow of crystals over a lattice floor, with slowly turning basis axes on the horizon. */
 function valeBackdrop(g: CanvasRenderingContext2D, t: number) {
@@ -198,9 +198,66 @@ function gorgeBackdrop(g: CanvasRenderingContext2D, t: number) {
   g.fillRect(Math.round(bx) - 1, Math.round(by) - 2, 2, 1);
 }
 
+/** Probability Peaks: a blue-hour glacier range; a bell-curve mountain, twinkling dice-pip stars, drifting snow and a histogram ice shelf. */
+function peaksBackdrop(g: CanvasRenderingContext2D, t: number) {
+  const sky = g.createLinearGradient(0, 0, 0, 74);
+  sky.addColorStop(0, "#0e1c3e");
+  sky.addColorStop(0.6, "#2c5a8e");
+  sky.addColorStop(1, "#a8d8f0");
+  g.fillStyle = sky;
+  g.fillRect(0, 0, STAGE_W, STAGE_H);
+  // stars as die pips
+  for (let i = 0; i < 18; i++) {
+    g.globalAlpha = 0.3 + 0.6 * Math.abs(Math.sin(t * 1.3 + i * 2.3));
+    g.fillStyle = "#e8f6ff";
+    g.fillRect((i * 37) % STAGE_W, 4 + ((i * 17) % 34), 2, 2);
+  }
+  g.globalAlpha = 1;
+  // far range of jagged peaks, then a big bell-curve mountain
+  g.fillStyle = "#4a6ea0";
+  for (let x = 0; x < STAGE_W; x += 4) {
+    const h = 14 + Math.abs(Math.sin(x * 0.07)) * 16 + Math.abs(Math.sin(x * 0.19)) * 6;
+    g.fillRect(x, 78 - h, 4, h);
+  }
+  const bell = (x: number) => Math.exp(-(((x - STAGE_W / 2) / 52) ** 2));
+  for (let x = 0; x < STAGE_W; x += 2) {
+    const h = Math.floor(48 * bell(x));
+    g.fillStyle = "#cfe8fa";
+    g.fillRect(x, 78 - h, 2, h);
+    g.fillStyle = "#ffffff";
+    g.fillRect(x, 78 - h, 2, 1);
+  }
+  // mean line and sigma ticks
+  g.fillStyle = "#ff5ad0";
+  g.fillRect(STAGE_W / 2, 26, 1, 52);
+  g.fillStyle = "#27c9bd";
+  for (const k of [-2, -1, 1, 2]) g.fillRect(STAGE_W / 2 + k * 40, 70, 1, 8);
+  // snowy slate floor with a histogram ice shelf along the back
+  const floor = g.createLinearGradient(0, 78, 0, STAGE_H);
+  floor.addColorStop(0, "#c4dcee");
+  floor.addColorStop(1, "#5a7aa4");
+  g.fillStyle = floor;
+  g.fillRect(0, 78, STAGE_W, STAGE_H - 78);
+  for (let i = 0; i < 15; i++) {
+    const h = 2 + Math.round(8 * Math.exp(-(((i - 7) / 3.2) ** 2)));
+    g.fillStyle = "#8cc8e8";
+    g.fillRect(8 + i * 15, 82 - h, 11, h);
+    g.fillStyle = "#e8faff";
+    g.fillRect(8 + i * 15, 82 - h, 11, 1);
+  }
+  // drifting snow
+  g.fillStyle = "#ffffff";
+  for (let i = 0; i < 30; i++) {
+    const x = (i * 41 + t * (6 + (i % 4)) + Math.sin(t + i) * 4) % STAGE_W;
+    const y = (i * 23 + t * (10 + (i % 3) * 3)) % STAGE_H;
+    g.fillRect(Math.floor(x), Math.floor(y), 1, 1);
+  }
+}
+
 function backdrop(g: CanvasRenderingContext2D, t: number, theme: StageTheme = "grid") {
   if (theme === "vale") return valeBackdrop(g, t);
   if (theme === "gorge") return gorgeBackdrop(g, t);
+  if (theme === "peaks") return peaksBackdrop(g, t);
   const sky = g.createLinearGradient(0, 0, 0, 78);
   sky.addColorStop(0, "#0d1033");
   sky.addColorStop(1, "#2a2a6e");
