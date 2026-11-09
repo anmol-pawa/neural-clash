@@ -564,3 +564,11 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Verification: lint (0 errors), typecheck, test (427 pass), build, build:pages; Playwright on `/dev/sprites` (static export) at desktop and iPhone 14: no console errors, no overflow; contact sheet and the page inspected. content:verify: only the known timing-dependent `fewest-tokens/wrong/tle_every_piece.cpp` failure (pre-existing, sandbox CPU speed).
 - Known gaps: no Peaks trainers or backdrop yet. CI/Pages not confirmed (no `gh` CLI in this session).
 - Next: D3e3 (Peaks trainers and battle backdrop).
+
+## 2026-11-09: D3e3 Peaks trainers and battle backdrop (D3e complete)
+- New `scripts/art/peaks-trainers.mjs`: Analyst Quill (fur-hooded ice-blue parka, round glasses, magenta scarf) and Analyst Brun (red pompom beanie, silver moustache, teal coat, clipboard); 16x24 overworld (stand, 4-frame walks in four directions) and 48x48 portraits (idle with blink, talk, smile, think). Registered in the roster; sprite tests extended.
+- `game/render/battle.ts`: `StageTheme` gains `"peaks"` (dawn sky, ridge, a bell-curve mountain banded at 1/2/3 sigma with a magenta mean line, snowfield with contour rings, glacial stream, drifting pip-snow). `/battle?theme=peaks` previews it; `GuardianDef.theme` accepts it for D3f.
+- Verification: lint (0 errors), typecheck, test (447 pass), build, build:pages; Playwright on `/battle?theme=peaks` and `/dev/sprites` at desktop and iPhone 14: no console errors, no overflow; backdrop, walk sheets and portraits inspected. content:verify not run (no content touched).
+- Known gaps: trainers are not yet placed in a Peaks map or given dialogue; Quill's hood reads slightly beret-like at 16x24.
+- CI/Pages: no `gh` CLI here; not confirmed.
+- Next: D3f (guardian fight `/guardian/peaks` and its readiness evidence).
