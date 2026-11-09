@@ -572,3 +572,10 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Known gaps: trainers are not yet placed in a Peaks map or given dialogue; Quill's hood reads slightly beret-like at 16x24.
 - CI/Pages: no `gh` CLI here; not confirmed.
 - Next: D3f (guardian fight `/guardian/peaks` and its readiness evidence).
+
+## 2026-11-09: D3f Warden Bell guardian fight (D3 complete)
+- `PEAKS_GUARDIAN` in `lib/guardian/defs.ts` (Warden Bell, Bell Badge, `prob-mle` Lab, peaks backdrop); `/guardian/peaks` page; Guardian uses the 47-card probability deck; the badge is Readiness evidence for `probability-stats`; title-screen link; `smoke:guardian-peaks` (cards, Lab pass with the reference, reveal fight, badge persistence) and `/guardian/peaks` added to `smoke-slice`.
+- Tests: new Warden Bell guardian test and a readiness test for the badge credit (448 pass).
+- Verification: lint (0 errors), typecheck, test, build, build:pages, `smoke:guardian-peaks` at desktop and iPhone 14 all pass; screenshots inspected (backdrop, Warden Bell, badge panel; no overflow or console errors). content:verify not re-run (no content changed).
+- CI/Pages not confirmed (no `gh` CLI in this session). Work is on branch `claude/wonderful-goodall-mb8e31`; `origin/main` has not advanced since 2026-11-02 (history-only merges).
+- Next: D4 (Classic Grove).

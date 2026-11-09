@@ -27,6 +27,7 @@ export default function Home() {
         <Link href="/guardian" className="px-btn px-4 py-2 text-center">Warden Indent (guardian)</Link>
         <Link href="/guardian/vale" className="px-btn px-4 py-2 text-center">Warden Basis (guardian)</Link>
         <Link href="/guardian/gorge" className="px-btn px-4 py-2 text-center">Warden Chain (guardian)</Link>
+        <Link href="/guardian/peaks" className="px-btn px-4 py-2 text-center">Warden Bell (guardian)</Link>
         <AudioControls />
         <p className="text-xs text-white/50">The Python Port opens soon. Work in progress.</p>
       </div>

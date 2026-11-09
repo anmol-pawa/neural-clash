@@ -57,7 +57,21 @@ export const GORGE_GUARDIAN: GuardianDef = {
   lessonsHref: "/learn",
 };
 
-export const GUARDIANS: readonly GuardianDef[] = [PYTHON_GUARDIAN, VALE_GUARDIAN, GORGE_GUARDIAN];
+export const PEAKS_GUARDIAN: GuardianDef = {
+  id: "guardian:probability-peaks",
+  slug: "peaks",
+  name: "Warden Bell",
+  badge: "Bell Badge",
+  region: "Probability Peaks",
+  spriteId: "warden-bell",
+  labId: "prob-mle",
+  theme: "peaks",
+  deckLabel: "probability and statistics",
+  trials: { read: "you can reason about uncertainty", write: "implement Gaussian MLE and a bootstrap", generalise: "build something that generalises" },
+  lessonsHref: "/learn",
+};
+
+export const GUARDIANS: readonly GuardianDef[] = [PYTHON_GUARDIAN, VALE_GUARDIAN, GORGE_GUARDIAN, PEAKS_GUARDIAN];
 
 export const guardianHref = (g: GuardianDef) => (g.slug ? `/guardian/${g.slug}` : "/guardian");
 
