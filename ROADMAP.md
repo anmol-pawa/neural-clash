@@ -104,7 +104,7 @@ Work top to bottom: take the **first unchecked box**, and split big boxes into r
   - [x] D4f. (done 2026-11-10) Guardian fight `/guardian/grove` (Warden Split: classic deck duel, `classic-cluster` Lab, hidden-set fight, Split Badge) and its readiness evidence.
 - [ ] D5. Metric Market + Data Dojo (F6, GDD §5.4), with the *Leakage* and *Imbalance Swarm* bosses, split into:
   - [x] D5a. (done 2026-11-10) Lessons (3) and a 34-card deck (confusion matrix, ROC/PR, calibration, splits and significance, ranking and regression metrics), numpy-computed and cross-checked by `lib/solvers/evalMetrics.ts`; wired into Learn and Daily Sync.
-  - [ ] D5b. Labs `metrics-classify` (precision/recall/F1/Fβ, ROC-AUC, PR-AUC, best-cost threshold) and `metrics-rank` (P@k, recall@k, MRR, nDCG, ECE) with hidden tests and known-wrong versions.
+  - [x] D5b. (done 2026-11-10) Labs `metrics-classify` (precision/recall/F1/Fβ, ROC-AUC, PR-AUC, best-cost threshold) and `metrics-rank` (P@k, recall@k, MRR, nDCG, ECE) with hidden tests and known-wrong versions.
   - [ ] D5c. Data Dojo interactive: confusion-matrix minigame with cost-matrix threshold tuning, split-leakage demo, A/B peeking simulator (`/dev/dojo`).
   - [ ] D5d. Readiness skill "evaluation" (deck + labs).
   - [ ] D5e. Region art: Metric Market tileset, Imbalance Swarm and Leakage boss sprites, trainers, backdrop.

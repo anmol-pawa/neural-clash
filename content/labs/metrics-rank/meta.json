@@ -1,0 +1,28 @@
+{
+  "id": "metrics-rank",
+  "title": "Ranking metrics and calibration error",
+  "phase": "market",
+  "language": "python",
+  "functions": [
+    "precision_at_k",
+    "recall_at_k",
+    "mrr",
+    "ndcg_at_k",
+    "ece"
+  ],
+  "wrong": {
+    "precision_divides_by_hits.py": "precision_at_k divides by the number of results returned instead of k, rewarding short lists",
+    "recall_divides_by_k.py": "recall_at_k divides by k instead of the number of relevant items, so it is just precision",
+    "mrr_uses_last_relevant.py": "mrr scores the rank of the last relevant result instead of the first",
+    "ndcg_linear_gain.py": "ndcg_at_k uses gain g instead of 2^g - 1, undervaluing highly relevant results",
+    "ndcg_ideal_from_top_k_only.py": "ndcg_at_k builds the ideal ordering from only the retrieved top k, so missing better results is never punished",
+    "ndcg_all_zero_is_nan.py": "ndcg_at_k divides by an ideal DCG of zero when nothing is relevant, giving NaN",
+    "ece_unweighted_bins.py": "ece averages bin gaps equally instead of weighting by bin size",
+    "ece_signed_gap.py": "ece lets over- and under-confident bins cancel instead of taking the absolute gap"
+  },
+  "hints": [
+    "Precision@k and recall@k share a numerator, the relevant items in rel[:k]; they differ only in the denominator (k versus the corpus total). MRR needs np.flatnonzero(rel > 0) and the first index plus one.",
+    "DCG sums (2^g - 1) / log2(rank + 1) with rank starting at 1, which is np.log2(np.arange(2, n + 2)) for n items. The ideal is the same function on the whole list sorted descending, truncated at k. Divide only if the ideal is positive.",
+    "Bin index = min(floor(p * bins), bins - 1). For each non-empty bin add (count / n) * |mean(y) - mean(p)|. Weighting by count and taking the absolute value are both load-bearing."
+  ]
+}

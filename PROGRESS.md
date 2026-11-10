@@ -638,3 +638,9 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Verification: lint (0 errors), typecheck, test (506 pass; `PATH=/usr/bin:$PATH` for numpy), build, build:pages, content:verify (all ok), smoke:learn and smoke:sync at desktop and iPhone 14 (all PASS; no console errors or overflow; no new visual surface, so no screenshots viewed).
 - Known gaps: no Labs, Dojo interactives, Readiness skill, art or bosses yet (D5b-D5f). CI/Pages confirmation not attempted (no `gh` CLI here).
 - Next: D5b (metric Labs).
+
+## 2026-11-10: D5b Metric Market Labs
+- New Lab phase `market` ("Metric Market") with two Python/numpy Labs. `metrics-classify`: `prf` (precision/recall/F-beta, zero-division is 0.0), `roc_auc` (pair-counting, ties half), `average_precision` (tied scores share a threshold), `best_threshold` (cost-minimising cut, `score >= t`, "flag nothing" candidate, ties keep the higher threshold). `metrics-rank`: `precision_at_k`, `recall_at_k`, `mrr`, `ndcg_at_k` (2^g-1 gain, ideal from the whole list), `ece` (equal-width, count-weighted, absolute gaps). Hidden tests include brute-force cost search, AUC vs pair counting, rescaling invariance, a base-rate demonstration (ROC unchanged, AP collapses with 20x negatives) and calibration of simulated well- and mis-calibrated probabilities. 8 documented known-wrong versions per Lab, all rejected; starters fail.
+- Verification: lint (0 errors), typecheck, test (506 pass; `PATH=/usr/bin:$PATH`), content:verify (labs ok), build, build:pages, `smoke:labs` at desktop and iPhone 14 (29 labs listed, no console errors or overflow; no new visual surface, no screenshots viewed). CI/Pages confirmation skipped (no `gh` CLI here).
+- Known gaps: Labs are not yet Readiness evidence (D5d); no Dojo interactive, art or bosses (D5c, D5e, D5f).
+- Next: D5c (Data Dojo interactives, `/dev/dojo`).

@@ -22,7 +22,7 @@ describe("lab catalog", () => {
     expect(t.kind).toBe("python");
     expect(t.starter["main.py"]).toContain("def gd_step");
     expect(labBrief(labById("linear-gd")!)).toContain("simplest creature");
-    expect(labsByPhase().map((g) => g.phase)).toEqual(["python-port", "vector-vale", "forge", "peaks", "grove"]);
+    expect(labsByPhase().map((g) => g.phase)).toEqual(["python-port", "vector-vale", "forge", "peaks", "grove", "market"]);
     expect(new Set(LABS.map((l) => l.id)).size).toBe(LABS.length);
   });
 });

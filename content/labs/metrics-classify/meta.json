@@ -1,0 +1,28 @@
+{
+  "id": "metrics-classify",
+  "title": "Precision, recall, AUC and the cost threshold",
+  "phase": "market",
+  "language": "python",
+  "functions": [
+    "prf",
+    "roc_auc",
+    "average_precision",
+    "best_threshold"
+  ],
+  "wrong": {
+    "prf_swaps_precision_recall.py": "prf returns (recall, precision, f) in the wrong order",
+    "fbeta_uses_beta_not_beta_squared.py": "prf weights recall by beta instead of beta squared, so F2 and F0.5 are wrong (F1 still passes)",
+    "prf_zero_division_gives_nan.py": "prf returns NaN when nothing is predicted or there are no positives, instead of 0.0",
+    "auc_ties_count_zero.py": "roc_auc gives a tied positive/negative pair no credit instead of one half, so constant scores score 0 not 0.5",
+    "auc_negative_minus_positive.py": "roc_auc compares negatives against positives, returning 1 - AUC",
+    "ap_divides_by_sample_count.py": "average_precision normalises recall by the number of samples instead of positives, so a perfect ranking scores the base rate",
+    "ap_cuts_between_tied_scores.py": "average_precision treats tied scores as separate thresholds, so the answer depends on input order",
+    "threshold_flags_strictly_above.py": "best_threshold flags score > t instead of score >= t, so the chosen item itself is never flagged and costs are off",
+    "threshold_swaps_the_costs.py": "best_threshold charges the false-positive price for misses and vice versa"
+  },
+  "hints": [
+    "Count tp, fp and fn with boolean masks. Guard every division: precision is 0 when nothing was flagged, recall is 0 when there are no positives. F-beta is (1 + beta^2) p r / (beta^2 p + r), guarded the same way.",
+    "AUC is a pair-counting statement: compare every positive score against every negative score with a (n_pos, n_neg) difference matrix; wins count 1, ties count 1/2. For average precision sort by descending score, take cumulative true positives, and only read precision and recall where the next score differs (a threshold cannot split ties).",
+    "Try each distinct score as a cut with `scores >= t`, price false positives and false negatives separately, and keep a strictly better cost only, scanning from the highest score down, so ties keep the higher threshold. Start from 'flag nothing' (cost = cost_fn x positives)."
+  ]
+}

@@ -20,6 +20,7 @@ export const PHASE_TITLES: Record<string, string> = {
   forge: "The Forge",
   peaks: "Probability Peaks",
   grove: "Classic Grove",
+  market: "Metric Market",
 };
 
 export const LABS: readonly LabSource[] = LAB_SOURCES;
