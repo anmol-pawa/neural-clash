@@ -1,0 +1,22 @@
+{
+  "id": "classic-cluster",
+  "title": "k-NN, k-means and the decision stump",
+  "phase": "grove",
+  "language": "python",
+  "functions": ["zscore", "knn_predict", "kmeans", "gini", "best_split"],
+  "wrong": {
+    "zscore_uses_test_statistics.py": "zscore standardises with the test set's mean and std, leaking test data into preprocessing and breaking train/test consistency",
+    "knn_picks_farthest.py": "knn_predict votes among the k farthest points instead of the k nearest",
+    "knn_tie_picks_largest_label.py": "knn_predict breaks vote ties toward the larger label instead of the smaller",
+    "kmeans_empty_cluster_becomes_nan.py": "kmeans takes the mean of an empty cluster, producing NaN centers",
+    "kmeans_single_round.py": "kmeans stops after one round whatever `iters` says",
+    "gini_forgets_square.py": "gini computes 1 - sum(p) which is always 0 instead of 1 - sum(p^2)",
+    "split_unweighted_children.py": "best_split averages the two child impurities instead of weighting by child size",
+    "split_threshold_at_value.py": "best_split returns a data value as the threshold instead of the midpoint between neighbours"
+  },
+  "hints": [
+    "Distances: (X_test[:, None, :] - X_train[None, :, :]) has shape (m, n, d); square and sum over the last axis for squared distances, which rank neighbours the same as Euclidean. np.argsort(..., kind='stable') gives the tie rule for free; np.bincount(labels).argmax() gives the smaller-label rule.",
+    "k-means is two steps in a loop: assign each point to the nearest center (argmin over axis 1), then recompute each center as the mean of its members. Guard the empty-cluster case so you never average zero points.",
+    "A stump scans thresholds between consecutive distinct sorted values. For each, impurity after the split is (n_left * gini(left) + n_right * gini(right)) / n; the gain is the parent's impurity minus that. Keep the first threshold that beats the best gain so far."
+  ]
+}

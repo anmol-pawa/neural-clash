@@ -19,6 +19,7 @@ export const PHASE_TITLES: Record<string, string> = {
   "vector-vale": "Vector Vale",
   forge: "The Forge",
   peaks: "Probability Peaks",
+  grove: "Classic Grove",
 };
 
 export const LABS: readonly LabSource[] = LAB_SOURCES;

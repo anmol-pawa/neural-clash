@@ -1,0 +1,22 @@
+{
+  "id": "classic-linear",
+  "title": "Linear and logistic regression from scratch",
+  "phase": "grove",
+  "language": "python",
+  "functions": ["normal_equation", "ridge_fit", "sigmoid", "logistic_loss", "logistic_grad", "logistic_gd"],
+  "wrong": {
+    "ols_no_intercept.py": "normal_equation fits the intercept column but returns b = 0, so any data with an offset is fit badly",
+    "ridge_penalises_intercept.py": "ridge_fit shrinks the intercept too, so shifting every label no longer shifts only b",
+    "ridge_penalty_is_sqrt_lambda.py": "ridge_fit uses sqrt(lam) as the penalty strength, so it matches the closed form only at lam = 0 or 1",
+    "sigmoid_overflows.py": "sigmoid computes 1/(1+exp(-z)) directly, which overflows for large negative z",
+    "loss_takes_log_of_probability.py": "logistic_loss takes log(p) of a saturated probability, giving inf or nan for confident-and-wrong logits",
+    "grad_sums_instead_of_mean.py": "logistic_grad sums over the batch instead of averaging, so the gradient is n times too big and fails the finite-difference check",
+    "grad_has_wrong_sign.py": "logistic_grad returns y - p instead of p - y, so descent climbs the loss",
+    "gd_never_updates_bias.py": "logistic_gd updates only the weights, so the decision boundary is stuck through the origin"
+  },
+  "hints": [
+    "Add a column of ones to X so the intercept is just another weight. The normal equations are (A^T A) theta = A^T y; solve them with np.linalg.solve. For ridge add lam on the diagonal, but leave the intercept's diagonal entry at 0.",
+    "A stable sigmoid uses exp(-|z|): for z >= 0 it is 1/(1+e), for z < 0 it is e/(1+e) with e = exp(-|z|). The cross-entropy -[y log s + (1-y) log(1-s)] equals log(1+e^z) - y z, which np.logaddexp(0, z) computes without overflow.",
+    "The gradient of mean cross-entropy is simple: with r = sigmoid(Xw + b) - y, grad_w = X^T r / n and grad_b = mean(r). Gradient descent starts at zero and repeats w -= lr * grad_w, b -= lr * grad_b."
+  ]
+}
