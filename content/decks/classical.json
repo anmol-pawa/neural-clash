@@ -1,0 +1,828 @@
+{
+  "id": "classical",
+  "title": "Classic Grove: classical machine learning",
+  "cards": [
+    {
+      "id": "ml-normal-eq",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "ml-linear",
+      "prompt": "What does this print?",
+      "code": [
+        "X = np.array([[1.0, 0.0], [1.0, 1.0], [1.0, 2.0], [1.0, 3.0]])",
+        "y = np.array([1.0, 3.0, 5.0, 7.0])",
+        "w = np.linalg.solve(X.T @ X, X.T @ y)",
+        "print(np.round(w, 3).tolist())"
+      ],
+      "choices": [
+        "[2.0, 1.0]",
+        "[1.0, 2.0]",
+        "[0.0, 2.0]",
+        "[1.0, 1.0]"
+      ],
+      "answer": 1,
+      "explanation": "The normal equation (X^T X) w = X^T y gives the least-squares weights. The first column of ones is the intercept column, so w = [intercept, slope] = [1, 2]: the data lie exactly on y = 1 + 2x. Listing the columns the other way round would swap the two numbers."
+    },
+    {
+      "id": "ml-ridge-shrinks",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "ml-linear",
+      "prompt": "What does this print?",
+      "code": [
+        "X = np.array([[1.0], [2.0], [3.0]])",
+        "y = np.array([2.0, 4.0, 6.0])",
+        "lam = 14.0",
+        "w = np.linalg.solve(X.T @ X + lam * np.eye(1), X.T @ y)",
+        "print(round(float(w[0]), 3))"
+      ],
+      "choices": [
+        "1.0",
+        "2.0",
+        "0.5",
+        "1.5"
+      ],
+      "answer": 0,
+      "explanation": "Without the penalty the exact fit is w = 2. Ridge solves (X^T X + lam I) w = X^T y, so here w = 28 / (14 + 14) = 1: a penalty equal to X^T X halves the weight. Ridge shrinks every coefficient toward zero but never sets one exactly to zero."
+    },
+    {
+      "id": "ml-logistic-grad",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "ml-linear",
+      "prompt": "What does this print?",
+      "code": [
+        "X = np.array([[1.0, 2.0], [1.0, -1.0]])",
+        "y = np.array([1.0, 0.0])",
+        "w = np.zeros(2)",
+        "p = 1 / (1 + np.exp(-(X @ w)))",
+        "print((X.T @ (p - y) / len(y)).tolist())"
+      ],
+      "choices": [
+        "[0.5, -0.75]",
+        "[0.0, 0.75]",
+        "[-0.25, -0.75]",
+        "[0.0, -0.75]"
+      ],
+      "answer": 3,
+      "explanation": "At w = 0 every prediction is 0.5, so the errors p - y are [-0.5, 0.5]. The gradient of the mean cross-entropy is X^T (p - y) / n = [0, -1.5] / 2 = [0, -0.75]. A negative entry means gradient descent will increase that weight, which is right: the second feature is large and positive for the positive example."
+    },
+    {
+      "id": "ml-mean-median",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "ml-linear",
+      "prompt": "What does this print?",
+      "code": [
+        "y = np.array([1.0, 2.0, 3.0, 100.0])",
+        "print(np.mean(y), np.median(y))"
+      ],
+      "choices": [
+        "2.5 26.5",
+        "26.5 26.5",
+        "26.5 2.5",
+        "2.5 2.5"
+      ],
+      "answer": 2,
+      "explanation": "The constant that minimises squared error is the mean (26.5), and the constant that minimises absolute error is the median (2.5). One outlier drags the mean-seeking MSE fit far from the bulk of the data, which is why MAE or Huber losses are the robust choices."
+    },
+    {
+      "id": "ml-poly-memorise",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "ml-biasvar",
+      "prompt": "What does this print?",
+      "code": [
+        "x = np.arange(5.0)",
+        "y = np.array([1.0, 3.0, 2.0, 5.0, 4.0])",
+        "coef = np.polyfit(x, y, 4)",
+        "print(round(float(np.mean((np.polyval(coef, x) - y) ** 2)), 6))"
+      ],
+      "choices": [
+        "0.5",
+        "0.0",
+        "1.2",
+        "2.0"
+      ],
+      "answer": 1,
+      "explanation": "A degree-4 polynomial has five coefficients, so it can pass through any five points: the training error is 0 (to rounding). Zero training error says nothing about how well it predicts a sixth point; that needs held-out data."
+    },
+    {
+      "id": "ml-kfold-sizes",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "ml-biasvar",
+      "prompt": "What does this print?",
+      "code": [
+        "folds = np.array_split(np.arange(11), 4)",
+        "print([len(f) for f in folds])"
+      ],
+      "choices": [
+        "[3, 3, 3, 2]",
+        "[2, 3, 3, 3]",
+        "[2, 2, 2, 5]",
+        "[3, 3, 3, 3]"
+      ],
+      "answer": 0,
+      "explanation": "11 items cannot split evenly into 4 folds; array_split gives the first (11 mod 4) = 3 folds one extra element each: [3, 3, 3, 2]. Cross-validation folds differ slightly in size, so average the per-fold scores weighted by size if the sizes differ a lot."
+    },
+    {
+      "id": "ml-scaler-train-only",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "ml-biasvar",
+      "prompt": "What does this print?",
+      "code": [
+        "x = np.array([1.0, 2.0, 3.0, 100.0])",
+        "train = x[:3]",
+        "print(x.mean(), train.mean())"
+      ],
+      "choices": [
+        "2.0 26.5",
+        "26.5 26.5",
+        "2.0 2.0",
+        "26.5 2.0"
+      ],
+      "answer": 3,
+      "explanation": "The scaler must learn its mean from the training rows only (2.0). Fitting on all rows (26.5) lets the held-out outlier shape the preprocessing the model sees, a mild form of leakage. In practice, wrap preprocessing and model in one pipeline so every cross-validation fold refits the scaler."
+    },
+    {
+      "id": "ml-class-weights",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "ml-biasvar",
+      "prompt": "What does this print?",
+      "code": [
+        "counts = np.array([990, 10])",
+        "w = counts.sum() / (len(counts) * counts)",
+        "print(np.round(w, 4).tolist())"
+      ],
+      "choices": [
+        "[0.99, 0.01]",
+        "[1.0, 99.0]",
+        "[0.5051, 50.0]",
+        "[0.01, 0.99]"
+      ],
+      "answer": 2,
+      "explanation": "The balanced class weight is n / (k x count): 1000 / (2 x 990) = 0.5051 for the majority and 1000 / (2 x 10) = 50 for the minority. Each class then contributes the same total weight to the loss, so the rare class is not ignored. Weights shift the decision boundary; they do not create information."
+    },
+    {
+      "id": "ml-gini",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "ml-trees",
+      "prompt": "What does this print?",
+      "code": [
+        "y = np.array([0, 0, 1, 1, 1, 1])",
+        "p = np.bincount(y) / len(y)",
+        "print(round(float(1 - np.sum(p ** 2)), 4))"
+      ],
+      "choices": [
+        "0.5",
+        "0.4444",
+        "0.3333",
+        "0.6667"
+      ],
+      "answer": 1,
+      "explanation": "Gini impurity is 1 - sum of squared class proportions: 1 - (1/3)^2 - (2/3)^2 = 0.4444. It is 0 for a pure node and 0.5 at most for two classes. 0.6667 is just the larger proportion, not an impurity."
+    },
+    {
+      "id": "ml-info-gain",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "ml-trees",
+      "prompt": "What does this print?",
+      "code": [
+        "def H(y):",
+        "    p = np.bincount(y) / len(y)",
+        "    p = p[p > 0]",
+        "    return float(-(p * np.log2(p)).sum())",
+        "parent = np.array([0, 0, 0, 0, 1, 1, 1, 1])",
+        "left, right = np.array([0, 0, 0, 1]), np.array([0, 1, 1, 1])",
+        "print(round(H(parent) - 0.5 * H(left) - 0.5 * H(right), 4))"
+      ],
+      "choices": [
+        "0.1887",
+        "0.8113",
+        "0.5",
+        "0.3774"
+      ],
+      "answer": 0,
+      "explanation": "The parent is a 50/50 mix, so H = 1 bit. Each child is 3-to-1, H = 0.8113 bits. Information gain is the parent entropy minus the size-weighted child entropy: 1 - 0.8113 = 0.1887. It is small because this split barely separates the classes; trees pick the split with the largest gain."
+    },
+    {
+      "id": "ml-boost-residual",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "ml-trees",
+      "prompt": "What does this print?",
+      "code": [
+        "y = np.array([3.0, 5.0, 10.0])",
+        "pred = np.full_like(y, y.mean())",
+        "print((y - pred).tolist())"
+      ],
+      "choices": [
+        "[3.0, 1.0, -4.0]",
+        "[0.0, 0.0, 0.0]",
+        "[-2.0, 0.0, 5.0]",
+        "[-3.0, -1.0, 4.0]"
+      ],
+      "answer": 3,
+      "explanation": "Gradient boosting starts from a constant (the mean, 6.0 here) and the next tree is fit to the residuals y - prediction = [-3, -1, 4]. With squared error the residual is exactly the negative gradient of the loss, which is why the method is called gradient boosting. [-2, 0, 5] would be the residuals from the median."
+    },
+    {
+      "id": "ml-bagging-variance",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "ml-trees",
+      "prompt": "What does this print?",
+      "code": [
+        "rho, sigma2, B = 0.5, 4.0, 100",
+        "print(round(rho * sigma2 + (1 - rho) * sigma2 / B, 3))"
+      ],
+      "choices": [
+        "0.04",
+        "2.0",
+        "2.02",
+        "1.0"
+      ],
+      "answer": 2,
+      "explanation": "Averaging B predictors with variance sigma^2 and pairwise correlation rho has variance rho sigma^2 + (1 - rho) sigma^2 / B = 2 + 0.02 = 2.02. The second term vanishes with more trees, but the first does not: correlated trees cannot be averaged away. That is why random forests randomise the features at every split."
+    },
+    {
+      "id": "ml-knn-vote",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "ml-instance",
+      "prompt": "What does this print?",
+      "code": [
+        "X = np.array([0.0, 1.0, 2.0, 10.0, 11.0])",
+        "y = np.array([0, 0, 0, 1, 1])",
+        "def vote(q, k):",
+        "    nearest = np.argsort(np.abs(X - q))[:k]",
+        "    return int(np.bincount(y[nearest]).argmax())",
+        "print(vote(7.0, 3), vote(7.0, 5))"
+      ],
+      "choices": [
+        "1 1",
+        "1 0",
+        "0 1",
+        "0 0"
+      ],
+      "answer": 1,
+      "explanation": "With k = 3 the nearest points to 7 are 10, 11 and 2, labelled 1, 1, 0, so the vote is 1. With k = 5 the whole dataset votes and class 0 wins 3 to 2. Larger k smooths the boundary (more bias, less variance); k equal to the dataset size always predicts the majority class."
+    },
+    {
+      "id": "ml-kmeans-step",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "ml-instance",
+      "prompt": "What does this print?",
+      "code": [
+        "X = np.array([1.0, 2.0, 9.0, 10.0])",
+        "C = np.array([0.0, 5.0])",
+        "a = np.abs(X[:, None] - C[None, :]).argmin(axis=1)",
+        "print([float(X[a == j].mean()) for j in range(2)])"
+      ],
+      "choices": [
+        "[1.5, 9.5]",
+        "[0.0, 5.0]",
+        "[5.5, 5.5]",
+        "[2.5, 7.5]"
+      ],
+      "answer": 0,
+      "explanation": "One Lloyd iteration: assign each point to its nearest centroid (1 and 2 go to 0, 9 and 10 go to 5), then move each centroid to the mean of its points: [1.5, 9.5]. Each iteration can only lower the total squared distance, so k-means always converges, but possibly to a poor local optimum."
+    },
+    {
+      "id": "ml-naive-bayes",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "ml-instance",
+      "prompt": "What does this print?",
+      "code": [
+        "p_spam = 0.4",
+        "lik_spam = [0.5, 0.2]",
+        "lik_ham = [0.1, 0.05]",
+        "s = p_spam * np.prod(lik_spam)",
+        "h = (1 - p_spam) * np.prod(lik_ham)",
+        "print(round(float(s / (s + h)), 4))"
+      ],
+      "choices": [
+        "0.9524",
+        "0.4",
+        "0.8",
+        "0.9302"
+      ],
+      "answer": 3,
+      "explanation": "Naive Bayes multiplies the class prior by each feature's likelihood, treating features as independent given the class: spam 0.4 x 0.5 x 0.2 = 0.04, ham 0.6 x 0.1 x 0.05 = 0.003, posterior 0.04 / 0.043 = 0.9302. The independence assumption is usually false, which makes the probability overconfident even when the ranking is good."
+    },
+    {
+      "id": "ml-svm-margin",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "ml-instance",
+      "prompt": "What does this print?",
+      "code": [
+        "w = np.array([3.0, 4.0])",
+        "b = -5.0",
+        "x = np.array([3.0, 4.0])",
+        "print(round(float((w @ x + b) / np.linalg.norm(w)), 3))"
+      ],
+      "choices": [
+        "20.0",
+        "0.8",
+        "4.0",
+        "5.0"
+      ],
+      "answer": 2,
+      "explanation": "The signed distance from a point to the hyperplane w.x + b = 0 is (w.x + b) / ||w||: (25 - 5) / 5 = 4. Dividing by the norm matters: w.x + b alone changes if you rescale w, but the geometric distance does not. An SVM maximises the smallest such distance, the margin."
+    },
+    {
+      "id": "ml-shape-gram",
+      "kind": "shape",
+      "topic": "ml-linear",
+      "prompt": "With `X = np.zeros((100, 3))`, what is the shape of `X.T @ X`? Type \"error\" if it raises.",
+      "answer": [
+        3,
+        3
+      ],
+      "explanation": "Result shape (3, 3). The Gram matrix X^T X of n x d data is d x d, independent of n. This is why the normal equation costs O(n d^2) to form plus O(d^3) to solve."
+    },
+    {
+      "id": "ml-shape-column-trap",
+      "kind": "shape",
+      "topic": "ml-linear",
+      "prompt": "With `y = np.zeros(100)` and `yhat = np.zeros((100, 1))`, what is the shape of `y - yhat`? Type \"error\" if it raises.",
+      "answer": [
+        100,
+        100
+      ],
+      "explanation": "Result shape (100, 100). A (100,) vector minus a (100, 1) column broadcasts to (100, 100), a silent bug that turns a mean squared error into a mean over 10,000 meaningless pairs. Always make predictions and targets the same shape."
+    },
+    {
+      "id": "ml-shape-kmeans-diff",
+      "kind": "shape",
+      "topic": "ml-instance",
+      "prompt": "With `X = np.zeros((50, 2))` and `C = np.zeros((4, 2))`, what is the shape of `X[:, None, :] - C[None, :, :]`? Type \"error\" if it raises.",
+      "answer": [
+        50,
+        4,
+        2
+      ],
+      "explanation": "Result shape (50, 4, 2). Inserting a size-1 axis lets broadcasting form every point-to-centroid difference at once: (50, 4, 2). Summing squares over the last axis gives the (50, 4) distance table whose argmin along axis 1 is the assignment."
+    },
+    {
+      "id": "ml-shape-softmax-grad",
+      "kind": "shape",
+      "topic": "ml-linear",
+      "prompt": "With `H = np.zeros((32, 10))` and `P = np.zeros((32, 3))` and `Y = np.zeros((32, 3))`, what is the shape of `H.T @ (P - Y)`? Type \"error\" if it raises.",
+      "answer": [
+        10,
+        3
+      ],
+      "explanation": "Result shape (10, 3). For a batch of 32 with 10 features and 3 classes, the weight gradient is H^T (P - Y): (10, 32) @ (32, 3) = (10, 3), the same shape as the weight matrix. The batch axis is summed away by the matmul."
+    },
+    {
+      "id": "ml-derive-ols",
+      "kind": "derive",
+      "topic": "ml-linear",
+      "prompt": "Fit y = a x + b by least squares to the points below and enter the slope a, the intercept b and R^2.",
+      "fields": [
+        "slope a",
+        "intercept b",
+        "R^2"
+      ],
+      "answers": [
+        1.99,
+        0.05,
+        0.997305
+      ],
+      "tol": 0.01,
+      "explanation": "The slope is Cov(x, y) / Var(x) = 1.99 and the intercept makes the line pass through the means (b = 0.05). R^2 = 1 - SS_res / SS_tot is the fraction of the variance of y explained: 0.9973 here because the points sit very close to a line."
+    },
+    {
+      "id": "ml-derive-ridge",
+      "kind": "derive",
+      "topic": "ml-linear",
+      "prompt": "One feature x = [1, 2, 3] and targets y = [2, 4, 7], no intercept. The ridge weight is w = (x . y) / (x . x + lambda). Enter w for lambda = 0, 1 and 10.",
+      "fields": [
+        "w at lambda 0",
+        "w at lambda 1",
+        "w at lambda 10"
+      ],
+      "answers": [
+        2.214286,
+        2.066667,
+        1.291667
+      ],
+      "tol": 0.005,
+      "explanation": "x . y = 31 and x . x = 14, so w = 31 / 14 = 2.214 with no penalty, 31 / 15 = 2.067 for lambda = 1 and 31 / 24 = 1.292 for lambda = 10. The weight shrinks smoothly as lambda grows and reaches zero only in the limit."
+    },
+    {
+      "id": "ml-derive-gini-split",
+      "kind": "derive",
+      "topic": "ml-trees",
+      "prompt": "A node holds labels [0,0,0,1,1,1,1,1,1,1]. A split sends [0,0,0,1] left and the six remaining 1s right. Enter the parent Gini impurity, the size-weighted Gini of the children and the impurity decrease.",
+      "fields": [
+        "parent Gini",
+        "weighted child Gini",
+        "decrease"
+      ],
+      "answers": [
+        0.42,
+        0.15,
+        0.27
+      ],
+      "tol": 0.001,
+      "explanation": "Parent: 1 - 0.3^2 - 0.7^2 = 0.42. Left: 1 - 0.75^2 - 0.25^2 = 0.375; right is pure (0). Weighted: 0.4 x 0.375 + 0.6 x 0 = 0.15. The split removes 0.27 of impurity. A tree builder tries every threshold on every feature and keeps the largest decrease."
+    },
+    {
+      "id": "ml-derive-inertia",
+      "kind": "derive",
+      "topic": "ml-instance",
+      "prompt": "Four points (0,0), (0,2), (8,0), (8,2). Enter the k-means inertia (sum of squared distances to the assigned centroid) for k = 1, and for k = 2 with clusters {first two} and {last two}.",
+      "fields": [
+        "inertia k=1",
+        "inertia k=2"
+      ],
+      "answers": [
+        68,
+        4
+      ],
+      "tol": 0.001,
+      "explanation": "With k = 1 the centroid is (4, 1) and each point is 16 + 1 = 17 away in squared distance: 68. With k = 2 the centroids are (0, 1) and (8, 1) and every point is 1 away: 4. Inertia always falls as k rises (it reaches 0 at k = n), so you cannot pick k by minimising it; look for an elbow or use a held-out criterion."
+    },
+    {
+      "id": "ml-derive-logistic-step",
+      "kind": "derive",
+      "topic": "ml-linear",
+      "prompt": "Logistic regression with X = [[1,0],[1,1],[1,2],[1,3]] (first column is the intercept), y = [0,0,1,1], start w = [0,0] and learning rate 1. Enter the two gradient components of the mean cross-entropy and the second weight after one step.",
+      "fields": [
+        "gradient[0]",
+        "gradient[1]",
+        "w[1] after one step"
+      ],
+      "answers": [
+        0,
+        -0.5,
+        0.5
+      ],
+      "tol": 0.001,
+      "explanation": "All predictions start at 0.5, so p - y = [0.5, 0.5, -0.5, -0.5]. The intercept gradient is the mean error, 0, because the classes are balanced. The slope gradient is (0 + 0.5 - 1 - 1.5) / 4 = -0.5, so one step raises the slope to 0.5."
+    },
+    {
+      "id": "ml-derive-bias-variance",
+      "kind": "derive",
+      "topic": "ml-biasvar",
+      "prompt": "A model is refit on four different training sets and predicts 3, 5, 7 and 9 at a test point whose true value is 4. The label noise has variance 1. Enter the squared bias, the variance of the prediction and the expected squared test error.",
+      "fields": [
+        "bias squared",
+        "variance",
+        "expected test MSE"
+      ],
+      "answers": [
+        4,
+        5,
+        10
+      ],
+      "tol": 0.001,
+      "explanation": "The mean prediction is 6, so the bias is 2 and its square 4. The prediction variance is 5. Expected squared error = bias^2 + variance + irreducible noise = 4 + 5 + 1 = 10. Regularising or bagging aims to cut the variance term without inflating the bias term by more than it saves."
+    },
+    {
+      "id": "ml-ols-vs-gd",
+      "kind": "mcq",
+      "topic": "ml-linear",
+      "prompt": "When does gradient descent beat the normal equation for linear regression?",
+      "choices": [
+        "When the data is noisy",
+        "When the model includes an intercept",
+        "With very many features, where forming and solving X^T X costs O(d^3) and can be ill-conditioned",
+        "When the targets are not centred"
+      ],
+      "answer": 2,
+      "explanation": "The normal equation is exact but needs an O(n d^2) product and an O(d^3) solve, and X^T X squares the condition number. With millions of features or streaming data, iterative methods win. For a few dozen features the closed form is simpler and exact (use a stable solver such as lstsq or QR, not an explicit inverse)."
+    },
+    {
+      "id": "ml-l1-l2",
+      "kind": "mcq",
+      "topic": "ml-linear",
+      "prompt": "Why does an L1 penalty produce exact zeros while L2 only shrinks?",
+      "choices": [
+        "L1 is smooth at zero so gradient descent lands exactly on it",
+        "The L1 constraint region has corners on the axes, where the loss contours usually touch it first",
+        "L2 punishes small weights more than L1 does",
+        "L1 penalises large weights more heavily than L2"
+      ],
+      "answer": 1,
+      "explanation": "Geometrically, an L1 ball is a diamond with sparse corners, and an elliptical loss contour typically meets it at a corner, where some weights are zero. The L2 ball is round, so the touching point has no reason to lie on an axis. Algebraically, the L1 proximal step is soft-thresholding, which maps small weights to exactly zero."
+    },
+    {
+      "id": "ml-logistic-separable",
+      "kind": "mcq",
+      "topic": "ml-linear",
+      "prompt": "Logistic regression is trained with no regularisation on perfectly separable data. What happens to the weights?",
+      "choices": [
+        "They grow without bound, because scaling them up always lowers the loss",
+        "They converge to a unique finite optimum",
+        "Training fails at the first step because the loss is undefined",
+        "They oscillate around zero"
+      ],
+      "answer": 0,
+      "explanation": "On separable data, doubling the weights makes every prediction more confident and strictly lowers the cross-entropy, so there is no finite minimiser: the norm keeps growing while the direction approaches the max-margin separator. A small L2 penalty (the usual default in libraries) restores a unique solution."
+    },
+    {
+      "id": "ml-logistic-ce",
+      "kind": "mcq",
+      "topic": "ml-linear",
+      "prompt": "Why is cross-entropy preferred to squared error for logistic regression?",
+      "choices": [
+        "Squared error cannot be evaluated on probabilities",
+        "Cross-entropy has a cheaper forward pass",
+        "Squared error ignores the label",
+        "With a sigmoid output cross-entropy is convex in the weights and its gradient is simply p - y, while squared error gives vanishing gradients when the model is confidently wrong"
+      ],
+      "answer": 3,
+      "explanation": "The sigmoid derivative p(1-p) multiplies the squared-error gradient and vanishes when p is near 0 or 1, so a confidently wrong prediction barely learns. Cross-entropy cancels that factor and yields the clean gradient p - y; as a negative log-likelihood it is also the statistically natural choice."
+    },
+    {
+      "id": "ml-high-variance",
+      "kind": "mcq",
+      "topic": "ml-biasvar",
+      "prompt": "Training error is 1% and validation error is 18%. Collecting more data is cheap. What is the best first move?",
+      "choices": [
+        "Diagnose high bias: make the model bigger",
+        "Train for more epochs",
+        "Diagnose high variance: add data and/or regularise, simplify the model or bag it",
+        "Remove the validation set"
+      ],
+      "answer": 2,
+      "explanation": "A large gap between training and validation error is the signature of overfitting (variance). More data, regularisation, fewer features, early stopping or bagging attack it. A bigger model would widen the gap. Plot a learning curve to confirm: the gap should shrink as data grows."
+    },
+    {
+      "id": "ml-high-bias",
+      "kind": "mcq",
+      "topic": "ml-biasvar",
+      "prompt": "Training error is 22% and validation error is 24%, and neither falls as you add data. What does this indicate?",
+      "choices": [
+        "High variance: add regularisation",
+        "High bias: the model class is too simple or the features are uninformative, so add capacity or better features",
+        "Data leakage",
+        "A learning rate that is too small"
+      ],
+      "answer": 1,
+      "explanation": "Both errors are high and close together, so the model underfits; extra data cannot help a model that is already unable to fit what it has. Richer features, interactions, a more flexible model or less regularisation are the levers. (If the label noise is high, 22% may simply be the floor, which is why a baseline and a human-level estimate matter.)"
+    },
+    {
+      "id": "ml-cv-time",
+      "kind": "mcq",
+      "topic": "ml-biasvar",
+      "prompt": "You are forecasting weekly demand. Which validation scheme is appropriate?",
+      "choices": [
+        "Rolling-origin splits that always validate on weeks after the training window",
+        "Shuffled 5-fold cross-validation",
+        "Leave-one-out on randomly chosen weeks",
+        "Stratified k-fold on the target"
+      ],
+      "answer": 0,
+      "explanation": "Random folds put future weeks in the training set and past weeks in validation, so the model effectively sees the future and the score is optimistic. Time-ordered splits mimic deployment. The same logic applies to grouped data: keep all rows of a customer in one fold."
+    },
+    {
+      "id": "ml-scaler-leak",
+      "kind": "mcq",
+      "topic": "ml-biasvar",
+      "prompt": "A colleague standardises the whole dataset and then splits it into train and validation. What is wrong?",
+      "choices": [
+        "Nothing: scaling uses no labels so it cannot leak",
+        "Scaling must happen after the model is trained",
+        "Scaling needs the labels to be correct",
+        "Validation rows influenced the mean and variance, a small leak; fit the scaler on the training fold only, inside a pipeline"
+      ],
+      "answer": 3,
+      "explanation": "Scaling statistics are computed from data, so using held-out rows lets validation information into preprocessing. For plain standardisation the effect is usually small, but for target encoding, imputation, feature selection or PCA it can be large. The rule: anything that learns from data is fit inside the training fold."
+    },
+    {
+      "id": "ml-random-search",
+      "kind": "mcq",
+      "topic": "ml-biasvar",
+      "prompt": "Six hyperparameters, only two of which matter much. Why is random search often better than a grid for the same budget?",
+      "choices": [
+        "Random search is guaranteed to find the optimum",
+        "Grids cannot handle continuous values",
+        "Each random trial tries a new value of the important ones, whereas a grid repeats the same few values many times",
+        "Random search needs no validation set"
+      ],
+      "answer": 2,
+      "explanation": "A 3^6 grid with 729 trials tests only 3 distinct values of each important hyperparameter; 729 random trials test 729 distinct values of each. When effective dimensionality is low, random search covers the useful dimensions far better. Bayesian or successive-halving methods improve further."
+    },
+    {
+      "id": "ml-tree-controls",
+      "kind": "mcq",
+      "topic": "ml-trees",
+      "prompt": "A fully grown decision tree scores 100% on training data and poorly on validation data. Which settings tame it?",
+      "choices": [
+        "Standardise the features",
+        "Limit the depth, require a minimum number of samples per leaf, or prune with a complexity penalty",
+        "Switch the split criterion from Gini to squared error",
+        "Lower the learning rate"
+      ],
+      "answer": 1,
+      "explanation": "An unrestricted tree keeps splitting until every leaf is pure, memorising noise (low bias, high variance). Depth limits, minimum leaf size and cost-complexity pruning bound its flexibility. Scaling does nothing for trees, and a learning rate belongs to boosting."
+    },
+    {
+      "id": "ml-rf-decorrelate",
+      "kind": "mcq",
+      "topic": "ml-trees",
+      "prompt": "What does a random forest do beyond plain bagging of decision trees?",
+      "choices": [
+        "It considers only a random subset of features at each split, which decorrelates the trees",
+        "It fits each tree to the residuals of the previous one",
+        "It prunes every tree to a stump",
+        "It trains every tree on the full dataset"
+      ],
+      "answer": 0,
+      "explanation": "Bagging alone leaves trees correlated because a few strong features dominate every tree's top splits, and correlated averages shrink variance only a little (see the rho sigma^2 term). Random feature subsets force diversity, so averaging helps more. Out-of-bag samples give a free validation estimate."
+    },
+    {
+      "id": "ml-boost-vs-bag",
+      "kind": "mcq",
+      "topic": "ml-trees",
+      "prompt": "Which description of bagging versus boosting is accurate?",
+      "choices": [
+        "Bagging fits residuals; boosting averages independent trees",
+        "Both train all trees in parallel on the same data",
+        "Boosting cannot overfit",
+        "Bagging averages independent deep trees to cut variance; boosting adds shallow trees sequentially to cut bias"
+      ],
+      "answer": 3,
+      "explanation": "Bagging trains models in parallel on bootstrap samples and averages them, mainly reducing variance. Boosting builds models in sequence, each correcting the current ensemble's errors, mainly reducing bias, and it can overfit: tune the number of rounds, the learning rate and the tree depth with early stopping."
+    },
+    {
+      "id": "ml-tree-scaling",
+      "kind": "mcq",
+      "topic": "ml-trees",
+      "prompt": "Do decision trees and their ensembles need feature scaling?",
+      "choices": [
+        "Yes, otherwise large features dominate the splits",
+        "Only for categorical features",
+        "No: a split depends only on the ordering of a feature, so monotone rescaling changes nothing",
+        "Only for random forests"
+      ],
+      "answer": 2,
+      "explanation": "A threshold test x < t is unchanged by any monotone transform of x, so trees are invariant to scaling and robust to outliers in the inputs. Distance-based models (k-NN, k-means, SVMs) and penalised linear models are the ones that need it."
+    },
+    {
+      "id": "ml-knn-scale",
+      "kind": "mcq",
+      "topic": "ml-instance",
+      "prompt": "A k-NN classifier's accuracy collapses after you add a feature measured in dollars (0 to 1,000,000) next to features in [0, 1]. Why?",
+      "choices": [
+        "k-NN cannot use more than three features",
+        "Euclidean distance is dominated by the large-range feature, so the others are ignored; standardise first",
+        "Large numbers overflow the distance computation",
+        "The extra feature raises the bias"
+      ],
+      "answer": 1,
+      "explanation": "Distance sums squared differences, so a feature with a range of a million swamps features with a range of one: neighbours are chosen by dollars alone. Standardising puts features on a comparable scale. Even then, k-NN degrades in high dimensions, where distances concentrate and 'nearest' loses meaning."
+    },
+    {
+      "id": "ml-kmeans-init",
+      "kind": "mcq",
+      "topic": "ml-instance",
+      "prompt": "What problem does k-means++ initialisation address?",
+      "choices": [
+        "Poorly placed random starting centroids that trap Lloyd's algorithm in a bad local optimum",
+        "Choosing the right value of k",
+        "Clusters that are not round",
+        "The O(n) cost of each iteration"
+      ],
+      "answer": 0,
+      "explanation": "Lloyd's algorithm only improves the objective locally, so the result depends on the start. k-means++ picks each new centroid with probability proportional to its squared distance from those already chosen, spreading them out; it also carries an O(log k) expected-approximation guarantee. It does not choose k or handle elongated clusters."
+    },
+    {
+      "id": "ml-nb-assume",
+      "kind": "mcq",
+      "topic": "ml-instance",
+      "prompt": "What does Naive Bayes assume, and what is the practical consequence?",
+      "choices": [
+        "Features are independent of the class",
+        "Features are normally distributed with equal variance",
+        "The classes are balanced",
+        "Features are independent given the class; rankings are often good but probabilities are overconfident"
+      ],
+      "answer": 3,
+      "explanation": "Conditional independence turns a huge joint likelihood into a product of one-dimensional ones, so it trains in one pass and works with little data. When features are correlated the evidence is double counted, pushing probabilities toward 0 and 1 even when the class ranking is fine; calibrate before using the probabilities."
+    },
+    {
+      "id": "ml-svm-kernel",
+      "kind": "mcq",
+      "topic": "ml-instance",
+      "prompt": "What does the kernel trick give a support vector machine?",
+      "choices": [
+        "A guarantee of zero training error",
+        "Automatic feature scaling",
+        "Inner products in a high-dimensional feature space computed without ever constructing the features",
+        "Probabilities instead of margins"
+      ],
+      "answer": 2,
+      "explanation": "The SVM training problem depends on the data only through inner products x_i . x_j. Replacing them with a kernel k(x_i, x_j), such as the RBF kernel, behaves like working in a (possibly infinite-dimensional) feature space at the cost of n x n kernel evaluations. That cost is why kernel SVMs do not scale to millions of rows."
+    },
+    {
+      "id": "ml-reduce-variance",
+      "kind": "multi",
+      "topic": "ml-biasvar",
+      "prompt": "Which changes usually reduce a model's variance? Pick all that apply.",
+      "choices": [
+        "Add an L2 penalty",
+        "Collect more training data",
+        "Add high-degree polynomial features",
+        "Average many bootstrap-trained trees",
+        "Increase the maximum tree depth"
+      ],
+      "answers": [
+        0,
+        1,
+        3
+      ],
+      "explanation": "Regularisation restricts the hypothesis space, more data pins the estimate down and bagging averages out fit noise. High-degree features and deeper trees add flexibility, which lowers bias but raises variance."
+    },
+    {
+      "id": "ml-needs-scaling",
+      "kind": "multi",
+      "topic": "ml-instance",
+      "prompt": "Which of these are sensitive to feature scale and usually need standardised inputs? Pick all that apply.",
+      "choices": [
+        "k-nearest neighbours",
+        "Ridge regression",
+        "A decision tree",
+        "A random forest",
+        "k-means"
+      ],
+      "answers": [
+        0,
+        1,
+        4
+      ],
+      "explanation": "k-NN and k-means use distances, and ridge penalises coefficients whose size depends on units. Trees and forests split on orderings, so scaling is irrelevant to them."
+    },
+    {
+      "id": "ml-leakage-risks",
+      "kind": "multi",
+      "topic": "ml-biasvar",
+      "prompt": "You are predicting next-month churn as of the first of the month. Which are leakage risks? Pick all that apply.",
+      "choices": [
+        "A feature holding the account-closure date",
+        "Imputing missing values with a mean computed on the whole dataset before splitting",
+        "Tenure in months as of the prediction date",
+        "The number of cancellation calls made during the target month",
+        "The customer's plan type on the prediction date"
+      ],
+      "answers": [
+        0,
+        1,
+        3
+      ],
+      "explanation": "Anything recorded after the prediction date (closure date, cancellation calls in the target month) encodes the label itself. A mean computed before splitting is the milder preprocessing leak. Tenure and plan type as of the prediction date are legitimately known at serving time."
+    },
+    {
+      "id": "ml-bug-logistic-sign",
+      "kind": "bug",
+      "topic": "ml-linear",
+      "prompt": "`grad` should return the gradient of the mean cross-entropy for logistic regression, but gradient descent with it increases the loss. Which line is wrong?",
+      "code": [
+        "import numpy as np",
+        "def grad(X, y, w):",
+        "    p = 1 / (1 + np.exp(-(X @ w)))",
+        "    return X.T @ (y - p) / len(y)"
+      ],
+      "line": 4,
+      "explanation": "The gradient of the loss is X^T (p - y) / n: prediction minus target. The buggy line returns the negative of that, so a descent step w - lr x grad moves uphill. A cheap guard is a numerical gradient check on a tiny input; it catches sign errors immediately."
+    },
+    {
+      "id": "ml-bug-kmeans-axis",
+      "kind": "bug",
+      "topic": "ml-instance",
+      "prompt": "`update` should move each centroid to the mean of its points, but the new centroids are nonsense (and happen to have the right shape). Which line is wrong?",
+      "code": [
+        "import numpy as np",
+        "def update(X, a, k):",
+        "    return np.array([X[a == j].mean(axis=1) for j in range(k)])"
+      ],
+      "line": 3,
+      "explanation": "X[a == j] is (members, features); the cluster centre is the mean over members, axis 0. Averaging over axis 1 returns one number per member (the mean of each point's coordinates). With equal-sized clusters the result still has a plausible shape, so shape checks alone miss it."
+    },
+    {
+      "id": "ml-bug-gini-counts",
+      "kind": "bug",
+      "topic": "ml-trees",
+      "prompt": "`gini` should return the impurity of a label array but returns negative numbers. Which line is wrong?",
+      "code": [
+        "import numpy as np",
+        "def gini(y):",
+        "    c = np.bincount(y)",
+        "    return 1 - np.sum(c ** 2)"
+      ],
+      "line": 3,
+      "explanation": "Gini impurity squares class proportions, not counts. bincount returns counts, so the sum of squares exceeds 1 and the impurity goes negative. Dividing by len(y) first gives proportions that sum to 1, and a 50/50 node scores 0.5."
+    }
+  ]
+}

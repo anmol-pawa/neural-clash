@@ -1,0 +1,283 @@
+{
+  "id": "classical-lessons",
+  "title": "Classic Grove lessons",
+  "lessons": [
+    {
+      "id": "ml-linear-lesson",
+      "title": "Linear and logistic regression, and regularisation",
+      "topics": [
+        "ml-linear"
+      ],
+      "intro": "Before deep nets, a line and a sigmoid solve a surprising share of real problems, and every later idea (loss, gradient, penalty) shows up here in its simplest form. Interviewers use these models to check that you can derive the update, not just call a library.",
+      "takeaways": [
+        "Least squares has a closed form (normal equation) and an iterative form; both give the same answer when the problem is well conditioned.",
+        "L2 shrinks all weights smoothly; L1 sets small ones exactly to zero (corners of the constraint region, soft-thresholding in the update).",
+        "Logistic regression minimises cross-entropy, whose gradient is X^T (p - y) / n.",
+        "Perfectly separable data makes unpenalised logistic weights diverge; regularisation fixes that."
+      ],
+      "trap": "Penalising the intercept or leaving features unscaled when using a penalty: the penalty then depends on units, so standardise the features and leave the intercept out of the penalty.",
+      "sections": [
+        {
+          "heading": "Closed form versus gradient descent",
+          "text": "Least squares has an exact answer from the normal equation, and gradient descent on the mean squared error walks to the same place. The closed form is O(d^3) in the number of features; descent scales to huge d and streaming data.",
+          "code": [
+            "rng = np.random.default_rng(0)",
+            "X = np.hstack([np.ones((200, 1)), rng.normal(size=(200, 3))])",
+            "w_true = np.array([1.0, 2.0, -1.0, 0.5])",
+            "y = X @ w_true + rng.normal(0, 0.1, 200)",
+            "w_exact = np.linalg.solve(X.T @ X, X.T @ y)",
+            "w = np.zeros(4)",
+            "for _ in range(500):",
+            "    w -= 0.1 * (2 / len(y)) * X.T @ (X @ w - y)",
+            "print(np.round(w_exact, 3).tolist())",
+            "print(np.round(w, 3).tolist())"
+          ],
+          "output": "[0.996, 1.991, -1.01, 0.505]\n[0.996, 1.991, -1.01, 0.505]"
+        },
+        {
+          "heading": "Ridge shrinks, lasso zeroes",
+          "text": "A penalty changes the update. The L2 step multiplies a weight by a constant below one, so small weights stay small but nonzero. The L1 step is soft-thresholding: anything smaller than the threshold becomes exactly zero, which is the source of lasso's sparsity.",
+          "code": [
+            "w = np.array([3.0, 0.4, 0.2, -2.0])",
+            "t = 0.5",
+            "l2 = w / (1 + t)",
+            "l1 = np.sign(w) * np.maximum(np.abs(w) - t, 0)",
+            "print(np.round(l2, 3).tolist())",
+            "print(np.round(l1, 3).tolist())"
+          ],
+          "output": "[2.0, 0.267, 0.133, -1.333]\n[2.5, 0.0, 0.0, -1.5]"
+        },
+        {
+          "heading": "Logistic regression by gradient descent",
+          "text": "Put a sigmoid on a linear score and minimise the cross-entropy; the gradient is the clean X^T (p - y) / n. On separable data nothing stops the weights growing, which the printed norms show: the penalty-free model keeps getting more confident.",
+          "code": [
+            "rng = np.random.default_rng(1)",
+            "X = np.vstack([rng.normal(-2, 0.5, (50, 2)), rng.normal(2, 0.5, (50, 2))])",
+            "y = np.array([0.0] * 50 + [1.0] * 50)",
+            "w = np.zeros(2)",
+            "for step in range(1, 2001):",
+            "    p = 1 / (1 + np.exp(-(X @ w)))",
+            "    w -= 0.5 * X.T @ (p - y) / len(y)",
+            "    if step in (10, 100, 2000):",
+            "        print(step, round(float(np.linalg.norm(w)), 2))",
+            "print(round(float(np.mean(((X @ w) > 0) == (y == 1))), 3))"
+          ],
+          "output": "10 1.36\n100 2.19\n2000 3.37\n1.0"
+        }
+      ]
+    },
+    {
+      "id": "ml-generalise-lesson",
+      "title": "Bias, variance and honest validation",
+      "topics": [
+        "ml-biasvar"
+      ],
+      "intro": "Every modelling interview eventually asks why a model that looks great offline disappoints in production. The answer is almost always one of two stories: the model was too flexible for the data (variance) or the evaluation was not honest (leakage).",
+      "takeaways": [
+        "Training error falls with flexibility; validation error is U-shaped, and the gap signals variance.",
+        "Expected test error = bias squared + variance + irreducible noise; regularisation and bagging trade bias for variance.",
+        "Anything fit from data (scalers, imputers, selectors, encoders) belongs inside the training fold.",
+        "Use time-ordered splits for forecasting and grouped splits when rows from one entity are related."
+      ],
+      "trap": "Tuning on the test set. Each look at the test score that changes a decision turns it into another validation set; keep one untouched final set and report it once.",
+      "sections": [
+        {
+          "heading": "Sweeping model flexibility",
+          "text": "Fit polynomials of increasing degree to twelve noisy points from a sine wave. Training error keeps falling, but validation error explodes once the polynomial starts chasing noise.",
+          "code": [
+            "rng = np.random.default_rng(1)",
+            "f = lambda t: np.sin(2 * np.pi * t)",
+            "x = np.sort(rng.uniform(0, 1, 12)); xv = np.sort(rng.uniform(0, 1, 200))",
+            "y = f(x) + rng.normal(0, 0.3, 12); yv = f(xv) + rng.normal(0, 0.3, 200)",
+            "for deg in (1, 3, 9):",
+            "    c = np.polyfit(x, y, deg)",
+            "    print(deg, round(float(np.mean((np.polyval(c, x) - y) ** 2)), 3), round(float(np.mean((np.polyval(c, xv) - yv) ** 2)), 3))"
+          ],
+          "output": "1 0.233 0.3\n3 0.015 0.094\n9 0.004 1.97"
+        },
+        {
+          "heading": "Measuring bias and variance directly",
+          "text": "Refit the model on 300 fresh training sets and look at its prediction at one point. The gap between the average prediction and the truth is the bias; the spread across refits is the variance. A line is stable but wrong; a degree-7 polynomial is right on average but wobbly.",
+          "code": [
+            "rng = np.random.default_rng(2)",
+            "f = lambda t: np.sin(2 * np.pi * t)",
+            "x0 = 0.25",
+            "for deg in (1, 7):",
+            "    preds = []",
+            "    for _ in range(300):",
+            "        x = rng.uniform(0, 1, 25); y = f(x) + rng.normal(0, 0.3, 25)",
+            "        preds.append(np.polyval(np.polyfit(x, y, deg), x0))",
+            "    preds = np.array(preds)",
+            "    print(deg, round(float((preds.mean() - f(x0)) ** 2), 3), round(float(preds.var()), 3))"
+          ],
+          "output": "1 0.261 0.02\n7 0.0 0.035"
+        },
+        {
+          "heading": "Selecting features outside the fold",
+          "text": "The data below are pure noise, so no honest method can beat 50% accuracy. Choosing the ten 'best' features using all rows, test rows included, produces a model that looks skilful anyway; choosing them on the training rows only gives the truth.",
+          "code": [
+            "rng = np.random.default_rng(0)",
+            "n, d = 200, 500",
+            "X = rng.normal(size=(n, d)); y = rng.integers(0, 2, n) * 2 - 1",
+            "tr, te = np.arange(100), np.arange(100, 200)",
+            "def pick(rows, k=10):",
+            "    c = (X[rows] * y[rows][:, None]).mean(axis=0)",
+            "    return np.argsort(-np.abs(c))[:k], np.sign(c)",
+            "def test_acc(rows):",
+            "    idx, s = pick(rows)",
+            "    return round(float(np.mean(np.sign(X[te][:, idx] @ s[idx]) == y[te])), 3)",
+            "print(test_acc(np.arange(n)), test_acc(tr))"
+          ],
+          "output": "0.78 0.52"
+        }
+      ]
+    },
+    {
+      "id": "ml-trees-lesson",
+      "title": "Decision trees, forests and boosting",
+      "topics": [
+        "ml-trees"
+      ],
+      "intro": "Trees are the workhorse of tabular machine learning. They need no scaling, handle mixed features and capture interactions, and their ensembles still win most tabular benchmarks. Know how a split is chosen and why bagging and boosting help in opposite ways.",
+      "takeaways": [
+        "A split is the (feature, threshold) pair with the largest impurity decrease; trees are invariant to monotone feature scaling.",
+        "Unrestricted trees memorise (high variance): limit depth, leaf size or prune.",
+        "Bagging averages deep trees to cut variance; random feature subsets decorrelate them.",
+        "Boosting fits residuals sequentially with shallow trees to cut bias; tune rounds and learning rate with early stopping."
+      ],
+      "trap": "Trusting impurity-based feature importance blindly: it favours high-cardinality features and splits credit between correlated ones. Prefer permutation importance on held-out data.",
+      "sections": [
+        {
+          "heading": "Choosing a split",
+          "text": "For one numeric feature, try every midpoint between sorted values as a threshold, score the children by the weighted Gini impurity and keep the best. A tree builder repeats this over all features and recurses.",
+          "code": [
+            "x = np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0])",
+            "y = np.array([0, 0, 0, 1, 1, 1, 1, 0])",
+            "def gini(v):",
+            "    p = np.bincount(v, minlength=2) / len(v)",
+            "    return 1 - float((p ** 2).sum())",
+            "best = None",
+            "for t in (x[:-1] + x[1:]) / 2:",
+            "    l, r = y[x <= t], y[x > t]",
+            "    score = (len(l) * gini(l) + len(r) * gini(r)) / len(y)",
+            "    if best is None or score < best[0]:",
+            "        best = (score, t)",
+            "print(round(gini(y), 4), best[1], round(best[0], 4))"
+          ],
+          "output": "0.5 3.5 0.2"
+        },
+        {
+          "heading": "Why correlated trees cannot be averaged away",
+          "text": "Averaging B predictors that each have variance 1 and pairwise correlation rho leaves a variance of rho + (1 - rho) / B. The simulation matches the formula and shows the floor at rho: this is why random forests decorrelate their trees.",
+          "code": [
+            "rng = np.random.default_rng(0)",
+            "B, rho = 50, 0.4",
+            "common = rng.normal(size=(20000, 1))",
+            "own = rng.normal(size=(20000, B))",
+            "P = np.sqrt(rho) * common + np.sqrt(1 - rho) * own",
+            "print(round(float(P.mean(axis=1).var()), 3), round(rho + (1 - rho) / B, 3))"
+          ],
+          "output": "0.409 0.412"
+        },
+        {
+          "heading": "Boosting fits residuals",
+          "text": "Start from the mean and repeatedly fit a one-split stump to the current residuals, adding a fraction of it (the learning rate). Fifty tiny stumps follow a sine wave that no single stump could.",
+          "code": [
+            "rng = np.random.default_rng(3)",
+            "x = np.sort(rng.uniform(0, 6, 80)); y = np.sin(x) + rng.normal(0, 0.2, 80)",
+            "def stump(x, r):",
+            "    best = (1e18, 0, 0, 0)",
+            "    for t in (x[:-1] + x[1:]) / 2:",
+            "        l, rr = r[x <= t], r[x > t]",
+            "        sse = ((l - l.mean()) ** 2).sum() + ((rr - rr.mean()) ** 2).sum()",
+            "        if sse < best[0]: best = (sse, t, l.mean(), rr.mean())",
+            "    return best[1:]",
+            "pred = np.full_like(y, y.mean())",
+            "for m in range(1, 51):",
+            "    t, a, b = stump(x, y - pred)",
+            "    pred += 0.3 * np.where(x <= t, a, b)",
+            "    if m in (1, 10, 50): print(m, round(float(np.mean((pred - y) ** 2)), 4))"
+          ],
+          "output": "1 0.3516\n10 0.0517\n50 0.0237"
+        }
+      ]
+    },
+    {
+      "id": "ml-instance-lesson",
+      "title": "Neighbours, clusters and simple probabilistic classifiers",
+      "topics": [
+        "ml-instance"
+      ],
+      "intro": "k-NN, k-means, Naive Bayes and SVMs look unrelated but share one theme: they make strong assumptions about distance or independence. Knowing the assumption tells you when each one fails.",
+      "takeaways": [
+        "Distance-based models (k-NN, k-means, SVM) need standardised features; trees do not.",
+        "k is a bias-variance dial for k-NN: small k is flexible and noisy, large k is smooth.",
+        "k-means finds a local optimum of the inertia, so initialise carefully (k-means++) and restart; inertia alone cannot choose k.",
+        "Naive Bayes trains in one pass using conditional independence; its ranking is decent but its probabilities are overconfident."
+      ],
+      "trap": "Reading cluster output as ground truth. k-means always returns k clusters, even for data with none; validate them against something external.",
+      "sections": [
+        {
+          "heading": "k-NN lives and dies by scale",
+          "text": "One informative feature in [-3, 3] and one pure-noise feature in [0, 100000]. Raw Euclidean distance is decided by the noise column; standardising restores the signal.",
+          "code": [
+            "rng = np.random.default_rng(4)",
+            "n = 200",
+            "a = rng.normal(0, 1, (n, 1)); b = rng.uniform(0, 1e5, (n, 1))",
+            "yy = (a[:, 0] > 0).astype(int)",
+            "X = np.hstack([a, b]); tr, te = slice(0, 120), slice(120, n)",
+            "def knn_acc(Z, k=5):",
+            "    d = np.linalg.norm(Z[te][:, None, :] - Z[tr][None, :, :], axis=2)",
+            "    nn = np.argsort(d, axis=1)[:, :k]",
+            "    pred = (yy[tr][nn].mean(axis=1) > 0.5).astype(int)",
+            "    return round(float(np.mean(pred == yy[te])), 3)",
+            "Zs = (X - X[tr].mean(axis=0)) / X[tr].std(axis=0)",
+            "print(knn_acc(X), knn_acc(Zs))"
+          ],
+          "output": "0.512 0.975"
+        },
+        {
+          "heading": "k-means and its initialisation",
+          "text": "Lloyd's algorithm alternates assignment and centroid updates. Five well-separated blobs have an obvious best inertia, yet random starts sometimes merge two blobs and split another. k-means++ spreads the starting centroids and avoids that.",
+          "code": [
+            "rng0 = np.random.default_rng(5)",
+            "X = np.vstack([rng0.normal(c, 0.6, (40, 2)) for c in ([0, 0], [6, 0], [0, 6], [6, 6], [3, 3])])",
+            "def kmeans(X, C, it=30):",
+            "    for _ in range(it):",
+            "        a = ((X[:, None] - C[None]) ** 2).sum(axis=2).argmin(axis=1)",
+            "        C = np.array([X[a == j].mean(axis=0) if (a == j).any() else C[j] for j in range(len(C))])",
+            "    return float(((X - C[a]) ** 2).sum())",
+            "def rand_init(X, k, r): return X[r.choice(len(X), k, replace=False)]",
+            "def pp_init(X, k, r):",
+            "    C = [X[r.integers(len(X))]]",
+            "    for _ in range(k - 1):",
+            "        d2 = np.min([((X - c) ** 2).sum(axis=1) for c in C], axis=0)",
+            "        C.append(X[r.choice(len(X), p=d2 / d2.sum())])",
+            "    return np.array(C)",
+            "for name, init in (('random', rand_init), ('k-means++', pp_init)):",
+            "    res = [kmeans(X, init(X, 5, np.random.default_rng(s))) for s in range(20)]",
+            "    print(name, round(min(res), 1), round(max(res), 1), sum(r > 1.5 * min(res) for r in res))"
+          ],
+          "output": "random 130.0 1570.9 10\nk-means++ 130.0 130.0 0"
+        },
+        {
+          "heading": "Naive Bayes from counts",
+          "text": "Count words per class, add one to every count (Laplace smoothing, so an unseen word does not zero the product) and multiply. The posterior favours spam for a message containing 'free' and 'winner'.",
+          "code": [
+            "vocab = ['free', 'winner', 'meeting', 'report']",
+            "spam = np.array([[3, 2, 0, 0], [2, 1, 0, 1]])",
+            "ham = np.array([[0, 0, 3, 2], [1, 0, 2, 3]])",
+            "def loglik(counts):",
+            "    c = counts.sum(axis=0) + 1",
+            "    return np.log(c / c.sum())",
+            "msg = np.array([1, 1, 0, 0])",
+            "ls = np.log(0.5) + msg @ loglik(spam)",
+            "lh = np.log(0.5) + msg @ loglik(ham)",
+            "print(round(float(1 / (1 + np.exp(lh - ls))), 4))"
+          ],
+          "output": "0.9411"
+        }
+      ]
+    }
+  ]
+}

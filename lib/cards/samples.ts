@@ -3,6 +3,7 @@ import deckNumpy from "@/content/decks/numpy.json";
 import deckLinalg from "@/content/decks/linalg.json";
 import deckCalculus from "@/content/decks/calculus.json";
 import deckProbability from "@/content/decks/probability.json";
+import deckClassical from "@/content/decks/classical.json";
 import deckStrategy from "@/content/decks/foundations-strategy.json";
 import { loadDeck } from "./loader";
 import { GENERATORS } from "./generators";
@@ -62,6 +63,8 @@ export const CALCULUS_DECK = loadDeck(deckCalculus);
 
 /** Probability Peaks (CUR F4): probability, statistics and A/B testing; every numeric answer computed by numpy (scripts/gen-probability.mjs). */
 export const PROBABILITY_DECK = loadDeck(deckProbability);
+/** Classic Grove (CUR F5): classical machine learning; every numeric answer computed by numpy (scripts/gen-classical.mjs). */
+export const CLASSICAL_DECK = loadDeck(deckClassical);
 
 /** A varied deck: hand-written cards plus solver-generated ones, shuffled by a seed. */
 export function demoDeck(seed: number): Card[] {

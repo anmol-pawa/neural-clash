@@ -579,3 +579,12 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Verification: lint (0 errors), typecheck, test (448 pass), build, build:pages, smoke:guardian-peaks and smoke:slice at desktop and iPhone 14: no console errors or overflow; screenshots inspected. content:verify: all ok.
 - Known gaps: no Peaks overworld map or trainer dialogue yet. CI/Pages not confirmed (no `gh` CLI here).
 - Next: D4 (Classic Grove).
+
+## 2026-11-10: D4a Classic Grove lessons and deck
+- D4 was split into D4a-D4f in ROADMAP. This run: `scripts/gen-classical.mjs` generates `content/decks/classical.json` (49 cards over ml-linear / ml-biasvar / ml-trees / ml-instance: 16 predict, 4 shape, 6 derive, 17 concept, 3 multi, 3 bug) and `content/lessons/classical.json` (4 lessons: regression and penalties, bias-variance and honest validation, trees/forests/boosting, k-NN/k-means/Naive Bayes). Every predict, shape and derive answer and every lesson output is computed natively with numpy; bug cards are checked to change behaviour when fixed; `--check` guards staleness.
+- New `lib/solvers/classical.ts` (Gini/entropy/split gain, best threshold, ridge, OLS, logistic gradient, bias-variance, ensemble variance, class weights, inertia, margin, Naive Bayes) and `tests/classical.test.ts` (10 tests; logistic gradient checked against a central finite difference). Deck wired into samples, lessons and Daily Sync (Readiness skill comes in D4d).
+- Lesson numbers worth knowing: feature selection outside the fold on pure noise scores 0.78 vs 0.52 honest; k-means++ never lands >1.5x the best inertia in 20 seeds, random init does in 10.
+- Verification: lint (0 errors), typecheck, test (459 pass; `node scripts/fetch-pyodide.mjs` first, `PATH=/usr/bin:$PATH` for numpy), content:verify (all ok), build, build:pages, smoke:learn (32 lessons) and smoke:sync at desktop and iPhone 14: no console errors or overflow; lesson list screenshot inspected.
+- Known gaps: no Labs, dataset, Readiness skill, art or guardian yet (D4b-D4f).
+- Branch/CI: the session's instructions designated branch `claude/wonderful-goodall-7nkppu`, so the work was pushed there rather than to `main` (merge to `main` to deploy). CI/Pages not checked: no `gh` CLI in this session.
+- Next: D4b (classical ML Labs).
