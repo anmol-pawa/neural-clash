@@ -5,13 +5,14 @@ import numpyDeck from "../content/decks/numpy.json";
 import linalgDeck from "../content/decks/linalg.json";
 import calculusDeck from "../content/decks/calculus.json";
 import probabilityDeck from "../content/decks/probability.json";
-import { LESSONS, PYTHON_LESSONS, NUMPY_LESSONS, LINALG_LESSONS, CALCULUS_LESSONS, PROBABILITY_LESSONS, lessonById, lessonForTopic } from "../lib/lessons/lessons";
+import classicDeck from "../content/decks/classic-grove.json";
+import { LESSONS, PYTHON_LESSONS, NUMPY_LESSONS, LINALG_LESSONS, CALCULUS_LESSONS, PROBABILITY_LESSONS, CLASSIC_LESSONS, lessonById, lessonForTopic } from "../lib/lessons/lessons";
 
 const python = process.env.PYTHON ?? "python3";
 
 describe("Python Port lessons", () => {
   it("covers every topic used by the Python deck, once", () => {
-    for (const [cards, lessons] of [[deck.cards, PYTHON_LESSONS], [numpyDeck.cards, NUMPY_LESSONS], [linalgDeck.cards, LINALG_LESSONS], [calculusDeck.cards, CALCULUS_LESSONS], [probabilityDeck.cards, PROBABILITY_LESSONS]] as const) {
+    for (const [cards, lessons] of [[deck.cards, PYTHON_LESSONS], [numpyDeck.cards, NUMPY_LESSONS], [linalgDeck.cards, LINALG_LESSONS], [calculusDeck.cards, CALCULUS_LESSONS], [probabilityDeck.cards, PROBABILITY_LESSONS], [classicDeck.cards, CLASSIC_LESSONS]] as const) {
       const topics = new Set(cards.map((c) => c.topic));
       for (const t of topics) expect(lessonForTopic(t), `no lesson for ${t}`).toBeDefined();
       const claimed = lessons.flatMap((l) => l.topics);
@@ -36,7 +37,7 @@ describe("Python Port lessons", () => {
   it("shows the real stdout of every code example (re-run natively)", () => {
     for (const l of LESSONS) for (const s of l.sections) {
       if (!s.code) { expect(s.output).toBeUndefined(); continue; }
-      const pre = NUMPY_LESSONS.includes(l) || LINALG_LESSONS.includes(l) || CALCULUS_LESSONS.includes(l) || PROBABILITY_LESSONS.includes(l) ? "import numpy as np\n" : "";
+      const pre = NUMPY_LESSONS.includes(l) || LINALG_LESSONS.includes(l) || CALCULUS_LESSONS.includes(l) || PROBABILITY_LESSONS.includes(l) || CLASSIC_LESSONS.includes(l) ? "import numpy as np\n" : "";
       const out = execFileSync(python, ["-I", "-c", pre + s.code.join("\n")], { encoding: "utf8" }).trim();
       expect(s.output, `${l.id}: ${s.heading}`).toBe(out);
     }

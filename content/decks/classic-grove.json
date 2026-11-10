@@ -1,0 +1,678 @@
+{
+  "id": "classic-grove",
+  "title": "Classic Grove: classical machine learning",
+  "cards": [
+    {
+      "id": "grove-normal-eq",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "grove-linear",
+      "prompt": "What does this print?",
+      "code": [
+        "X = np.array([[1, 0], [1, 1], [1, 2], [1, 3]], dtype=float)",
+        "y = np.array([1.0, 3.0, 5.0, 7.0])",
+        "w = np.linalg.solve(X.T @ X, X.T @ y)",
+        "print(np.round(w, 3))"
+      ],
+      "choices": [
+        "[2. 1.]",
+        "[1. 2.]",
+        "[1. 1.]",
+        "[0. 2.]"
+      ],
+      "answer": 1,
+      "explanation": "The first column of ones is the intercept, so w = [intercept, slope]. The data lie exactly on y = 1 + 2x, and solving the normal equations (X^T X) w = X^T y recovers it. Use solve (or lstsq) rather than an explicit inverse: it is faster and more stable."
+    },
+    {
+      "id": "grove-ridge-shrink",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "grove-linear",
+      "prompt": "What does this print? (One feature, no intercept; ridge solves w = (x.x + lam) ^ -1 x.y.)",
+      "code": [
+        "x = np.array([1.0, 2.0, 3.0])",
+        "y = np.array([2.0, 4.0, 6.0])",
+        "print(*[x @ y / (x @ x + lam) for lam in (0.0, 14.0)])"
+      ],
+      "choices": [
+        "2.0 1.0",
+        "2.0 2.0",
+        "2.0 0.5",
+        "1.0 2.0"
+      ],
+      "answer": 0,
+      "explanation": "With lam = 0 this is ordinary least squares, w = 28 / 14 = 2. Adding lam = 14 to the denominator halves the weight to 1: the L2 penalty shrinks every coefficient toward zero, trading a little bias for lower variance. Ridge never sets a weight exactly to zero."
+    },
+    {
+      "id": "grove-logit",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "grove-linear",
+      "prompt": "What does this print? (Log-odds of p = 0.8.)",
+      "code": [
+        "p = 0.8",
+        "print(round(float(np.log(p / (1 - p))), 4))"
+      ],
+      "choices": [
+        "0.8",
+        "0.2231",
+        "1.6094",
+        "1.3863"
+      ],
+      "answer": 3,
+      "explanation": "Logistic regression is linear in the log-odds: log(p / (1 - p)) = w.x + b. For p = 0.8 the odds are 4 to 1 and the log-odds are ln 4 = 1.3863. The sigmoid is the inverse map from log-odds back to a probability."
+    },
+    {
+      "id": "grove-soft-threshold",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "grove-linear",
+      "prompt": "What does this print? (The L1 proximal step shrinks each weight by lam toward zero and clips at zero.)",
+      "code": [
+        "w = np.array([3.0, 0.4, 0.2, -2.0])",
+        "lam = 0.5",
+        "print((np.sign(w) * np.maximum(np.abs(w) - lam, 0)).tolist())"
+      ],
+      "choices": [
+        "[2.5, -0.1, -0.3, -1.5]",
+        "[3.0, 0.0, 0.0, -2.0]",
+        "[2.5, 0.0, 0.0, -1.5]",
+        "[2.5, 0.4, 0.2, -1.5]"
+      ],
+      "answer": 2,
+      "explanation": "Soft-thresholding subtracts lam from each magnitude and floors at zero, so the two small weights become exactly 0.0 while the big ones shrink by 0.5. This is why L1 (lasso) produces sparse models and L2 only shrinks: the L1 penalty has a corner at zero."
+    },
+    {
+      "id": "grove-gini",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "grove-trees",
+      "prompt": "What does this print?",
+      "code": [
+        "y = np.array([0, 0, 0, 1, 1, 1, 1, 1])",
+        "p = y.mean()",
+        "print(round(float(1 - p ** 2 - (1 - p) ** 2), 4))"
+      ],
+      "choices": [
+        "0.625",
+        "0.4688",
+        "0.9544",
+        "0.2344"
+      ],
+      "answer": 1,
+      "explanation": "Gini impurity is 1 - sum of squared class proportions. With 5/8 positives it is 1 - 0.3906 - 0.1406 = 0.4688, close to the 0.5 maximum for two classes. A pure node scores 0; a tree grows by picking the split that lowers the weighted child impurity the most."
+    },
+    {
+      "id": "grove-info-gain",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "grove-trees",
+      "prompt": "What does this print?",
+      "code": [
+        "def H(y):",
+        "    p = np.mean(y)",
+        "    return 0.0 if p in (0, 1) else -(p * np.log2(p) + (1 - p) * np.log2(1 - p))",
+        "y = np.array([0, 0, 0, 1, 1, 1, 1, 1])",
+        "left, right = y[:4], y[4:]",
+        "print(round(float(H(y) - (len(left) * H(left) + len(right) * H(right)) / len(y)), 3))"
+      ],
+      "choices": [
+        "0.549",
+        "0.954",
+        "0.811",
+        "0.0"
+      ],
+      "answer": 0,
+      "explanation": "Information gain = parent entropy minus the size-weighted child entropy: 0.954 - (0.5 x 0.811 + 0.5 x 0) = 0.549 bits. The right child is pure, which is where most of the gain comes from."
+    },
+    {
+      "id": "grove-boost-residual",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "grove-trees",
+      "prompt": "What does this print? (One boosting round: start from the mean, then move a learning-rate fraction toward each residual.)",
+      "code": [
+        "y = np.array([3.0, 5.0, 10.0])",
+        "f = np.full(3, y.mean())",
+        "r = y - f",
+        "print(np.round(f + 0.5 * r, 2).tolist())"
+      ],
+      "choices": [
+        "[3.0, 5.0, 10.0]",
+        "[6.0, 6.0, 6.0]",
+        "[1.5, 4.5, 12.0]",
+        "[4.5, 5.5, 8.0]"
+      ],
+      "answer": 3,
+      "explanation": "The starting prediction is the mean, 6. The residuals are [-3, -1, 4], and a learning rate of 0.5 moves half way: [4.5, 5.5, 8.0]. Gradient boosting for squared error is exactly this: each new weak learner is fit to the residuals (the negative gradient), and a small learning rate takes cautious steps."
+    },
+    {
+      "id": "grove-knn-vote",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "grove-instance",
+      "prompt": "What does this print? (Labels of the three nearest points, then their majority vote.)",
+      "code": [
+        "X = np.array([0.0, 1.0, 2.0, 3.0, 10.0])",
+        "y = np.array([0, 0, 1, 1, 1])",
+        "idx = np.argsort(np.abs(X - 1.4))[:3]",
+        "print(y[idx].tolist(), int(np.bincount(y[idx]).argmax()))"
+      ],
+      "choices": [
+        "[0, 1, 1] 1",
+        "[0, 0, 1] 0",
+        "[0, 1, 0] 0",
+        "[1, 0, 0] 0"
+      ],
+      "answer": 2,
+      "explanation": "Distances to 1.4 are [1.4, 0.4, 0.6, 1.6, 8.6], so the nearest three are indices 1, 2, 0 with labels [0, 1, 0] and the vote is 0. Note that k = 1 would say 0 as well but k = 2 would tie: use an odd k for two classes, and remember k-NN has no training step and a costly predict step."
+    },
+    {
+      "id": "grove-kmeans-step",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "grove-instance",
+      "prompt": "What does this print? (One k-means iteration: assign to the nearest centre, then move each centre to its cluster mean.)",
+      "code": [
+        "X = np.array([1.0, 2.0, 9.0, 10.0, 11.0])",
+        "c = np.array([0.0, 5.0])",
+        "a = np.abs(X[:, None] - c[None, :]).argmin(axis=1)",
+        "print(a.tolist(), [float(X[a == k].mean()) for k in range(2)])"
+      ],
+      "choices": [
+        "[0, 0, 0, 1, 1] [4.0, 10.5]",
+        "[0, 0, 1, 1, 1] [1.5, 10.0]",
+        "[0, 0, 1, 1, 1] [1.5, 9.0]",
+        "[0, 1, 1, 1, 1] [1.0, 8.0]"
+      ],
+      "answer": 1,
+      "explanation": "The point 2.0 is 2 from centre 0 and 3 from centre 5, so it joins cluster 0; everything from 9 up joins cluster 1. The centres then move to the means, 1.5 and 10.0. Each such step never increases the total squared distance, which is why k-means converges (to a local minimum, hence k-means++ initialisation and several restarts)."
+    },
+    {
+      "id": "grove-nb-smoothing",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "grove-instance",
+      "prompt": "What does this print? (A word never seen in a class: raw estimate versus add-one smoothing. 10 words seen in the class, vocabulary of 5.)",
+      "code": [
+        "count, total, vocab = 0, 10, 5",
+        "print(count / total, round((count + 1) / (total + vocab), 4))"
+      ],
+      "choices": [
+        "0.0 0.0667",
+        "0.1 0.1",
+        "0.0 0.0",
+        "0.0 0.1"
+      ],
+      "answer": 0,
+      "explanation": "Without smoothing an unseen word has probability 0, and because Naive Bayes multiplies per-word probabilities one such word zeroes the whole class. Laplace (add-one) smoothing gives (0 + 1) / (10 + 5) = 0.0667 and keeps every probability positive."
+    },
+    {
+      "id": "grove-leaky-scaler",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "grove-practice",
+      "prompt": "What does this print? (Mean of the training rows, then the mean if the scaler is fitted on train and test together.)",
+      "code": [
+        "train = np.array([1.0, 2.0, 3.0])",
+        "test = np.array([100.0])",
+        "print(train.mean(), np.concatenate([train, test]).mean())"
+      ],
+      "choices": [
+        "2.0 2.0",
+        "26.5 2.0",
+        "2.0 100.0",
+        "2.0 26.5"
+      ],
+      "answer": 3,
+      "explanation": "Fitting the scaler (or imputer, or encoder) on all the data lets test-set statistics leak into the features: the mean here jumps from 2.0 to 26.5 because of one test row. Fit on the training split only, then apply the same transform to validation and test."
+    },
+    {
+      "id": "grove-class-weight",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "grove-practice",
+      "prompt": "What does this print? (Balanced class weights n / (k x count) for 90 negatives and 10 positives.)",
+      "code": [
+        "n, k = 100, 2",
+        "print(round(n / (k * 90), 3), n / (k * 10))"
+      ],
+      "choices": [
+        "0.9 0.1",
+        "0.1 0.9",
+        "0.556 5.0",
+        "0.5 0.5"
+      ],
+      "answer": 2,
+      "explanation": "Balanced weights make each class contribute equally to the loss: 100 / (2 x 90) = 0.556 for the common class and 100 / (2 x 10) = 5.0 for the rare one. It is an alternative to resampling and, unlike SMOTE-style oversampling, adds no synthetic rows - but it does shift predicted probabilities, so recalibrate if you need real probabilities."
+    },
+    {
+      "id": "grove-kfold-sizes",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "grove-practice",
+      "prompt": "What does this print? (Fold sizes when 10 rows are split into 3 folds.)",
+      "code": [
+        "print([len(f) for f in np.array_split(np.arange(10), 3)])"
+      ],
+      "choices": [
+        "[3, 3, 4]",
+        "[4, 3, 3]",
+        "[3, 3, 3]",
+        "[4, 4, 2]"
+      ],
+      "answer": 1,
+      "explanation": "array_split gives the first folds the extra rows: sizes [4, 3, 3]. In k-fold cross-validation every row is validated exactly once; remember to shuffle, stratify for imbalanced labels, and group or time-split when rows are not independent."
+    },
+    {
+      "id": "grove-overfit-poly",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "grove-practice",
+      "prompt": "What does this print? (Training MSE of a degree-1 and a degree-7 polynomial fitted to eight alternating points.)",
+      "code": [
+        "x = np.arange(8.0)",
+        "y = np.array([0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0])",
+        "print([round(float(np.mean((np.polyval(np.polyfit(x, y, d), x) - y) ** 2)), 4) for d in (1, 7)])"
+      ],
+      "choices": [
+        "[0.2381, 0.0]",
+        "[0.0, 0.2486]",
+        "[0.25, 0.25]",
+        "[0.2486, 0.2486]"
+      ],
+      "answer": 0,
+      "explanation": "A degree-7 polynomial has eight coefficients, so it interpolates eight points exactly and its training error is 0. The straight line cannot follow the alternation (MSE about 0.24). Zero training error says nothing about new points: that is overfitting, and why you judge models on held-out data."
+    },
+    {
+      "id": "grove-shape-design",
+      "kind": "shape",
+      "topic": "grove-linear",
+      "prompt": "With `X = np.zeros((100, 3))`, what is the shape of `np.c_[np.ones(100), X]`? Type \"error\" if it raises.",
+      "answer": [
+        100,
+        4
+      ],
+      "explanation": "Result shape (100, 4). Prepending a column of ones adds the intercept as just another weight, so 3 features become 4 columns: (100, 4). Forgetting the column forces the fit through the origin."
+    },
+    {
+      "id": "grove-shape-gram",
+      "kind": "shape",
+      "topic": "grove-linear",
+      "prompt": "With `X = np.zeros((100, 4))`, what is the shape of `X.T @ X`? Type \"error\" if it raises.",
+      "answer": [
+        4,
+        4
+      ],
+      "explanation": "Result shape (4, 4). X^T X pairs every feature with every other, so its shape depends only on the number of features: (4, 4), however many rows there are. That is why the normal equation costs O(d^3) to solve plus O(n d^2) to build."
+    },
+    {
+      "id": "grove-shape-knn-dist",
+      "kind": "shape",
+      "topic": "grove-instance",
+      "prompt": "With `Q = np.zeros((5, 2))` and `T = np.zeros((8, 2))`, what is the shape of `np.linalg.norm(Q[:, None, :] - T[None, :, :], axis=2)`? Type \"error\" if it raises.",
+      "answer": [
+        5,
+        8
+      ],
+      "explanation": "Result shape (5, 8). Broadcasting (5, 1, 2) against (1, 8, 2) gives (5, 8, 2) differences; the norm over the last axis leaves one distance per query/train pair: (5, 8). This is the vectorised core of k-NN, at the cost of n_query x n_train memory."
+    },
+    {
+      "id": "grove-shape-kmeans-assign",
+      "kind": "shape",
+      "topic": "grove-instance",
+      "prompt": "With `X = np.zeros((200, 2))` and `C = np.zeros((3, 2))`, what is the shape of `np.argmin(np.linalg.norm(X[:, None] - C[None], axis=2), axis=1)`? Type \"error\" if it raises.",
+      "answer": [
+        200
+      ],
+      "explanation": "Result shape (200,). The distance matrix is (200, 3); taking argmin over the centre axis returns one centre index per point: (200,). Updating centres then averages the points of each index."
+    },
+    {
+      "id": "grove-derive-ols",
+      "kind": "derive",
+      "topic": "grove-linear",
+      "prompt": "Fit y = b + m x by least squares to the points (1, 2.1), (2, 3.9), (3, 6.2), (4, 7.8), (5, 10.1). Enter the intercept b, the slope m and R^2.",
+      "fields": [
+        "intercept",
+        "slope",
+        "R^2"
+      ],
+      "answers": [
+        0.05,
+        1.99,
+        0.997305
+      ],
+      "tol": 0.01,
+      "explanation": "Solving the normal equations gives the line of best fit. R^2 is 1 minus the ratio of the residual sum of squares to the total sum of squares around the mean: the share of variance the line explains. A high R^2 on training data is not evidence of generalisation."
+    },
+    {
+      "id": "grove-derive-gini",
+      "kind": "derive",
+      "topic": "grove-trees",
+      "prompt": "A node holds labels 0,0,0,0,1,1,1,1,1,0 (five of each class). A split sends 0,0,0,0,1 left and 1,1,1,1,0 right. Enter the parent Gini impurity, the size-weighted child Gini and the impurity decrease.",
+      "fields": [
+        "parent Gini",
+        "weighted child Gini",
+        "decrease"
+      ],
+      "answers": [
+        0.5,
+        0.32,
+        0.18
+      ],
+      "tol": 0.005,
+      "explanation": "The parent is maximally impure (0.5). Each child is 4:1, impurity 1 - 0.64 - 0.04 = 0.32, so the weighted child impurity is 0.32 and the split removes 0.18. A tree builder tries every feature and threshold and keeps the split with the largest decrease."
+    },
+    {
+      "id": "grove-derive-inertia",
+      "kind": "derive",
+      "topic": "grove-instance",
+      "prompt": "Points 1, 2, 9, 10, 11 are clustered with the centres 1.5 and 10. Enter the k-means inertia (sum of squared distances to the assigned centre), the inertia if everything were one cluster (centre at the overall mean), and the fraction of that variation the two clusters remove.",
+      "fields": [
+        "inertia k=2",
+        "inertia k=1",
+        "fraction removed"
+      ],
+      "answers": [
+        2.5,
+        89.2,
+        0.971973
+      ],
+      "tol": 0.005,
+      "explanation": "Two clusters leave an inertia of 0.25 + 0.25 + 1 + 0 + 1 = 2.5 against 89.2 for one cluster, removing about 97% of the variation. Inertia always falls as k grows, so choosing k needs an elbow plot, silhouette score or a downstream metric, not the inertia alone."
+    },
+    {
+      "id": "grove-derive-imbalance",
+      "kind": "derive",
+      "topic": "grove-practice",
+      "prompt": "A dataset has 1,000 rows of which 10 are positive. Enter the accuracy of a model that always predicts negative, the balanced weight n / (2 x positives) of the positive class and the balanced weight of the negative class.",
+      "fields": [
+        "always-negative accuracy",
+        "positive weight",
+        "negative weight"
+      ],
+      "answers": [
+        0.99,
+        50,
+        0.505051
+      ],
+      "tol": 0.005,
+      "explanation": "Always saying 'negative' scores 99% accuracy while catching nothing, the standard reason accuracy is the wrong metric under imbalance. Balanced weights (50 and 0.505) make the 10 positives count as much as the 990 negatives in total."
+    },
+    {
+      "id": "grove-derive-nb",
+      "kind": "derive",
+      "topic": "grove-instance",
+      "prompt": "A spam prior is 0.3. The word 'free' appears in 40% of spam and 5% of ham; the word 'meeting' appears in 20% of spam and 10% of ham. Assuming the words are independent given the class, enter P(spam | 'free') and P(spam | 'free' and 'meeting').",
+      "fields": [
+        "P(spam | free)",
+        "P(spam | free, meeting)"
+      ],
+      "answers": [
+        0.774194,
+        0.872727
+      ],
+      "tol": 0.005,
+      "explanation": "Naive Bayes multiplies the per-word likelihoods (the 'naive' independence assumption) by the class prior and normalises: 0.12 / (0.12 + 0.035) = 0.774 for one word, 0.024 / (0.024 + 0.0035) = 0.873 for both. The probabilities are usually over-confident because words are not truly independent, but the ranking is often good."
+    },
+    {
+      "id": "grove-ols-vs-gd",
+      "kind": "mcq",
+      "topic": "grove-linear",
+      "prompt": "When does the closed-form normal equation stop being the sensible way to fit linear regression?",
+      "choices": [
+        "Whenever the data have noise",
+        "Whenever the intercept is nonzero",
+        "With very many features or rows, where O(d^3) solves and storing X^T X are costly and gradient methods scale better",
+        "When the labels are continuous"
+      ],
+      "answer": 2,
+      "explanation": "Solving (X^T X) w = X^T y costs O(n d^2 + d^3) and goes wrong when features are collinear (X^T X is singular). For millions of features, streaming data or non-linear models, (stochastic) gradient descent is the practical choice; for small and medium problems the closed form is exact and fast."
+    },
+    {
+      "id": "grove-l1-l2",
+      "kind": "mcq",
+      "topic": "grove-linear",
+      "prompt": "Why does an L1 penalty tend to give exactly-zero weights while L2 does not?",
+      "choices": [
+        "L1 is a larger penalty than L2",
+        "The L1 constraint region has corners on the axes, where the loss contours often touch it; L2's round region has none",
+        "L2 penalises only the bias",
+        "L1 uses a smaller learning rate"
+      ],
+      "answer": 1,
+      "explanation": "Picture the loss contours expanding until they touch the constraint region: the L1 diamond is pointy on the axes so the touch point often has some coordinates exactly zero, which is built-in feature selection. The L2 disc is smooth, so weights shrink but stay nonzero. Elastic net blends the two."
+    },
+    {
+      "id": "grove-logistic-loss",
+      "kind": "mcq",
+      "topic": "grove-linear",
+      "prompt": "Why is logistic regression trained with cross-entropy rather than squared error on the probability?",
+      "choices": [
+        "Cross-entropy is the Bernoulli negative log-likelihood and gives a convex problem with strong gradients on confident mistakes",
+        "Squared error cannot be computed for probabilities",
+        "Cross-entropy ignores class imbalance",
+        "Squared error has no minimum"
+      ],
+      "answer": 0,
+      "explanation": "Cross-entropy follows from maximum likelihood and, for a linear logit, is convex with gradient (p - y) x, so a confidently wrong prediction gets a large push. Squared error through a sigmoid is non-convex and its gradient vanishes when the sigmoid saturates, exactly where the model is most wrong."
+    },
+    {
+      "id": "grove-bias-variance",
+      "kind": "mcq",
+      "topic": "grove-practice",
+      "prompt": "A model has 2% training error and 25% validation error. What is the most likely diagnosis and a sensible first move?",
+      "choices": [
+        "High bias (underfitting): use a more complex model",
+        "Label leakage from the validation set into training",
+        "The learning rate is too small",
+        "High variance (overfitting): add data, regularise or simplify the model"
+      ],
+      "answer": 3,
+      "explanation": "A large train/validation gap means the model memorises noise: variance. More data, stronger regularisation, fewer features, bagging or early stopping all help. If both errors were high and close together, that would be bias, and the fix would be a richer model or better features."
+    },
+    {
+      "id": "grove-cv-purpose",
+      "kind": "mcq",
+      "topic": "grove-practice",
+      "prompt": "What is k-fold cross-validation mainly for?",
+      "choices": [
+        "Making the model train faster",
+        "Increasing the number of training rows",
+        "Estimating generalisation and comparing settings with less variance than one split, without touching the final test set",
+        "Removing the need for a test set"
+      ],
+      "answer": 2,
+      "explanation": "Each row is validated once by a model that never saw it, so the averaged score is a steadier estimate than a single split, and the spread across folds shows how noisy it is. Choose hyperparameters with CV, then report once on an untouched test set; nesting the search inside CV avoids optimistic scores."
+    },
+    {
+      "id": "grove-tree-overfit",
+      "kind": "mcq",
+      "topic": "grove-trees",
+      "prompt": "An unrestricted decision tree reaches 100% training accuracy. What is the usual remedy?",
+      "choices": [
+        "Train it for more epochs",
+        "Limit depth or leaf size, prune, or average many trees",
+        "Add more levels until validation improves",
+        "Standardise the features"
+      ],
+      "answer": 1,
+      "explanation": "A tree can always isolate every training row, so it memorises: low bias, very high variance. Depth and min-samples limits or cost-complexity pruning regularise one tree; bagging (random forests) averages many high-variance trees to cut the variance. Scaling features does nothing for trees because they only compare thresholds."
+    },
+    {
+      "id": "grove-bagging-boosting",
+      "kind": "mcq",
+      "topic": "grove-trees",
+      "prompt": "How do bagging (random forests) and boosting differ?",
+      "choices": [
+        "Bagging averages independently trained deep trees to reduce variance; boosting fits shallow trees sequentially to the errors to reduce bias",
+        "Bagging is sequential and boosting is parallel",
+        "Boosting needs no hyperparameters",
+        "They are the same algorithm with different names"
+      ],
+      "answer": 0,
+      "explanation": "Random forests train trees on bootstrap samples (and random feature subsets) in parallel and average them: variance goes down. Gradient boosting adds small trees one at a time, each fit to the residual gradient of the current ensemble: it attacks bias but can overfit if you add too many rounds, so use a small learning rate and early stopping."
+    },
+    {
+      "id": "grove-trees-scale",
+      "kind": "mcq",
+      "topic": "grove-trees",
+      "prompt": "Which model family needs feature scaling the LEAST?",
+      "choices": [
+        "k-nearest neighbours",
+        "Ridge regression",
+        "Support vector machines with an RBF kernel",
+        "Decision trees and tree ensembles"
+      ],
+      "answer": 3,
+      "explanation": "Trees split on thresholds of one feature at a time, so any monotone rescaling gives the same tree. k-NN, SVMs and k-means use distances, and ridge or lasso penalise weights whose size depends on feature units, so those all need standardisation."
+    },
+    {
+      "id": "grove-knn-curse",
+      "kind": "mcq",
+      "topic": "grove-instance",
+      "prompt": "Why does k-NN degrade in very high dimensions?",
+      "choices": [
+        "It runs out of memory for the labels",
+        "The vote always ties",
+        "Distances concentrate: the nearest and farthest points become almost equally far, so 'nearest' stops being informative",
+        "Euclidean distance becomes negative"
+      ],
+      "answer": 2,
+      "explanation": "In high dimensions most volume sits far from any point and pairwise distances bunch together, so neighbours carry little signal and need exponentially more data. Dimension reduction, learned embeddings or approximate-nearest-neighbour indexes on good embeddings are the usual answers."
+    },
+    {
+      "id": "grove-kmeans-limits",
+      "kind": "mcq",
+      "topic": "grove-instance",
+      "prompt": "Which data does k-means handle poorly?",
+      "choices": [
+        "Clusters that are compact and similar in size",
+        "Clusters that are non-spherical, very different in size or density, or contain strong outliers",
+        "Data with fewer than 100 rows",
+        "Data that has been standardised"
+      ],
+      "answer": 1,
+      "explanation": "k-means minimises squared distance to a centre, so it favours round, similar-sized clusters and is dragged by outliers. Elongated or nested shapes suit DBSCAN or spectral methods; overlapping Gaussians of different shape suit a Gaussian mixture fitted with EM."
+    },
+    {
+      "id": "grove-svm-margin",
+      "kind": "mcq",
+      "topic": "grove-instance",
+      "prompt": "What does a linear support vector machine try to maximise?",
+      "choices": [
+        "The margin: the distance between the separating hyperplane and the closest training points (the support vectors)",
+        "The number of misclassified points",
+        "The training accuracy at any cost",
+        "The number of features used"
+      ],
+      "answer": 0,
+      "explanation": "Among all separating hyperplanes the SVM picks the one furthest from the nearest points of both classes; only those support vectors determine it. The soft-margin C parameter trades margin width against violations. Kernels let the same idea draw curved boundaries by comparing points in an implicit feature space."
+    },
+    {
+      "id": "grove-gen-vs-disc",
+      "kind": "mcq",
+      "topic": "grove-instance",
+      "prompt": "How does Naive Bayes differ from logistic regression?",
+      "choices": [
+        "Naive Bayes needs gradient descent and logistic regression does not",
+        "Naive Bayes only works for two classes",
+        "Logistic regression assumes features are independent",
+        "Naive Bayes is generative (models P(x | class) and P(class)) with a strong independence assumption; logistic regression models P(class | x) directly"
+      ],
+      "answer": 3,
+      "explanation": "Naive Bayes fits class-conditional word or feature frequencies by counting, which is fast and works with tiny data, but its independence assumption makes probabilities over-confident. Logistic regression optimises the conditional likelihood directly and usually wins with enough data."
+    },
+    {
+      "id": "grove-missing-data",
+      "kind": "mcq",
+      "topic": "grove-practice",
+      "prompt": "A column is missing for 30% of rows, and rows with a missing value are more likely to churn. What is a sound approach?",
+      "choices": [
+        "Drop the column silently",
+        "Fill with the mean of the full dataset including test",
+        "Impute using statistics from the training split and add a 'was missing' indicator feature",
+        "Delete every incomplete row"
+      ],
+      "answer": 2,
+      "explanation": "Missingness here carries signal, so keep it as a feature. Compute imputation values (median, mode, or a model) on the training split only to avoid leakage, and apply the same values later. Dropping rows biases the sample when the missingness is not random."
+    },
+    {
+      "id": "grove-imbalance-moves",
+      "kind": "multi",
+      "topic": "grove-practice",
+      "prompt": "Only 1% of rows are positive. Which are reasonable ways to handle it? Pick all that apply.",
+      "choices": [
+        "Use precision-recall metrics and pick a threshold from a cost trade-off",
+        "Apply class weights or resample the training split only",
+        "Oversample before splitting into train and validation",
+        "Report plain accuracy as the headline metric"
+      ],
+      "answers": [
+        0,
+        1
+      ],
+      "explanation": "Evaluate with precision, recall and PR-AUC rather than accuracy, and treat the threshold as a business decision. Weights or resampling belong inside the training split: oversampling before the split copies the same positive into both train and validation and inflates the score."
+    },
+    {
+      "id": "grove-leak-sources",
+      "kind": "multi",
+      "topic": "grove-practice",
+      "prompt": "Which of these cause data leakage? Pick all that apply.",
+      "choices": [
+        "Fitting a scaler on the full dataset before splitting",
+        "Selecting features by their correlation with the label using all rows, then cross-validating",
+        "Computing a mean-encoding of a category from the training rows only",
+        "Using a feature recorded after the outcome happened"
+      ],
+      "answers": [
+        0,
+        1,
+        3
+      ],
+      "explanation": "Anything fitted or chosen using validation or test rows lets that information leak into training, including feature selection and scalers; features that only exist after the label is known are leakage too. A target encoding computed inside the training fold is fine (add smoothing and out-of-fold encoding to limit overfitting)."
+    },
+    {
+      "id": "grove-bug-gini",
+      "kind": "bug",
+      "topic": "grove-trees",
+      "prompt": "`gini(y)` should return the Gini impurity of 0/1 labels, but a perfectly mixed node scores 1 instead of 0.5. Which line is wrong?",
+      "code": [
+        "import numpy as np",
+        "def gini(y):",
+        "    p = np.mean(y)",
+        "    return 1 - p ** 2 + (1 - p) ** 2"
+      ],
+      "line": 4,
+      "explanation": "Impurity is one minus the SUM of squared class proportions, so both squares are subtracted. With the plus sign a pure node would score 2 - 2p, a balanced one 1, and the split search would prefer the wrong splits. Sanity checks: pure = 0, 50/50 = 0.5."
+    },
+    {
+      "id": "grove-bug-kmeans",
+      "kind": "bug",
+      "topic": "grove-instance",
+      "prompt": "`update_centres(X, a, k)` should move each centre to the mean of its points, but the centres drift far from the data. Which line is wrong?",
+      "code": [
+        "import numpy as np",
+        "def update_centres(X, a, k):",
+        "    return np.array([X[a == j].sum(axis=0) for j in range(k)])"
+      ],
+      "line": 3,
+      "explanation": "A centroid is the MEAN of its members, not their sum, so the sum grows with the cluster size and flings the centre away. (Production code must also handle an empty cluster, where the mean is nan: re-seed it or keep the old centre.)"
+    },
+    {
+      "id": "grove-bug-ridge",
+      "kind": "bug",
+      "topic": "grove-linear",
+      "prompt": "`ridge(X, y, lam)` should solve (X^T X + lam I) w = X^T y, but the penalty has no effect. Which line is wrong?",
+      "code": [
+        "import numpy as np",
+        "def ridge(X, y, lam):",
+        "    d = X.shape[1]",
+        "    A = X.T @ X + lam * np.zeros((d, d))",
+        "    return np.linalg.solve(A, X.T @ y)"
+      ],
+      "line": 4,
+      "explanation": "The L2 penalty adds lam to the diagonal, lam times the identity matrix. A zero matrix leaves ordinary least squares, so the 'regularised' fit is unchanged (and singular when features are collinear). In practice leave the intercept column unpenalised."
+    }
+  ]
+}

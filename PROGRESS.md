@@ -579,3 +579,11 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Verification: lint (0 errors), typecheck, test (448 pass), build, build:pages, smoke:guardian-peaks and smoke:slice at desktop and iPhone 14: no console errors or overflow; screenshots inspected. content:verify: all ok.
 - Known gaps: no Peaks overworld map or trainer dialogue yet. CI/Pages not confirmed (no `gh` CLI here).
 - Next: D4 (Classic Grove).
+
+## 2026-11-10: D4a Classic Grove lessons, deck and solvers
+- D4 split into D4a-D4e in ROADMAP. This run: `scripts/gen-classic.mjs` -> `content/decks/classic-grove.json` (41 cards: 14 predict, 4 shape, 5 derive, 13 mcq, 2 multi, 3 bug; every number computed by running numpy natively) and `content/lessons/classic-grove.json` (4 lessons: linear/logistic/regularisation, trees and ensembles, neighbours/Bayes/margins/clusters, bias-variance/validation/leakage/imbalance; all outputs real).
+- `lib/solvers/classical.ts`: independent TypeScript solvers (Gini/entropy/best split, OLS, ridge, soft-threshold, k-NN, k-means step, Naive Bayes, balanced weights); `tests/classic.test.ts` cross-checks the deck against them, re-runs every predict snippet and checks staleness.
+- Wired into `samples.ts`, `lessons.ts`, Daily Sync and a new "classical-ml" Readiness skill (theory round, weight 3). Lessons test extended.
+- Verification: lint (0 errors), typecheck, test (456 pass; one earlier full run showed a transient failure under load, the two reruns were green), build, build:pages, content:verify (problems ok), smoke:learn and smoke:sync at desktop and iPhone 14: no console errors or overflow. No new visual UI beyond list entries, so no screenshots.
+- Known gaps: no Classic Grove Labs, art, or guardian yet. CI and Pages deploy not confirmed: today is after 2026-11-01, but this session has no `gh` CLI/Actions access. Work was pushed to the session's designated branch `claude/wonderful-goodall-btn57k`, not `main`, per the session's branch instruction; `main` needs a merge for the Pages deploy.
+- Next: D4b (kNN and k-means Labs).

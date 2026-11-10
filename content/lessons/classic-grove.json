@@ -1,0 +1,214 @@
+{
+  "id": "classic-grove-lessons",
+  "title": "Classic Grove lessons",
+  "lessons": [
+    {
+      "id": "grove-linear-lesson",
+      "title": "Linear and logistic models, regularisation",
+      "topics": [
+        "grove-linear"
+      ],
+      "intro": "Before any neural network, a linear model is the baseline you must be able to write, explain and beat. Linear regression has an exact solution, logistic regression turns a linear score into a probability, and a penalty on the weights is the cheapest defence against overfitting.",
+      "takeaways": [
+        "Solve the normal equations with solve or lstsq, never an explicit inverse.",
+        "Ridge shrinks all weights; lasso (L1) can set weights exactly to zero.",
+        "Logistic regression: linear log-odds, cross-entropy loss, gradient (p - y) x.",
+        "Standardise features before penalising, and leave the intercept unpenalised."
+      ],
+      "trap": "Penalising the intercept or unscaled features, so the penalty depends on the units you happened to choose.",
+      "sections": [
+        {
+          "heading": "The normal equation",
+          "text": "Least squares sets the gradient of the squared error to zero, which gives (X^T X) w = X^T y. Put a column of ones in X for the intercept and solve the linear system instead of inverting the matrix.",
+          "code": [
+            "X = np.c_[np.ones(5), np.arange(1.0, 6.0)]",
+            "y = np.array([2.1, 3.9, 6.2, 7.8, 10.1])",
+            "w = np.linalg.solve(X.T @ X, X.T @ y)",
+            "print(np.round(w, 3))"
+          ],
+          "output": "[0.05 1.99]"
+        },
+        {
+          "heading": "Ridge shrinks, lasso zeroes",
+          "text": "Ridge adds lam to the diagonal of X^T X, which shrinks every weight and also makes the system solvable when features are collinear. The L1 penalty has no closed form but its proximal step is soft-thresholding, which sets small weights exactly to zero.",
+          "code": [
+            "X = np.array([[1.0, 2.0], [2.0, 4.1], [3.0, 5.9], [4.0, 8.0]])",
+            "y = np.array([1.0, 2.0, 3.0, 4.0])",
+            "for lam in (0.0, 1.0, 10.0):",
+            "    w = np.linalg.solve(X.T @ X + lam * np.eye(2), X.T @ y)",
+            "    print(lam, np.round(w, 3))"
+          ],
+          "output": "0.0 [1. 0.]\n1.0 [0.202 0.396]\n10.0 [0.188 0.375]"
+        },
+        {
+          "heading": "Logistic regression is linear in the log-odds",
+          "text": "The model says log(p / (1 - p)) = w.x + b. Training minimises the cross-entropy, whose gradient is simply (p - y) x, so the boundary is a hyperplane and p is the sigmoid of the score.",
+          "code": [
+            "z = np.array([-2.0, 0.0, 2.0])",
+            "p = 1 / (1 + np.exp(-z))",
+            "print(np.round(p, 4))",
+            "print(np.round(np.log(p / (1 - p)), 4))"
+          ],
+          "output": "[0.1192 0.5    0.8808]\n[-2.  0.  2.]"
+        }
+      ]
+    },
+    {
+      "id": "grove-trees-lesson",
+      "title": "Decision trees and ensembles",
+      "topics": [
+        "grove-trees"
+      ],
+      "intro": "A decision tree asks a sequence of threshold questions. It needs no scaling, handles mixed features and is easy to explain, but one deep tree overfits. Ensembles fix that in two opposite ways: average many trees to cut variance, or add small trees one at a time to cut bias.",
+      "takeaways": [
+        "Gini and entropy both measure node impurity; pick the split with the largest weighted decrease.",
+        "One unrestricted tree has low bias and high variance; limit depth or prune.",
+        "Bagging and random forests average trees to reduce variance; boosting adds shallow trees to reduce bias.",
+        "Trees are invariant to monotone feature scaling."
+      ],
+      "trap": "Boosting for too many rounds with a large learning rate: training error keeps falling while validation error turns upward.",
+      "sections": [
+        {
+          "heading": "Choosing a split",
+          "text": "For each feature and threshold, compute the impurity (Gini or entropy) of the two children, weight by size, and keep the split with the largest decrease. A pure child scores zero.",
+          "code": [
+            "y = np.array([0, 0, 0, 1, 1, 1, 1, 1])",
+            "x = np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0])",
+            "g = lambda a: 0.0 if len(a) == 0 else 1 - np.mean(a) ** 2 - (1 - np.mean(a)) ** 2",
+            "for t in (3.5, 4.5, 6.5):",
+            "    l, r = y[x <= t], y[x > t]",
+            "    print(t, round((len(l) * g(l) + len(r) * g(r)) / len(y), 4))"
+          ],
+          "output": "3.5 0.0\n4.5 0.1875\n6.5 0.375"
+        },
+        {
+          "heading": "Boosting fits residuals",
+          "text": "Start from a constant, then repeatedly fit a weak learner to the current residuals and add a fraction of it. For squared error the residual is the negative gradient, which is why this is gradient descent in function space.",
+          "code": [
+            "x = np.arange(8.0)",
+            "y = np.array([1.0, 1.2, 0.9, 1.1, 3.0, 3.2, 2.9, 3.1])",
+            "f = np.full(8, y.mean())",
+            "for step in range(3):",
+            "    r = y - f",
+            "    stump = np.where(x < 3.5, r[x < 3.5].mean(), r[x >= 3.5].mean())",
+            "    f = f + 0.5 * stump",
+            "    print(step, round(float(np.mean((y - f) ** 2)), 4))"
+          ],
+          "output": "0 0.2625\n1 0.075\n2 0.0281"
+        }
+      ]
+    },
+    {
+      "id": "grove-instance-lesson",
+      "title": "Neighbours, Bayes, margins and clusters",
+      "topics": [
+        "grove-instance"
+      ],
+      "intro": "Several classical models work by comparing points or counting. k-NN votes among the closest training rows, Naive Bayes multiplies counted likelihoods, an SVM keeps only the points that define the margin, and k-means groups unlabelled points around centres.",
+      "takeaways": [
+        "k-NN: no training, O(n) prediction, sensitive to scale and to high dimensions.",
+        "Naive Bayes is a generative model: counts, smoothing, and an independence assumption that makes probabilities overconfident.",
+        "An SVM maximises the margin; only support vectors matter, and kernels give curved boundaries.",
+        "k-means assigns then averages; it needs k, good initialisation and roughly round clusters."
+      ],
+      "trap": "Running k-NN or k-means on raw features of mixed units, so the feature with the biggest numbers decides everything.",
+      "sections": [
+        {
+          "heading": "k-NN is a distance matrix and a sort",
+          "text": "Compute every query-to-train distance with broadcasting, take the k smallest, and vote. There is nothing to train, so prediction costs O(n) per query and everything depends on the distance, which depends on the feature scale.",
+          "code": [
+            "Xtr = np.array([[0.0, 0.0], [1.0, 1.0], [4.0, 4.0], [5.0, 5.0]])",
+            "ytr = np.array([0, 0, 1, 1])",
+            "q = np.array([[0.5, 0.2], [4.2, 3.9]])",
+            "d = np.linalg.norm(q[:, None] - Xtr[None], axis=2)",
+            "idx = np.argsort(d, axis=1)[:, :3]",
+            "print(d.shape, [int(np.bincount(ytr[i]).argmax()) for i in idx])"
+          ],
+          "output": "(2, 4) [0, 1]"
+        },
+        {
+          "heading": "Naive Bayes counts",
+          "text": "Multiply the class prior by the per-feature likelihoods (assumed independent given the class) and normalise. Smooth the counts, or one unseen word zeroes the whole product. Work in log space to avoid underflow.",
+          "code": [
+            "ps, a, b = 0.3, [0.4, 0.2], [0.05, 0.1]",
+            "spam = ps * np.prod(a)",
+            "ham = (1 - ps) * np.prod(b)",
+            "print(round(spam / (spam + ham), 4))",
+            "print(round(float(np.log(ps) + np.log(a).sum()), 4))"
+          ],
+          "output": "0.8727\n-3.7297"
+        },
+        {
+          "heading": "k-means alternates two easy steps",
+          "text": "Assign every point to its nearest centre, then move each centre to the mean of its points. The total squared distance can only go down, so it converges, but only to a local minimum: initialise with k-means++ and keep the best of several restarts.",
+          "code": [
+            "rng = np.random.default_rng(0)",
+            "X = np.r_[rng.normal(0, 0.5, (20, 2)), rng.normal(4, 0.5, (20, 2))]",
+            "c = X[[0, 1]].copy()",
+            "for it in range(4):",
+            "    a = np.linalg.norm(X[:, None] - c[None], axis=2).argmin(axis=1)",
+            "    c = np.array([X[a == j].mean(axis=0) for j in range(2)])",
+            "    print(it, round(float(((X - c[a]) ** 2).sum()), 3))"
+          ],
+          "output": "0 164.978\n1 17.375\n2 17.375\n3 17.375"
+        }
+      ]
+    },
+    {
+      "id": "grove-practice-lesson",
+      "title": "Bias-variance, validation and messy data",
+      "topics": [
+        "grove-practice"
+      ],
+      "intro": "Most real classical-ML wins and losses happen around the model: how you split, what you fit on which rows, and how you treat imbalance and missing values. The vocabulary is bias and variance; the discipline is never letting validation or test information touch training.",
+      "takeaways": [
+        "Train-validation gap large: variance, so get more data or regularise. Both errors high: bias, so use a richer model or better features.",
+        "Fit every learned preprocessing step on the training fold only.",
+        "Under imbalance, accuracy lies; use precision, recall, PR-AUC and a cost-based threshold.",
+        "Group or time-split when rows are not independent, or CV will flatter you."
+      ],
+      "trap": "Tuning hyperparameters on the test set until the number looks good, so the final score is no longer an honest estimate.",
+      "sections": [
+        {
+          "heading": "Capacity: bias and variance",
+          "text": "A more flexible model drives the training error towards zero while the held-out error eventually rises. Comparing the two errors tells you whether to add capacity or to regularise.",
+          "code": [
+            "rng = np.random.default_rng(1)",
+            "x = np.sort(rng.uniform(0, 1, 16))",
+            "y = np.sin(2 * np.pi * x) + rng.normal(0, 0.3, 16)",
+            "xv = np.linspace(0, 1, 200)",
+            "yv = np.sin(2 * np.pi * xv)",
+            "for d in (1, 3, 9):",
+            "    c = np.polyfit(x, y, d)",
+            "    print(d, round(float(np.mean((np.polyval(c, x) - y) ** 2)), 3), round(float(np.mean((np.polyval(c, xv) - yv) ** 2)), 3))"
+          ],
+          "output": "1 0.332 0.203\n3 0.113 0.018\n9 0.051 35.366"
+        },
+        {
+          "heading": "Fit preprocessing on the training split only",
+          "text": "Anything learned from data (scaler statistics, imputation values, encodings, selected features) is part of the model. Fit it inside each training fold and apply it unchanged to the validation fold, or the score is optimistic.",
+          "code": [
+            "train = np.array([1.0, 2.0, 3.0])",
+            "test = np.array([100.0])",
+            "mu, sd = train.mean(), train.std()",
+            "print(np.round((test - mu) / sd, 2))",
+            "allx = np.concatenate([train, test])",
+            "print(np.round((test - allx.mean()) / allx.std(), 2))"
+          ],
+          "output": "[120.02]\n[1.73]"
+        },
+        {
+          "heading": "Imbalance: change the metric first",
+          "text": "With 1% positives, 'always negative' scores 99% accuracy. Use precision, recall and PR-AUC, choose the threshold from costs, and treat class weights or resampling (training split only) as tools for the model, not for the score.",
+          "code": [
+            "n, pos = 1000, 10",
+            "tp, fp, fn = 6, 4, 4",
+            "print(round((n - pos) / n, 3))",
+            "print(round(tp / (tp + fp), 3), round(tp / (tp + fn), 3))"
+          ],
+          "output": "0.99\n0.6 0.6"
+        }
+      ]
+    }
+  ]
+}
