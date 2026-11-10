@@ -4,6 +4,7 @@ import { LAB_TILES } from "./tiles/lab-tiles";
 import { VECTOR_VALE_TILES } from "./tiles/vector-vale-tiles";
 import { GRADIENT_GORGE_TILES } from "./tiles/gradient-gorge-tiles";
 import { PROBABILITY_PEAKS_TILES } from "./tiles/probability-peaks-tiles";
+import { CLASSIC_GROVE_TILES } from "./tiles/classic-grove-tiles";
 
 /** Python Port, the harbour town where the game starts. */
 export const PORT_LEGEND: TileLegend = {
@@ -102,3 +103,8 @@ export const PEAKS_GRID: readonly string[] = [
   "wwwwwwwwwwwwwwwwwwww",
 ];
 export const PEAKS_PREVIEW = mapSprite("probability-peaks-preview", "PROBABILITY PEAKS (preview)", PROBABILITY_PEAKS_TILES, PEAKS_GRID, PEAKS_LEGEND);
+
+/** Classic Grove: a woodland of decision-tree canopies, a brook and the guardian's pad. Same tile names as the Vale. */
+export const GROVE_LEGEND: TileLegend = VALE_LEGEND;
+export const GROVE_GRID: readonly string[] = PEAKS_GRID;
+export const GROVE_PREVIEW = mapSprite("classic-grove-preview", "CLASSIC GROVE (preview)", CLASSIC_GROVE_TILES, GROVE_GRID, GROVE_LEGEND);
