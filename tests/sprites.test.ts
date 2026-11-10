@@ -11,7 +11,7 @@ import { PROBABILITY_PEAKS_TILES } from "@/game/sprites/tiles/probability-peaks-
 import { composeMap, TILE, validateMap } from "@/game/sprites/tilemap";
 import { LAB_GRID, LAB_LEGEND, PORT_GRID, PORT_LEGEND, VALE_GRID, VALE_LEGEND, GORGE_GRID, GORGE_LEGEND, PEAKS_GRID, PEAKS_LEGEND, GROVE_GRID, GROVE_LEGEND, MARKET_GRID, MARKET_LEGEND } from "@/game/sprites/maps";
 
-const isCharacter = (d: { id: string }) => d.id === "player" || d.id === "okafor" || d.id === "cadet-shear" || d.id === "ranger-axis" || d.id === "climber-delta" || d.id === "surveyor-hess" || d.id === "analyst-quill" || d.id === "analyst-brun" || d.id === "botanist-fern" || d.id === "forester-birch" || d.id.endsWith("-portrait");
+const isCharacter = (d: { id: string }) => d.id === "player" || d.id === "okafor" || d.id === "cadet-shear" || d.id === "ranger-axis" || d.id === "climber-delta" || d.id === "surveyor-hess" || d.id === "analyst-quill" || d.id === "analyst-brun" || d.id === "botanist-fern" || d.id === "forester-birch" || d.id === "vendor-pip" || d.id === "appraiser-lode" || d.id.endsWith("-portrait");
 const isWorld = (d: { id: string }) => d.id.endsWith("-tiles") || d.id.endsWith("-preview");
 const CREATURES = SPRITES.filter((d) => !isCharacter(d) && !isWorld(d));
 const CHARACTERS = SPRITES.filter(isCharacter);

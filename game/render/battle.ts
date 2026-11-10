@@ -45,7 +45,7 @@ function sprite(def: SpriteDef, anim: string, i: number, tint: Tint): HTMLCanvas
 
 const frameFor = (def: SpriteDef, anim: string, t: number) => Math.floor(t * (def.fps?.[anim] ?? 6));
 
-export type StageTheme = "grid" | "vale" | "gorge" | "peaks" | "grove";
+export type StageTheme = "grid" | "vale" | "gorge" | "peaks" | "grove" | "market";
 
 /** Vector Vale: a twilight meadow of crystals over a lattice floor, with slowly turning basis axes on the horizon. */
 function valeBackdrop(g: CanvasRenderingContext2D, t: number) {
@@ -332,7 +332,87 @@ function groveBackdrop(g: CanvasRenderingContext2D, t: number) {
   }
 }
 
+/** Metric Market: a warm bazaar at dusk; striped awnings with a flapping pennant, a ROC-curve signboard, a balance scale, a mosaic floor with a sliding threshold line. */
+function marketBackdrop(g: CanvasRenderingContext2D, t: number) {
+  const sky = g.createLinearGradient(0, 0, 0, 76);
+  sky.addColorStop(0, "#f2a86a");
+  sky.addColorStop(1, "#fbe3b4");
+  g.fillStyle = sky;
+  g.fillRect(0, 0, STAGE_W, STAGE_H);
+  // distant rooftops
+  g.fillStyle = "#c98a6a";
+  for (let x = 0; x < STAGE_W; x += 18) {
+    const h = 16 + 10 * Math.abs(Math.sin(x * 0.11));
+    g.fillRect(x, 66 - h, 16, h);
+    g.fillStyle = "#e8c070";
+    g.fillRect(x + 4, 66 - h + 5, 3, 3);
+    g.fillStyle = "#c98a6a";
+  }
+  // striped awnings across the back, with a pennant flapping on the middle one
+  for (let i = 0; i < 4; i++) {
+    const x = 14 + i * 56;
+    for (let s = 0; s < 8; s++) {
+      g.fillStyle = s % 2 ? "#f6ecd0" : "#7a3ac0";
+      g.fillRect(x + s * 6, 42, 6, 12 - (s % 2));
+    }
+    g.fillStyle = "#5a2a8a";
+    g.fillRect(x - 1, 54, 50, 2);
+    g.fillStyle = "#6a4a2a";
+    g.fillRect(x, 56, 3, 12);
+    g.fillRect(x + 45, 56, 3, 12);
+    g.fillStyle = ["#e8409a", "#22b8c8", "#f0c050", "#e8409a"][i];
+    g.fillRect(x + 10, 60, 6, 6); // fruit crates
+    g.fillRect(x + 20, 60, 6, 6);
+  }
+  const flap = Math.sin(t * 5);
+  g.fillStyle = "#e8409a";
+  g.fillRect(118, 30, 2, 12);
+  g.beginPath();
+  g.moveTo(120, 30);
+  g.lineTo(132 + flap * 2, 33 + flap);
+  g.lineTo(120, 37);
+  g.fill();
+  // ROC signboard with a sliding operating point
+  g.fillStyle = "#2a1a40";
+  g.fillRect(190, 18, 36, 26);
+  g.strokeStyle = "#7adcd8";
+  g.lineWidth = 1;
+  g.beginPath();
+  g.moveTo(194, 40);
+  g.quadraticCurveTo(194, 22, 222, 22);
+  g.stroke();
+  const op = (Math.sin(t * 1.5) + 1) / 2;
+  const ox = 196 + op * 20;
+  g.fillStyle = "#ffe14a";
+  g.fillRect(Math.round(ox), Math.round(40 - Math.sqrt(Math.max(0, 1 - ((ox - 194) / 28) ** 2)) * 18), 3, 3);
+  // mosaic floor: a confusion-matrix pattern, diagonal brighter
+  const floor = g.createLinearGradient(0, 74, 0, STAGE_H);
+  floor.addColorStop(0, "#e8cf94");
+  floor.addColorStop(1, "#c49a5a");
+  g.fillStyle = floor;
+  g.fillRect(0, 74, STAGE_W, STAGE_H - 74);
+  for (let r = 0; r < 4; r++) {
+    for (let c = 0; c < 12; c++) {
+      const diag = (r + c) % 2 === 0;
+      g.fillStyle = diag ? "rgba(34,184,200,0.22)" : "rgba(232,64,154,0.16)";
+      g.fillRect(c * 20 + 1, 78 + r * 14, 18, 12);
+    }
+  }
+  // threshold line sweeping across the floor
+  g.fillStyle = "rgba(255,255,255,0.75)";
+  const tx = Math.floor((t * 14) % STAGE_W);
+  for (let y = 76; y < STAGE_H; y += 6) g.fillRect(tx, y, 2, 3);
+  // drifting confetti petals
+  for (let i = 0; i < 12; i++) {
+    const x = (i * 59 + t * (5 + (i % 4) * 2)) % STAGE_W;
+    const y = (i * 43 + t * (8 + (i % 3) * 3)) % STAGE_H;
+    g.fillStyle = i % 2 ? "#e8409a" : "#22b8c8";
+    g.fillRect(Math.floor(x), Math.floor(y), 2, 1);
+  }
+}
+
 function backdrop(g: CanvasRenderingContext2D, t: number, theme: StageTheme = "grid") {
+  if (theme === "market") return marketBackdrop(g, t);
   if (theme === "vale") return valeBackdrop(g, t);
   if (theme === "gorge") return gorgeBackdrop(g, t);
   if (theme === "peaks") return peaksBackdrop(g, t);

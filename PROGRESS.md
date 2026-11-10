@@ -671,3 +671,9 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Verification: lint (0 errors), typecheck, test (536 pass; `PATH=/usr/bin:$PATH`; the first run right after `npm ci` failed only because Pyodide assets were not staged yet), build, build:pages, content:verify (all ok); Playwright on `/dev/sprites/` at desktop and iPhone 14: no console errors, no overflow; both bosses' frames inspected.
 - Known gaps: not yet used in fights (D5f); trainers and backdrop pending (D5e3). CI/Pages confirmation: no `gh` CLI in this session.
 - Next: D5e3 (Market trainers + `theme: "market"` backdrop).
+
+## 2026-11-10: D5e3 Market trainers and battle backdrop
+- `scripts/art/market-trainers.mjs` -> Vendor Pip (violet beret with cream stripe, teal shirt, orange apron/neckerchief, freckles) and Appraiser Lode (purple skullcap with gold button, round gold spectacles, white beard, plum robe, ledger): 16x24 overworld (4-dir 4-frame walks, stand, idle) and 48x48 portraits (idle/talk/smile/think), registered in the roster; sprite tests extended. New `theme: "market"` battle backdrop (dusk bazaar rooftops, striped awnings with crates, flapping pennant, ROC signboard with a sliding operating point, confusion-matrix mosaic floor, sweeping threshold line), selectable via `/battle?theme=market`.
+- Verification: lint (0 errors), typecheck, test (556 pass; `PATH=/usr/bin:$PATH`), build, build:pages; Playwright at desktop and iPhone 14 on `/dev/sprites/` and `/battle/?theme=market`: no console errors, no overflow; trainer sheets, portraits and the backdrop inspected. content:verify not run (art only). CI/Pages confirmation skipped (Actions quota note).
+- Known gaps: the ROC signboard slightly overlaps the enemy HUD on desktop; trainers are not yet placed on a Market map or used in fights (D5f).
+- Next: D5f (Leakage and Imbalance Swarm boss fights + readiness evidence).
