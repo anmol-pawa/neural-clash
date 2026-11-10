@@ -200,3 +200,21 @@ describe("Warden Split sprite", () => {
     expect(new Set(s!.anims.idle.map((f) => f.join("\n"))).size).toBe(s!.anims.idle.length);
   });
 });
+
+describe("Warden Split", () => {
+  it("runs on the classic deck with the classic-cluster Lab and awards the Split Badge", async () => {
+    const { GROVE_GUARDIAN } = await import("@/lib/guardian/defs");
+    const { CLASSIC_DECK } = await import("@/lib/cards/samples");
+    expect(CLASSIC_DECK.cards.length).toBeGreaterThanOrEqual(30);
+    expect(labById(GROVE_GUARDIAN.labId)).toBeTruthy();
+    let g = startGuardian(CLASSIC_DECK.cards, GROVE_GUARDIAN.labId);
+    for (let i = 0; i < 100 && g.phase === "cards" && g.cards.current; i++) {
+      g = guardianAnswer(g, correctResponse(g.cards.current));
+      if (g.phase === "cards") g = guardianNext(g);
+    }
+    expect(g.cards.phase).toBe("won");
+    g = guardianLabResult(guardianAdvanceFromCards(g), true);
+    g = guardianFight(g, { attack: 95, defence: 90, speed: 80 });
+    expect(summarizeGuardian(g, GROVE_GUARDIAN.badge).badge).toBe("Split Badge");
+  });
+});

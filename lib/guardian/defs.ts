@@ -71,7 +71,21 @@ export const PEAKS_GUARDIAN: GuardianDef = {
   lessonsHref: "/learn",
 };
 
-export const GUARDIANS: readonly GuardianDef[] = [PYTHON_GUARDIAN, VALE_GUARDIAN, GORGE_GUARDIAN, PEAKS_GUARDIAN];
+export const GROVE_GUARDIAN: GuardianDef = {
+  id: "guardian:classic-grove",
+  slug: "grove",
+  name: "Warden Split",
+  badge: "Split Badge",
+  region: "Classic Grove",
+  spriteId: "warden-split",
+  labId: "classic-cluster",
+  theme: "grove",
+  deckLabel: "classical machine learning",
+  trials: { read: "you can choose and diagnose a classical model", write: "implement k-NN, k-means and a Gini split", generalise: "build something that generalises" },
+  lessonsHref: "/learn",
+};
+
+export const GUARDIANS: readonly GuardianDef[] = [PYTHON_GUARDIAN, VALE_GUARDIAN, GORGE_GUARDIAN, PEAKS_GUARDIAN, GROVE_GUARDIAN];
 
 export const guardianHref = (g: GuardianDef) => (g.slug ? `/guardian/${g.slug}` : "/guardian");
 

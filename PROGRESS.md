@@ -625,3 +625,9 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Verification: lint (0 errors), typecheck, test (500 pass; `PATH=/usr/bin:$PATH`), build, build:pages; Playwright on `/battle/?theme=grove` and `/dev/sprites/` at desktop and iPhone 14: no console errors, no overflow; backdrop and trainer sheets inspected. content:verify not run (art only).
 - Known gaps: Fern's hair reads a little like a beret under the hood; trainers not yet placed in a map. CI/Pages not confirmed (no `gh` CLI here).
 - Next: D4f (guardian fight `/guardian/grove` and its readiness evidence).
+
+## 2026-11-10: D4f Warden Split guardian fight (D4 complete)
+- `GROVE_GUARDIAN` (Warden Split, Split Badge) in `lib/guardian/defs.ts`; `/guardian/grove` runs on `CLASSIC_DECK` with the `classic-cluster` Lab as the Write trial, then the hidden-set fight. Home link added; the guardian is now evidence for the `classical-ml` Readiness skill. Tests: guardian full-flow and readiness credit.
+- Verification: lint (0 errors), typecheck, test (501 pass; `PATH=/usr/bin:$PATH`), build, build:pages, `smoke:guardian-grove` at desktop and iPhone 14 (all PASS; no console errors or overflow; iPhone cards screenshot inspected, boss reads as a tree on the Grove backdrop). content:verify not run (no content changed).
+- Known gaps: the Grove is not yet reachable on the overworld map (trainers not placed). CI/Pages confirmation skipped (no `gh` CLI here). Pushed to `main` and the session branch.
+- Next: D5 (Metric Market + Data Dojo), to be split into sub-boxes first.

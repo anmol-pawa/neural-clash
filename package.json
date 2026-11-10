@@ -25,6 +25,7 @@
     "smoke:guardian-vale": "node scripts/smoke-guardian-vale.mjs",
     "smoke:guardian-gorge": "node scripts/smoke-guardian-gorge.mjs",
     "smoke:guardian-peaks": "node scripts/smoke-guardian-peaks.mjs",
+    "smoke:guardian-grove": "node scripts/smoke-guardian-grove.mjs",
     "smoke:transform": "node scripts/smoke-transform.mjs",
     "smoke:descent": "node scripts/smoke-descent.mjs",
     "smoke:clt": "node scripts/smoke-clt.mjs",
