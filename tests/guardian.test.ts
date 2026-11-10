@@ -189,3 +189,14 @@ describe("Warden Bell", () => {
     expect(summarizeGuardian(g, PEAKS_GUARDIAN.badge).badge).toBe("Bell Badge");
   });
 });
+
+describe("Warden Split sprite", () => {
+  it("is a registered 96×96 boss sprite with distinct animation frames", () => {
+    const s = spriteById("warden-split");
+    expect(s).toBeDefined();
+    expect(s!.w).toBe(96);
+    expect(s!.h).toBe(96);
+    for (const a of ["idle", "attack", "hurt", "faint"]) expect(s!.anims[a].length).toBeGreaterThanOrEqual(3);
+    expect(new Set(s!.anims.idle.map((f) => f.join("\n"))).size).toBe(s!.anims.idle.length);
+  });
+});

@@ -99,7 +99,7 @@ Work top to bottom: take the **first unchecked box**, and split big boxes into r
   - [x] D4d. (done 2026-11-10) Readiness skill "classical ML" (deck + labs).
   - [ ] D4e. Region art, split into:
     - [x] D4e1. (done 2026-11-10) Classic Grove tileset (`scripts/art/classic-grove.mjs`: mossy ground with scatter-plot clusters, decision-tree canopies, boundary signposts, node obelisks, brook, arena pad) and preview map.
-    - [ ] D4e2. Guardian (96x96, idle/attack/hurt/faint).
+    - [x] D4e2. (done 2026-11-10) Guardian Warden Split (96x96 oak golem built as a decision tree; `scripts/art/warden-split.mjs`; idle/attack/hurt/faint).
     - [ ] D4e3. Two trainers (16x24 walks + 48x48 portraits) and the Grove battle backdrop (`theme: "grove"`).
   - [ ] D4f. Guardian fight `/guardian/grove` and its readiness evidence.
 - [ ] D5. Metric Market + Data Dojo (F6, GDD §5.4), with the *Leakage* and *Imbalance Swarm* bosses

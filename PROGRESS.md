@@ -612,3 +612,9 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Verification: lint (0 errors), typecheck, test (473 pass after `node scripts/fetch-pyodide.mjs`; `PATH=/usr/bin:$PATH`), build, build:pages; Playwright on `/dev/sprites` at desktop and iPhone 14: no console errors, no overflow; preview map and tile sheet inspected. content:verify not run (art only).
 - Known gaps: canopy is slightly small against its trunk tile; no guardian, trainers or backdrop yet. CI/Pages not confirmed (no `gh` CLI here).
 - Next: D4e2 (Grove guardian art).
+
+## 2026-11-10: D4e2 Classic Grove guardian art
+- `scripts/art/warden-split.mjs` -> `game/sprites/creatures/warden-split.ts`: Warden Split, a 96x96 ancient-oak golem built as a decision tree (root-node rune with cyan/magenta class leaves on the trunk, boughs forking into child-node fists, canopy of class-coloured data points cut by a dashed split line). Idle 4, attack 5 (slams a dashed boundary across the ground), hurt 3, faint 4 (wilts, leaves fall). Registered in the roster; sprite test added in `tests/guardian.test.ts`.
+- Verification: lint (0 errors), typecheck, test (480 pass), build, build:pages; `/dev/sprites` at desktop and iPhone 14: no console errors or overflow; guardian frames inspected (reads as a tree, eyes/runes animate).
+- Known gaps: not yet used by a fight (D4f); trainers and backdrop pending (D4e3). CI/Pages not confirmed (no `gh` CLI here).
+- Next: D4e3 (Grove trainers and battle backdrop).
