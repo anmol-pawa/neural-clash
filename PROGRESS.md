@@ -593,3 +593,10 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Verification: lint (0 errors), typecheck, test (459 pass; `npm ci` + `node scripts/fetch-pyodide.mjs` first, `PATH=/usr/bin:$PATH` for numpy), content:verify (all ok), build, build:pages, `smoke:labs` at desktop and iPhone 14 (27 labs listed, no console errors or overflow; iPhone list screenshot inspected).
 - Known gaps: Labs are not yet Readiness evidence (D4d); the dataset is not yet used by the Training Grounds or a lesson (D4c/D5).
 - Next: D4c (`/dev/grove` visualiser).
+
+## 2026-11-10: D4c Classic Grove visualiser
+- New pure `lib/classic/boundary.ts` (seeded blobs/moons/XOR data, k-NN, greedy Gini tree, stable logistic GD, polynomial fit and a bias-variance sweep) with `tests/boundary.test.ts` (7 tests: 1-NN memorises, linear fails XOR, a greedy tree needs depth 4 on XOR because the first split has no gain, polyFit recovers an exact quadratic, train error falls while test error is U-shaped).
+- New `/dev/grove` (`components/GroveLab.tsx`): decision-boundary canvas with model/dataset/k/depth/noise controls and live train vs test accuracy, plus a bias-variance tab. `npm run smoke:grove` at desktop and iPhone 14.
+- Verification: lint (0 errors), typecheck, test (all pass; `PATH=/usr/bin:$PATH` for numpy), build, build:pages, smoke:grove at desktop and iPhone 14 (no console errors or overflow; screenshots inspected). Caught and fixed a moons generator whose arcs crossed. content:verify not re-run (no content touched).
+- Known gaps: dev page only, not linked from lessons. CI/Pages not confirmed (no `gh` CLI in this session).
+- Next: D4d (Readiness skill "classical ML").

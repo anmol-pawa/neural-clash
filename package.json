@@ -28,6 +28,7 @@
     "smoke:transform": "node scripts/smoke-transform.mjs",
     "smoke:descent": "node scripts/smoke-descent.mjs",
     "smoke:clt": "node scripts/smoke-clt.mjs",
+    "smoke:grove": "node scripts/smoke-grove.mjs",
     "smoke:sync": "node scripts/smoke-sync.mjs",
     "smoke:companion": "node scripts/smoke-companion.mjs",
     "smoke:journal": "node scripts/smoke-journal.mjs",
