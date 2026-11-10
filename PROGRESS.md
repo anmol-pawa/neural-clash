@@ -644,3 +644,11 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Verification: lint (0 errors), typecheck, test (506 pass; `PATH=/usr/bin:$PATH`), content:verify (labs ok), build, build:pages, `smoke:labs` at desktop and iPhone 14 (29 labs listed, no console errors or overflow; no new visual surface, no screenshots viewed). CI/Pages confirmation skipped (no `gh` CLI here).
 - Known gaps: Labs are not yet Readiness evidence (D5d); no Dojo interactive, art or bosses (D5c, D5e, D5f).
 - Next: D5c (Data Dojo interactives, `/dev/dojo`).
+
+## 2026-11-10: D5c Data Dojo interactives
+- New pure `lib/metrics/dojo.ts` (seeded): scored population + confusion counts + cost-matrix best threshold; user/time-structured rows with random/group/time splits and a 1-NN memoriser; normal helpers, sample-size formula and an A/B peeking simulator (optional Bonferroni). `tests/dojoLab.test.ts` (9 tests): best threshold equals brute force and falls as miss cost rises; random split beats group split by >15 points and group is near chance; one look holds alpha, ten looks more than double it, split alpha restores it; a planned-size test reaches about 80% power.
+- New `/dev/dojo` (`components/DataDojoLab.tsx`) with Cost matrix, Split leakage and A/B peeking tabs; `npm run smoke:dojolab`.
+- Honest finding kept in the copy: a time split alone still shares users, so it is only partly honest.
+- Verification: lint (0 errors), typecheck, test (515 pass; `PATH=/usr/bin:$PATH`), build, build:pages, smoke:dojolab at desktop and iPhone 14 (all PASS, no console errors or overflow; cost and A/B screenshots inspected). content:verify not run (no content changed).
+- Known gaps: dev page only, not yet linked from lessons or the overworld. CI/Pages confirmation: no `gh` CLI/Actions access in this session.
+- Next: D5d (Readiness skill "evaluation").
