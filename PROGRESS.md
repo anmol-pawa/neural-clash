@@ -600,3 +600,9 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Verification: lint (0 errors), typecheck, test (all pass; `PATH=/usr/bin:$PATH` for numpy), build, build:pages, smoke:grove at desktop and iPhone 14 (no console errors or overflow; screenshots inspected). Caught and fixed a moons generator whose arcs crossed. content:verify not re-run (no content touched).
 - Known gaps: dev page only, not linked from lessons. CI/Pages not confirmed (no `gh` CLI in this session).
 - Next: D4d (Readiness skill "classical ML").
+
+## 2026-11-10: D4d Readiness skill "classical ML"
+- New Readiness skill `classical-ml` (evidence: `classic` deck, Labs `classic-linear` and `classic-cluster`), weighted into the ML-engineer theory (3) and implement (1) rounds; `classic` deck passed to the report in `components/Readiness.tsx`. Three new tests in `tests/readiness.test.ts` (content exists, assisted-lab discount, round membership).
+- Verification: lint (0 errors), typecheck, test (469 pass), build, build:pages, `smoke:readiness` at desktop and iPhone 14 (all PASS; no console errors or overflow; no screenshots viewed, since the change adds one list row). content:verify not run (no content touched).
+- Known gaps: Grove guardian not yet evidence (D4f). CI/Pages confirmation: no `gh` CLI here.
+- Next: D4e (Classic Grove region art).
