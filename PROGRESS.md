@@ -606,3 +606,9 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Verification: lint (0 errors), typecheck, test (469 pass), build, build:pages, `smoke:readiness` at desktop and iPhone 14 (all PASS; no console errors or overflow; no screenshots viewed, since the change adds one list row). content:verify not run (no content touched).
 - Known gaps: Grove guardian not yet evidence (D4f). CI/Pages confirmation: no `gh` CLI here.
 - Next: D4e (Classic Grove region art).
+
+## 2026-11-10: D4e1 Classic Grove tileset
+- D4e was split into D4e1-D4e3 in ROADMAP. This run: `scripts/art/classic-grove.mjs` -> `game/sprites/tiles/classic-grove-tiles.ts`, 20 tiles using the Vale's names: mossy ground with scatter-plot clusters (cyan/magenta data points), decision-tree canopies (root, two children, four leaves; the root node blinks), forking trunks, boundary signposts, a door with a split glyph, node obelisks, brook, clay roofs, fork-glyph arena pad. `GROVE_PREVIEW` map registered in the roster; tileset and map validity tests extended.
+- Verification: lint (0 errors), typecheck, test (473 pass after `node scripts/fetch-pyodide.mjs`; `PATH=/usr/bin:$PATH`), build, build:pages; Playwright on `/dev/sprites` at desktop and iPhone 14: no console errors, no overflow; preview map and tile sheet inspected. content:verify not run (art only).
+- Known gaps: canopy is slightly small against its trunk tile; no guardian, trainers or backdrop yet. CI/Pages not confirmed (no `gh` CLI here).
+- Next: D4e2 (Grove guardian art).
