@@ -45,7 +45,7 @@ function sprite(def: SpriteDef, anim: string, i: number, tint: Tint): HTMLCanvas
 
 const frameFor = (def: SpriteDef, anim: string, t: number) => Math.floor(t * (def.fps?.[anim] ?? 6));
 
-export type StageTheme = "grid" | "vale" | "gorge" | "peaks" | "grove";
+export type StageTheme = "grid" | "vale" | "gorge" | "peaks" | "grove" | "market";
 
 /** Vector Vale: a twilight meadow of crystals over a lattice floor, with slowly turning basis axes on the horizon. */
 function valeBackdrop(g: CanvasRenderingContext2D, t: number) {
@@ -332,11 +332,99 @@ function groveBackdrop(g: CanvasRenderingContext2D, t: number) {
   }
 }
 
+/** Metric Market: a sandstone bazaar at dusk; striped awnings with a pennant, a ROC-curve signboard whose operating point slides, a confusion-matrix mosaic floor. */
+function marketBackdrop(g: CanvasRenderingContext2D, t: number) {
+  const sky = g.createLinearGradient(0, 0, 0, 72);
+  sky.addColorStop(0, "#f2a46a");
+  sky.addColorStop(1, "#fbe3a8");
+  g.fillStyle = sky;
+  g.fillRect(0, 0, STAGE_W, STAGE_H);
+  // far rooftops
+  g.fillStyle = "#c98a6a";
+  for (let x = 0; x < STAGE_W; x += 20) {
+    const h = 16 + ((x * 7) % 5) * 4;
+    g.fillRect(x, 66 - h, 18, h);
+    g.fillStyle = "#b07454";
+    g.fillRect(x, 66 - h, 18, 2);
+    g.fillStyle = "#c98a6a";
+  }
+  // striped awnings along the top (violet / cream) with a swaying pennant
+  for (let i = 0; i < 6; i++) {
+    const x = 6 + i * 38;
+    for (let s = 0; s < 6; s++) {
+      g.fillStyle = s % 2 ? "#f4ead0" : "#7a46c0";
+      g.fillRect(x + s * 5, 2, 5, 14);
+    }
+    g.fillStyle = "#4a2480";
+    g.fillRect(x, 16, 30, 2);
+  }
+  const sway = Math.sin(t * 3) * 2;
+  g.fillStyle = "#e8409a";
+  g.fillRect(118, 20, 2, 12);
+  g.fillRect(120, 20, 8 + sway, 5);
+  // ROC-curve signboard: axes, a bowed curve and a sliding operating point
+  g.fillStyle = "#3a2a4a";
+  g.fillRect(86, 28, 68, 40);
+  g.fillStyle = "#fbf3dc";
+  g.fillRect(88, 30, 64, 36);
+  g.strokeStyle = "#3a2a4a";
+  g.lineWidth = 1;
+  g.beginPath();
+  g.moveTo(94, 62);
+  g.lineTo(94, 34);
+  g.moveTo(94, 62);
+  g.lineTo(148, 62);
+  g.stroke();
+  g.strokeStyle = "#9a9aa8";
+  g.beginPath();
+  g.moveTo(94, 62);
+  g.lineTo(146, 36);
+  g.stroke();
+  g.strokeStyle = "#22b8c8";
+  g.lineWidth = 2;
+  g.beginPath();
+  for (let k = 0; k <= 20; k++) {
+    const u = k / 20;
+    const x = 94 + u * 52;
+    const y = 62 - Math.pow(u, 0.35) * 26;
+    if (k === 0) g.moveTo(x, y);
+    else g.lineTo(x, y);
+  }
+  g.stroke();
+  const u = 0.18 + 0.5 * (0.5 + 0.5 * Math.sin(t * 1.2));
+  g.fillStyle = "#e8409a";
+  g.fillRect(Math.floor(94 + u * 52) - 2, Math.floor(62 - Math.pow(u, 0.35) * 26) - 2, 5, 5);
+  // sandstone floor
+  const floor = g.createLinearGradient(0, 74, 0, STAGE_H);
+  floor.addColorStop(0, "#e8c88a");
+  floor.addColorStop(1, "#b88a52");
+  g.fillStyle = floor;
+  g.fillRect(0, 74, STAGE_W, STAGE_H - 74);
+  // confusion-matrix mosaic: diagonal (correct) tiles teal, off-diagonal rose
+  for (let r = 0; r < 2; r++) {
+    for (let c = 0; c < 2; c++) {
+      g.fillStyle = r === c ? "rgba(34,184,200,0.45)" : "rgba(232,64,154,0.35)";
+      g.fillRect(70 + c * 50, 88 + r * 30, 48, 28);
+    }
+  }
+  g.fillStyle = "rgba(60,40,20,0.35)";
+  g.fillRect(118, 86, 2, 62);
+  g.fillRect(68, 117, 102, 2);
+  // drifting coins / price-tag glints
+  for (let i = 0; i < 10; i++) {
+    const x = (i * 59 + t * (5 + (i % 3) * 2)) % STAGE_W;
+    const y = (i * 43 + t * (7 + (i % 4) * 2)) % STAGE_H;
+    g.fillStyle = i % 2 ? "#ffe14a" : "#fff6c8";
+    g.fillRect(Math.floor(x), Math.floor(y), 2, 2);
+  }
+}
+
 function backdrop(g: CanvasRenderingContext2D, t: number, theme: StageTheme = "grid") {
   if (theme === "vale") return valeBackdrop(g, t);
   if (theme === "gorge") return gorgeBackdrop(g, t);
   if (theme === "peaks") return peaksBackdrop(g, t);
   if (theme === "grove") return groveBackdrop(g, t);
+  if (theme === "market") return marketBackdrop(g, t);
   const sky = g.createLinearGradient(0, 0, 0, 78);
   sky.addColorStop(0, "#0d1033");
   sky.addColorStop(1, "#2a2a6e");

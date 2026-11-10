@@ -671,3 +671,10 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Verification: lint (0 errors), typecheck, test (536 pass; `PATH=/usr/bin:$PATH`; the first run right after `npm ci` failed only because Pyodide assets were not staged yet), build, build:pages, content:verify (all ok); Playwright on `/dev/sprites/` at desktop and iPhone 14: no console errors, no overflow; both bosses' frames inspected.
 - Known gaps: not yet used in fights (D5f); trainers and backdrop pending (D5e3). CI/Pages confirmation: no `gh` CLI in this session.
 - Next: D5e3 (Market trainers + `theme: "market"` backdrop).
+
+## 2026-11-10: D5e3 Market trainers and battle backdrop (D5e complete)
+- `scripts/art/market-trainers.mjs`: Vendor Odds (violet cloak, cream head wrap, teal scarf, sash stripes) and Auditor Margin (green eyeshade, round glasses, navy vest, ledger); 16x24 walks (4 directions) and 48x48 portraits (idle/talk/smile/think). Registered in the roster; sprite tests extended.
+- `game/render/battle.ts`: `StageTheme` gains `"market"` (dusk bazaar, striped awnings with a swaying pennant, ROC-curve signboard whose operating point slides, confusion-matrix mosaic floor, drifting coin glints). `/battle?theme=market` previews it; `GuardianDef.theme` accepts it for D5f.
+- Verification: lint (0 errors), typecheck, test (556 pass; `PATH=/usr/bin:$PATH`), build, build:pages; Playwright on `/battle/?theme=market` and `/dev/sprites/` at desktop and iPhone 14: no console errors, no overflow; backdrop and all four trainer sheets inspected. content:verify not run (art only). CI/Pages confirmation skipped (no `gh` CLI in this session).
+- Known gaps: the trainers are recolour-derived from the Grove templates with distinct headgear/accessories (Vendor is the weaker design); not yet placed on a map. Work was pushed to the session branch, not `main`.
+- Next: D5f (boss fights: Leakage, Imbalance Swarm, and readiness evidence).
