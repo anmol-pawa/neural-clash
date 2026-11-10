@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { DAY, review, type SrsTable } from "@/lib/srs/srs";
-import { CALCULUS_DECK, CLASSIC_DECK, LINALG_DECK, PROBABILITY_DECK } from "@/lib/cards/samples";
+import { CALCULUS_DECK, CLASSIC_DECK, LINALG_DECK, METRICS_DECK, PROBABILITY_DECK } from "@/lib/cards/samples";
 import { ASSISTED_LAB_CREDIT, LOOPS, SKILLS, band, readiness, scoreSkill, type Loop, type ReadinessInput, type Skill } from "@/lib/readiness/readiness";
 import { LABS } from "@/lib/labs/catalog";
 
@@ -176,6 +176,27 @@ describe("classical ML skill", () => {
   it("is tested in the theory and implement rounds of the ML-engineer loop", () => {
     const loop = LOOPS.find((l) => l.id === "ml-engineer")!;
     for (const id of ["theory", "implement"]) expect(loop.rounds.find((r) => r.id === id)!.skills.some((s) => s.skill === "classical-ml")).toBe(true);
+  });
+});
+
+describe("evaluation skill", () => {
+  const skill = SKILLS.find((s) => s.id === "evaluation")!;
+  const labIds = new Set(LABS.map((l) => l.id));
+  const decks = { metrics: METRICS_DECK.cards.map((c) => c.id) };
+  it("has its deck and both Metric Market labs; the boss fights are still planned", () => {
+    const r = scoreSkill(skill, { ...base(), labIds, decks });
+    expect(r.coverage).toBeCloseTo(0.75, 5);
+    expect(r.score).toBe(0);
+  });
+  it("gains credit from lab passes, assisted discounted; planned evidence adds nothing", () => {
+    const labs = { "metrics-classify": { passed: true, assisted: false }, "metrics-rank": { passed: true, assisted: true } };
+    const r = scoreSkill(skill, { ...base(), labIds, labs, decks });
+    expect(r.score).toBeCloseTo((1 + ASSISTED_LAB_CREDIT) / 4, 5);
+  });
+  it("is tested in the applied-AI take-home and the ML-engineer theory round", () => {
+    const has = (loop: string, round: string) => LOOPS.find((l) => l.id === loop)!.rounds.find((r) => r.id === round)!.skills.some((s) => s.skill === "evaluation");
+    expect(has("applied-ai", "takehome")).toBe(true);
+    expect(has("ml-engineer", "theory")).toBe(true);
   });
 });
 

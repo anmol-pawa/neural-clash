@@ -150,3 +150,11 @@ def test_hidden_reused_activation_accumulates():
         return h * h + h.sum(axis=1, keepdims=True)
     _check(f, r.normal(size=(3, 4)), r.normal(size=(4, 2)))
     _check(lambda a: a.exp() * a.exp() + a.relu() * a.relu(), r.normal(size=(2, 3)))
+
+
+def test_hidden_tanh_adds_to_existing_gradient():
+    # z = tanh(x) + x: the add's backward deposits 1 on x *before* tanh's backward runs (tanh is
+    # upstream of x in the graph), so a backward that assigns instead of accumulating loses it.
+    x = Tensor(np.array([0.3, -0.7, 1.2]))
+    (x.tanh() + x).sum().backward()
+    assert_close(x.grad, 1.0 + (1.0 - np.tanh(x.data) ** 2))

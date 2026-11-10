@@ -106,7 +106,7 @@ Work top to bottom: take the **first unchecked box**, and split big boxes into r
   - [x] D5a. (done 2026-11-10) Lessons (3) and a 34-card deck (confusion matrix, ROC/PR, calibration, splits and significance, ranking and regression metrics), numpy-computed and cross-checked by `lib/solvers/evalMetrics.ts`; wired into Learn and Daily Sync.
   - [x] D5b. (done 2026-11-10) Labs `metrics-classify` (precision/recall/F1/Fβ, ROC-AUC, PR-AUC, best-cost threshold) and `metrics-rank` (P@k, recall@k, MRR, nDCG, ECE) with hidden tests and known-wrong versions.
   - [x] D5c. (done 2026-11-10) Data Dojo interactive: confusion-matrix minigame with cost-matrix threshold tuning, split-leakage demo, A/B peeking simulator (`/dev/dojo`).
-  - [ ] D5d. Readiness skill "evaluation" (deck + labs).
+  - [x] D5d. (done 2026-11-10) Readiness skill "evaluation" (deck + labs).
   - [ ] D5e. Region art: Metric Market tileset, Imbalance Swarm and Leakage boss sprites, trainers, backdrop.
   - [ ] D5f. Boss fights (Leakage, Imbalance Swarm) and their readiness evidence.
 - [ ] D6. Neuron Nest (F7), with Forge modules 3–8 (split across runs) and the companion → Multilayer

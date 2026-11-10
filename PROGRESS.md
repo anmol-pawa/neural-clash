@@ -652,3 +652,10 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Verification: lint (0 errors), typecheck, test (515 pass; `PATH=/usr/bin:$PATH`), build, build:pages, smoke:dojolab at desktop and iPhone 14 (all PASS, no console errors or overflow; cost and A/B screenshots inspected). content:verify not run (no content changed).
 - Known gaps: dev page only, not yet linked from lessons or the overworld. CI/Pages confirmation: no `gh` CLI/Actions access in this session.
 - Next: D5d (Readiness skill "evaluation").
+
+## 2026-11-10: D5d Readiness skill "evaluation"
+- New Readiness skill `evaluation` (evidence: `metrics` deck, Labs `metrics-classify` and `metrics-rank`, plus a *planned* item for the Leakage / Imbalance Swarm boss fights so coverage honestly shows 75%). Weighted into Applied-AI take-home (2) and product sense (1), ML-engineer theory (3) and implement (1). `components/Readiness.tsx` passes the metrics deck ids. Tests: coverage, lab credit with the assisted discount, round membership.
+- Fixed a flaky Lab check found by `content:verify`: `forge-tensor`'s `wrong/overwrite_grad.py` passed whenever set iteration order happened to hide the bug. Added the deterministic hidden test `test_hidden_tanh_adds_to_existing_gradient` (`tanh(x) + x`); `content:verify` then passed on repeated runs.
+- Verification: lint (0 errors), typecheck, test (518 pass; `PATH=/usr/bin:$PATH`, build first so Pyodide assets exist), build, build:pages, content:verify (ok x2 after the fix), `smoke:readiness` at desktop and iPhone 14 (all PASS, no console errors or overflow; list-only change, screenshots not viewed). CI/Pages confirmation skipped (Actions quota note / no `gh`).
+- Known gaps: boss fights, art and the Metric Market map are still to come (D5e, D5f).
+- Next: D5e (Metric Market art: tileset, Imbalance Swarm and Leakage boss sprites, trainers, backdrop), likely to be split.
