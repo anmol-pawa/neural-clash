@@ -1,0 +1,894 @@
+{
+  "id": "classical",
+  "title": "Classic Grove: classical ML",
+  "cards": [
+    {
+      "id": "cls-normal-eq",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "cls-linear",
+      "prompt": "What does this print? (The first column of X is the constant 1.)",
+      "code": [
+        "X = np.array([[1, 1], [1, 2], [1, 3]], dtype=float)",
+        "y = np.array([1, 2, 2], dtype=float)",
+        "print(np.linalg.solve(X.T @ X, X.T @ y).round(3).tolist())"
+      ],
+      "choices": [
+        "[1.0, 0.5]",
+        "[0.667, 0.5]",
+        "[0.5, 0.667]",
+        "[0.667, 1.0]"
+      ],
+      "answer": 1,
+      "explanation": "The normal equation (X^T X) w = X^T y gives the least-squares line y = 0.667 + 0.5 x: intercept first because the ones column is first. Solving the linear system is preferred to forming an explicit inverse, which is slower and less accurate; for ill-conditioned X prefer lstsq or a QR/SVD route."
+    },
+    {
+      "id": "cls-r2",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "cls-linear",
+      "prompt": "What does this print?",
+      "code": [
+        "y = np.array([3, 5, 7, 9.0])",
+        "p = np.array([2.5, 5.5, 6.5, 9.5])",
+        "print(round(1 - ((y - p) ** 2).sum() / ((y - y.mean()) ** 2).sum(), 3))"
+      ],
+      "choices": [
+        "0.95",
+        "0.05",
+        "0.975",
+        "0.9"
+      ],
+      "answer": 0,
+      "explanation": "R^2 = 1 - SS_res / SS_tot = 1 - 1 / 20 = 0.95: the model explains 95% of the variance around the mean predictor. A constant prediction at the mean scores exactly 0, and a model worse than that scores below 0, so R^2 can be negative on held-out data."
+    },
+    {
+      "id": "cls-gd-step",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "cls-linear",
+      "prompt": "What does this print? (One gradient-descent step on mean squared error for y = w x, starting at w = 0, learning rate 0.1.)",
+      "code": [
+        "X = np.array([1.0, 2.0, 3.0])",
+        "y = np.array([2.0, 4.0, 6.0])",
+        "w = 0.0",
+        "g = 2 * np.mean((w * X - y) * X)",
+        "print(round(w - 0.1 * g, 3))"
+      ],
+      "choices": [
+        "0.1",
+        "-1.867",
+        "18.667",
+        "1.867"
+      ],
+      "answer": 3,
+      "explanation": "The gradient of the mean squared error is 2 mean((wx - y) x) = -18.667 at w = 0, so the step moves w by +1.867 toward the true slope 2. The step is large because the features are not scaled; the stability limit is 2 / 9.33 = 0.21 (the curvature of this loss), so a learning rate of 0.25 would diverge. Scaling features makes one learning rate work for all of them."
+    },
+    {
+      "id": "cls-ridge-shrink",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "cls-linear",
+      "prompt": "What does this print? (Ridge solution w = (X^T X + lambda I)^-1 X^T y for lambda = 0 and then 14, with one feature.)",
+      "code": [
+        "X = np.array([[1.0], [2.0], [3.0]])",
+        "y = np.array([2.0, 4.0, 6.0])",
+        "for lam in (0, 14):",
+        "    print(round(float(np.linalg.solve(X.T @ X + lam * np.eye(1), X.T @ y)[0]), 3), end=' ')"
+      ],
+      "choices": [
+        "2.0 2.0",
+        "2.0 0.0",
+        "2.0 1.0",
+        "1.0 2.0"
+      ],
+      "answer": 2,
+      "explanation": "X^T X = 14 and X^T y = 28, so lambda = 0 gives 2 and lambda = 14 gives 28 / 28 = 1: the L2 penalty halves the weight. Ridge always shrinks toward zero (never exactly to zero) and keeps X^T X + lambda I invertible even when features are collinear. The intercept is normally left unpenalised."
+    },
+    {
+      "id": "cls-sigmoid",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "cls-linear",
+      "prompt": "What does this print?",
+      "code": [
+        "z = np.array([-2.0, 0.0, 3.0])",
+        "print((1 / (1 + np.exp(-z))).round(4).tolist())"
+      ],
+      "choices": [
+        "[0.0, 0.5, 1.0]",
+        "[0.1192, 0.5, 0.9526]",
+        "[0.8808, 0.5, 0.0474]",
+        "[-2.0, 0.0, 3.0]"
+      ],
+      "answer": 1,
+      "explanation": "The sigmoid maps a logit to a probability: 1 / (1 + e^2) = 0.1192, 0.5 at zero, and 0.9526 for 3. The logit is the log-odds, so logistic regression is linear in log-odds and the decision boundary at probability 0.5 is the hyperplane w.x + b = 0."
+    },
+    {
+      "id": "cls-logit-grad",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "cls-linear",
+      "prompt": "What does this print? (The gradient of the mean log-loss at w = 0.)",
+      "code": [
+        "X = np.array([[1.0, 2.0], [1.0, -1.0]])",
+        "y = np.array([1.0, 0.0])",
+        "p = 1 / (1 + np.exp(-(X @ np.zeros(2))))",
+        "print((X.T @ (p - y) / len(y)).round(3).tolist())"
+      ],
+      "choices": [
+        "[0.0, -0.75]",
+        "[0.0, 0.75]",
+        "[-0.5, 0.5]",
+        "[0.75, 0.0]"
+      ],
+      "answer": 0,
+      "explanation": "The gradient of mean log-loss with a sigmoid is X^T (p - y) / n, the same shape as least squares but with p in place of the linear prediction. At w = 0 every p is 0.5, so the residuals are -0.5 and +0.5 and the gradient is [0, -0.75]. A descent step then moves w along +0.75 in the second feature, as it should."
+    },
+    {
+      "id": "cls-knn",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "cls-simple",
+      "prompt": "What does this print? (Indices of the 3 nearest neighbours, then the majority label.)",
+      "code": [
+        "X = np.array([[0, 0], [1, 0], [0, 1], [5, 5], [6, 5]], dtype=float)",
+        "y = np.array([0, 0, 0, 1, 1])",
+        "q = np.array([2.0, 1.5])",
+        "idx = np.argsort(np.linalg.norm(X - q, axis=1))[:3]",
+        "print(idx.tolist(), int(np.bincount(y[idx]).argmax()))"
+      ],
+      "choices": [
+        "[1, 2, 0] 1",
+        "[3, 4, 1] 1",
+        "[0, 1, 2] 0",
+        "[1, 2, 0] 0"
+      ],
+      "answer": 3,
+      "explanation": "Distances to the query are 2.5, 1.8, 2.06, 4.6 and 5.3, so the three nearest are rows 1, 2 and 0, all labelled 0. With k = 5 the vote would be 3 to 2, still class 0, but k = 5 on a bigger imbalanced dataset would drown out a small class. Choosing k is a bias-variance dial: small k is jagged and noisy, large k is smooth and biased."
+    },
+    {
+      "id": "cls-knn-scale",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "cls-simple",
+      "prompt": "What does this print? (Index of the row nearest to the query by plain Euclidean distance. Columns: age in years, income in dollars.)",
+      "code": [
+        "X = np.array([[1.0, 50000.0], [2.0, 51000.0], [1.5, 90000.0]])",
+        "q = np.array([1.0, 51000.0])",
+        "print(int(np.linalg.norm(X - q, axis=1).argmin()))"
+      ],
+      "choices": [
+        "0",
+        "2",
+        "1",
+        "3"
+      ],
+      "answer": 2,
+      "explanation": "Row 1 wins because the income column is 50,000 times larger than the age column, so the age difference is invisible and the distance is just the income gap. Distance-based models (k-NN, k-means, RBF-SVM) need standardised features, and the scaler must be fitted on the training split only."
+    },
+    {
+      "id": "cls-naive-bayes",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "cls-simple",
+      "prompt": "What does this print? (Naive Bayes posterior of class 0 for x = [1, 0]. Rows of p are classes; columns are P(feature = 1 | class).)",
+      "code": [
+        "prior = np.array([0.5, 0.5])",
+        "p = np.array([[0.8, 0.4], [0.1, 0.3]])",
+        "x = np.array([1, 0])",
+        "like = (p ** x * (1 - p) ** (1 - x)).prod(axis=1)",
+        "post = prior * like",
+        "print(round(float(post[0] / post.sum()), 4))"
+      ],
+      "choices": [
+        "0.5",
+        "0.8727",
+        "0.48",
+        "0.5714"
+      ],
+      "answer": 1,
+      "explanation": "Naive Bayes multiplies per-feature likelihoods (the 'naive' conditional-independence assumption): class 0 scores 0.8 x 0.6 = 0.48 and class 1 scores 0.1 x 0.7 = 0.07. Normalising gives 0.48 x 0.5 / (0.48 x 0.5 + 0.07 x 0.5) = 0.8727. The probabilities are over-confident when features are correlated, but the ranking is often still good."
+    },
+    {
+      "id": "cls-laplace",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "cls-simple",
+      "prompt": "What does this print? (Add-one smoothing: a word never seen in a class of 10 tokens, with a vocabulary of 5 words.)",
+      "code": [
+        "count, total, vocab = 0, 10, 5",
+        "print(round((count + 1) / (total + vocab), 4))"
+      ],
+      "choices": [
+        "0.0667",
+        "0.0",
+        "0.1",
+        "0.2"
+      ],
+      "answer": 0,
+      "explanation": "Add-one (Laplace) smoothing gives (0 + 1) / (10 + 5) = 0.0667. Without it one unseen word makes the whole class likelihood exactly zero, vetoing the class however strong the other evidence is. Smoothing is a MAP estimate under a uniform Dirichlet prior."
+    },
+    {
+      "id": "cls-gini",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "cls-trees",
+      "prompt": "What does this print? (Gini impurity of the labels.)",
+      "code": [
+        "y = np.array([0, 0, 0, 1, 1, 1, 1, 1])",
+        "p = np.bincount(y) / len(y)",
+        "print(round(1 - (p ** 2).sum(), 4))"
+      ],
+      "choices": [
+        "0.5",
+        "0.9544",
+        "0.2344",
+        "0.4688"
+      ],
+      "answer": 3,
+      "explanation": "Gini = 1 - sum p^2 = 1 - (0.375^2 + 0.625^2) = 0.4688, close to the two-class maximum of 0.5. A pure node scores 0. Entropy (0.9544 bits for the same labels) behaves almost identically; in practice the choice between them rarely changes the tree much."
+    },
+    {
+      "id": "cls-split-gain",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "cls-trees",
+      "prompt": "What does this print? (Impurity decrease from splitting at x < 6.5, Gini impurity, children weighted by size.)",
+      "code": [
+        "x = np.array([1, 2, 3, 10, 11, 12.0])",
+        "y = np.array([0, 0, 0, 1, 1, 1])",
+        "def gini(v):",
+        "    p = np.bincount(v, minlength=2) / len(v); return 1 - (p ** 2).sum()",
+        "l, r = y[x < 6.5], y[x >= 6.5]",
+        "print(round(gini(y) - (len(l) * gini(l) + len(r) * gini(r)) / len(y), 3))"
+      ],
+      "choices": [
+        "0.0",
+        "0.25",
+        "0.5",
+        "1.0"
+      ],
+      "answer": 2,
+      "explanation": "The parent has Gini 0.5 and both children are pure (0), so the gain is the full 0.5. A greedy tree evaluates every threshold between sorted feature values this way and keeps the best. Weighting children by their size matters: a split that peels off one pure example should not look as good as a balanced one."
+    },
+    {
+      "id": "cls-boost-residual",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "cls-trees",
+      "prompt": "What does this print? (Residuals of the first boosting stage, then the predictions after adding a learning-rate-0.5 correction that fits those residuals perfectly.)",
+      "code": [
+        "y = np.array([3.0, 5.0, 10.0])",
+        "f = np.full(3, y.mean())",
+        "r = y - f",
+        "print(r.round(3).tolist(), (f + 0.5 * r).round(3).tolist())"
+      ],
+      "choices": [
+        "[3.0, 1.0, -4.0] [7.5, 6.5, 4.0]",
+        "[-3.0, -1.0, 4.0] [4.5, 5.5, 8.0]",
+        "[-3.0, -1.0, 4.0] [6.0, 6.0, 6.0]",
+        "[-3.0, -1.0, 4.0] [3.0, 5.0, 10.0]"
+      ],
+      "answer": 1,
+      "explanation": "Gradient boosting starts from a constant (the mean, 6) and each new tree fits the residuals (-3, -1, 4), which are the negative gradient of squared error. Adding only a fraction (the learning rate, here 0.5) of the correction is shrinkage: it needs more trees but generalises better."
+    },
+    {
+      "id": "cls-bagging-var",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "cls-trees",
+      "prompt": "What does this print? (Variance of the average of 10 models, each with variance 4 and pairwise correlation 0.5: rho s^2 + (1 - rho) s^2 / m.)",
+      "code": [
+        "rho, s2, m = 0.5, 4.0, 10",
+        "print(round(rho * s2 + (1 - rho) * s2 / m, 3))"
+      ],
+      "choices": [
+        "2.2",
+        "0.4",
+        "4.0",
+        "2.0"
+      ],
+      "answer": 0,
+      "explanation": "The variance of an average is rho s^2 + (1 - rho) s^2 / m = 2 + 0.2 = 2.2. Averaging removes the independent part but not the correlated part, so it can never go below rho s^2. That is why random forests also subsample features: they decorrelate the trees."
+    },
+    {
+      "id": "cls-kmeans-assign",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "cls-practice",
+      "prompt": "What does this print? (Cluster labels, then the sum of squared distances to the assigned centroid.)",
+      "code": [
+        "X = np.array([[0, 0], [0, 2], [10, 0], [10, 2]], dtype=float)",
+        "c = np.array([[0.0, 1.0], [10.0, 1.0]])",
+        "d = np.linalg.norm(X[:, None] - c[None], axis=2)",
+        "print(d.argmin(axis=1).tolist(), round(float((d.min(axis=1) ** 2).sum()), 3))"
+      ],
+      "choices": [
+        "[0, 1, 0, 1] 4.0",
+        "[0, 0, 1, 1] 2.0",
+        "[1, 1, 0, 0] 4.0",
+        "[0, 0, 1, 1] 4.0"
+      ],
+      "answer": 3,
+      "explanation": "Each point goes to its nearest centroid, so the left pair joins cluster 0 and the right pair cluster 1, and every point is 1 away from its centre: inertia 4. The assign-then-update loop (Lloyd's algorithm) never increases inertia, but it only finds a local minimum, which is why k-means++ initialisation and several restarts are standard."
+    },
+    {
+      "id": "cls-imbalance-acc",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "cls-practice",
+      "prompt": "What does this print? (Accuracy, then recall of the rare class, for a model that always predicts the majority class on 98 negatives and 2 positives.)",
+      "code": [
+        "y = np.array([0] * 98 + [1] * 2)",
+        "p = np.zeros(100, dtype=int)",
+        "print((p == y).mean(), (p[y == 1] == 1).mean())"
+      ],
+      "choices": [
+        "0.98 0.98",
+        "0.02 0.0",
+        "0.98 0.0",
+        "1.0 0.0"
+      ],
+      "answer": 2,
+      "explanation": "A model that never predicts the rare class is 98% accurate and finds none of the positives. On imbalanced data report precision, recall, PR curves or a cost-weighted metric, and tune the decision threshold, instead of accuracy."
+    },
+    {
+      "id": "cls-precision-recall",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "cls-practice",
+      "prompt": "What does this print? (Precision, recall and F1 for 8 true positives, 2 false positives and 4 false negatives.)",
+      "code": [
+        "tp, fp, fn = 8, 2, 4",
+        "p, r = tp / (tp + fp), tp / (tp + fn)",
+        "print(round(p, 3), round(r, 3), round(2 * p * r / (p + r), 3))"
+      ],
+      "choices": [
+        "0.8 0.8 0.8",
+        "0.8 0.667 0.727",
+        "0.667 0.8 0.727",
+        "0.8 0.667 0.733"
+      ],
+      "answer": 1,
+      "explanation": "Precision = 8/10 = 0.8 (of the flags, how many were right), recall = 8/12 = 0.667 (of the real positives, how many were found), and F1, their harmonic mean, is 0.727. The harmonic mean is dragged toward the smaller of the two, so F1 cannot hide a weak recall behind a strong precision."
+    },
+    {
+      "id": "cls-class-weight",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "cls-practice",
+      "prompt": "What does this print? (The 'balanced' class weights n / (k x count) for 950 negatives and 50 positives.)",
+      "code": [
+        "n, k = 1000, 2",
+        "cnt = np.array([950, 50])",
+        "print((n / (k * cnt)).round(3).tolist())"
+      ],
+      "choices": [
+        "[0.526, 10.0]",
+        "[1.0, 19.0]",
+        "[0.05, 0.95]",
+        "[0.5, 10.0]"
+      ],
+      "answer": 0,
+      "explanation": "Weights of 0.526 and 10.0 make each class contribute equal total weight to the loss (950 x 0.526 = 50 x 10 = 500). Class weights change the loss without changing the data, so unlike oversampling they cannot leak duplicates across a validation split."
+    },
+    {
+      "id": "cls-standardize-outlier",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "cls-practice",
+      "prompt": "What does this print? (z-scores of a feature that contains an outlier.)",
+      "code": [
+        "x = np.array([10.0, 20.0, 30.0, 100.0])",
+        "print(((x - x.mean()) / x.std()).round(3).tolist())"
+      ],
+      "choices": [
+        "[-1.5, -0.5, 0.5, 1.5]",
+        "[0.0, 0.111, 0.222, 1.0]",
+        "[-1.0, -0.333, 0.333, 1.0]",
+        "[-0.849, -0.566, -0.283, 1.697]"
+      ],
+      "answer": 3,
+      "explanation": "The outlier inflates the mean (40) and the standard deviation (35.4), so the three ordinary values are squeezed into -0.85 to -0.28 while the outlier sits at 1.70. The choice of scaler is a robustness decision: a median/IQR scaler or a log transform copes better with heavy tails. Min-max scaling would give 0, 0.111, 0.222, 1 and is even more outlier-sensitive."
+    },
+    {
+      "id": "cls-scaler-leak",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "cls-practice",
+      "prompt": "What does this print? (Mean used to scale when the scaler is fitted on all four rows, then on the three training rows only.)",
+      "code": [
+        "x = np.array([1.0, 2.0, 3.0, 100.0])",
+        "print(x.mean(), x[:3].mean())"
+      ],
+      "choices": [
+        "2.0 2.0",
+        "26.5 26.5",
+        "26.5 2.0",
+        "2.0 26.5"
+      ],
+      "answer": 2,
+      "explanation": "Fitting the scaler on all rows lets the held-out value 100 shift the mean to 26.5, so test information leaks into the training features. Fit every preprocessing step (scaler, imputer, encoder, feature selection) on the training split inside the cross-validation loop, for example with a pipeline."
+    },
+    {
+      "id": "cls-bias-variance",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "cls-linear",
+      "prompt": "What does this print? (Expected squared error = bias^2 + variance + irreducible noise.)",
+      "code": [
+        "bias, std, noise = 0.3, 0.5, 0.2",
+        "print(round(bias ** 2 + std ** 2 + noise, 3))"
+      ],
+      "choices": [
+        "0.34",
+        "0.54",
+        "1.0",
+        "0.45"
+      ],
+      "answer": 1,
+      "explanation": "0.09 + 0.25 + 0.2 = 0.54. The noise term is a floor no model can beat; only bias and variance are under your control. More flexible models trade bias for variance, so the best model is rarely the simplest or the most flexible one."
+    },
+    {
+      "id": "cls-l1-l2-norms",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "cls-linear",
+      "prompt": "What does this print? (The L1 and L2 penalties of a weight vector.)",
+      "code": [
+        "w = np.array([0.5, -0.3, 0.0])",
+        "print(round(np.abs(w).sum(), 2), round((w ** 2).sum(), 2))"
+      ],
+      "choices": [
+        "0.8 0.34",
+        "0.8 0.8",
+        "0.34 0.8",
+        "0.5 0.25"
+      ],
+      "answer": 0,
+      "explanation": "L1 is the sum of absolute values (0.8), L2 the sum of squares (0.34). The L1 gradient has constant magnitude, so it keeps pulling small weights all the way to exactly zero (a sparse model and a form of feature selection); the L2 gradient shrinks as the weight shrinks, so weights get small but stay non-zero."
+    },
+    {
+      "id": "cls-shape-gram",
+      "kind": "shape",
+      "topic": "cls-linear",
+      "prompt": "With `X = np.zeros((100, 3))`, what is the shape of `X.T @ X`? Type \"error\" if it raises.",
+      "answer": [
+        3,
+        3
+      ],
+      "explanation": "Result shape (3, 3). The Gram matrix X^T X of n x d data is d x d, independent of n: this is the matrix the normal equation inverts, and it is why the cost of the closed form grows with the number of features cubed, not with the number of rows."
+    },
+    {
+      "id": "cls-shape-pairwise",
+      "kind": "shape",
+      "topic": "cls-simple",
+      "prompt": "With `A = np.zeros((5, 4))` and `B = np.zeros((3, 4))`, what is the shape of `np.linalg.norm(A[:, None] - B[None], axis=2)`? Type \"error\" if it raises.",
+      "answer": [
+        5,
+        3
+      ],
+      "explanation": "Result shape (5, 3). A[:, None] is (5, 1, 4) and B[None] is (1, 3, 4); broadcasting makes their difference (5, 3, 4) and the norm over the feature axis leaves one distance per (query, point) pair: (5, 3). This is the distance matrix k-NN and k-means build."
+    },
+    {
+      "id": "cls-shape-column",
+      "kind": "shape",
+      "topic": "cls-linear",
+      "prompt": "With `X = np.zeros((100, 3))` and `w = np.zeros((3, 1))`, what is the shape of `X @ w`? Type \"error\" if it raises.",
+      "answer": [
+        100,
+        1
+      ],
+      "explanation": "Result shape (100, 1). A (3, 1) weight column gives a (100, 1) prediction column, not a flat (100,) vector. That innocent difference is the source of a classic bug on the next card."
+    },
+    {
+      "id": "cls-shape-column-bug",
+      "kind": "shape",
+      "topic": "cls-linear",
+      "prompt": "With `X = np.zeros((100, 3))` and `w = np.zeros((3, 1))` and `y = np.zeros(100)`, what is the shape of `X @ w - y`? Type \"error\" if it raises.",
+      "answer": [
+        100,
+        100
+      ],
+      "explanation": "Result shape (100, 100). (100, 1) minus (100,) broadcasts to (100, 100): every prediction is compared with every label and the loss silently becomes a mean over 10,000 pairs. No error is raised, which is why you assert shapes in training code."
+    },
+    {
+      "id": "cls-derive-ols",
+      "kind": "derive",
+      "topic": "cls-linear",
+      "prompt": "Fit y = b0 + b1 x by ordinary least squares to the points (1, 2), (2, 4), (3, 5), (4, 8). Enter the intercept b0, the slope b1 and R^2.",
+      "fields": [
+        "intercept b0",
+        "slope b1",
+        "R^2"
+      ],
+      "answers": [
+        0,
+        1.9,
+        0.962667
+      ],
+      "tol": 0.01,
+      "explanation": "The slope is Cov(x, y) / Var(x) = 1.9 and the intercept makes the line pass through the means (2.5, 4.75): b0 = 4.75 - 1.9 x 2.5 = 0. R^2 = 0.9627, so the line explains most of the variance in four points; with so few points that is weak evidence of a linear law."
+    },
+    {
+      "id": "cls-derive-logistic-step",
+      "kind": "derive",
+      "topic": "cls-linear",
+      "prompt": "Logistic regression with weights [0, 0] on X = [[1, 0.5], [1, -1], [1, 2]] (first column the bias) and labels [1, 0, 1]. Enter the mean log-loss, then the two gradient components.",
+      "fields": [
+        "mean log-loss",
+        "gradient (bias)",
+        "gradient (feature)"
+      ],
+      "answers": [
+        0.693147,
+        -0.166667,
+        -0.583333
+      ],
+      "tol": 0.01,
+      "explanation": "With every probability at 0.5 the loss is ln 2 = 0.693, the 'know nothing' baseline. The gradient is X^T (p - y) / n = [-0.1667, -0.5833]; since gradient descent subtracts it, both weights increase, as they should for mostly-positive labels on positive feature values."
+    },
+    {
+      "id": "cls-derive-split",
+      "kind": "derive",
+      "topic": "cls-trees",
+      "prompt": "A node holds labels [0, 0, 1, 1, 1, 1, 0, 1]. A candidate split sends the first three to the left child and the other five to the right. Enter the parent's Gini impurity, the size-weighted Gini of the children, and the impurity decrease (gain).",
+      "fields": [
+        "parent Gini",
+        "weighted child Gini",
+        "gain"
+      ],
+      "answers": [
+        0.46875,
+        0.366667,
+        0.102083
+      ],
+      "tol": 0.01,
+      "explanation": "The parent has three 0s and five 1s: Gini 0.469. The left child [0,0,1] has Gini 0.444 and the right [1,1,1,0,1] has 0.32; weighted by sizes 3/8 and 5/8 that is 0.367, so the split gains 0.102. A tree takes the split with the largest gain and recurses until a stopping rule (depth, minimum samples, minimum gain) fires."
+    },
+    {
+      "id": "cls-derive-kmeans",
+      "kind": "derive",
+      "topic": "cls-practice",
+      "prompt": "1-D points 1, 2, 9, 10, 20 with initial centroids 1 and 10. Do one assignment step and one update step. Enter the inertia (sum of squared distances) after the assignment, then the two updated centroids.",
+      "fields": [
+        "inertia after assignment",
+        "new centroid 0",
+        "new centroid 1"
+      ],
+      "answers": [
+        102,
+        1.5,
+        13
+      ],
+      "tol": 0.01,
+      "explanation": "Points 1 and 2 go to centroid 1, and 9, 10, 20 to centroid 10, giving inertia 0 + 1 + 1 + 0 + 100 = 102. The update moves the centroids to the cluster means, 1.5 and 13. The outlier 20 drags the second centroid away from the dense group, which is k-means' sensitivity to outliers (k-medoids and robust methods are alternatives)."
+    },
+    {
+      "id": "cls-derive-threshold",
+      "kind": "derive",
+      "topic": "cls-practice",
+      "prompt": "A classifier gives scores [0.9, 0.8, 0.7, 0.6, 0.55, 0.4, 0.3, 0.2] for true labels [1, 1, 0, 1, 0, 1, 0, 0]. At the threshold 0.5 enter precision, recall and F1.",
+      "fields": [
+        "precision",
+        "recall",
+        "F1"
+      ],
+      "answers": [
+        0.6,
+        0.75,
+        0.666667
+      ],
+      "tol": 0.01,
+      "explanation": "Five scores clear 0.5, of which 3 are positives (precision 0.6); the positive at 0.4 is missed (recall 0.75). F1 = 0.667. Moving the threshold trades one for the other: that trade-off is the precision-recall curve, and the right operating point depends on the cost of each error."
+    },
+    {
+      "id": "cls-normal-vs-gd",
+      "kind": "mcq",
+      "topic": "cls-linear",
+      "prompt": "When is gradient descent preferred over the normal equation for linear regression?",
+      "choices": [
+        "Whenever the data is noisy",
+        "When the problem is not convex",
+        "When there are very many features or rows, or the model will later be regularised or generalised beyond least squares",
+        "When there are fewer features than rows"
+      ],
+      "answer": 2,
+      "explanation": "The normal equation costs O(n d^2 + d^3) and needs X^T X to be well-conditioned. Gradient (and stochastic) methods scale to millions of rows and to models with no closed form, which is why every neural network uses them. For small, well-conditioned problems the closed form is exact and simpler."
+    },
+    {
+      "id": "cls-l1-vs-l2",
+      "kind": "mcq",
+      "topic": "cls-linear",
+      "prompt": "Why does an L1 penalty produce sparse weights but L2 does not?",
+      "choices": [
+        "L1 is faster to compute",
+        "The L1 constraint region has corners on the axes, so the optimum often lands where some weights are exactly zero",
+        "L2 ignores large weights",
+        "L1 penalises the bias term"
+      ],
+      "answer": 1,
+      "explanation": "The L1 ball is a diamond whose corners lie on the axes, and the loss contours tend to touch it at a corner; the L2 ball is smooth, so the touch point has all coordinates non-zero. Under a Bayesian reading, L1 is a Laplace prior and L2 a Gaussian prior. With correlated features, L1 arbitrarily keeps one of them; elastic net blends both."
+    },
+    {
+      "id": "cls-diagnose-overfit",
+      "kind": "mcq",
+      "topic": "cls-linear",
+      "prompt": "Training error is 1% and validation error is 18%. What is the most likely diagnosis and a sensible first move?",
+      "choices": [
+        "High variance (overfitting): add data, regularise, simplify the model or stop earlier",
+        "High bias (underfitting): use a bigger model",
+        "The labels are random, so nothing can be done",
+        "Leakage from the validation set into training"
+      ],
+      "answer": 0,
+      "explanation": "A large train-validation gap points to variance. If both errors were high and close together the diagnosis would be bias, and the cure a richer model or better features. Learning curves (error versus training-set size) tell the two apart: they converge high for bias, and keep a gap for variance. Check for a bug or distribution shift before tuning."
+    },
+    {
+      "id": "cls-mse-logistic",
+      "kind": "mcq",
+      "topic": "cls-linear",
+      "prompt": "Why is log-loss rather than squared error used to train logistic regression?",
+      "choices": [
+        "Squared error cannot be computed for probabilities",
+        "Log-loss has no gradient",
+        "They give identical gradients",
+        "Log-loss is the Bernoulli negative log-likelihood and is convex in the weights; squared error on a sigmoid is non-convex and its gradient vanishes on confident mistakes"
+      ],
+      "answer": 3,
+      "explanation": "With a sigmoid output the log-loss gradient simplifies to (p - y) x, which stays large when the model is confidently wrong. The squared-error gradient carries an extra p (1 - p) factor that goes to zero when p saturates, so a confidently wrong model barely learns."
+    },
+    {
+      "id": "cls-knn-tradeoffs",
+      "kind": "mcq",
+      "topic": "cls-simple",
+      "prompt": "Which statement about k-nearest neighbours is correct?",
+      "choices": [
+        "It learns a small set of weights, so prediction is fast",
+        "It does not need feature scaling",
+        "Training is trivial but prediction is expensive, and distances degrade as the number of dimensions grows",
+        "Larger k always improves accuracy"
+      ],
+      "answer": 2,
+      "explanation": "k-NN stores the data and searches at query time (use KD-trees, ball trees or approximate indexes for scale). In high dimensions the nearest and farthest neighbours become almost equally far (the curse of dimensionality), so the neighbourhood stops meaning anything. Small k means low bias and high variance; large k the reverse."
+    },
+    {
+      "id": "cls-naive-bayes-why",
+      "kind": "mcq",
+      "topic": "cls-simple",
+      "prompt": "Naive Bayes assumes features are independent given the class, which is rarely true. Why does it still often work well for text?",
+      "choices": [
+        "The independence assumption is always true for words",
+        "Classification only needs the correct class to rank highest, not calibrated probabilities, and the model has very low variance",
+        "It uses a deep representation",
+        "It never overfits regardless of the vocabulary"
+      ],
+      "answer": 1,
+      "explanation": "Correlated features double-count evidence, so the probabilities come out over-confident, but the arg-max can still be right. Its very few parameters make it a strong baseline with small data. If you need trustworthy probabilities, calibrate the scores afterwards."
+    },
+    {
+      "id": "cls-svm-margin",
+      "kind": "mcq",
+      "topic": "cls-simple",
+      "prompt": "What does a (hard-margin) linear SVM optimise?",
+      "choices": [
+        "The separating hyperplane with the largest margin to the nearest points, which are the support vectors",
+        "The hyperplane closest to the class means",
+        "The lowest training log-loss",
+        "The deepest tree"
+      ],
+      "answer": 0,
+      "explanation": "Only the points on or inside the margin (the support vectors) determine the boundary; the rest could move without changing it. The soft-margin parameter C trades margin width against violations, and kernels (for example RBF) let the same machinery draw non-linear boundaries by computing inner products in an implicit feature space. Large kernels do not scale to millions of rows."
+    },
+    {
+      "id": "cls-tree-instability",
+      "kind": "mcq",
+      "topic": "cls-trees",
+      "prompt": "Why is a single deep decision tree a high-variance model?",
+      "choices": [
+        "It cannot represent non-linear boundaries",
+        "Trees need scaled features",
+        "It underfits by construction",
+        "A small change in the data can change an early split and so the whole structure below it"
+      ],
+      "answer": 3,
+      "explanation": "Greedy top-down splitting makes early decisions that cascade; deep trees fit noise and flip when a few rows change. Pruning, depth limits and minimum leaf sizes reduce variance; averaging many trees (bagging) is the more powerful cure. Trees need no feature scaling and capture interactions natively."
+    },
+    {
+      "id": "cls-rf-decorrelate",
+      "kind": "mcq",
+      "topic": "cls-trees",
+      "prompt": "What does a random forest add to plain bagging of trees?",
+      "choices": [
+        "It trains each tree on the residuals of the previous one",
+        "It prunes every tree to one split",
+        "It considers only a random subset of features at each split, which decorrelates the trees and lowers the variance of the average",
+        "It removes the need for any hyperparameters"
+      ],
+      "answer": 2,
+      "explanation": "Bagging alone leaves the trees correlated when a few strong features dominate every tree. Feature subsampling forces diversity, and out-of-bag samples give a free validation estimate. Forests are robust defaults for tabular data but give less accurate probabilities than a calibrated boosted model."
+    },
+    {
+      "id": "cls-boost-vs-bag",
+      "kind": "mcq",
+      "topic": "cls-trees",
+      "prompt": "How do boosting and bagging differ?",
+      "choices": [
+        "Boosting trains trees in parallel on bootstrap samples",
+        "Boosting builds weak learners sequentially to reduce bias; bagging builds strong learners in parallel to reduce variance",
+        "Bagging fits residuals",
+        "They are identical"
+      ],
+      "answer": 1,
+      "explanation": "Boosting adds shallow trees one at a time, each fitting what the ensemble still gets wrong (residuals, or gradients of the loss), with shrinkage to limit overfitting; it can overfit noisy labels if run too long, so early stopping on a validation set matters. Bagged deep trees are hard to overfit by adding more trees."
+    },
+    {
+      "id": "cls-kmeans-assumptions",
+      "kind": "mcq",
+      "topic": "cls-practice",
+      "prompt": "Which data would k-means handle badly?",
+      "choices": [
+        "Two interleaved crescents, or clusters with very different sizes and densities",
+        "Well-separated round blobs of equal size",
+        "Data with a clear elbow in inertia",
+        "Standardised features"
+      ],
+      "answer": 0,
+      "explanation": "k-means minimises within-cluster squared distance, so it implicitly assumes roughly spherical, similar-sized clusters. Density-based methods (DBSCAN) or a Gaussian mixture with full covariances handle other shapes. The elbow of the inertia curve is a heuristic for k, not a proof; silhouette scores or domain needs are better guides."
+    },
+    {
+      "id": "cls-kmeanspp",
+      "kind": "mcq",
+      "topic": "cls-practice",
+      "prompt": "What problem does k-means++ initialisation address?",
+      "choices": [
+        "The choice of k",
+        "Missing values",
+        "Non-spherical clusters",
+        "Poor local minima from bad random starting centroids; it spreads the starts by sampling proportional to squared distance"
+      ],
+      "answer": 3,
+      "explanation": "Choosing the first centroid at random and each next one with probability proportional to its squared distance from the nearest chosen centroid gives an O(log k)-competitive expected solution and faster convergence. Running several restarts and keeping the lowest inertia is still common."
+    },
+    {
+      "id": "cls-smote-leak",
+      "kind": "mcq",
+      "topic": "cls-practice",
+      "prompt": "You oversample the minority class (copies or SMOTE) and then run cross-validation. What is wrong?",
+      "choices": [
+        "Oversampling is never allowed",
+        "Cross-validation cannot handle imbalance",
+        "Copies of the same example land in training and validation folds, inflating the score; resample inside each training fold only",
+        "Nothing; it is standard practice"
+      ],
+      "answer": 2,
+      "explanation": "Any step that looks at labels or duplicates rows must happen after the split. Otherwise a synthetic neighbour of a validation point sits in training and the metric measures memorisation. Alternatives that avoid the problem: class weights, threshold tuning on a held-out set, and metrics that suit the imbalance (PR-AUC, recall at a precision target)."
+    },
+    {
+      "id": "cls-cv-time",
+      "kind": "mcq",
+      "topic": "cls-practice",
+      "prompt": "For a model that forecasts next week's demand from past weeks, which validation scheme is right?",
+      "choices": [
+        "Shuffled 5-fold cross-validation",
+        "Forward-chaining splits: train on the past, validate on the following window",
+        "Train on the future and test on the past",
+        "Leave-one-out"
+      ],
+      "answer": 1,
+      "explanation": "Shuffled folds let the model train on data from after the validation period, which is leakage through time and overstates performance. Group-aware splits (all rows of a user in one fold) solve the analogous problem for repeated measurements. The validation scheme should mimic how the model will be used."
+    },
+    {
+      "id": "cls-nested-cv",
+      "kind": "mcq",
+      "topic": "cls-practice",
+      "prompt": "Why is nested cross-validation used when tuning hyperparameters?",
+      "choices": [
+        "Selecting the best configuration on the same folds you report makes the score optimistic; an outer loop gives an honest estimate",
+        "It makes training faster",
+        "It removes the need for a test set in every case",
+        "It chooses the number of folds"
+      ],
+      "answer": 0,
+      "explanation": "The maximum of many noisy validation scores is biased upward. The inner loop picks hyperparameters; the outer loop scores the whole procedure on data the selection never saw. A cheaper alternative is a final untouched test set used once."
+    },
+    {
+      "id": "cls-impute-flag",
+      "kind": "mcq",
+      "topic": "cls-practice",
+      "prompt": "A column is missing for 30% of rows, and being missing is itself related to the label. What is a sound approach?",
+      "choices": [
+        "Drop the column silently",
+        "Fill with the global mean computed on all rows including the test set",
+        "Delete every incomplete row",
+        "Impute using training-set statistics and add a 'was missing' indicator feature"
+      ],
+      "answer": 3,
+      "explanation": "Missingness is often informative (a blank income field, a skipped lab test). An indicator lets the model use it. Imputation statistics belong to the training split. Dropping rows biases the sample when data is not missing at random; tree libraries that handle missing values natively are another route."
+    },
+    {
+      "id": "cls-scale-sensitive",
+      "kind": "multi",
+      "topic": "cls-practice",
+      "prompt": "Which of these usually need standardised features to work well? Pick all that apply.",
+      "choices": [
+        "k-nearest neighbours",
+        "k-means",
+        "L2-regularised logistic regression",
+        "A random forest",
+        "A single decision tree"
+      ],
+      "answers": [
+        0,
+        1,
+        2
+      ],
+      "explanation": "Distance-based and penalised or gradient-trained models depend on feature scale. Tree splits compare a feature with a threshold, so any monotonic rescaling leaves the tree unchanged."
+    },
+    {
+      "id": "cls-leak-sources",
+      "kind": "multi",
+      "topic": "cls-practice",
+      "prompt": "Which of these can leak information from the test set into model selection? Pick all that apply.",
+      "choices": [
+        "Fitting a scaler on the full dataset before splitting",
+        "Choosing hyperparameters by repeatedly checking the test score",
+        "Selecting features using all labels before cross-validation",
+        "Fitting an imputer on the training fold only",
+        "Splitting by time so validation follows training"
+      ],
+      "answers": [
+        0,
+        1,
+        2
+      ],
+      "explanation": "Any preprocessing or selection step that sees the held-out labels or values contaminates the estimate. The last two options are the safe versions. Wrap preprocessing and the model in one pipeline so every step is refit inside each fold."
+    },
+    {
+      "id": "cls-bug-logistic-sign",
+      "kind": "bug",
+      "topic": "cls-linear",
+      "prompt": "`step(w, X, y, lr)` should take one gradient-descent step on the log-loss, but the loss goes up each step. Which line is wrong?",
+      "code": [
+        "import numpy as np",
+        "def step(w, X, y, lr):",
+        "    p = 1 / (1 + np.exp(-(X @ w)))",
+        "    grad = X.T @ (y - p) / len(y)",
+        "    return w - lr * grad"
+      ],
+      "line": 4,
+      "explanation": "The gradient of the log-loss is X^T (p - y) / n. With (y - p) the sign is flipped, so subtracting it is gradient ascent. A quick check for any training loop: after one small step the loss on the same batch must go down."
+    },
+    {
+      "id": "cls-bug-split-weight",
+      "kind": "bug",
+      "topic": "cls-trees",
+      "prompt": "`split_impurity(l, r)` should return the size-weighted Gini of a split, but it prefers splits that isolate a single example. Which line is wrong?",
+      "code": [
+        "import numpy as np",
+        "def gini(v):",
+        "    p = np.bincount(v, minlength=2) / len(v); return 1 - (p ** 2).sum()",
+        "def split_impurity(l, r):",
+        "    return (gini(l) + gini(r)) / 2"
+      ],
+      "line": 5,
+      "explanation": "Children must be weighted by how many examples they hold. An unweighted average rewards peeling off one pure example (impurity 0) and ignores the large impure remainder. Real implementations also guard against empty children."
+    },
+    {
+      "id": "cls-bug-scaler-leak",
+      "kind": "bug",
+      "topic": "cls-practice",
+      "prompt": "`scale(train, test)` should standardise both sets using the training statistics only, but it leaks test information. Which line is wrong?",
+      "code": [
+        "import numpy as np",
+        "def scale(train, test):",
+        "    mu = np.concatenate([train, test]).mean(axis=0)",
+        "    sd = train.std(axis=0)",
+        "    return (train - mu) / sd, (test - mu) / sd"
+      ],
+      "line": 3,
+      "explanation": "The mean used to centre the training data included the test rows, so the held-out distribution shaped the training features. The fitted statistics must come from the training split alone and then be applied unchanged to validation and test, ideally via a pipeline object that is fitted once per fold."
+    }
+  ]
+}

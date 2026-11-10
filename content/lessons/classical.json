@@ -1,0 +1,236 @@
+{
+  "id": "classical-lessons",
+  "title": "Classic Grove lessons",
+  "lessons": [
+    {
+      "id": "cls-linear-lesson",
+      "title": "Linear and logistic regression, regularisation, bias and variance",
+      "topics": [
+        "cls-linear"
+      ],
+      "intro": "Almost every model you will meet is a linear model with extra machinery around it. Learn the closed form, the gradient form, the probabilistic reading and the two failure modes (too simple, too flexible), and the rest of machine learning becomes variations.",
+      "takeaways": [
+        "Least squares: normal equation (exact, O(d^3)) or gradient descent (scales, generalises).",
+        "Logistic regression = linear logit + sigmoid + log-loss; gradient X^T (p - y) / n.",
+        "L2 shrinks weights and cures collinearity; L1 produces sparse weights.",
+        "Error = bias^2 + variance + noise: fix high bias with capacity or features, high variance with data, regularisation or simpler models.",
+        "Learning curves tell underfitting from overfitting."
+      ],
+      "trap": "Judging a model by training error, or reporting R^2 on the training set. Always compare train and validation error before deciding what to change.",
+      "sections": [
+        {
+          "heading": "Least squares two ways",
+          "text": "The normal equation solves (X^T X) w = X^T y directly. Gradient descent reaches the same answer by repeated small steps. Prefer solve (or lstsq) to an explicit inverse.",
+          "code": [
+            "X = np.array([[1, 1], [1, 2], [1, 3], [1, 4]], dtype=float)",
+            "y = np.array([2, 4, 5, 8], dtype=float)",
+            "w = np.linalg.solve(X.T @ X, X.T @ y)",
+            "v = np.zeros(2)",
+            "for _ in range(5000):",
+            "    v -= 0.05 * 2 * X.T @ (X @ v - y) / len(y)",
+            "print(w.round(3).tolist(), v.round(3).tolist())"
+          ],
+          "output": "[-0.0, 1.9] [0.0, 1.9]"
+        },
+        {
+          "heading": "Logistic regression: a linear logit, a sigmoid, log-loss",
+          "text": "The model is p = sigmoid(w.x). The loss is the Bernoulli negative log-likelihood, and its gradient is X^T (p - y) / n. The decision boundary at p = 0.5 is the hyperplane w.x = 0. On perfectly separable data like this the weights never stop growing (the likelihood keeps rising), which is one reason to regularise.",
+          "code": [
+            "X = np.array([[1, 0.5], [1, -1], [1, 2], [1, -2]], dtype=float)",
+            "y = np.array([1, 0, 1, 0], dtype=float)",
+            "w = np.zeros(2)",
+            "for _ in range(200):",
+            "    p = 1 / (1 + np.exp(-(X @ w)))",
+            "    w -= 0.5 * X.T @ (p - y) / len(y)",
+            "p = 1 / (1 + np.exp(-(X @ w)))",
+            "print(w.round(3).tolist(), p.round(3).tolist())"
+          ],
+          "output": "[0.904, 4.455] [0.958, 0.028, 1.0, 0.0]"
+        },
+        {
+          "heading": "Ridge shrinks, lasso selects",
+          "text": "Adding lambda ||w||^2 turns the system into (X^T X + lambda I) w = X^T y: weights shrink smoothly and the matrix stays invertible even for collinear features. With two near-identical columns the unpenalised weights are unstable (1.76 and 1.24 where the true total is 3); ridge shares the weight evenly. An L1 penalty instead drives some weights to exactly zero.",
+          "code": [
+            "rng = np.random.default_rng(0)",
+            "x1 = rng.normal(size=50)",
+            "X = np.column_stack([x1, x1 + 0.01 * rng.normal(size=50)])",
+            "y = 3 * x1 + 0.1 * rng.normal(size=50)",
+            "for lam in (0, 1, 100):",
+            "    print(lam, np.linalg.solve(X.T @ X + lam * np.eye(2), X.T @ y).round(2).tolist())"
+          ],
+          "output": "0 [1.76, 1.24]\n1 [1.49, 1.48]\n100 [0.69, 0.69]"
+        }
+      ]
+    },
+    {
+      "id": "cls-simple-lesson",
+      "title": "k-NN, naive Bayes and support vector machines",
+      "topics": [
+        "cls-simple"
+      ],
+      "intro": "Three classical classifiers, three different ideas: remember the data (k-NN), count and multiply probabilities (naive Bayes), and find the widest-margin boundary (SVM). Each has a sharp interview-ready trade-off.",
+      "takeaways": [
+        "k-NN has no training and costly prediction; it needs scaled features and suffers in high dimensions.",
+        "Small k = low bias, high variance; large k = smooth and biased.",
+        "Naive Bayes: tiny variance, over-confident probabilities, strong baseline for text; always smooth.",
+        "SVM: widest margin, only support vectors matter, kernels give non-linear boundaries, C trades margin for violations.",
+        "Fit scalers on the training split only."
+      ],
+      "trap": "Running k-NN or an RBF-SVM on raw features of wildly different scales and wondering why one column decides everything.",
+      "sections": [
+        {
+          "heading": "k-NN: distance, votes and the scale trap",
+          "text": "Prediction is a vote among the k closest training points, so everything depends on the distance. A feature measured in thousands silently outvotes one measured in units unless you standardise. After standardising, the nearest neighbour here changes from row 1 to row 0.",
+          "code": [
+            "X = np.array([[1.0, 50000.0], [2.0, 51000.0], [1.5, 90000.0]])",
+            "q = np.array([1.0, 51000.0])",
+            "print(np.linalg.norm(X - q, axis=1).round(1).tolist())",
+            "mu, sd = X.mean(axis=0), X.std(axis=0)",
+            "Z, zq = (X - mu) / sd, (q - mu) / sd",
+            "print(np.linalg.norm(Z - zq, axis=1).round(2).tolist())"
+          ],
+          "output": "[1000.0, 1.0, 39000.0]\n[0.05, 2.45, 2.43]"
+        },
+        {
+          "heading": "Naive Bayes: multiply per-feature likelihoods",
+          "text": "Bayes' rule gives P(class | x) proportional to P(class) times the product of P(feature | class). Independence given the class is the 'naive' step; smoothing prevents a single unseen feature from zeroing a class.",
+          "code": [
+            "prior = np.array([0.5, 0.5])",
+            "p = np.array([[0.8, 0.4], [0.1, 0.3]])",
+            "x = np.array([1, 0])",
+            "like = (p ** x * (1 - p) ** (1 - x)).prod(axis=1)",
+            "post = prior * like",
+            "print((post / post.sum()).round(4).tolist())"
+          ],
+          "output": "[0.8727, 0.1273]"
+        },
+        {
+          "heading": "The curse of dimensionality",
+          "text": "In high dimensions the nearest and the farthest neighbours become almost equally far away (the printed ratio of nearest to farthest distance climbs toward 1), which is why k-NN and kernel methods need low-dimensional, meaningful features or learned embeddings.",
+          "code": [
+            "rng = np.random.default_rng(0)",
+            "for d in (2, 20, 200, 2000):",
+            "    P = rng.random((300, d))",
+            "    dist = np.linalg.norm(P[1:] - P[0], axis=1)",
+            "    print(d, round(float(dist.min() / dist.max()), 2))"
+          ],
+          "output": "2 0.02\n20 0.5\n200 0.77\n2000 0.93"
+        }
+      ]
+    },
+    {
+      "id": "cls-trees-lesson",
+      "title": "Decision trees, bagging, random forests and boosting",
+      "topics": [
+        "cls-trees"
+      ],
+      "intro": "Trees dominate tabular machine learning. A single tree is easy to explain and unstable; ensembles fix that in two opposite ways: average many deep trees to cut variance, or add many shallow trees one at a time to cut bias.",
+      "takeaways": [
+        "A tree greedily maximises impurity decrease; deep trees overfit and are unstable.",
+        "Bagging/random forests average decorrelated deep trees to reduce variance; out-of-bag error is a free validation estimate.",
+        "Boosting adds shallow trees on residuals/gradients with shrinkage to reduce bias; tune the number of rounds with early stopping.",
+        "Trees need no scaling and capture interactions, but extrapolate as flat lines.",
+        "Compare ensembles by variance versus bias, not by name."
+      ],
+      "trap": "Letting a boosted model run to many rounds on noisy labels without early stopping on a clean validation set.",
+      "sections": [
+        {
+          "heading": "Choosing a split",
+          "text": "At each node a tree tries every threshold on every feature and keeps the one with the largest impurity decrease: parent impurity minus the size-weighted impurity of the two children.",
+          "code": [
+            "x = np.array([1, 2, 3, 10, 11, 12.0, 4, 9])",
+            "y = np.array([0, 0, 0, 1, 1, 1, 1, 0])",
+            "def gini(v):",
+            "    p = np.bincount(v, minlength=2) / len(v); return 1 - (p ** 2).sum()",
+            "xs = np.sort(x)",
+            "best = max(((gini(y) - ((x < t).sum() * gini(y[x < t]) + (x >= t).sum() * gini(y[x >= t])) / len(y), t) for t in (xs[:-1] + xs[1:]) / 2))",
+            "print(round(best[0], 4), best[1])"
+          ],
+          "output": "0.3 9.5"
+        },
+        {
+          "heading": "Averaging removes variance, but not correlation",
+          "text": "The variance of an average of m models with variance s^2 and pairwise correlation rho is rho s^2 + (1 - rho) s^2 / m. More trees help until the correlated part dominates, which is why forests subsample features.",
+          "code": [
+            "for rho in (0.0, 0.3, 0.9):",
+            "    print(rho, [round(rho * 4 + (1 - rho) * 4 / m, 2) for m in (1, 10, 100)])"
+          ],
+          "output": "0.0 [4.0, 0.4, 0.04]\n0.3 [4.0, 1.48, 1.23]\n0.9 [4.0, 3.64, 3.6]"
+        },
+        {
+          "heading": "Boosting fits residuals",
+          "text": "Start from a constant, then repeatedly fit a small tree to the residuals and add a fraction of it. With squared error the residual is the negative gradient, and the learning rate shrinks each step.",
+          "code": [
+            "x = np.linspace(0, 6, 40)",
+            "y = np.sin(x)",
+            "f = np.full_like(y, y.mean())",
+            "def stump(x, r):",
+            "    best = min(((((r[x < t] - r[x < t].mean()) ** 2).sum() + ((r[x >= t] - r[x >= t].mean()) ** 2).sum(), t) for t in x[1:-1]))",
+            "    t = best[1]; return np.where(x < t, r[x < t].mean(), r[x >= t].mean())",
+            "for step in range(30):",
+            "    f = f + 0.3 * stump(x, y - f)",
+            "    if step in (0, 9, 29):",
+            "        print(step + 1, round(float(((y - f) ** 2).mean()), 4))"
+          ],
+          "output": "1 0.2964\n10 0.0444\n30 0.0105"
+        }
+      ]
+    },
+    {
+      "id": "cls-practice-lesson",
+      "title": "Clustering, imbalance, validation and preprocessing",
+      "topics": [
+        "cls-practice"
+      ],
+      "intro": "Models fail in practice for boring reasons: a leaky split, the wrong metric for rare events, a scaler fitted on the wrong data, or a clustering algorithm applied to shapes it cannot represent. This lesson is the checklist interviewers listen for.",
+      "takeaways": [
+        "k-means: assign/update loop, local minima, k-means++ and restarts, spherical-cluster assumption.",
+        "Imbalance: use PR metrics, class weights and threshold tuning; resample only inside training folds.",
+        "Validation must mimic deployment: time order for forecasting, groups for repeated users, nested CV for tuning.",
+        "Every preprocessing step belongs inside the pipeline and is fitted on the training fold.",
+        "Add a missing-indicator when missingness carries signal."
+      ],
+      "trap": "Reporting a cross-validation score from a procedure that selected features, tuned hyperparameters or oversampled before splitting.",
+      "sections": [
+        {
+          "heading": "k-means in a dozen lines",
+          "text": "Alternate between assigning each point to its nearest centroid and moving each centroid to the mean of its points. Inertia never rises, but the result depends on the start.",
+          "code": [
+            "rng = np.random.default_rng(0)",
+            "X = np.vstack([rng.normal(0, 0.5, (30, 2)), rng.normal(4, 0.5, (30, 2))])",
+            "c = X[[0, 1]].copy()",
+            "for _ in range(10):",
+            "    lab = np.linalg.norm(X[:, None] - c[None], axis=2).argmin(axis=1)",
+            "    c = np.array([X[lab == k].mean(axis=0) for k in range(2)])",
+            "print(c.round(2).tolist(), np.bincount(lab).tolist())"
+          ],
+          "output": "[[-0.06, 0.14], [4.06, 4.03]] [30, 30]"
+        },
+        {
+          "heading": "Accuracy lies when classes are rare",
+          "text": "With 2% positives a model that always predicts negative is 98% accurate and useless. Look at precision, recall and the precision-recall trade-off as the threshold moves.",
+          "code": [
+            "y = np.array([0] * 98 + [1] * 2)",
+            "s = np.r_[np.linspace(0, 0.6, 98), [0.7, 0.9]]",
+            "for t in (0.5, 0.65, 0.8):",
+            "    pred = s >= t",
+            "    tp = int((pred & (y == 1)).sum()); fp = int((pred & (y == 0)).sum())",
+            "    print(t, tp, fp, round(tp / max(tp + fp, 1), 2), round(tp / 2, 2))"
+          ],
+          "output": "0.5 2 17 0.11 1.0\n0.65 2 0 1.0 1.0\n0.8 1 0 1.0 0.5"
+        },
+        {
+          "heading": "Leakage through preprocessing",
+          "text": "A scaler, imputer or feature selector fitted on all rows lets the validation set influence training. The estimate then looks better than the model really is.",
+          "code": [
+            "rng = np.random.default_rng(1)",
+            "X = rng.normal(size=(40, 2)); X[-5:] += 50",
+            "train, test = X[:35], X[35:]",
+            "print(train.mean(axis=0).round(2).tolist(), X.mean(axis=0).round(2).tolist())"
+          ],
+          "output": "[-0.03, -0.12] [6.23, 6.13]"
+        }
+      ]
+    }
+  ]
+}

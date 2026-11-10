@@ -38,7 +38,7 @@ for (const [name, opts] of [["desktop", { viewport: { width: 1280, height: 800 }
   await page.goto(`${origin}${BASE}/learn`);
   await page.getByRole("heading", { name: "Lessons" }).waitFor();
   const n = await page.locator("ul li a").count();
-  check(n >= 28, `${name}: at least 28 lessons listed (${n})`);
+  check(n >= 32, `${name}: at least 32 lessons listed (${n})`);
   await page.screenshot({ path: join(shots, `learn-list-${name}.png`) });
   await page.locator("ul li a").nth(19).click();
   await page.getByText("Common trap").waitFor();

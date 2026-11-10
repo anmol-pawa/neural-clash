@@ -579,3 +579,12 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Verification: lint (0 errors), typecheck, test (448 pass), build, build:pages, smoke:guardian-peaks and smoke:slice at desktop and iPhone 14: no console errors or overflow; screenshots inspected. content:verify: all ok.
 - Known gaps: no Peaks overworld map or trainer dialogue yet. CI/Pages not confirmed (no `gh` CLI here).
 - Next: D4 (Classic Grove).
+
+## 2026-11-10: D4a Classic Grove lessons and deck
+- D4 was split into D4a-D4f in ROADMAP. This run: `scripts/gen-classical.mjs` generates `content/decks/classical.json` (52 cards: 22 predict, 4 shape, 5 derive, 16 concept, 2 multi, 3 bug) and `content/lessons/classical.json` (4 lessons, 12 sections) with every predict/shape/derive answer and lesson output computed by running numpy natively.
+- New pure `lib/solvers/classical.ts` (ridge/OLS, R^2, logistic loss+grad, Gini/entropy, split gain and best split, k-means step, k-NN, precision/recall/F1, balanced weights, naive Bayes, averaged variance). `tests/classical.test.ts` cross-checks the deck against it, including a finite-difference gradient check, k-means monotone inertia and weighted-split behaviour. Deck wired into `lib/cards/samples.ts`, `lib/lessons/lessons.ts`, Daily Sync; lessons test and `smoke:learn` updated.
+- Verification: lint (0 errors), typecheck, test (458 pass), build, build:pages, content:verify (all ok), smoke:learn at desktop and iPhone 14 (32 lessons, no console errors or overflow; list screenshot inspected).
+- Known gaps: the Learn page intro text still says "Python, numpy and linear-algebra decks"; no Labs/dataset/art yet.
+- Branch note: this session was told to push to `claude/wonderful-goodall-73jiee`, not `main`, so work is there awaiting merge.
+- CI/Pages: not confirmed (no `gh` CLI in this session).
+- Next: D4b (Creature Stats dataset and classical-ML Labs).
