@@ -612,3 +612,9 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Verification: lint (0 errors), typecheck, test (473 pass after `node scripts/fetch-pyodide.mjs`; `PATH=/usr/bin:$PATH`), build, build:pages; Playwright on `/dev/sprites` at desktop and iPhone 14: no console errors, no overflow; preview map and tile sheet inspected. content:verify not run (art only).
 - Known gaps: canopy is slightly small against its trunk tile; no guardian, trainers or backdrop yet. CI/Pages not confirmed (no `gh` CLI here).
 - Next: D4e2 (Grove guardian art).
+
+## 2026-11-10: D4e2 Classic Grove guardian art
+- New `scripts/art/warden-fork.mjs` -> `game/sprites/creatures/warden-fork.ts`: Warden Fork, 96x96 living decision tree. Head is the root node (leaf canopy with a face), arms are branches ending in a cyan YES node and a magenta NO node, legs are forking roots, a split-rule glyph is carved in the trunk. Idle 4, attack 5 (branches reach out, leaf-bolts fly), hurt 3 (leaves shed), faint 4 (sinks, leaves fall). Registered in the roster, so the roster-driven sprite tests cover it.
+- Verification: lint (0 errors), typecheck, test (479 pass; `PATH=/usr/bin:$PATH`), build:pages; Playwright on `/dev/sprites` (static export) at desktop and iPhone 14: no console errors, no overflow; contact sheet of all 16 frames inspected. content:verify not run (art only).
+- Known gaps: no Grove trainers or backdrop yet. Pushed to the designated branch `claude/wonderful-goodall-76mjhm` (session instruction) rather than `main`, so Pages is unchanged until merged. CI/Pages not checked (no `gh` CLI).
+- Next: D4e3 (Grove trainers and battle backdrop).
