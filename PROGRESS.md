@@ -631,3 +631,10 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Verification: lint (0 errors), typecheck, test (501 pass; `PATH=/usr/bin:$PATH`), build, build:pages, `smoke:guardian-grove` at desktop and iPhone 14 (all PASS; no console errors or overflow; iPhone cards screenshot inspected, boss reads as a tree on the Grove backdrop). content:verify not run (no content changed).
 - Known gaps: the Grove is not yet reachable on the overworld map (trainers not placed). CI/Pages confirmation skipped (no `gh` CLI here). Pushed to `main` and the session branch.
 - Next: D5 (Metric Market + Data Dojo), to be split into sub-boxes first.
+
+## 2026-11-10: D5a Metric Market lessons and deck
+- D5 was split into D5a-D5f in ROADMAP. This run: `scripts/gen-metrics.mjs` generates `content/decks/metrics.json` (34 cards over metric-confusion / metric-curves / metric-calibration / metric-splits / metric-ranking: 16 predict, 3 shape, 3 derive, 8 concept, 1 multi, 3 bug) and `content/lessons/metrics.json` (3 lessons: confusion matrix + ROC vs PR + base rate + cost thresholds; calibration + time/group splits + significance; ranking and regression metrics). Every answer and lesson output is computed natively with numpy; bug cards are checked to change behaviour when fixed; `--check` guards staleness. Two explanation numbers I had typed (9.1%, R^2 -11.71) were caught by reading the computed outputs and corrected (9.0%, -14).
+- New `lib/solvers/evalMetrics.ts` and `tests/metrics.test.ts` cross-check the deck (precision/recall/F-beta, Bayes PPV/NPV, pairwise AUC, AP, P@k, MRR, nDCG, R^2, standard error). Wired into Learn (35 lessons) and Daily Sync.
+- Verification: lint (0 errors), typecheck, test (506 pass; `PATH=/usr/bin:$PATH` for numpy), build, build:pages, content:verify (all ok), smoke:learn and smoke:sync at desktop and iPhone 14 (all PASS; no console errors or overflow; no new visual surface, so no screenshots viewed).
+- Known gaps: no Labs, Dojo interactives, Readiness skill, art or bosses yet (D5b-D5f). CI/Pages confirmation not attempted (no `gh` CLI here).
+- Next: D5b (metric Labs).

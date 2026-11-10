@@ -1,0 +1,576 @@
+{
+  "id": "metrics",
+  "title": "Metric Market: evaluation",
+  "cards": [
+    {
+      "id": "met-pr",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "metric-confusion",
+      "prompt": "What does this print? (Precision, then recall, of a classifier with 30 true positives, 10 false positives and 20 false negatives.)",
+      "code": [
+        "tp, fp, fn = 30, 10, 20",
+        "print(round(tp / (tp + fp), 3), round(tp / (tp + fn), 3))"
+      ],
+      "choices": [
+        "0.6 0.75",
+        "0.75 0.6",
+        "0.75 0.75",
+        "0.5 0.6"
+      ],
+      "answer": 1,
+      "explanation": "Precision = TP / (TP + FP) = 30 / 40 asks 'of what I flagged, how much was right?'. Recall = TP / (TP + FN) = 30 / 50 asks 'of the real positives, how many did I find?'. They share the numerator and differ in the denominator."
+    },
+    {
+      "id": "met-f1",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "metric-confusion",
+      "prompt": "What does this print? (F1 is the harmonic mean of precision and recall.)",
+      "code": [
+        "p, r = 0.75, 0.6",
+        "print(round(2 * p * r / (p + r), 4))"
+      ],
+      "choices": [
+        "0.6667",
+        "0.675",
+        "0.45",
+        "0.7"
+      ],
+      "answer": 0,
+      "explanation": "The harmonic mean 2pr / (p + r) = 0.9 / 1.35 = 0.6667 sits below the arithmetic mean 0.675, and it is dragged toward the smaller of the two, so you cannot buy a high F1 with one great number."
+    },
+    {
+      "id": "met-fbeta",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "metric-confusion",
+      "prompt": "What does this print? (F-beta with beta = 2 weights recall more: (1 + b^2) p r / (b^2 p + r).)",
+      "code": [
+        "p, r, b = 0.5, 1.0, 2.0",
+        "print(round((1 + b ** 2) * p * r / (b ** 2 * p + r), 4))"
+      ],
+      "choices": [
+        "0.6667",
+        "0.75",
+        "0.5",
+        "0.8333"
+      ],
+      "answer": 3,
+      "explanation": "With b = 2 the score is 5 * 0.5 / (4 * 0.5 + 1) = 0.8333, above the F1 of 0.6667 for the same precision and recall, because F2 forgives low precision and punishes low recall. Use it when a miss costs more than a false alarm."
+    },
+    {
+      "id": "met-rare-precision",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "metric-confusion",
+      "prompt": "What does this print? (10,000 cases, 100 positive. A model has recall 0.5 and a false-positive rate of 1%. What is its precision?)",
+      "code": [
+        "n, pos = 10000, 100",
+        "tp = 0.5 * pos",
+        "fp = 0.01 * (n - pos)",
+        "print(round(tp / (tp + fp), 3))"
+      ],
+      "choices": [
+        "0.99",
+        "0.5",
+        "0.336",
+        "0.05"
+      ],
+      "answer": 2,
+      "explanation": "A 1% false-positive rate sounds tiny but applies to 9,900 negatives: 99 false alarms against 50 hits, so only about a third of the flags are real. On rare classes precision, not the false-positive rate, is what users feel."
+    },
+    {
+      "id": "met-base-rate",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "metric-confusion",
+      "prompt": "What does this print? (A test with 99% sensitivity and 99% specificity, for a condition with 0.1% prevalence. P(condition | positive test) by Bayes' rule.)",
+      "code": [
+        "sens, spec, prev = 0.99, 0.99, 0.001",
+        "print(round(sens * prev / (sens * prev + (1 - spec) * (1 - prev)), 3))"
+      ],
+      "choices": [
+        "0.99",
+        "0.09",
+        "0.5",
+        "0.001"
+      ],
+      "answer": 1,
+      "explanation": "True positives are 0.99 x 0.001 = 0.00099 of all cases; false positives are 0.01 x 0.999 = 0.00999. So a positive test is right only 0.00099 / 0.01098 = 9.0% of the time. Prevalence, not just accuracy, decides what a positive means."
+    },
+    {
+      "id": "met-youden",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "metric-curves",
+      "prompt": "What does this print? (Youden's J is the true-positive rate minus the false-positive rate at a threshold.)",
+      "code": [
+        "tpr, fpr = 0.8, 0.1",
+        "print(round(tpr - fpr, 2))"
+      ],
+      "choices": [
+        "0.7",
+        "0.9",
+        "0.08",
+        "0.8"
+      ],
+      "answer": 0,
+      "explanation": "J = 0.8 - 0.1 = 0.7. Maximising J picks the ROC point farthest above the diagonal; it treats both error types as equally costly, which is rarely true in practice (see the cost-matrix card)."
+    },
+    {
+      "id": "met-auc-rank",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "metric-curves",
+      "prompt": "What does this print? (ROC-AUC equals the probability that a random positive outscores a random negative.)",
+      "code": [
+        "s = np.array([0.1, 0.4, 0.35, 0.8])",
+        "y = np.array([0, 0, 1, 1])",
+        "pos, neg = s[y == 1], s[y == 0]",
+        "print((pos[:, None] > neg[None, :]).mean())"
+      ],
+      "choices": [
+        "1.0",
+        "0.5",
+        "0.625",
+        "0.75"
+      ],
+      "answer": 3,
+      "explanation": "Positives score 0.35 and 0.8, negatives 0.1 and 0.4. Of the four pairs only (0.35, 0.4) is mis-ordered, so AUC = 3/4. This pairwise view also explains why AUC ignores calibration: only the order of scores matters."
+    },
+    {
+      "id": "met-cost-threshold",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "metric-curves",
+      "prompt": "What does this print? (Pick the threshold with the lowest total cost when a false negative costs 10 and a false positive costs 1.)",
+      "code": [
+        "th = np.array([0.3, 0.5, 0.7])",
+        "fp = np.array([60, 20, 5])",
+        "fn = np.array([2, 5, 15])",
+        "print(th[np.argmin(fp * 1 + fn * 10)])"
+      ],
+      "choices": [
+        "0.3",
+        "0.7",
+        "0.5",
+        "0.4"
+      ],
+      "answer": 2,
+      "explanation": "Costs are 60 + 20 = 80, 20 + 50 = 70 and 5 + 150 = 155, so 0.5 wins. With equal costs the 0.3 threshold (62) would win instead: the best threshold is a property of the cost matrix, not of the model."
+    },
+    {
+      "id": "met-ece",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "metric-calibration",
+      "prompt": "What does this print? (One confidence bin: expected calibration error is |accuracy - mean confidence|.)",
+      "code": [
+        "conf = np.array([0.9, 0.9, 0.9, 0.9])",
+        "correct = np.array([1, 1, 1, 0])",
+        "print(round(abs(correct.mean() - conf.mean()), 2))"
+      ],
+      "choices": [
+        "0.1",
+        "0.15",
+        "0.25",
+        "0.75"
+      ],
+      "answer": 1,
+      "explanation": "The model says 90% but is right 3 times in 4, an over-confidence gap of 0.15. ECE averages that gap over confidence bins, weighted by how many predictions fall in each."
+    },
+    {
+      "id": "met-se-accuracy",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "metric-splits",
+      "prompt": "What does this print? (Standard error of an accuracy of 0.8 measured on 400 test examples: sqrt(p (1 - p) / n).)",
+      "code": [
+        "p, n = 0.8, 400",
+        "print(round((p * (1 - p) / n) ** 0.5, 3))"
+      ],
+      "choices": [
+        "0.02",
+        "0.04",
+        "0.002",
+        "0.4"
+      ],
+      "answer": 0,
+      "explanation": "sqrt(0.16 / 400) = 0.02, so a 95% interval is about +/- 0.039. Two models 1 point apart on 400 examples are statistically indistinguishable, which is why 'it is 1% better' needs an error bar."
+    },
+    {
+      "id": "met-mae-rmse",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "metric-ranking",
+      "prompt": "What does this print? (MAE, then RMSE, for errors 1, 1, 1 and 9.)",
+      "code": [
+        "e = np.array([1.0, 1.0, 1.0, 9.0])",
+        "print(np.abs(e).mean(), round(float(np.sqrt((e ** 2).mean())), 2))"
+      ],
+      "choices": [
+        "3.0 3.0",
+        "3.0 9.0",
+        "4.58 3.0",
+        "3.0 4.58"
+      ],
+      "answer": 3,
+      "explanation": "MAE = 12 / 4 = 3. RMSE = sqrt(84 / 4) = 4.58. Squaring makes the single outlier dominate RMSE; choose it when large misses are disproportionately bad, MAE when you want a typical error in the original units."
+    },
+    {
+      "id": "met-mape",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "metric-ranking",
+      "prompt": "What does this print? (MAPE = mean(|y - pred| / |y|).)",
+      "code": [
+        "y = np.array([100.0, 2.0])",
+        "pred = np.array([110.0, 1.0])",
+        "print(round(float(np.mean(np.abs(y - pred) / np.abs(y))), 2))"
+      ],
+      "choices": [
+        "0.1",
+        "5.5",
+        "0.3",
+        "0.55"
+      ],
+      "answer": 2,
+      "explanation": "Errors of 10 and 1 give percentage errors of 0.10 and 0.50, mean 0.30. The tiny target dominates, and a target of exactly 0 would divide by zero: MAPE is unstable near zero and punishes over-forecasts less than under-forecasts."
+    },
+    {
+      "id": "met-p-at-k",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "metric-ranking",
+      "prompt": "What does this print? (Precision@3 of a ranked list; 1 marks a relevant result.)",
+      "code": [
+        "rel = [1, 0, 1, 1, 0]",
+        "k = 3",
+        "print(round(sum(rel[:k]) / k, 3))"
+      ],
+      "choices": [
+        "0.6",
+        "0.667",
+        "0.4",
+        "0.5"
+      ],
+      "answer": 1,
+      "explanation": "Two of the top three results are relevant, so P@3 = 2/3. Recall@3 would divide by the total number of relevant items instead, and neither metric cares where inside the top 3 the hit lands."
+    },
+    {
+      "id": "met-mrr",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "metric-ranking",
+      "prompt": "What does this print? (MRR: the mean of 1 / rank of the first relevant result, over three queries whose first hits are at ranks 1, 3 and 2.)",
+      "code": [
+        "ranks = np.array([1, 3, 2])",
+        "print(round(float((1 / ranks).mean()), 4))"
+      ],
+      "choices": [
+        "0.6111",
+        "2.0",
+        "0.5",
+        "0.3333"
+      ],
+      "answer": 0,
+      "explanation": "(1 + 1/3 + 1/2) / 3 = 0.6111. MRR rewards getting one good answer high up, which suits question answering and 'find the one file' search, and ignores everything after the first hit."
+    },
+    {
+      "id": "met-ndcg",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "metric-ranking",
+      "prompt": "What does this print? (nDCG@3 with graded relevance 2, 3, 0 in ranked order; gain 2^rel - 1, discount log2(rank + 1).)",
+      "code": [
+        "rel = np.array([2, 3, 0])",
+        "disc = np.log2(np.arange(2, len(rel) + 2))",
+        "dcg = ((2.0 ** rel - 1) / disc).sum()",
+        "ideal = ((2.0 ** np.sort(rel)[::-1] - 1) / disc).sum()",
+        "print(round(float(dcg / ideal), 4))"
+      ],
+      "choices": [
+        "1.0",
+        "0.6667",
+        "0.9",
+        "0.834"
+      ],
+      "answer": 3,
+      "explanation": "The ideal order puts the grade-3 item first (7 + 3 / 1.585 = 8.893); the shown order scores 3 + 7 / 1.585 = 7.417, so nDCG = 0.834. Graded gain and a log discount make order matter more near the top."
+    },
+    {
+      "id": "met-r2-negative",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "metric-ranking",
+      "prompt": "What does this print? (R^2 of a model that predicts a constant 10 for targets with mean 3.)",
+      "code": [
+        "y = np.array([1.0, 2.0, 3.0, 6.0])",
+        "pred = np.full(4, 10.0)",
+        "print(round(1 - ((y - pred) ** 2).sum() / ((y - y.mean()) ** 2).sum(), 2))"
+      ],
+      "choices": [
+        "0.0",
+        "1.0",
+        "-14.0",
+        "-1.0"
+      ],
+      "answer": 2,
+      "explanation": "R^2 compares you to the best constant predictor (the mean). SSE is 81 + 64 + 49 + 16 = 210 against SST 14, so R^2 = 1 - 15 = -14: a negative R^2 means worse than predicting the mean, which is possible on held-out data."
+    },
+    {
+      "id": "met-shape-pairs",
+      "kind": "shape",
+      "topic": "metric-curves",
+      "prompt": "With `pos = np.zeros(30)` and `neg = np.zeros(70)`, what is the shape of `pos[:, None] > neg[None, :]`? Type \"error\" if it raises.",
+      "answer": [
+        30,
+        70
+      ],
+      "explanation": "Result shape (30, 70). Broadcasting (30, 1) against (1, 70) yields one comparison per positive-negative pair: 2,100 pairs. This O(P x N) view of AUC is what a rank-sum formula computes without materialising the grid."
+    },
+    {
+      "id": "met-shape-topk",
+      "kind": "shape",
+      "topic": "metric-ranking",
+      "prompt": "With `scores = np.zeros(100)` and `k = 10`, what is the shape of `np.argsort(-scores)[:k]`? Type \"error\" if it raises.",
+      "answer": [
+        10
+      ],
+      "explanation": "Result shape (10,). argsort returns all 100 indices from highest score down; slicing the first k gives the top-k item ids, a vector of length 10. Metrics like P@k are computed from the labels at these positions."
+    },
+    {
+      "id": "met-shape-argmax",
+      "kind": "shape",
+      "topic": "metric-confusion",
+      "prompt": "With `P = np.zeros((50, 3))`, what is the shape of `P.argmax(axis=1)`? Type \"error\" if it raises.",
+      "answer": [
+        50
+      ],
+      "explanation": "Result shape (50,). Probabilities are (examples, classes). argmax over the class axis collapses it to one predicted label per example: shape (50,). Over axis 0 you would get (3,) and silently compare examples instead."
+    },
+    {
+      "id": "met-derive-prf",
+      "kind": "derive",
+      "topic": "metric-confusion",
+      "prompt": "A classifier has TP = 40, FP = 10, FN = 20 and TN = 930. Enter precision, recall and F1.",
+      "fields": [
+        "precision",
+        "recall",
+        "F1"
+      ],
+      "answers": [
+        0.8,
+        0.666667,
+        0.727273
+      ],
+      "tol": 0.001,
+      "explanation": "Precision 40/50 = 0.8, recall 40/60 = 0.667, F1 = 0.727. Notice that the 930 true negatives appear in none of the three: that is exactly why they are the right metrics when negatives are plentiful."
+    },
+    {
+      "id": "met-derive-ppv",
+      "kind": "derive",
+      "topic": "metric-confusion",
+      "prompt": "A screening test has sensitivity 0.9 and specificity 0.95; the condition has prevalence 2%. Enter the positive predictive value and the negative predictive value.",
+      "fields": [
+        "PPV",
+        "NPV"
+      ],
+      "answers": [
+        0.268657,
+        0.997856
+      ],
+      "tol": 0.001,
+      "explanation": "Per 10,000 people: 180 true positives, 490 false positives, 9,310 true negatives, 20 false negatives. PPV = 180 / 670 = 0.269 and NPV = 9310 / 9330 = 0.998. A 'good' test still gives mostly false alarms at low prevalence."
+    },
+    {
+      "id": "met-derive-auc-ap",
+      "kind": "derive",
+      "topic": "metric-curves",
+      "prompt": "Scores 0.9, 0.8, 0.7, 0.6, 0.55, 0.4 have labels 1, 1, 0, 1, 0, 0. Enter ROC-AUC and average precision (the mean of precision at each positive's rank).",
+      "fields": [
+        "ROC-AUC",
+        "average precision"
+      ],
+      "answers": [
+        0.888889,
+        0.916667
+      ],
+      "tol": 0.001,
+      "explanation": "8 of 9 positive-negative pairs are ordered correctly, so AUC = 0.889. Precision at the three positives' ranks is 1, 1 and 3/4, so AP = 0.917. AP looks only at the top of the ranking, which is why it reacts more than AUC to false positives ranked early."
+    },
+    {
+      "id": "met-roc-vs-pr",
+      "kind": "mcq",
+      "topic": "metric-curves",
+      "prompt": "A fraud model is evaluated on data where 0.1% of transactions are fraud. Why prefer PR-AUC to ROC-AUC here?",
+      "choices": [
+        "ROC-AUC cannot be computed when classes are imbalanced",
+        "PR-AUC is always larger than ROC-AUC, so it is easier to report",
+        "ROC-AUC can look excellent because the false-positive rate is divided by a huge negative count, while PR-AUC shows the precision that analysts actually experience",
+        "PR-AUC is unaffected by the choice of threshold, ROC-AUC is not"
+      ],
+      "answer": 2,
+      "explanation": "Both curves sweep every threshold. The difference is the denominator: FPR = FP / (all negatives), so thousands of false alarms can still be a 1% FPR and a near-perfect AUC. Precision uses FP in the same ratio as TP, so it exposes the cost. (A random scorer's PR-AUC equals the prevalence, here 0.001, not 0.5.)"
+    },
+    {
+      "id": "met-threshold-choice",
+      "kind": "mcq",
+      "topic": "metric-curves",
+      "prompt": "Your model's AUC is fixed. A product owner says missing a fraud case costs 50 times a false alarm. What should you do?",
+      "choices": [
+        "Retrain with a different random seed until AUC rises",
+        "Choose the operating threshold from the cost matrix on validation data (and re-check it when the costs or base rate change)",
+        "Keep the default 0.5 threshold because it is calibrated by definition",
+        "Report accuracy, since it already includes both error types"
+      ],
+      "answer": 1,
+      "explanation": "AUC measures ranking quality across all thresholds; deployment needs one. The expected-cost-minimising threshold depends on the costs and prevalence, so choose it on held-out data and monitor it for drift."
+    },
+    {
+      "id": "met-time-split",
+      "kind": "mcq",
+      "topic": "metric-splits",
+      "prompt": "You forecast next week's demand from the last two years of data. How should you split for validation?",
+      "choices": [
+        "Train on the past and validate on a later period (rolling or expanding windows), never shuffle across time",
+        "A random 80/20 shuffle, because it keeps the class mix identical",
+        "Stratify by the target so both sets have the same mean",
+        "Use k-fold with shuffling; more folds make it more reliable"
+      ],
+      "answer": 0,
+      "explanation": "Random shuffling puts neighbouring days in both sets, so the model is graded on interpolation it will never get in production, and any trend or seasonality leaks. Validation must mimic deployment: predict the future from the past."
+    },
+    {
+      "id": "met-group-split",
+      "kind": "mcq",
+      "topic": "metric-splits",
+      "prompt": "A dataset has 20 X-ray images per patient. A random image-level split gives 97% accuracy; a new hospital gives 81%. What is the likely cause and fix?",
+      "choices": [
+        "The new hospital has more patients, so accuracy always drops",
+        "The model is underfitting; add more layers",
+        "Random splits are always fine when the dataset has over 1,000 rows",
+        "The same patients appear in train and validation (leakage via correlated rows); split by patient with GroupKFold"
+      ],
+      "answer": 3,
+      "explanation": "Images of one patient share anatomy and scanner artefacts, so the model can recognise the person instead of the disease. Whenever rows are not independent (patients, users, sessions, devices), split by that group so the evaluation matches new, unseen groups."
+    },
+    {
+      "id": "met-calibration",
+      "kind": "mcq",
+      "topic": "metric-calibration",
+      "prompt": "Two models have the same ROC-AUC, but model B says 'probability 0.9' for events that happen 60% of the time. Which statement is correct?",
+      "choices": [
+        "AUC being equal proves both models are equally good for decisions",
+        "B must be retrained from scratch, since recalibration changes the ranking",
+        "B is mis-calibrated; a monotonic recalibration (Platt or isotonic fitted on held-out data) can fix it without changing AUC",
+        "Calibration only matters for regression models"
+      ],
+      "answer": 2,
+      "explanation": "AUC depends only on the order of scores, and a monotonic map preserves order. If downstream code uses the number as a probability (expected cost, thresholds, combining models), calibration matters: check a reliability diagram and ECE on data not used to fit the calibrator."
+    },
+    {
+      "id": "met-peeking",
+      "kind": "mcq",
+      "topic": "metric-splits",
+      "prompt": "You run an A/B test and check the p-value daily, stopping the first day it drops below 0.05. What goes wrong?",
+      "choices": [
+        "Nothing: p < 0.05 means the result is real whenever you look",
+        "Repeated looks inflate the false-positive rate well above 5%; fix the sample size in advance or use a sequential method",
+        "The p-value becomes smaller with every look, so you stop sooner and more safely",
+        "You should instead stop once the effect size looks large"
+      ],
+      "answer": 1,
+      "explanation": "Each peek is another chance for noise to cross the threshold, so the true false-positive rate climbs with the number of looks. Pre-register the sample size from a power calculation, or use sequential tests (alpha spending, always-valid p-values) designed for peeking."
+    },
+    {
+      "id": "met-offline-online",
+      "kind": "mcq",
+      "topic": "metric-splits",
+      "prompt": "A new ranking model improves offline nDCG by 2% but an online A/B test shows no change in engagement. What is the most useful reading?",
+      "choices": [
+        "Offline labels are an imperfect proxy for user behaviour (logging bias, position effects, a metric that is not the goal); trust the randomised online test and investigate the gap",
+        "The A/B test must be broken, because offline metrics are ground truth",
+        "Offline nDCG should be recomputed with more decimals",
+        "The model needs a larger learning rate"
+      ],
+      "answer": 0,
+      "explanation": "Offline sets are built from what the old system showed, so they under-represent items it never surfaced. Offline metrics are cheap filters for iteration; the randomised online experiment measures the outcome you care about."
+    },
+    {
+      "id": "met-r2-meaning",
+      "kind": "mcq",
+      "topic": "metric-ranking",
+      "prompt": "A regression model has a test R^2 of -0.4. What does that tell you?",
+      "choices": [
+        "The correlation is -0.4, so flip the sign of the predictions",
+        "R^2 can never be negative, so the code has a bug",
+        "The model explains 40% of the variance",
+        "It does worse than always predicting the training mean on this test set"
+      ],
+      "answer": 3,
+      "explanation": "R^2 = 1 - SSE / SST compares with a constant predictor. Negative means higher squared error than that baseline, which happens out of sample when the model overfits or the distribution shifted. It is not a squared correlation unless the model is an in-sample least-squares fit with an intercept."
+    },
+    {
+      "id": "met-auc-facts",
+      "kind": "multi",
+      "topic": "metric-curves",
+      "prompt": "Which statements about ROC-AUC are true? Pick all that apply.",
+      "choices": [
+        "It equals the probability a random positive outranks a random negative (ties count half)",
+        "It is unchanged by any strictly increasing transformation of the scores",
+        "It tells you whether the predicted probabilities are calibrated",
+        "A value of 0.5 corresponds to a random ranking",
+        "It depends on the chosen decision threshold"
+      ],
+      "answers": [
+        0,
+        1,
+        3
+      ],
+      "explanation": "AUC is a pure ranking statistic: the pairwise-probability reading, invariance under monotone transforms and 0.5 for random order are all true. It says nothing about calibration, and since it sweeps every threshold it does not depend on any one of them."
+    },
+    {
+      "id": "met-bug-f1",
+      "kind": "bug",
+      "topic": "metric-confusion",
+      "prompt": "`f1(tp, fp, fn)` should be the harmonic mean of precision and recall, but a model with precision 0.75 and recall 0.6 scores 0.675. Which line is wrong?",
+      "code": [
+        "def f1(tp, fp, fn):",
+        "    p = tp / (tp + fp)",
+        "    r = tp / (tp + fn)",
+        "    return (p + r) / 2"
+      ],
+      "line": 4,
+      "explanation": "(p + r) / 2 is the arithmetic mean, which lets one strong number hide a weak one. The harmonic mean 2pr / (p + r) is dominated by the smaller value."
+    },
+    {
+      "id": "met-bug-ppv",
+      "kind": "bug",
+      "topic": "metric-confusion",
+      "prompt": "`ppv(sens, spec, prev)` should give P(condition | positive test), but it returns 0.001 for a 99%-accurate test of a 0.1%-prevalence condition. Which line is wrong?",
+      "code": [
+        "def ppv(sens, spec, prev):",
+        "    tp = sens * prev",
+        "    fp = spec * (1 - prev)",
+        "    return tp / (tp + fp)"
+      ],
+      "line": 3,
+      "explanation": "False positives are the healthy people the test wrongly flags: (1 - specificity) x (1 - prevalence). Using specificity counts the correctly cleared people as false alarms."
+    },
+    {
+      "id": "met-bug-pak",
+      "kind": "bug",
+      "topic": "metric-ranking",
+      "prompt": "`precision_at_k(rel, k)` should divide hits in the top k by k, but it returns 0.4 for [1, 0, 1, 1, 0] at k = 3. Which line is wrong?",
+      "code": [
+        "def precision_at_k(rel, k):",
+        "    hits = sum(rel[:k])",
+        "    return hits / len(rel)"
+      ],
+      "line": 3,
+      "explanation": "Precision@k is hits among the k results shown. Dividing by the list length changes the question as soon as the list is longer than k, and makes scores incomparable between queries."
+    }
+  ]
+}
