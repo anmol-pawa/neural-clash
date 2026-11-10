@@ -201,6 +201,19 @@ describe("Warden Split sprite", () => {
   });
 });
 
+describe("Metric Market boss sprites", () => {
+  for (const id of ["leakage", "imbalance-swarm"]) {
+    it(`${id} is a registered 96×96 sprite with distinct animation frames`, () => {
+      const s = spriteById(id);
+      expect(s).toBeDefined();
+      expect(s!.w).toBe(96);
+      expect(s!.h).toBe(96);
+      for (const a of ["idle", "attack", "hurt", "faint"]) expect(s!.anims[a].length).toBeGreaterThanOrEqual(3);
+      for (const a of Object.values(s!.anims)) expect(new Set(a.map((f) => f.join("\n"))).size).toBe(a.length);
+    });
+  }
+});
+
 describe("Warden Split", () => {
   it("runs on the classic deck with the classic-cluster Lab and awards the Split Badge", async () => {
     const { GROVE_GUARDIAN } = await import("@/lib/guardian/defs");

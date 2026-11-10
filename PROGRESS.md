@@ -665,3 +665,9 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Verification: lint (0 errors), typecheck, test (all pass; `PATH=/usr/bin:$PATH`), build, build:pages; Playwright on `/dev/sprites/` at desktop and iPhone 14: no console errors, no overflow; preview map and tile sheet inspected. content:verify not run (art only).
 - Known gaps: mosaic floor is a little busy; no bosses, trainers or backdrop yet. CI/Pages not confirmed (no `gh` CLI here).
 - Next: D5e2 (Imbalance Swarm and Leakage boss sprites).
+
+## 2026-11-10: D5e2 Metric Market boss sprites
+- `scripts/art/market-bosses.mjs` -> `game/sprites/creatures/leakage.ts` and `imbalance-swarm.ts` (96x96, idle 4 / attack 5 / hurt 3 / faint 4, registered in the roster). Leakage: hooded violet phantom peeking at a stolen answer sheet (ticked answers), answer-drops seeping into a puddle; attack throws answer-drops. Imbalance Swarm: a heap of ~28 identical teal bugs under a "99%" accuracy banner with a grinning boss bug on top, hiding one lone glowing magenta minority bug at the front; attack surges the heap. First draft hid the minority bug under the face where it read as a tongue; moved it to the front after inspecting screenshots. Sprite tests added in `tests/guardian.test.ts`.
+- Verification: lint (0 errors), typecheck, test (536 pass; `PATH=/usr/bin:$PATH`; the first run right after `npm ci` failed only because Pyodide assets were not staged yet), build, build:pages, content:verify (all ok); Playwright on `/dev/sprites/` at desktop and iPhone 14: no console errors, no overflow; both bosses' frames inspected.
+- Known gaps: not yet used in fights (D5f); trainers and backdrop pending (D5e3). CI/Pages confirmation: no `gh` CLI in this session.
+- Next: D5e3 (Market trainers + `theme: "market"` backdrop).
