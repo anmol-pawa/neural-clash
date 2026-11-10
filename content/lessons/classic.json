@@ -1,0 +1,289 @@
+{
+  "id": "classic-lessons",
+  "title": "Classic Grove lessons",
+  "lessons": [
+    {
+      "id": "classic-linear-lesson",
+      "title": "Linear and logistic regression, and regularisation",
+      "topics": [
+        "classic-linear"
+      ],
+      "intro": "Linear and logistic regression are the baseline every ML interview starts from: a weighted sum of features, a loss, and a way to fit it. Knowing the closed form, the gradient step, the probabilistic meaning and what a penalty does is worth more than any library call.",
+      "takeaways": [
+        "Normal equation: solve (X^T X) w = X^T y; use solve, not an explicit inverse.",
+        "Linear and logistic regression share the gradient shape X^T (prediction - target) / n.",
+        "Logistic regression models log-odds and minimises the Bernoulli negative log-likelihood.",
+        "L2 adds lambda I to X^T X and shrinks weights; L1 gives sparsity; standardise features first and leave the intercept unpenalised."
+      ],
+      "trap": "Choosing the regularisation strength (or anything else) by training loss: it will always pick no regularisation.",
+      "sections": [
+        {
+          "heading": "The normal equation",
+          "text": "Least squares has a closed form: solve (X^T X) w = X^T y. The column of ones makes the intercept just another weight. Solve the linear system; do not form the inverse.",
+          "code": [
+            "X = np.c_[np.ones(5), np.arange(5.0)]",
+            "y = np.array([1.1, 2.9, 5.2, 7.1, 8.8])",
+            "w = np.linalg.solve(X.T @ X, X.T @ y)",
+            "print(np.round(w, 3))",
+            "print(round(float(((y - X @ w) ** 2).sum()), 4))"
+          ],
+          "output": "[1.1  1.96]\n0.092"
+        },
+        {
+          "heading": "Gradient descent finds the same answer",
+          "text": "The gradient of the mean squared error is X^T (Xw - y) / n. Repeated small steps downhill reach the closed-form weights, and this is the version that scales to millions of rows and generalises to every model after this one.",
+          "code": [
+            "X = np.c_[np.ones(5), np.arange(5.0)]",
+            "y = np.array([1.1, 2.9, 5.2, 7.1, 8.8])",
+            "w = np.zeros(2)",
+            "for _ in range(2000):",
+            "    w -= 0.1 * X.T @ (X @ w - y) / len(y)",
+            "print(np.round(w, 3))"
+          ],
+          "output": "[1.1  1.96]"
+        },
+        {
+          "heading": "Logistic regression: same gradient shape, new link",
+          "text": "Pass the score through a sigmoid and the cross-entropy gradient becomes X^T (p - y) / n. Each step lowers the log-loss, and the weights read as log-odds per unit of each feature.",
+          "code": [
+            "rng = np.random.default_rng(0)",
+            "x = rng.normal(size=200)",
+            "y = (x + 0.5 * rng.normal(size=200) > 0).astype(float)",
+            "X = np.c_[np.ones(200), x]",
+            "w = np.zeros(2)",
+            "def loss(w):",
+            "    p = 1 / (1 + np.exp(-X @ w))",
+            "    return float(-np.mean(y * np.log(p) + (1 - y) * np.log(1 - p)))",
+            "print(round(loss(w), 3))",
+            "for _ in range(500):",
+            "    p = 1 / (1 + np.exp(-X @ w))",
+            "    w -= 0.5 * X.T @ (p - y) / 200",
+            "print(round(loss(w), 3), np.round(w, 2))"
+          ],
+          "output": "0.693\n0.322 [-0.21  3.51]"
+        },
+        {
+          "heading": "Ridge shrinks the weights",
+          "text": "Adding lambda to the diagonal of X^T X is L2 regularisation. As lambda grows the weight vector shrinks smoothly; it also makes X^T X invertible when features are collinear.",
+          "code": [
+            "rng = np.random.default_rng(0)",
+            "X = rng.normal(size=(30, 5))",
+            "y = X @ np.array([3.0, 0.0, 0.0, -2.0, 0.0]) + rng.normal(size=30)",
+            "for lam in (0.0, 10.0, 100.0):",
+            "    w = np.linalg.solve(X.T @ X + lam * np.eye(5), X.T @ y)",
+            "    print(lam, round(float(np.linalg.norm(w)), 3))"
+          ],
+          "output": "0.0 3.932\n10.0 2.79\n100.0 0.865"
+        }
+      ]
+    },
+    {
+      "id": "classic-tree-lesson",
+      "title": "Decision trees, bagging and boosting",
+      "topics": [
+        "classic-tree"
+      ],
+      "intro": "A decision tree is a greedy search over thresholds; forests and boosting are two different ways of fixing its weaknesses. Interviewers love the question 'bagging or boosting, and why?' because it tests whether you understand bias and variance, not just the library.",
+      "takeaways": [
+        "Greedy splits maximise impurity reduction (Gini or entropy); an unpruned tree overfits.",
+        "Bagging and forests average decorrelated deep trees to reduce variance.",
+        "Boosting adds shallow trees fitted to residuals (negative gradients) to reduce bias; use a small learning rate and early stopping.",
+        "Trees need no scaling, handle mixed types, and cannot extrapolate beyond the training range."
+      ],
+      "trap": "Adding more and more boosting rounds with a large learning rate: the training loss keeps falling while validation turns up.",
+      "sections": [
+        {
+          "heading": "Finding the best split",
+          "text": "For one feature, try every threshold between sorted values, compute the size-weighted Gini of the two sides, and keep the lowest. A real tree repeats this for every feature at every node.",
+          "code": [
+            "x = np.array([1, 2, 3, 4, 5, 6, 7, 8])",
+            "y = np.array([0, 0, 0, 1, 1, 0, 1, 1])",
+            "def gini(y):",
+            "    p = np.bincount(y, minlength=2) / len(y)",
+            "    return 1 - (p ** 2).sum()",
+            "best = None",
+            "for t in x[:-1]:",
+            "    l, r = y[x <= t], y[x > t]",
+            "    score = (len(l) * gini(l) + len(r) * gini(r)) / len(y)",
+            "    print(t, round(float(score), 4))",
+            "    if best is None or score < best[0]:",
+            "        best = (score, t)",
+            "print('best threshold', best[1])"
+          ],
+          "output": "1 0.4286\n2 0.3333\n3 0.2\n4 0.375\n5 0.4667\n6 0.3333\n7 0.4286\nbest threshold 3"
+        },
+        {
+          "heading": "Bagging cuts variance, but correlation sets a floor",
+          "text": "Averaging 25 independent noisy predictors divides the variance by 25. If they share a common error, the average keeps it. That is why random forests also randomise the features each split may use.",
+          "code": [
+            "rng = np.random.default_rng(0)",
+            "indep = rng.normal(0, 2, size=(20000, 25))",
+            "print(round(float(indep[:, 0].var()), 2), round(float(indep.mean(axis=1).var()), 2))",
+            "shared = rng.normal(0, np.sqrt(2), size=(20000, 1))",
+            "own = rng.normal(0, np.sqrt(2), size=(20000, 25))",
+            "corr = shared + own",
+            "print(round(float(corr[:, 0].var()), 2), round(float(corr.mean(axis=1).var()), 2))"
+          ],
+          "output": "3.99 0.16\n4.02 2.08"
+        },
+        {
+          "heading": "Boosting fits residuals",
+          "text": "Start from the mean, fit a one-split stump to the residuals, add a fraction of it, repeat. Each round removes some of the remaining error, which is gradient descent in function space.",
+          "code": [
+            "x = np.linspace(-1, 1, 21)",
+            "y = x ** 2",
+            "F = np.full_like(y, y.mean())",
+            "def stump(x, r):",
+            "    best = None",
+            "    for t in x[:-1]:",
+            "        l, g = r[x <= t], r[x > t]",
+            "        sse = ((l - l.mean()) ** 2).sum() + ((g - g.mean()) ** 2).sum()",
+            "        if best is None or sse < best[0]:",
+            "            best = (sse, t, l.mean(), g.mean())",
+            "    return best",
+            "print(0, round(float(((y - F) ** 2).mean()), 4))",
+            "for m in range(1, 21):",
+            "    _, t, lv, gv = stump(x, y - F)",
+            "    F = F + 0.5 * np.where(x <= t, lv, gv)",
+            "    if m in (1, 5, 20):",
+            "        print(m, round(float(((y - F) ** 2).mean()), 4))"
+          ],
+          "output": "0 0.1068\n1 0.0815\n5 0.0227\n20 0.0018"
+        }
+      ]
+    },
+    {
+      "id": "classic-cluster-lesson",
+      "title": "k-NN, k-means and Naive Bayes",
+      "topics": [
+        "classic-cluster"
+      ],
+      "intro": "These three models are simple enough to write in a screen of code and revealing enough to carry an interview: each makes a different assumption about what 'similar' means.",
+      "takeaways": [
+        "k-NN: no training, slow queries, needs scaled features; k trades variance for bias.",
+        "k-means minimises within-cluster squared distance, converges to a local minimum; use k-means++ and restarts.",
+        "Naive Bayes assumes conditional independence: tiny, fast, a strong text baseline, poorly calibrated.",
+        "SVMs maximise the margin (minimise ||w||); kernels give non-linear boundaries at O(n^2) memory."
+      ],
+      "trap": "Fitting a scaler or choosing k on the test data: every 'fit' belongs on the training split.",
+      "sections": [
+        {
+          "heading": "k-NN lives and dies by its distance",
+          "text": "With raw units the dollar column swamps the centimetre column and the nearest neighbour is the wrong person. After standardising, the answer changes.",
+          "code": [
+            "X = np.array([[170.0, 50000.0], [180.0, 51000.0], [171.0, 90000.0]])",
+            "q = np.array([171.0, 52000.0])",
+            "print(int(np.argmin(np.linalg.norm(X - q, axis=1))))",
+            "m, s = X.mean(axis=0), X.std(axis=0)",
+            "print(int(np.argmin(np.linalg.norm((X - m) / s - (q - m) / s, axis=1))))"
+          ],
+          "output": "1\n0"
+        },
+        {
+          "heading": "k-means alternates two steps",
+          "text": "Assign every point to its nearest centre, then move each centre to the mean of its points. The inertia never increases, so it converges, but only to a local minimum.",
+          "code": [
+            "rng = np.random.default_rng(1)",
+            "X = np.vstack([rng.normal(c, 0.5, (30, 2)) for c in ([0, 0], [4, 0], [2, 3])])",
+            "C = X[[0, 1, 2]].copy()",
+            "for it in range(1, 9):",
+            "    a = ((X[:, None, :] - C[None, :, :]) ** 2).sum(axis=2).argmin(axis=1)",
+            "    C = np.array([X[a == j].mean(axis=0) for j in range(3)])",
+            "    print(it, round(float(((X - C[a]) ** 2).sum()), 2))"
+          ],
+          "output": "1 213.64\n2 43.79\n3 35.06\n4 35.06\n5 35.06\n6 35.06\n7 35.06\n8 35.06"
+        },
+        {
+          "heading": "Naive Bayes counts, and smoothing saves it",
+          "text": "Multiply per-word likelihoods under each class. A word never seen in a class would make the whole product zero, so add a pseudo-count (Laplace smoothing) to every count.",
+          "code": [
+            "spam = np.array([8.0, 2.0, 10.0])",
+            "ham = np.array([1.0, 9.0, 0.0])",
+            "msg = np.array([0, 0, 1])",
+            "def post(alpha):",
+            "    ps = (spam + alpha) / (spam.sum() + alpha * 3)",
+            "    ph = (ham + alpha) / (ham.sum() + alpha * 3)",
+            "    with np.errstate(divide='ignore'):",
+            "        ls = np.log(0.5) + (msg * np.log(ps)).sum()",
+            "        lh = np.log(0.5) + (msg * np.log(ph)).sum()",
+            "    return round(float(1 / (1 + np.exp(lh - ls))), 4)",
+            "print(post(0.0), post(1.0))"
+          ],
+          "output": "1.0 0.8614"
+        }
+      ]
+    },
+    {
+      "id": "classic-eval-lesson",
+      "title": "Bias, variance, cross-validation and imbalance",
+      "topics": [
+        "classic-eval"
+      ],
+      "intro": "Most real ML failures are not about the algorithm; they are about measuring it wrongly. This lesson is the checklist behind 'how would you know this model works?'.",
+      "takeaways": [
+        "Train error falling while validation error rises is variance; both high is bias.",
+        "Everything learned from data (scalers, imputers, feature selection, encodings) is fitted inside the training fold.",
+        "Split by group or time when rows are not independent.",
+        "On imbalanced data use PR-based metrics, class weights and a tuned threshold; resample the training split only."
+      ],
+      "trap": "Tuning on the test set until it looks good: the final number is then a training metric. Keep one untouched holdout.",
+      "sections": [
+        {
+          "heading": "Capacity: bias falls, variance rises",
+          "text": "Fit polynomials of increasing degree to 20 noisy points. Training error always falls; test error falls and then climbs when the model starts fitting noise.",
+          "code": [
+            "rng = np.random.default_rng(0)",
+            "f = lambda x: np.sin(2 * np.pi * x)",
+            "xt = rng.uniform(0, 1, 20)",
+            "yt = f(xt) + rng.normal(0, 0.3, 20)",
+            "xs = rng.uniform(0, 1, 500)",
+            "ys = f(xs) + rng.normal(0, 0.3, 500)",
+            "for deg in (1, 3, 9):",
+            "    c = np.polyfit(xt, yt, deg)",
+            "    print(deg, round(float(np.mean((np.polyval(c, xt) - yt) ** 2)), 3), round(float(np.mean((np.polyval(c, xs) - ys) ** 2)), 3))"
+          ],
+          "output": "1 0.332 0.297\n3 0.036 0.119\n9 0.02 0.127"
+        },
+        {
+          "heading": "Leakage inflates cross-validation",
+          "text": "On pure noise there is nothing to learn, so honest accuracy is about 50%. Choosing the 10 'best' features using all the labels first, then cross-validating, produces a convincing but false score.",
+          "code": [
+            "rng = np.random.default_rng(0)",
+            "X = rng.normal(size=(40, 500))",
+            "y = rng.integers(0, 2, 40)",
+            "folds = np.arange(40) % 5",
+            "def top(Xt, yt, k=10):",
+            "    return np.argsort(np.abs((Xt - Xt.mean(axis=0)).T @ (yt - yt.mean())))[-k:]",
+            "def acc(Xtr, ytr, Xte, yte):",
+            "    m0, m1 = Xtr[ytr == 0].mean(axis=0), Xtr[ytr == 1].mean(axis=0)",
+            "    pred = (((Xte - m1) ** 2).sum(axis=1) < ((Xte - m0) ** 2).sum(axis=1)).astype(int)",
+            "    return (pred == yte).mean()",
+            "leaky, honest = [], []",
+            "all_sel = top(X, y)",
+            "for f in range(5):",
+            "    tr, te = folds != f, folds == f",
+            "    leaky.append(acc(X[tr][:, all_sel], y[tr], X[te][:, all_sel], y[te]))",
+            "    sel = top(X[tr], y[tr])",
+            "    honest.append(acc(X[tr][:, sel], y[tr], X[te][:, sel], y[te]))",
+            "print(round(float(np.mean(leaky)), 3), round(float(np.mean(honest)), 3))"
+          ],
+          "output": "0.825 0.525"
+        },
+        {
+          "heading": "Accuracy lies on imbalanced data",
+          "text": "A model that never predicts the rare class is 99% accurate and catches nothing. Look at recall and precision, and weight the rare class in the loss.",
+          "code": [
+            "y = np.zeros(1000, dtype=int)",
+            "y[:10] = 1",
+            "pred = np.zeros(1000, dtype=int)",
+            "acc = (pred == y).mean()",
+            "recall = ((pred == 1) & (y == 1)).sum() / y.sum()",
+            "print(acc, recall)",
+            "print(1000 / (2 * 10), round(1000 / (2 * 990), 3))"
+          ],
+          "output": "0.99 0.0\n50.0 0.505"
+        }
+      ]
+    }
+  ]
+}

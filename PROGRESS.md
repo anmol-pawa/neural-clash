@@ -579,3 +579,10 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Verification: lint (0 errors), typecheck, test (448 pass), build, build:pages, smoke:guardian-peaks and smoke:slice at desktop and iPhone 14: no console errors or overflow; screenshots inspected. content:verify: all ok.
 - Known gaps: no Peaks overworld map or trainer dialogue yet. CI/Pages not confirmed (no `gh` CLI here).
 - Next: D4 (Classic Grove).
+
+## 2026-11-10: D4a Classic Grove lessons and deck
+- D4 was split into D4a-D4f in ROADMAP. This run: `scripts/gen-classic.mjs` generates `content/decks/classic.json` (41 cards over classic-linear / classic-tree / classic-cluster / classic-eval: 18 predict, 4 shape, 5 derive, 12 concept, 2 multi, 3 bug) and `content/lessons/classic.json` (4 lessons incl. normal equation vs GD, logistic regression, ridge, split search, bagging variance floor, boosting, k-NN scaling, k-means, Naive Bayes smoothing, bias-variance, a feature-selection leakage demo on pure noise, imbalance). Every predict/shape/derive answer and lesson output is computed natively with numpy; bug cards are checked to change behaviour when fixed; `--check` guards staleness.
+- New `lib/solvers/classic.ts` (Gini/entropy/gain, best threshold, OLS, ridge slope, logistic point, 1D k-means, ensemble variance, class weights, SVM margin, Naive Bayes posterior) and `tests/classic.test.ts` cross-checking the deck. Wired into Learn (32 lessons) and Daily Sync; `smoke:learn` now opens the newest lesson.
+- Verification: lint (0 errors), typecheck, test (all pass; `node scripts/fetch-pyodide.mjs` first, `PATH=/usr/bin:$PATH` for numpy), build, build:pages, smoke:learn and smoke:sync at desktop and iPhone 14 (no console errors or overflow; iPhone lesson screenshot inspected). content:verify: see commit notes below.
+- Known gaps: no Labs, visualiser, Readiness skill or art for Classic Grove yet (D4b-D4f). CI/Pages not checked (no `gh` CLI here; Actions quota period has ended, so this should be confirmed next run).
+- Next: D4b (classic Labs).

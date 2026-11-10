@@ -40,7 +40,7 @@ for (const [name, opts] of [["desktop", { viewport: { width: 1280, height: 800 }
   const n = await page.locator("ul li a").count();
   check(n >= 28, `${name}: at least 28 lessons listed (${n})`);
   await page.screenshot({ path: join(shots, `learn-list-${name}.png`) });
-  await page.locator("ul li a").nth(19).click();
+  await page.locator("ul li a").nth(n - 2).click();
   await page.getByText("Common trap").waitFor();
   check((await page.locator("pre[aria-label=Output]").count()) >= 3, `${name}: lesson shows output blocks`);
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth);

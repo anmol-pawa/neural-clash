@@ -92,7 +92,13 @@ Work top to bottom: take the **first unchecked box**, and split big boxes into r
     - [x] D3e2. (done 2026-11-09) Guardian Warden Bell (96x96, idle 4, attack 5, hurt 3, faint 4; `scripts/art/warden-bell.mjs`): a bell-curve ice golem with sigma bands, a mean line and two re-rolling dice.
     - [x] D3e3. (done 2026-11-09) Two trainers, Analyst Quill and Analyst Brun (16x24 walks + 48x48 portraits; `scripts/art/peaks-trainers.mjs`) and the Peaks battle backdrop (`theme: "peaks"`, bell-curve mountain with sigma bands).
   - [x] D3f. (done 2026-11-09) Guardian fight `/guardian/peaks` (Warden Bell: probability deck duel, `prob-mle` Lab, hidden-set fight, Bell Badge) and its readiness evidence.
-- [ ] D4. Classic Grove (F5), with from-scratch classical ML labs and the Creature Stats dataset
+- [ ] D4. Classic Grove (F5), with from-scratch classical ML labs and the Creature Stats dataset, split into:
+  - [x] D4a. (done 2026-11-10) Lessons (4) and a ~40-card deck (linear/logistic/regularisation, trees and ensembles, k-NN/k-means/Naive Bayes/SVM, bias-variance/CV/leakage/imbalance), numpy-computed and cross-checked by `lib/solvers/classic.ts`; wired into Learn and Daily Sync.
+  - [ ] D4b. Labs `classic-linear` (normal equation, ridge, logistic regression GD) and `classic-cluster` (k-NN, k-means, tree split) with hidden tests and known-wrong versions; Creature Stats dataset generator.
+  - [ ] D4c. Interactive visualiser `/dev/grove` (decision boundaries for k-NN, tree, logistic; bias-variance slider).
+  - [ ] D4d. Readiness skill "classical ML" (deck + labs).
+  - [ ] D4e. Region art (tileset, guardian, 2 trainers, backdrop).
+  - [ ] D4f. Guardian fight `/guardian/grove` and its readiness evidence.
 - [ ] D5. Metric Market + Data Dojo (F6, GDD §5.4), with the *Leakage* and *Imbalance Swarm* bosses
 - [ ] D6. Neuron Nest (F7), with Forge modules 3–8 (split across runs) and the companion → Multilayer
 - [ ] D7. Conv Caverns (F8), with module 9, the Glyphs dataset and the companion → Convling
