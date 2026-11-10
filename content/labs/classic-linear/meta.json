@@ -1,0 +1,22 @@
+{
+  "id": "classic-linear",
+  "title": "Linear and logistic models from scratch",
+  "phase": "grove",
+  "language": "python",
+  "functions": ["ols_fit", "ridge_fit", "sigmoid", "logistic_loss_grad", "logistic_fit"],
+  "wrong": {
+    "ols_no_intercept.py": "ols_fit solves for the intercept but returns 0.0 for it, so any data not through the origin is fitted badly",
+    "ridge_penalises_bias.py": "ridge_fit shrinks the intercept along with the weights, so the model drifts toward predicting 0 instead of the mean",
+    "ridge_half_lambda.py": "ridge_fit adds 0.5 * lam * I: the penalty convention does not match lam * ||w||^2",
+    "sigmoid_overflows.py": "sigmoid is 1 / (1 + exp(-z)) with no branch on the sign: exp overflows for large negative z",
+    "loss_naive_log.py": "the loss takes log(p) and log(1 - p) directly, which is infinite or NaN for confidently wrong predictions",
+    "grad_sums_not_means.py": "the gradient sums over the batch instead of averaging, so it is n times too large for a mean loss",
+    "grad_sign_flipped.py": "the residual is y - p instead of p - y, so the gradient points uphill",
+    "gd_adds_gradient.py": "logistic_fit adds the gradient, ascending the loss instead of descending it"
+  },
+  "hints": [
+    "Normal equations: append a column of ones to X, then solve (A^T A) theta = A^T y. Use np.linalg.solve, not an explicit inverse. The last entry of theta is the intercept. For ridge add lam on the diagonal of A^T A, except the intercept's entry.",
+    "Stable sigmoid: for z >= 0 use 1 / (1 + exp(-z)); for z < 0 use exp(z) / (1 + exp(z)), so exp only ever sees a non-positive number. For the loss, binary cross-entropy simplifies to mean(softplus(z) - y * z) and np.logaddexp(0, z) is a stable softplus.",
+    "The gradient of the mean cross-entropy with respect to the logits is (sigmoid(z) - y) / n. So grad_w = X^T (p - y) / n + lam * w and grad_b = mean(p - y); the bias is not penalised. If your finite-difference check disagrees, look at the mean and the sign first."
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "id": "classic-cluster",
+  "title": "k-NN, k-means and the tree split",
+  "phase": "grove",
+  "language": "python",
+  "functions": [
+    "knn_predict",
+    "kmeans_assign",
+    "kmeans_update",
+    "gini",
+    "best_split"
+  ],
+  "wrong": {
+    "knn_nearest_only.py": "knn_predict ignores k and votes with only the single nearest neighbour",
+    "knn_tie_to_largest.py": "knn_predict breaks a tied vote toward the largest label instead of the smallest",
+    "knn_unstable_sort.py": "knn_predict uses an unstable sort, so equal distances are not resolved by training order",
+    "kmeans_empty_to_zero.py": "kmeans_update sends an empty cluster's centre to the origin instead of keeping it",
+    "kmeans_modifies_centers.py": "kmeans_update writes into the caller's centres array",
+    "gini_uses_entropy.py": "gini returns the entropy -sum(p log2 p) instead of 1 - sum(p^2)",
+    "split_unweighted_children.py": "best_split averages the two child impurities without weighting by child size",
+    "split_picks_last_tie.py": "best_split keeps the last of several equally good thresholds instead of the first"
+  },
+  "hints": [
+    "Distances: (Xte[:, None, :] - Xtr[None, :, :]) ** 2 summed over the last axis gives an (m, n) matrix of squared distances. Squared distance orders neighbours the same as distance, so skip the sqrt. np.argsort with kind=\"stable\" keeps training order among equal distances, and np.unique returns sorted labels, which makes the smallest-label tie rule free.",
+    "K-means: assignment is an argmin over the (n, k) distance matrix; the update is a per-cluster mean. Guard the empty cluster (members.size == 0) so you do not take the mean of nothing. Copy the centres before writing.",
+    "Tree split: sort the distinct values, take midpoints, and score each with the size-weighted child impurity (n_left * G_left + n_right * G_right) / n. Accept a candidate only if it beats the best so far by more than a tiny epsilon, so the first (smallest) of tied thresholds wins and a no-gain split returns (None, 0.0)."
+  ]
+}

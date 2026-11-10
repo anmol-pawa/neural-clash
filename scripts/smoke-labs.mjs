@@ -39,7 +39,7 @@ for (const [name, opts] of [["desktop", { viewport: { width: 1280, height: 800 }
   await page.goto(`${origin}${BASE}/labs`);
   await page.getByTestId("lab-linear-gd").waitFor();
   const n = await page.locator("[data-testid^=lab-]").count();
-  check(n >= 19, `${name}: labs listed (${n})`);
+  check(n >= 27, `${name}: labs listed (${n})`);
   await page.screenshot({ path: join(shots, `labs-list-${name}.png`) });
   await page.getByTestId("mode-guided").click(); // free hints, so the ladder test needs no Bits
   await page.getByTestId("lab-linear-gd").click();
