@@ -618,3 +618,10 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Verification: lint (0 errors), typecheck, test (480 pass), build, build:pages; `/dev/sprites` at desktop and iPhone 14: no console errors or overflow; guardian frames inspected (reads as a tree, eyes/runes animate).
 - Known gaps: not yet used by a fight (D4f); trainers and backdrop pending (D4e3). CI/Pages not confirmed (no `gh` CLI here).
 - Next: D4e3 (Grove trainers and battle backdrop).
+
+## 2026-11-10: D4e3 Grove trainers and battle backdrop (D4e complete)
+- `scripts/art/grove-trainers.mjs`: Botanist Fern (moss-green leaf hood, freckles, amber scarf) and Forester Birch (brown felt cap with feather, grey beard, forest-green coat, clipboard); 16x24 walks (4 directions) and 48x48 portraits (idle/talk/smile/think). Registered in the roster; sprite tests extended.
+- `game/render/battle.ts`: `StageTheme` gains `"grove"` (dappled glade, a big decision tree whose root node blinks, cyan/magenta scatter clusters on the moss, dashed boundary, drifting leaves). `/battle?theme=grove` previews it; `GuardianDef.theme` accepts it for D4f.
+- Verification: lint (0 errors), typecheck, test (500 pass; `PATH=/usr/bin:$PATH`), build, build:pages; Playwright on `/battle/?theme=grove` and `/dev/sprites/` at desktop and iPhone 14: no console errors, no overflow; backdrop and trainer sheets inspected. content:verify not run (art only).
+- Known gaps: Fern's hair reads a little like a beret under the hood; trainers not yet placed in a map. CI/Pages not confirmed (no `gh` CLI here).
+- Next: D4f (guardian fight `/guardian/grove` and its readiness evidence).

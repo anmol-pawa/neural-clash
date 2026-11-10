@@ -45,7 +45,7 @@ function sprite(def: SpriteDef, anim: string, i: number, tint: Tint): HTMLCanvas
 
 const frameFor = (def: SpriteDef, anim: string, t: number) => Math.floor(t * (def.fps?.[anim] ?? 6));
 
-export type StageTheme = "grid" | "vale" | "gorge" | "peaks";
+export type StageTheme = "grid" | "vale" | "gorge" | "peaks" | "grove";
 
 /** Vector Vale: a twilight meadow of crystals over a lattice floor, with slowly turning basis axes on the horizon. */
 function valeBackdrop(g: CanvasRenderingContext2D, t: number) {
@@ -261,10 +261,82 @@ function peaksBackdrop(g: CanvasRenderingContext2D, t: number) {
   }
 }
 
+/** Classic Grove: a dappled-green glade; a decision-tree canopy forks overhead, scatter-plot clusters dot the moss, a dashed boundary line cuts the floor. */
+function groveBackdrop(g: CanvasRenderingContext2D, t: number) {
+  const sky = g.createLinearGradient(0, 0, 0, 72);
+  sky.addColorStop(0, "#9ad8b8");
+  sky.addColorStop(1, "#e6f4c0");
+  g.fillStyle = sky;
+  g.fillRect(0, 0, STAGE_W, STAGE_H);
+  // distant tree line
+  g.fillStyle = "#6aa86a";
+  for (let x = 0; x < STAGE_W; x += 6) {
+    const h = 14 + 8 * Math.abs(Math.sin(x * 0.07)) + 5 * Math.abs(Math.sin(x * 0.21));
+    g.fillRect(x, 68 - h, 6, h);
+  }
+  // a big decision tree: trunk, root split, two children, four leaves
+  const cx = 120;
+  g.strokeStyle = "#5a3a1c";
+  g.lineWidth = 3;
+  const seg = (x1: number, y1: number, x2: number, y2: number) => {
+    g.beginPath();
+    g.moveTo(x1, y1);
+    g.lineTo(x2, y2);
+    g.stroke();
+  };
+  seg(cx, 74, cx, 44);
+  seg(cx, 44, cx - 34, 28);
+  seg(cx, 44, cx + 34, 28);
+  g.lineWidth = 2;
+  for (const dx of [-34, 34]) {
+    seg(cx + dx, 28, cx + dx - 16, 14);
+    seg(cx + dx, 28, cx + dx + 16, 14);
+  }
+  // nodes (the root blinks) and class-coloured leaf clusters
+  const blink = Math.floor(t * 2) % 4 === 0;
+  g.fillStyle = blink ? "#fff3a0" : "#ffe14a";
+  g.fillRect(cx - 3, 41, 7, 7);
+  g.fillRect(cx - 37, 25, 6, 6);
+  g.fillRect(cx + 31, 25, 6, 6);
+  const leaf = ["#22b8c8", "#e8409a", "#e8409a", "#22b8c8"];
+  [-50, -18, 18, 50].forEach((dx, i) => {
+    g.fillStyle = "#3e8a46";
+    g.beginPath();
+    g.ellipse(cx + dx, 12, 11, 8, 0, 0, Math.PI * 2);
+    g.fill();
+    g.fillStyle = leaf[i];
+    for (const [ox, oy] of [[-4, -2], [3, 0], [-1, 3], [5, -4]]) g.fillRect(cx + dx + ox, 12 + oy, 2, 2);
+  });
+  // mossy floor
+  const floor = g.createLinearGradient(0, 74, 0, STAGE_H);
+  floor.addColorStop(0, "#9ad06a");
+  floor.addColorStop(1, "#4a8a44");
+  g.fillStyle = floor;
+  g.fillRect(0, 74, STAGE_W, STAGE_H - 74);
+  // scatter-plot clusters on the moss (cyan vs magenta), and a dashed decision boundary
+  const pts: [number, number, number][] = [[24, 90, 0], [34, 96, 0], [18, 102, 0], [44, 108, 0], [30, 116, 0], [200, 92, 1], [214, 100, 1], [226, 90, 1], [206, 112, 1], [220, 118, 1], [190, 104, 1]];
+  for (const [x, y, c] of pts) {
+    g.fillStyle = c ? "#e8409a" : "#22b8c8";
+    g.fillRect(x, y, 3, 3);
+    g.fillStyle = "rgba(255,255,255,0.6)";
+    g.fillRect(x, y, 1, 1);
+  }
+  g.fillStyle = "rgba(255,255,255,0.7)";
+  for (let y = 76; y < STAGE_H; y += 6) g.fillRect(cx - 1 + Math.round((y - 76) * 0.04), y, 2, 3);
+  // drifting leaves
+  for (let i = 0; i < 12; i++) {
+    const x = (i * 61 + t * (6 + (i % 4) * 2)) % STAGE_W;
+    const y = (i * 41 + t * (9 + (i % 3) * 3)) % STAGE_H;
+    g.fillStyle = i % 2 ? "#c8e870" : "#f0c050";
+    g.fillRect(Math.floor(x), Math.floor(y), 2, 1);
+  }
+}
+
 function backdrop(g: CanvasRenderingContext2D, t: number, theme: StageTheme = "grid") {
   if (theme === "vale") return valeBackdrop(g, t);
   if (theme === "gorge") return gorgeBackdrop(g, t);
   if (theme === "peaks") return peaksBackdrop(g, t);
+  if (theme === "grove") return groveBackdrop(g, t);
   const sky = g.createLinearGradient(0, 0, 0, 78);
   sky.addColorStop(0, "#0d1033");
   sky.addColorStop(1, "#2a2a6e");
