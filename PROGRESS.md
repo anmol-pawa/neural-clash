@@ -606,3 +606,9 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Verification: lint (0 errors), typecheck, test (469 pass), build, build:pages, `smoke:readiness` at desktop and iPhone 14 (all PASS; no console errors or overflow; no screenshots viewed, since the change adds one list row). content:verify not run (no content touched).
 - Known gaps: Grove guardian not yet evidence (D4f). CI/Pages confirmation: no `gh` CLI here.
 - Next: D4e (Classic Grove region art).
+
+## 2026-11-10: D4e1 Classic Grove tileset
+- D4e split into D4e1-D4e3 in ROADMAP. This run: `scripts/art/classic-grove.mjs` -> `game/sprites/tiles/classic-grove-tiles.ts`, 20 tiles sharing the Vale's names: orchard grass, tilled-soil table path, pond, branching decision-tree trees (split nodes, fruit leaves), timber fence, scatter-plot signposts with a fitted line, two-cluster obelisks, k-means arena pad with blinking centroids, a hut door with a tree glyph. `GROVE_PREVIEW` map registered in the roster; tileset and map validity tests extended.
+- Verification: lint (0 errors), typecheck, test (473 pass), build:pages; Playwright on `/dev/sprites` (static export) at desktop and iPhone 14: no console errors, no overflow; tile sheet and preview map inspected. content:verify not run (no content touched).
+- Known gaps: the tree canopy reads as a fruit tree first and a split-diagram second at 16x16; no guardian, trainers or backdrop yet. Work was committed to the session branch `claude/wonderful-goodall-kfz3ow`, not `main`, as the session instructions require, so Pages will not deploy it until merged. CI/Pages not confirmed (no `gh` CLI here).
+- Next: D4e2 (Grove guardian art).
