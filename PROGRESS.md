@@ -659,3 +659,9 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Verification: lint (0 errors), typecheck, test (518 pass; `PATH=/usr/bin:$PATH`, build first so Pyodide assets exist), build, build:pages, content:verify (ok x2 after the fix), `smoke:readiness` at desktop and iPhone 14 (all PASS, no console errors or overflow; list-only change, screenshots not viewed). CI/Pages confirmation skipped (Actions quota note / no `gh`).
 - Known gaps: boss fights, art and the Metric Market map are still to come (D5e, D5f).
 - Next: D5e (Metric Market art: tileset, Imbalance Swarm and Leakage boss sprites, trainers, backdrop), likely to be split.
+
+## 2026-11-10: D5e1 Metric Market tileset
+- D5e was split into D5e1-D5e3 in ROADMAP. This run: `scripts/art/metric-market.mjs` -> `game/sprites/tiles/metric-market-tiles.ts`, 20 tiles with the Vale's names: sandstone plaza with stray class-coloured dots, fruit crates, a 2x2 confusion-matrix mosaic floor (diagonal vs off-diagonal), canal and quay, violet/cream striped awnings with a flapping pennant over stalls, price-tag rail, ROC-curve signboard (operating point slides), balance-scale pillar (pans tip), exchange door with a scale glyph, threshold-dial arena pad (needle swings). `MARKET_PREVIEW` map registered in the roster; tileset and map validity tests extended.
+- Verification: lint (0 errors), typecheck, test (all pass; `PATH=/usr/bin:$PATH`), build, build:pages; Playwright on `/dev/sprites/` at desktop and iPhone 14: no console errors, no overflow; preview map and tile sheet inspected. content:verify not run (art only).
+- Known gaps: mosaic floor is a little busy; no bosses, trainers or backdrop yet. CI/Pages not confirmed (no `gh` CLI here).
+- Next: D5e2 (Imbalance Swarm and Leakage boss sprites).

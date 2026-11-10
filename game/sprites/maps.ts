@@ -4,6 +4,7 @@ import { LAB_TILES } from "./tiles/lab-tiles";
 import { VECTOR_VALE_TILES } from "./tiles/vector-vale-tiles";
 import { GRADIENT_GORGE_TILES } from "./tiles/gradient-gorge-tiles";
 import { CLASSIC_GROVE_TILES } from "./tiles/classic-grove-tiles";
+import { METRIC_MARKET_TILES } from "./tiles/metric-market-tiles";
 import { PROBABILITY_PEAKS_TILES } from "./tiles/probability-peaks-tiles";
 
 /** Python Port, the harbour town where the game starts. */
@@ -121,3 +122,8 @@ export const GROVE_GRID: readonly string[] = [
   "wwwwwwwwwwwwwwwwwwww",
 ];
 export const GROVE_PREVIEW = mapSprite("classic-grove-preview", "CLASSIC GROVE (preview)", CLASSIC_GROVE_TILES, GROVE_GRID, GROVE_LEGEND);
+
+/** Metric Market: a bazaar of awnings around a mosaic plaza, a canal and the guardian's threshold-dial pad. Same tile names as the Vale. */
+export const MARKET_LEGEND: TileLegend = VALE_LEGEND;
+export const MARKET_GRID: readonly string[] = GROVE_GRID;
+export const MARKET_PREVIEW = mapSprite("metric-market-preview", "METRIC MARKET (preview)", METRIC_MARKET_TILES, MARKET_GRID, MARKET_LEGEND);
