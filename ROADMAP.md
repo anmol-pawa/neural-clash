@@ -96,7 +96,7 @@ Work top to bottom: take the **first unchecked box**, and split big boxes into r
   - [x] D4a. (done 2026-11-10) Lessons (4) and a ~40-card deck (linear/logistic/regularisation, trees and ensembles, k-NN/k-means/Naive Bayes/SVM, bias-variance/CV/leakage/imbalance), numpy-computed and cross-checked by `lib/solvers/classic.ts`; wired into Learn and Daily Sync.
   - [x] D4b. (done 2026-11-10) Labs `classic-linear` (normal equation, ridge, stable logistic loss/grad, GD) and `classic-cluster` (z-score, k-NN, k-means, Gini stump) with hidden tests and 8 known-wrong versions each; Creature Stats dataset generator (`lib/datasets/creatureStats.ts`).
   - [x] D4c. (done 2026-11-10) Interactive visualiser `/dev/grove` (decision boundaries for k-NN, tree, logistic; bias-variance slider).
-  - [ ] D4d. Readiness skill "classical ML" (deck + labs).
+  - [x] D4d. (done 2026-11-10) Readiness skill "classical ML" (deck + labs), weighted into the theory and implement rounds.
   - [ ] D4e. Region art (tileset, guardian, 2 trainers, backdrop).
   - [ ] D4f. Guardian fight `/guardian/grove` and its readiness evidence.
 - [ ] D5. Metric Market + Data Dojo (F6, GDD §5.4), with the *Leakage* and *Imbalance Swarm* bosses

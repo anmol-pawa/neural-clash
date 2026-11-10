@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useMemo } from "react";
-import { CALCULUS_DECK, LINALG_DECK, NUMPY_DECK, PROBABILITY_DECK, PYTHON_DECK, STRATEGY_DECK } from "@/lib/cards/samples";
+import { CALCULUS_DECK, CLASSIC_DECK, LINALG_DECK, NUMPY_DECK, PROBABILITY_DECK, PYTHON_DECK, STRATEGY_DECK } from "@/lib/cards/samples";
 import { LABS } from "@/lib/labs/catalog";
 import { band, readiness, type LoopResult } from "@/lib/readiness/readiness";
 import { useSave } from "@/lib/save/react";
@@ -15,6 +15,7 @@ const DECKS = {
   linalg: LINALG_DECK.cards.map((c) => c.id),
   calculus: CALCULUS_DECK.cards.map((c) => c.id),
   probability: PROBABILITY_DECK.cards.map((c) => c.id),
+  classic: CLASSIC_DECK.cards.map((c) => c.id),
   strategy: STRATEGY_DECK.cards.map((c) => c.id),
 };
 
