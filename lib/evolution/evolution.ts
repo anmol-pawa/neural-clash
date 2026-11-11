@@ -16,7 +16,7 @@ export interface FormDef {
 
 export const FORMS: readonly FormDef[] = [
   { id: "perceptron", name: "Perceptron", blurb: "One weighted sum and a bias, trained by gradient descent.", requires: ["linear-gd"], sprite: "neuron-pup-perceptron" },
-  { id: "multilayer", name: "Multilayer", blurb: "Autograd lets stacked layers learn what one line cannot.", requires: ["autograd", "mlp"], sprite: null },
+  { id: "multilayer", name: "Multilayer", blurb: "Autograd lets stacked layers learn what one line cannot.", requires: ["forge-value", "forge-mlp"], sprite: "neuron-pup-multilayer" },
   { id: "convling", name: "Convling", blurb: "Shared filters that look for a pattern anywhere in the input.", requires: ["conv2d"], sprite: null },
   { id: "recurrent", name: "Recurrent", blurb: "A hidden state carries memory along a sequence.", requires: ["rnn"], sprite: null },
   { id: "transformer", name: "Transformer", blurb: "Attention lets every token look at every other token.", requires: ["attention", "transformer-block"], sprite: null },
@@ -65,4 +65,11 @@ export function evolutionState(labs: LabResults, existingLabIds: ReadonlySet<str
   const next = statuses[current + 1] ?? null;
   const nextProgress = next ? next.requirements.filter((r) => r.done).length / next.requirements.length : 1;
   return { forms: statuses, current, next, nextProgress };
+}
+
+/** Battle sprite id for the companion's current form (back view); falls back to the Perceptron pup. */
+export function heroBackSpriteId(labs: LabResults, existingLabIds: ReadonlySet<string>): string {
+  const { forms, current } = evolutionState(labs, existingLabIds);
+  const sprite = forms[current]?.form.sprite ?? "neuron-pup-perceptron";
+  return `${sprite}-back`;
 }

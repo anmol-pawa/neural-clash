@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { evolutionState, FORMS } from "@/lib/evolution/evolution";
+import { evolutionState, FORMS, heroBackSpriteId } from "@/lib/evolution/evolution";
 
-const exists = new Set(["linear-gd", "autograd"]);
+const exists = new Set(["linear-gd", "forge-value"]);
 const pass = { passed: true, assisted: false };
 
 describe("evolutionState", () => {
@@ -24,10 +24,10 @@ describe("evolutionState", () => {
   });
 
   it("reports partial progress and marks planned Labs unavailable", () => {
-    const s = evolutionState({ "linear-gd": pass, autograd: pass }, exists);
+    const s = evolutionState({ "linear-gd": pass, "forge-value": pass }, exists);
     expect(s.current).toBe(0);
     expect(s.nextProgress).toBe(0.5);
-    expect(s.next?.requirements.map((r) => [r.labId, r.done, r.available])).toEqual([["autograd", true, true], ["mlp", false, false]]);
+    expect(s.next?.requirements.map((r) => [r.labId, r.done, r.available])).toEqual([["forge-value", true, true], ["forge-mlp", false, false]]);
   });
 
   it("forms are strictly ordered: a later form needs every earlier one", () => {
@@ -49,5 +49,14 @@ describe("evolutionState", () => {
   it("has unique form ids and non-empty requirements", () => {
     expect(new Set(FORMS.map((f) => f.id)).size).toBe(FORMS.length);
     for (const f of FORMS) expect(f.requires.length).toBeGreaterThan(0);
+  });
+
+  it("reaches Multilayer on the Forge Labs and switches the battle sprite", () => {
+    const all = new Set(["linear-gd", "forge-value", "forge-mlp"]);
+    expect(heroBackSpriteId({ "linear-gd": pass }, all)).toBe("neuron-pup-perceptron-back");
+    expect(heroBackSpriteId({}, all)).toBe("neuron-pup-perceptron-back");
+    const s = evolutionState({ "linear-gd": pass, "forge-value": pass, "forge-mlp": pass }, all);
+    expect(s.forms[1]!.form.sprite).toBe("neuron-pup-multilayer");
+    expect(heroBackSpriteId({ "linear-gd": pass, "forge-value": pass, "forge-mlp": pass }, all)).toBe("neuron-pup-multilayer-back");
   });
 });

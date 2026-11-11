@@ -14,8 +14,10 @@ import { PYTHON_GUARDIAN, type GuardianDef } from "@/lib/guardian/defs";
 import { shuffle, rng } from "@/lib/cards/rng";
 import type { Response } from "@/lib/cards/types";
 import { lessonForTopic } from "@/lib/lessons/lessons";
-import { labById, labTask } from "@/lib/labs/catalog";
+import { LABS, labById, labTask } from "@/lib/labs/catalog";
 import { PHASES, guardianAdvanceFromCards, guardianAnswer, guardianFight, guardianLabResult, guardianNext, phaseProgress, progressOf, resumeGuardian, startGuardian, summarizeGuardian, type GuardianProgress, type GuardianState } from "@/lib/guardian/portGuardian";
+import { heroBackSpriteId } from "@/lib/evolution/evolution";
+
 import { payReward } from "@/lib/economy/economy";
 import { getSaveManager, useSave } from "@/lib/save/react";
 
@@ -68,7 +70,7 @@ export default function Guardian({ def = PYTHON_GUARDIAN }: { def?: GuardianDef 
 
   useEffect(() => {
     const foe = spriteById(def.spriteId)!;
-    const hero = spriteById("neuron-pup-perceptron-back")!;
+    const hero = spriteById(heroBackSpriteId(save.labs, new Set(LABS.map((l) => l.id)))) ?? spriteById("neuron-pup-perceptron-back")!;
     const g = canvasRef.current!.getContext("2d")!;
     let last = performance.now();
     let raf = 0;

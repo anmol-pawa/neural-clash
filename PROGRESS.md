@@ -744,3 +744,10 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Verification: lint (0 errors), typecheck, test (603 pass; `PATH=/usr/bin:$PATH`), build, build:pages, content:verify (all ok), smoke at desktop and iPhone 14 (all PASS, no console errors or overflow; screenshots inspected, Dimwarden on the nest backdrop reads well). CI/Pages confirmation skipped: GitHub Actions quota note.
 - Known gaps: Neuron Nest not yet on an overworld map; Multilayer evolution art/logic pending (D6g2).
 - Next: D6g2 (Multilayer companion sprite and evolution).
+
+## 2026-11-11: D6g2 Multilayer companion (D6 complete)
+- `scripts/art/neuron-pup-multilayer.mjs` -> `neuron-pup-multilayer{,-back}.ts` (64x64; front: idle 4, attack 5, hurt 3, faint 4, evolve 4; back: idle 4, attack 3, hurt 2, faint 3): deeper violet fur, a 2-3-1 network on the belly with magenta hidden units, a three-node hidden-layer crest, a second tail knob. Registered in the roster.
+- `FORMS`: Multilayer now requires the Forge Labs `forge-value` + `forge-mlp` (was planned ids `autograd`/`mlp`) and has its sprite. New `heroBackSpriteId`; guardian fights draw the companion's current form. Evolution tests updated and extended; GDD §3 table updated.
+- Verification: lint (0 errors), typecheck, test (608 pass + `py.core` needing Pyodide assets from build), build, build:pages; contact sheets inspected (crest and magenta hidden units read; belly network is slightly busy at 64px). Not browser-tested at iPhone size (no layout change). CI/Pages skipped (Actions quota note).
+- Known gaps: Battle demo page and Sync still show the Perceptron sprite; belly net could be cleaner; Neuron Nest not on an overworld map.
+- Next: D7 (Conv Caverns, needs splitting first).

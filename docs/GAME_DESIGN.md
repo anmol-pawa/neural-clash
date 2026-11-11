@@ -63,7 +63,7 @@ Source of truth for what the game is. `docs/CURRICULUM.md` covers what it teache
 | Stage | Unlocked by |
 |---|---|
 | **Perceptron** | linear model + gradient descent |
-| **Multilayer** | autograd + MLP |
+| **Multilayer** | autograd `Value` + MLP (Forge Labs `forge-value`, `forge-mlp`) |
 | **Convling** | conv layers |
 | **Recurrent** | sequence models |
 | **Transformer** | attention + transformer block |

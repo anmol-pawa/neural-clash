@@ -112,7 +112,7 @@ Work top to bottom: take the **first unchecked box**, and split big boxes into r
     - [x] D5e2. (done 2026-11-10) Imbalance Swarm and Leakage boss sprites (96x96, `scripts/art/market-bosses.mjs`).
     - [x] D5e3. (done 2026-11-11) Two trainers (Trader Mina, Auditor Crowe: 16x24 walks + 48x48 portraits; `scripts/art/market-trainers.mjs`) and the Market battle backdrop (`theme: "market"`).
   - [x] D5f. (done 2026-11-11) Boss fights `/guardian/leakage` and `/guardian/swarm` (metrics deck, market backdrop, Labs `metrics-rank` / `metrics-classify`) and their readiness evidence.
-- [ ] D6. Neuron Nest (F7), with Forge modules 3–8 (split across runs) and the companion → Multilayer, split into:
+- [x] D6. Neuron Nest (F7), with Forge modules 3–8 (split across runs) and the companion → Multilayer, split into:
   - [x] D6a. (done 2026-11-11) Lessons (4) and a ~37-card deck (perceptron/XOR/activations, loss + backprop by hand, init, normalisation, regularisation, debugging training), numpy-computed and cross-checked by `lib/solvers/nn.ts`; wired into Learn and Daily Sync.
   - [x] D6b. (done 2026-11-11) Forge modules 3–5 Labs (`forge-linear` layers with backward, `forge-activations-loss`, `forge-mlp`) with hidden finite-difference gradient checks and known-wrong versions.
   - [x] D6c. (done 2026-11-11) Forge modules 6–8 Labs (`forge-init-norm`: Xavier/He, BatchNorm1d, LayerNorm; `forge-optim-reg`: Dropout, SGD momentum + L2, AdamW; `forge-trainer`: seeded mini-batches, EarlyStopping, `fit`).
@@ -122,9 +122,9 @@ Work top to bottom: take the **first unchecked box**, and split big boxes into r
     - [x] D6f1. (done 2026-11-11) Neuron Nest tileset (`scripts/art/neuron-nest.mjs`) and preview map.
     - [x] D6f2. (done 2026-11-11) Guardian sprite Dimwarden (96x96, `scripts/art/nest-guardian.mjs`: vanishing-gradient totem, dead-unit face, ReLU hinge).
     - [x] D6f3. (done 2026-11-11) Two trainers (Wirer Tansy, Pruner Holt: 16x24 walks + 48x48 portraits; `scripts/art/nest-trainers.mjs`) and the `theme: "nest"` battle backdrop.
-  - [ ] D6g. Guardian fight and the companion → Multilayer evolution, split into:
+  - [x] D6g. Guardian fight and the companion → Multilayer evolution, split into:
     - [x] D6g1. (done 2026-11-11) Dimwarden guardian fight `/guardian/nest` (nn deck, Lab `forge-mlp`, nest backdrop, Live Gradient Badge) and its readiness evidence.
-    - [ ] D6g2. Multilayer companion sprite (64x64 front/back, idle/attack/hurt/faint/evolve) and evolution requirements updated to the Forge Labs (`forge-mlp` etc.).
+    - [x] D6g2. (done 2026-11-11) Multilayer companion sprite (64x64 front/back, idle/attack/hurt/faint/evolve; `scripts/art/neuron-pup-multilayer.mjs`) and evolution requirements moved to the Forge Labs (`forge-value`, `forge-mlp`); Guardian battles use the current form's back sprite.
 - [ ] D7. Conv Caverns (F8), with module 9, the Glyphs dataset and the companion → Convling
 - [ ] D8. Recurrent Rapids (F9), with module 10 and the companion → Recurrent; plus the *Drift* boss
 
