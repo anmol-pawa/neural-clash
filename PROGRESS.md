@@ -757,3 +757,9 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Verification: lint (0 errors), typecheck, test (621 pass; `PATH=/usr/bin:$PATH`), build, build:pages, content:verify (all ok). Templates inspected as ASCII renders; shapes read clearly. No UI change. CI/Pages confirmation skipped (Actions quota note).
 - Known gaps: Glyphs not yet wired into `/train` or the worker; no gallery view; slash is slightly clipped at its ends.
 - Next: D7b (conv shape / receptive-field / FLOPs solvers).
+
+## 2026-11-11: D7b Conv stack solvers
+- `lib/solvers/conv.ts` (exported from the solvers index): `analyzeStack` reports per-layer output shape, receptive field, cumulative stride, parameters and MACs for conv/pool stacks (stride, padding, dilation), plus `convParams`, `convMacs`, `denseCost`. Reuses the existing `convOut`.
+- `tests/conv-solvers.test.ts` (7): receptive field vs brute-force interval back-propagation on four stacks including dilation, 3x3 stacking to 5/7, params/MACs vs a literal loop count, weight sharing vs a dense layer, pooling, oversize-kernel rejection.
+- Verification: lint (0 errors), typecheck, test (627 pass; `lessons.test.ts` generator check timed out once under full-suite load and passed alone), build, build:pages, content:verify all ok. No UI change, so no screenshots. Work pushed to the session branch `claude/wonderful-goodall-tzdabb` (designated branch), not `main`. CI/Pages not confirmed: no gh CLI in session.
+- Next: D7c (Forge module 9 Lab `forge-conv`).
