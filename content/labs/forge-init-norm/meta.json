@@ -1,0 +1,41 @@
+{
+  "id": "forge-init-norm",
+  "title": "Forge 6: initialisation, BatchNorm and LayerNorm",
+  "phase": "forge",
+  "language": "python",
+  "functions": [
+    "xavier_std",
+    "he_std",
+    "init_weights",
+    "BatchNorm1d",
+    "LayerNorm"
+  ],
+  "wrong": {
+    "he_std_missing_two.py": "he_std is sqrt(1/fan_in): the factor 2 that pays for ReLU zeroing half the units is missing, so the signal halves per layer",
+    "xavier_fan_in_only.py": "xavier_std ignores fan_out (sqrt(2/fan_in))",
+    "init_not_seeded.py": "init_weights ignores its seed, so runs are not reproducible",
+    "init_unknown_kind_silent.py": "an unknown kind silently falls back to He instead of raising",
+    "bn_unbiased_forward.py": "the batch is normalised with the unbiased variance (ddof=1) instead of the biased one",
+    "bn_running_var_biased.py": "the running variance uses the biased batch variance (missing N/(N-1))",
+    "bn_momentum_swapped.py": "the running average weights are swapped: momentum multiplies the OLD value",
+    "bn_eval_uses_batch_stats.py": "evaluation mode still normalises with the current batch's statistics",
+    "bn_eval_updates_running.py": "evaluation mode also updates the running statistics",
+    "bn_dx_ignores_batch_stats.py": "backward treats mean and variance as constants: dx = dout*gamma*inv_std (a plausible shortcut that is wrong in training mode)",
+    "bn_eps_outside_sqrt.py": "eps is added to the standard deviation instead of the variance",
+    "bn_dgamma_without_xhat.py": "dgamma sums dout without multiplying by xhat",
+    "bn_single_example_allowed.py": "training mode accepts a batch of one (variance 0, output is just beta) instead of raising",
+    "bn_no_train_flag.py": "train() and eval() do not change the mode",
+    "ln_normalises_over_batch.py": "LayerNorm reduces over axis 0 (the batch) instead of the last axis",
+    "ln_dgamma_not_summed.py": "dgamma/dbeta are not summed over the leading axes, so they have the wrong shape for 3-D input",
+    "ln_no_eps.py": "eps is dropped, so a constant row divides by zero",
+    "ln_dx_missing_mean_terms.py": "backward keeps only dxhat*inv_std and drops the mean and variance terms",
+    "ln_accumulates.py": "dgamma accumulates across calls instead of being set"
+  },
+  "hints": [
+    "Initialisation is two one-liners plus a seeded rng.normal scaled by the std. The interesting part is *why*: Var(y) = fan_in * Var(w) * E[x^2].",
+    "BatchNorm forward in training: mean = x.mean(0), var = x.var(0) (numpy's default is the biased variance, which is what you want for normalising). Cache xhat and 1/sqrt(var+eps) for backward.",
+    "The running variance uses var * N/(N-1). The running update is running = (1-momentum)*running + momentum*batch_stat.",
+    "dx = inv_std / N * (N*dxhat - dxhat.sum(0) - xhat * (dxhat*xhat).sum(0)), with dxhat = dout * gamma. dgamma = (dout*xhat).sum(0), dbeta = dout.sum(0).",
+    "LayerNorm is the same formulas with axis=-1 and keepdims=True, and N replaced by the feature count D. If a gradient check fails, check the reduction axes first."
+  ]
+}

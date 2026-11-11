@@ -120,12 +120,12 @@ Across the game, the player writes an original mini deep-learning library, **`la
 Modules, in order:
 1. `Value` (scalar autograd: computational graph, topological sort, backward)
 2. `Tensor` ops on numpy with broadcasting-aware backward
-3. `nn.Linear` / activations / `Sequential`
-4. Losses (MSE, stable softmax-CE, BCE-with-logits)
-5. Optimisers (SGD, momentum, Adam/AdamW, LR schedules, gradient clipping)
-6. Init (Xavier/He) and normalisation (BatchNorm/LayerNorm)
-7. Dropout and regularisation
-8. `DataLoader` (batching, shuffling, seeded)
+3. `Linear` layer with a hand-written backward
+4. Activations and numerically stable losses (MSE, softmax-CE, BCE-with-logits)
+5. `MLP` (forward, backprop through a stack, SGD step; learns XOR)
+6. Init (Xavier/He) and normalisation (BatchNorm with running stats, LayerNorm)
+7. Dropout, SGD with momentum and weight decay, AdamW (decoupled decay)
+8. Mini-batching (seeded shuffling), early stopping with restore-best, and the training loop
 9. `Conv2d` + pooling (im2col forward and backward)
 10. RNN/GRU cell
 11. Embedding + positional encodings (sinusoidal, RoPE)

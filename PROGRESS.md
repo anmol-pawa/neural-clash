@@ -698,3 +698,10 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Verification: lint (0 errors), typecheck, test (564 pass; `PATH=/usr/bin:$PATH`), build, build:pages, content:verify (all ok, including the three new Labs). No UI change; Labs are rendered by the existing panel (smoke:labs not extended).
 - Known gaps: init/norm/optimiser Labs (D6c), visualiser, readiness skill, art, guardian (D6d-D6g).
 - Next: D6c (Forge modules 6-8 Labs).
+
+## 2026-11-11: D6c Forge modules 6-8 Labs
+- Three new Labs (lesson, starter, visible + hidden tests, reference, documented wrong versions): `forge-init-norm` (Xavier/He std and seeded init, BatchNorm1d with train/eval and unbiased running variance, LayerNorm on N-D input; 18 wrong versions), `forge-optim-reg` (inverted Dropout, SGD with momentum + L2, AdamW with bias correction and decoupled decay checked against an oracle; 20 wrong versions) and `forge-trainer` (seeded per-epoch `minibatches`, `EarlyStopping` with snapshot/restore and min_delta, `fit`; 18 wrong versions). Hidden tests include finite-difference checks of dx/dgamma/dbeta in both BN modes, a dx-sums-to-zero property, 20-layer signal-propagation measurements (He vs Xavier under ReLU, tanh saturation), Adam's first-step = lr*sign(g) and scale invariance, and "restored model's val loss equals min(val_losses)".
+- GDD §5.2 module list updated to match what is actually built (modules 3-8).
+- Verification: lint (0 errors), typecheck, test (564 pass; `PATH=/usr/bin:$PATH`, after build so Pyodide assets exist), build, build:pages, content:verify (44 ok incl. the three new Labs; every wrong version is rejected). No UI change; the existing Lab panel renders them (smoke:labs not extended, no screenshots needed).
+- Known gaps: the new Labs are not yet linked to a Readiness skill (D6e). Two of my first-draft thresholds (tanh signal level, momentum step count) were wrong and fixed by measuring.
+- Next: D6d (interactive visualiser `/dev/nest`).

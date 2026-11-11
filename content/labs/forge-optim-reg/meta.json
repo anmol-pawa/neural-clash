@@ -1,0 +1,40 @@
+{
+  "id": "forge-optim-reg",
+  "title": "Forge 7: Dropout, SGD with momentum, and AdamW",
+  "phase": "forge",
+  "language": "python",
+  "functions": [
+    "Dropout",
+    "SGD",
+    "AdamW"
+  ],
+  "wrong": {
+    "dropout_no_rescale.py": "survivors are not scaled by 1/(1-p), so the expected activation shrinks in training",
+    "dropout_scales_by_p.py": "survivors are divided by p instead of 1-p",
+    "dropout_active_in_eval.py": "evaluation mode still drops units",
+    "dropout_backward_unmasked.py": "backward passes the gradient through every unit, ignoring which were dropped",
+    "dropout_mask_drawn_once.py": "the mask is drawn on the first call and reused forever",
+    "dropout_p_is_keep_prob.py": "p is treated as the keep probability instead of the drop probability",
+    "dropout_mutates_input.py": "forward multiplies the caller's array in place",
+    "dropout_accepts_p_one.py": "p=1 is accepted (division by zero later) instead of raising ValueError",
+    "sgd_no_velocity.py": "the velocity is overwritten each step (v = g), so there is no momentum",
+    "sgd_weight_decay_wrong_sign.py": "weight decay is added with the wrong sign (weights grow)",
+    "sgd_rebinds.py": "the update is p = p - lr * v, which rebinds a local name so the caller's arrays never change",
+    "sgd_modifies_grads.py": "the weight-decay term is added to the caller's gradient array in place",
+    "sgd_velocity_lags_one_step.py": "the parameter moves with the old velocity and only then folds in the new gradient, so every update is one step stale",
+    "adamw_no_bias_correction.py": "m and v are used without bias correction, so early steps are about 3x too large",
+    "adamw_l2_instead_of_decoupled.py": "weight decay is added to the gradient (Adam + L2) instead of decoupled, so Adam normalises it away",
+    "adamw_decay_not_scaled_by_lr.py": "the decay multiplies by (1 - weight_decay) without lr",
+    "adamw_eps_inside_sqrt.py": "eps is added inside the square root",
+    "adamw_v_uses_abs.py": "the second moment tracks |g| instead of g squared",
+    "adamw_step_counter_stuck.py": "t is never incremented past 1 (bias correction frozen)",
+    "adamw_rebinds.py": "the parameter update rebinds a local name, so the caller's arrays never change"
+  },
+  "hints": [
+    "Dropout: the mask is (rng.random(x.shape) >= p) / (1 - p), drawn fresh on every training forward. Cache it for backward. Evaluation returns x untouched.",
+    "SGD with momentum: v = momentum * v + d, then p -= lr * v. Use in-place operations (v *= m; v += d; p -= ...) so the arrays you were given actually change.",
+    "L2 weight decay goes into the gradient: d = g + weight_decay * p.",
+    "Adam: update m and v, divide each by (1 - beta^t), then p -= lr * m_hat / (sqrt(v_hat) + eps). t counts steps from 1.",
+    "AdamW's decay is separate: p *= 1 - lr * weight_decay, applied to the parameter itself, never added to the gradient."
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "id": "forge-trainer",
+  "title": "Forge 8: mini-batches, early stopping and the training loop",
+  "phase": "forge",
+  "language": "python",
+  "functions": [
+    "minibatches",
+    "EarlyStopping",
+    "fit"
+  ],
+  "wrong": {
+    "batches_not_shuffled.py": "minibatches returns the indices in order (no shuffle)",
+    "batches_same_order_every_epoch.py": "the epoch is ignored when seeding, so every epoch sees the same order",
+    "batches_seed_ignored.py": "the seed is ignored: a fresh unseeded generator is used",
+    "batches_drop_last.py": "the ragged last batch is silently dropped",
+    "batches_with_replacement.py": "indices are sampled with replacement, so some examples repeat and others are missed",
+    "es_patience_off_by_one.py": "training stops one epoch late (bad_epochs > patience)",
+    "es_counter_never_resets.py": "an improvement does not reset the bad-epoch counter, so stops come too early",
+    "es_ties_count_as_improvement.py": "a tie counts as an improvement (<=), so a flat loss never stops",
+    "es_min_delta_ignored.py": "min_delta is ignored: any decrease counts as progress",
+    "es_snapshot_is_a_view.py": "best_params holds references to the live arrays, so later training overwrites the 'best' weights",
+    "es_restore_rebinds.py": "restore assigns to the loop variable instead of writing into the live arrays, so the model is unchanged",
+    "es_best_epoch_off_by_one.py": "best_epoch is off by one (epochs counted from 1)",
+    "fit_never_restores.py": "fit returns the weights of the last epoch it ran instead of restoring the best",
+    "fit_ignores_max_epochs.py": "fit keeps going until early stopping triggers, ignoring max_epochs",
+    "fit_validates_on_train.py": "the 'validation' loss is computed on the training set",
+    "fit_unweighted_train_loss.py": "the epoch train loss is the plain mean of batch losses (the short last batch counts too much)",
+    "fit_steps_on_validation.py": "the validation pass is followed by an optimiser step, so the model trains on validation data",
+    "fit_epoch_not_passed.py": "fit passes epoch 0 to minibatches every time, so every epoch shuffles identically"
+  },
+  "hints": [
+    "minibatches: order = np.random.default_rng([seed, epoch]).permutation(n), then slice [i:i+batch_size] for i in range(0, n, batch_size).",
+    "EarlyStopping.update: improved = val_loss < best_loss - min_delta. If improved, store best_loss, best_epoch and [p.copy() for p in params]; reset the counter. Otherwise increment it.",
+    "restore must write INTO the live arrays: p[...] = best. Assigning a new list would not change the model.",
+    "fit: for each epoch accumulate loss * len(idx) over batches and divide by len(Xtr). Compute the validation loss with the same loss_and_backward call (ignore its gradients).",
+    "Test your fit by checking that after it returns, the model's validation loss equals min(val_losses)."
+  ]
+}
