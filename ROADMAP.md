@@ -132,7 +132,7 @@ Work top to bottom: take the **first unchecked box**, and split big boxes into r
   - [x] D7d. (done 2026-11-11) CNN lessons (3) + 32-card `cnn` deck (`scripts/gen-cnn.mjs`); Readiness skill `convnets`.
   - [ ] D7e. Region art, split into:
     - [x] D7e1. (done 2026-11-11) Conv Caverns tileset (`scripts/art/conv-caverns.mjs`) and preview map.
-    - [ ] D7e2. Guardian sprite (96x96).
+    - [x] D7e2. (done 2026-11-11) Guardian sprite Scanwarden (96x96, `scripts/art/caverns-guardian.mjs`).
     - [ ] D7e3. Two trainers (16x24 walks + 48x48 portraits) and the `theme: "caverns"` battle backdrop.
   - [ ] D7f. Guardian fight and companion → Convling evolution.
 - [ ] D8. Recurrent Rapids (F9), with module 10 and the companion → Recurrent; plus the *Drift* boss

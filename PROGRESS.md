@@ -785,3 +785,9 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Verification: lint (0 errors), typecheck, test (642 pass; `py.core` passes after build; `PATH=/usr/bin:$PATH`), build, build:pages, content:verify (all ok); Playwright on `/dev/sprites/` at desktop and iPhone 14: no console errors, no overflow; tile sheet and preview map inspected, silhouettes legible and clearly distinct from the Nest. CI/Pages confirmation: no gh CLI in session.
 - Known gaps: no guardian, trainers or backdrop yet (D7e2, D7e3); cave has no darkness/vignette layer.
 - Next: D7e2 (Conv Caverns guardian sprite).
+
+## 2026-11-11: D7e2 Scanwarden guardian sprite
+- `scripts/art/caverns-guardian.mjs` -> `game/sprites/creatures/scanwarden.ts` (96x96, 17 frames: idle 4, attack 6, hurt 3, faint 4): a crystal-cave golem with a 5x5 cell grid on its chest; a 3x3 window (yellow frame) slides across it each frame, the cell under the centre lights magenta, its eye follows the window, the attack fires a magenta/white beam from the output cell, and faint darkens the grid and sinks the body. Reads as a convolution kernel: same weights at every position. Registered in the roster; the sprite suite validates size, frames and palette.
+- Verification: lint (0 errors), typecheck, test (656 incl. `py.core` after build; `PATH=/usr/bin:$PATH`), build, build:pages, content:verify (all ok); Playwright on `/dev/sprites/` at desktop and iPhone 14: no console errors, no overflow, Scanwarden listed; contact sheet inspected (grid, window and faint darkening read clearly). CI/Pages confirmation: no gh CLI in session.
+- Known gaps: hurt cracks are faint at 1x; not yet in a fight or on the map.
+- Next: D7e3 (two Caverns trainers + `theme: "caverns"` backdrop).
