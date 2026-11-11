@@ -118,10 +118,10 @@ Work top to bottom: take the **first unchecked box**, and split big boxes into r
   - [x] D6c. (done 2026-11-11) Forge modules 6–8 Labs (`forge-init-norm`: Xavier/He, BatchNorm1d, LayerNorm; `forge-optim-reg`: Dropout, SGD momentum + L2, AdamW; `forge-trainer`: seeded mini-batches, EarlyStopping, `fit`).
   - [x] D6d. (done 2026-11-11) Interactive visualiser `/dev/nest` (XOR boundary with hidden units, activation/gradient flow by depth, init variance).
   - [x] D6e. (done 2026-11-11) Readiness skill "neural-nets" (deck + six Forge labs; guardian planned).
-  - [ ] D6f. Region art, split into:
+  - [x] D6f. Region art, split into:
     - [x] D6f1. (done 2026-11-11) Neuron Nest tileset (`scripts/art/neuron-nest.mjs`) and preview map.
     - [x] D6f2. (done 2026-11-11) Guardian sprite Dimwarden (96x96, `scripts/art/nest-guardian.mjs`: vanishing-gradient totem, dead-unit face, ReLU hinge).
-    - [ ] D6f3. Two trainers (16x24 walks + 48x48 portraits) and the `theme: "nest"` battle backdrop.
+    - [x] D6f3. (done 2026-11-11) Two trainers (Wirer Tansy, Pruner Holt: 16x24 walks + 48x48 portraits; `scripts/art/nest-trainers.mjs`) and the `theme: "nest"` battle backdrop.
   - [ ] D6g. Guardian fight and the companion → Multilayer evolution.
 - [ ] D7. Conv Caverns (F8), with module 9, the Glyphs dataset and the companion → Convling
 - [ ] D8. Recurrent Rapids (F9), with module 10 and the companion → Recurrent; plus the *Drift* boss

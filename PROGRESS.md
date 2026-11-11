@@ -730,3 +730,10 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Verification: lint (0 errors), typecheck, test (582 pass; `PATH=/usr/bin:$PATH`), build, build:pages; contact sheet rendered and inspected (silhouette and fade readable). CI/Pages confirmation skipped: no gh CLI in session. content:verify not run (art only).
 - Known gaps: hurt shake is subtle; not yet used in a fight (D6g); no `/dev/sprites` screenshot at iPhone size (roster page unchanged).
 - Next: D6f3 (two trainers + `theme: "nest"` backdrop).
+
+## 2026-11-11: D6f3 Neuron Nest trainers and battle backdrop (D6f complete)
+- `scripts/art/nest-trainers.mjs`: Wirer Tansy (teal bob, amber goggles on the forehead, orange vest) and Pruner Holt (bald crown, white side hair and full beard, moss-green coat, shear-book); 16x24 walks (4 directions) and 48x48 portraits (idle/talk/smile/think). Registered in the roster; sprite tests extended.
+- `game/render/battle.ts`: `StageTheme` gains `"nest"` (twilight canopy, a 2-3-1 network with pulses travelling along its edges, synapse-lined moss floor, glowing mushrooms, fireflies). `/battle?theme=nest` previews it; `GuardianDef.theme` and the battle route accept it for D6g.
+- Verification: lint (0 errors), typecheck, test (602 pass; `PATH=/usr/bin:$PATH`), build, build:pages, content:verify (all ok); Playwright on `/battle/?theme=nest` and `/dev/sprites/` at desktop and iPhone 14: no console errors, no overflow; trainer contact sheets and the backdrop inspected. CI/Pages confirmation skipped (Actions quota note).
+- Known gaps: Holt's portrait face is slightly streaky; trainers not yet placed on the Nest map.
+- Next: D6g (Dimwarden guardian fight and companion -> Multilayer evolution).

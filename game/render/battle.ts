@@ -45,7 +45,7 @@ function sprite(def: SpriteDef, anim: string, i: number, tint: Tint): HTMLCanvas
 
 const frameFor = (def: SpriteDef, anim: string, t: number) => Math.floor(t * (def.fps?.[anim] ?? 6));
 
-export type StageTheme = "grid" | "vale" | "gorge" | "peaks" | "grove" | "market";
+export type StageTheme = "grid" | "vale" | "gorge" | "peaks" | "grove" | "market" | "nest";
 
 /** Vector Vale: a twilight meadow of crystals over a lattice floor, with slowly turning basis axes on the horizon. */
 function valeBackdrop(g: CanvasRenderingContext2D, t: number) {
@@ -428,12 +428,83 @@ function marketBackdrop(g: CanvasRenderingContext2D, t: number) {
   }
 }
 
+/** Neuron Nest: a twilight thicket; moss floor threaded with synapse lines, a 2-3-1 network glowing in the canopy whose signal pulses travel left to right, glowing mushrooms and drifting fireflies. */
+function nestBackdrop(g: CanvasRenderingContext2D, t: number) {
+  const sky = g.createLinearGradient(0, 0, 0, 78);
+  sky.addColorStop(0, "#150f3a");
+  sky.addColorStop(1, "#3a2a72");
+  g.fillStyle = sky;
+  g.fillRect(0, 0, STAGE_W, STAGE_H);
+  // dendrite canopy: dark violet blobs with hanging branches
+  for (let i = 0; i < 8; i++) {
+    const x = i * 34 - 8;
+    g.fillStyle = i % 2 ? "#2a1a5a" : "#3a2478";
+    g.beginPath();
+    g.arc(x + 18, 22 + (i % 3) * 4, 22, 0, Math.PI * 2);
+    g.fill();
+    g.fillStyle = "#4a3490";
+    g.fillRect(x + 16, 40 + (i % 3) * 4, 2, 26 - (i % 2) * 8);
+  }
+  // a 2-3-1 network hanging in the canopy; pulses ride the edges
+  const layers: [number, number[]][] = [[84, [24, 44]], [120, [16, 34, 52]], [156, [34]]];
+  g.lineWidth = 1;
+  for (let l = 0; l < 2; l++) {
+    const [ax, ays] = layers[l], [bx, bys] = layers[l + 1];
+    ays.forEach((ay, ai) => bys.forEach((by, bi) => {
+      g.strokeStyle = "rgba(120,220,200,0.45)";
+      g.beginPath();
+      g.moveTo(ax, ay);
+      g.lineTo(bx, by);
+      g.stroke();
+      const u = (t * 0.6 + l * 0.5 + (ai * 3 + bi) * 0.13) % 1;
+      g.fillStyle = "#fff6a0";
+      g.fillRect(Math.round(ax + (bx - ax) * u) - 1, Math.round(ay + (by - ay) * u) - 1, 3, 3);
+    }));
+  }
+  layers.forEach(([x, ys], l) => ys.forEach((y, i) => {
+    const glow = 0.5 + 0.5 * Math.sin(t * 2 + l * 1.7 + i);
+    g.fillStyle = "#1a3a4a";
+    g.fillRect(x - 4, y - 4, 9, 9);
+    g.fillStyle = glow > 0.5 ? "#6cf0d0" : "#2aa890";
+    g.fillRect(x - 3, y - 3, 7, 7);
+  }));
+  // moss floor with synapse lines
+  const floor = g.createLinearGradient(0, 74, 0, STAGE_H);
+  floor.addColorStop(0, "#2e6a48");
+  floor.addColorStop(1, "#16402c");
+  g.fillStyle = floor;
+  g.fillRect(0, 74, STAGE_W, STAGE_H - 74);
+  g.strokeStyle = "rgba(120,240,200,0.35)";
+  g.beginPath();
+  for (let i = 0; i < 6; i++) {
+    g.moveTo(i * 44, 78);
+    g.lineTo(i * 44 + 30, 100 + (i % 3) * 14);
+    g.lineTo(i * 44 + 8, STAGE_H);
+  }
+  g.stroke();
+  // glowing mushrooms
+  for (const [mx, my] of [[14, 96], [210, 88], [226, 124], [40, 130]]) {
+    g.fillStyle = "#e8d8a8";
+    g.fillRect(mx + 2, my + 3, 2, 4);
+    g.fillStyle = Math.sin(t * 2 + mx) > 0 ? "#ff8ad0" : "#c860a8";
+    g.fillRect(mx - 1, my, 8, 4);
+  }
+  // fireflies
+  for (let i = 0; i < 12; i++) {
+    const x = (i * 61 + t * (4 + (i % 4)) + Math.sin(t + i) * 6 + STAGE_W) % STAGE_W;
+    const y = 20 + ((i * 41 + t * (3 + (i % 3) * 2)) % (STAGE_H - 30));
+    g.fillStyle = Math.sin(t * 3 + i) > 0 ? "#fff6a0" : "#a0f0c8";
+    g.fillRect(Math.floor(x), Math.floor(y), 2, 2);
+  }
+}
+
 function backdrop(g: CanvasRenderingContext2D, t: number, theme: StageTheme = "grid") {
   if (theme === "vale") return valeBackdrop(g, t);
   if (theme === "gorge") return gorgeBackdrop(g, t);
   if (theme === "peaks") return peaksBackdrop(g, t);
   if (theme === "grove") return groveBackdrop(g, t);
   if (theme === "market") return marketBackdrop(g, t);
+  if (theme === "nest") return nestBackdrop(g, t);
   const sky = g.createLinearGradient(0, 0, 0, 78);
   sky.addColorStop(0, "#0d1033");
   sky.addColorStop(1, "#2a2a6e");
