@@ -1,0 +1,590 @@
+{
+  "id": "cnn",
+  "title": "Conv Caverns: convolutional networks",
+  "cards": [
+    {
+      "id": "cnn-corr-flip",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "cnn-conv",
+      "prompt": "What does this print? (What deep-learning frameworks call a convolution layer is cross-correlation: the kernel is not flipped.)",
+      "code": [
+        "x = np.array([1.0, 2.0, 3.0, 4.0])",
+        "k = np.array([1.0, 0.0, -1.0])",
+        "print(np.correlate(x, k, 'valid').tolist())"
+      ],
+      "choices": [
+        "[2.0, 2.0]",
+        "[-2.0, -2.0]",
+        "[-2.0, -2.0, -2.0]",
+        "[0.0, 0.0]"
+      ],
+      "answer": 1,
+      "explanation": "Each output is x[i] - x[i+2] = -2. A mathematical convolution flips the kernel first and would give [2.0, 2.0]. Frameworks skip the flip because the kernel is learned anyway; it only matters when you port hand-designed filters or compare against np.convolve."
+    },
+    {
+      "id": "cnn-same-size",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "cnn-shapes",
+      "prompt": "What does this print? (Output side of a 5x5 convolution with padding 2 and stride 1 on a 28-pixel side.)",
+      "code": [
+        "n, k, p, s = 28, 5, 2, 1",
+        "print((n + 2 * p - k) // s + 1)"
+      ],
+      "choices": [
+        "28",
+        "27",
+        "24",
+        "32"
+      ],
+      "answer": 0,
+      "explanation": "The formula is floor((n + 2p - k) / s) + 1. With p = (k - 1) / 2 and stride 1 the size is preserved, which is what 'same' padding means for odd kernels."
+    },
+    {
+      "id": "cnn-stride-floor",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "cnn-shapes",
+      "prompt": "What does this print? (Output side of a 3x3 convolution with stride 2, no padding, on a 32-pixel side.)",
+      "code": [
+        "n, k, p, s = 32, 3, 0, 2",
+        "print((n + 2 * p - k) // s + 1)"
+      ],
+      "choices": [
+        "16",
+        "14",
+        "17",
+        "15"
+      ],
+      "answer": 3,
+      "explanation": "(32 - 3) / 2 = 14.5 floors to 14, so there are 15 window positions. The last column is simply never read, which is why odd sizes matter when you stack strided layers."
+    },
+    {
+      "id": "cnn-dilated-kernel",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "cnn-shapes",
+      "prompt": "What does this print? (Effective kernel size of a 3x3 convolution with dilation 2, then the output side on a 32-pixel side with no padding.)",
+      "code": [
+        "k, d, n = 3, 2, 32",
+        "ke = d * (k - 1) + 1",
+        "print(ke, n - ke + 1)"
+      ],
+      "choices": [
+        "3 30",
+        "6 27",
+        "5 28",
+        "4 29"
+      ],
+      "answer": 2,
+      "explanation": "Dilation spreads the taps apart: the kernel covers d(k - 1) + 1 = 5 pixels while still having only 3 weights per row. Use it to widen the receptive field without extra parameters or downsampling."
+    },
+    {
+      "id": "cnn-transposed",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "cnn-shapes",
+      "prompt": "What does this print? (Output side of a transposed convolution with kernel 4, stride 2, padding 1 on a 7-pixel side.)",
+      "code": [
+        "n, k, s, p = 7, 4, 2, 1",
+        "print((n - 1) * s - 2 * p + k)"
+      ],
+      "choices": [
+        "13",
+        "14",
+        "15",
+        "16"
+      ],
+      "answer": 1,
+      "explanation": "A transposed convolution inverts the size arithmetic of a strided convolution: (n - 1) s - 2p + k. Kernel 4, stride 2, padding 1 exactly doubles the side, the usual upsampling block; a kernel not divisible by the stride leaves a checkerboard pattern."
+    },
+    {
+      "id": "cnn-params-conv",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "cnn-cost",
+      "prompt": "What does this print? (Parameters of a 3x3 convolution from 3 to 16 channels, with biases.)",
+      "code": [
+        "cin, cout, k = 3, 16, 3",
+        "print(cout * cin * k * k + cout)"
+      ],
+      "choices": [
+        "448",
+        "432",
+        "144",
+        "1344"
+      ],
+      "answer": 0,
+      "explanation": "Each of the 16 filters has 3 x 3 x 3 = 27 weights and one bias, so 448. The count does not depend on the image size at all; that is the point of weight sharing."
+    },
+    {
+      "id": "cnn-params-dense",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "cnn-cost",
+      "prompt": "What does this print? (Parameters of a dense layer that maps a flattened 32x32x3 image to a flattened 32x32x16 output, with biases.)",
+      "code": [
+        "fin, fout = 32 * 32 * 3, 32 * 32 * 16",
+        "print(fin * fout + fout)"
+      ],
+      "choices": [
+        "448",
+        "50331648",
+        "3145728",
+        "50348032"
+      ],
+      "answer": 3,
+      "explanation": "About 50 million parameters, against 448 for the 3x3 convolution that computes a locally connected, weight-shared version of the same shape change. Locality and sharing are the inductive bias that makes images tractable."
+    },
+    {
+      "id": "cnn-macs",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "cnn-cost",
+      "prompt": "What does this print? (Multiply-accumulates for a 3x3 convolution from 3 to 16 channels with 'same' padding on a 32x32 image, one example.)",
+      "code": [
+        "cin, cout, k, h, w = 3, 16, 3, 32, 32",
+        "print(cout * h * w * cin * k * k)"
+      ],
+      "choices": [
+        "27648",
+        "1327104",
+        "442368",
+        "448"
+      ],
+      "answer": 2,
+      "explanation": "Every one of the 16 x 32 x 32 outputs costs 3 x 3 x 3 = 27 multiply-accumulates. Parameters did not grow with resolution but compute does, which is why early high-resolution layers dominate FLOPs and late wide layers dominate parameters."
+    },
+    {
+      "id": "cnn-depthwise",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "cnn-cost",
+      "prompt": "What does this print? (Weights, without biases, of a depthwise 3x3 convolution on 64 channels, and of a standard 3x3 convolution from 64 to 64 channels.)",
+      "code": [
+        "c, k = 64, 3",
+        "print(c * k * k, c * c * k * k)"
+      ],
+      "choices": [
+        "576 576",
+        "576 36864",
+        "36864 576",
+        "4096 36864"
+      ],
+      "answer": 1,
+      "explanation": "A depthwise layer filters each channel on its own (64 x 9 weights); a following 1x1 pointwise convolution (64 x 64) mixes channels. Together they cost about 1/k^2 + 1/c of a standard convolution, at some loss of expressiveness."
+    },
+    {
+      "id": "cnn-one-by-one",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "cnn-cost",
+      "prompt": "What does this print? (Parameters, with biases, of a 1x1 convolution that squeezes 256 channels to 64, a 'bottleneck'.)",
+      "code": [
+        "cin, cout = 256, 64",
+        "print(cin * cout + cout)"
+      ],
+      "choices": [
+        "16448",
+        "16384",
+        "65600",
+        "147520"
+      ],
+      "answer": 0,
+      "explanation": "A 1x1 convolution is a dense layer applied at every pixel: 256 x 64 weights plus 64 biases. It reduces channels cheaply before an expensive 3x3 convolution, the trick behind bottleneck blocks."
+    },
+    {
+      "id": "cnn-flatten-dim",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "cnn-cost",
+      "prompt": "What does this print? (The in_features of the Linear head after flattening a 64-channel 7x7 feature map.)",
+      "code": [
+        "c, h, w = 64, 7, 7",
+        "print(c * h * w)"
+      ],
+      "choices": [
+        "448",
+        "64",
+        "49",
+        "3136"
+      ],
+      "answer": 3,
+      "explanation": "Flattening ties the head to one input resolution: 64 x 7 x 7 = 3136 features. Global average pooling (64 features, any resolution) avoids that and removes most of the head's parameters."
+    },
+    {
+      "id": "cnn-rf-stack",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "cnn-receptive",
+      "prompt": "What does this print? (Receptive field of one unit after three stacked 3x3 convolutions with stride 1.)",
+      "code": [
+        "rf = 1",
+        "for _ in range(3):",
+        "    rf += 3 - 1",
+        "print(rf)"
+      ],
+      "choices": [
+        "9",
+        "6",
+        "7",
+        "27"
+      ],
+      "answer": 2,
+      "explanation": "Each stride-1 layer of kernel k adds k - 1 pixels, so three 3x3 layers see 7x7, the same area as one 7x7 kernel but with 27 weights per channel pair instead of 49, plus two extra non-linearities."
+    },
+    {
+      "id": "cnn-rf-stride",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "cnn-receptive",
+      "prompt": "What does this print? (Receptive field after conv3 stride 1, conv3 stride 2, conv3 stride 1.)",
+      "code": [
+        "rf, jump = 1, 1",
+        "for k, s in [(3, 1), (3, 2), (3, 1)]:",
+        "    rf += (k - 1) * jump",
+        "    jump *= s",
+        "print(rf)"
+      ],
+      "choices": [
+        "7",
+        "9",
+        "11",
+        "8"
+      ],
+      "answer": 1,
+      "explanation": "The 'jump' is the input distance between neighbouring units. After a stride-2 layer every later 3x3 layer steps 2 input pixels, so it adds 4 rather than 2. Downsampling is how networks see large objects without huge kernels."
+    },
+    {
+      "id": "cnn-pool-back",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "cnn-pooling",
+      "prompt": "What does this print? (The gradient reaching the input of a 2x2 max pool whose window is [[1, 5], [4, 2]] when the output gradient is 1.)",
+      "code": [
+        "w = np.array([[1.0, 5.0], [4.0, 2.0]])",
+        "g = np.zeros_like(w)",
+        "g[np.unravel_index(w.argmax(), w.shape)] = 1.0",
+        "print(g.tolist())"
+      ],
+      "choices": [
+        "[[0.0, 1.0], [0.0, 0.0]]",
+        "[[0.25, 0.25], [0.25, 0.25]]",
+        "[[1.0, 1.0], [1.0, 1.0]]",
+        "[[0.0, 0.0], [1.0, 0.0]]"
+      ],
+      "answer": 0,
+      "explanation": "Max pooling routes the whole gradient to the arg-max position and zero elsewhere (average pooling would split it evenly). Overlapping windows add their contributions, and ties need a deterministic rule such as first-max."
+    },
+    {
+      "id": "cnn-pool-shift",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "cnn-pooling",
+      "prompt": "What does this print? (Max pooling, size 2 stride 2, of a spike and of the same spike shifted by one pixel inside the window.)",
+      "code": [
+        "a = np.array([9.0, 0.0, 0.0, 0.0])",
+        "b = np.array([0.0, 9.0, 0.0, 0.0])",
+        "pool = lambda v: v.reshape(-1, 2).max(axis=1).tolist()",
+        "print(pool(a), pool(b))"
+      ],
+      "choices": [
+        "[9.0, 0.0] [0.0, 9.0]",
+        "[0.0, 9.0] [9.0, 0.0]",
+        "[9.0, 0.0] [9.0, 9.0]",
+        "[9.0, 0.0] [9.0, 0.0]"
+      ],
+      "answer": 3,
+      "explanation": "Pooling gives small local invariance: the shift stays inside one window so the output is unchanged. A shift across a window boundary would change it, so invariance is only approximate, and strided pooling can even alias."
+    },
+    {
+      "id": "cnn-equivariance",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "cnn-conv",
+      "prompt": "What does this print? (Index of the strongest response of the same edge filter to a pattern, and to the pattern shifted right by one pixel.)",
+      "code": [
+        "x = np.array([0.0, 0.0, 1.0, 2.0, 3.0, 0.0, 0.0, 0.0])",
+        "k = np.array([1.0, 0.0, -1.0])",
+        "r = lambda v: int(np.correlate(v, k, 'valid').argmax())",
+        "print(r(x), r(np.roll(x, 1)))"
+      ],
+      "choices": [
+        "4 4",
+        "5 4",
+        "4 5",
+        "4 6"
+      ],
+      "answer": 2,
+      "explanation": "Convolution is translation-equivariant: shift the input and the feature map shifts with it. That is different from invariance (an unchanged output), which pooling or a global reduction adds on top."
+    },
+    {
+      "id": "cnn-shape-nhwc",
+      "kind": "shape",
+      "topic": "cnn-shapes",
+      "prompt": "With `x = np.zeros((8, 3, 32, 32))`, what is the shape of `x.transpose(0, 2, 3, 1)`? Type \"error\" if it raises.",
+      "answer": [
+        8,
+        32,
+        32,
+        3
+      ],
+      "explanation": "Result shape (8, 32, 32, 3). Moving channels last turns NCHW into NHWC, the layout some frameworks and accelerators prefer. A transpose only permutes axes, so no values are lost, but the result is a non-contiguous view until copied."
+    },
+    {
+      "id": "cnn-shape-flatten",
+      "kind": "shape",
+      "topic": "cnn-shapes",
+      "prompt": "With `x = np.zeros((8, 3, 32, 32))`, what is the shape of `x.reshape(8, -1)`? Type \"error\" if it raises.",
+      "answer": [
+        8,
+        3072
+      ],
+      "explanation": "Result shape (8, 3072). Flatten everything except the batch axis: 3 x 32 x 32 = 3072 features per example. Flattening with -1 over the batch axis is a classic bug that mixes examples."
+    },
+    {
+      "id": "cnn-shape-bn",
+      "kind": "shape",
+      "topic": "cnn-arch",
+      "prompt": "With `x = np.zeros((8, 3, 32, 32))`, what is the shape of `x.mean(axis=(0, 2, 3))`? Type \"error\" if it raises.",
+      "answer": [
+        3
+      ],
+      "explanation": "Result shape (3,). BatchNorm2d keeps one mean and variance per channel, pooled over the batch and both spatial axes, so the statistics have shape (C,) = (3,). Normalising over the channel axis instead would erase the very feature differences the channels carry."
+    },
+    {
+      "id": "cnn-shape-gap",
+      "kind": "shape",
+      "topic": "cnn-arch",
+      "prompt": "With `x = np.zeros((8, 3, 32, 32))`, what is the shape of `x.mean(axis=(2, 3))`? Type \"error\" if it raises.",
+      "answer": [
+        8,
+        3
+      ],
+      "explanation": "Result shape (8, 3). Global average pooling collapses each channel's map to one number: (8, 3, 32, 32) -> (8, 3). The head that follows no longer depends on the input resolution."
+    },
+    {
+      "id": "cnn-derive-stack",
+      "kind": "derive",
+      "topic": "cnn-shapes",
+      "prompt": "A grayscale 32x32 image goes through conv 3x3 (1->16, 'same' padding, bias), 2x2 max pool, conv 3x3 (16->32, 'same', bias), 2x2 max pool. Enter the final feature-map side, the total convolution parameters and the flattened feature size.",
+      "fields": [
+        "side",
+        "conv parameters",
+        "flattened size"
+      ],
+      "answers": [
+        8,
+        4800,
+        2048
+      ],
+      "tol": 0.001,
+      "explanation": "Pools halve the side twice (32 -> 16 -> 8), 'same' convolutions keep it. Parameters: 160 + 4,640 = 4,800, tiny next to the head: flattening 32 x 8 x 8 = 2,048 features into even 10 classes costs 20,490 parameters."
+    },
+    {
+      "id": "cnn-derive-backward",
+      "kind": "derive",
+      "topic": "cnn-conv",
+      "prompt": "A 1-D cross-correlation y[i] = sum_j k[j] x[i + j] with x = [1, 2, 3, 4], k = [1, -1] (valid, so y has 3 entries) and loss L = sum(y^2) / 2. Enter dL/dk[0], dL/dk[1], dL/dx[0] and dL/dx[3].",
+      "fields": [
+        "dk[0]",
+        "dk[1]",
+        "dx[0]",
+        "dx[3]"
+      ],
+      "answers": [
+        -6,
+        -9,
+        -1,
+        1
+      ],
+      "tol": 0.001,
+      "explanation": "dy = y = [-1, -1, -1]. A kernel weight collects dy[i] x x[i + j] over every position (weight sharing sums the contributions), and an input pixel collects dy[i] x k[j] from every window that contained it (a full convolution of dy with the kernel). Verify any such derivation with finite differences."
+    },
+    {
+      "id": "cnn-derive-cost",
+      "kind": "derive",
+      "topic": "cnn-cost",
+      "prompt": "A 3x3 convolution maps 64 channels to 64 channels on a 56x56 feature map with 'same' padding and biases. Enter its parameter count and its multiply-accumulates for one example.",
+      "fields": [
+        "parameters",
+        "multiply-accumulates"
+      ],
+      "answers": [
+        36928,
+        115605504
+      ],
+      "tol": 0.001,
+      "explanation": "Parameters 36,928; MACs about 115.6 million, i.e. roughly 231 MFLOPs for one layer on one image. Halving the spatial side divides the MACs by 4 while the parameters do not change."
+    },
+    {
+      "id": "cnn-why-conv",
+      "kind": "mcq",
+      "topic": "cnn-conv",
+      "prompt": "Why does a convolutional layer suit images better than a dense layer of the same output size?",
+      "choices": [
+        "It can represent functions a dense layer cannot, because dense layers are linear",
+        "It removes the need for non-linear activations",
+        "Local connectivity and weight sharing exploit that nearby pixels matter together and the same pattern can appear anywhere, with far fewer parameters",
+        "It guarantees invariance to rotation and scale"
+      ],
+      "answer": 2,
+      "explanation": "A dense layer can represent anything a convolution can (a convolution is a constrained dense layer), so the gain is an inductive bias, not expressiveness: fewer parameters, translation equivariance and better sample efficiency. Rotation and scale are not handled for free."
+    },
+    {
+      "id": "cnn-padding-why",
+      "kind": "mcq",
+      "topic": "cnn-conv",
+      "prompt": "Why pad the borders of a feature map before a convolution?",
+      "choices": [
+        "Padding adds learnable parameters that improve accuracy",
+        "Without padding the map shrinks every layer and border pixels take part in fewer windows than interior ones",
+        "Padding is required for the convolution to be differentiable",
+        "Padding makes the layer translation-invariant"
+      ],
+      "answer": 1,
+      "explanation": "Padding with zeros ('same') preserves the spatial size and lets edge pixels contribute about as often as central ones. It is not required for gradients; zero padding can leak absolute position, which some networks quietly exploit."
+    },
+    {
+      "id": "cnn-invariance",
+      "kind": "mcq",
+      "topic": "cnn-pooling",
+      "prompt": "A convolution plus global max pooling detects a pattern wherever it appears. Which statement is accurate?",
+      "choices": [
+        "The convolution is translation-equivariant and the global pooling then makes the output invariant to the pattern's position",
+        "The convolution alone is translation-invariant",
+        "Both are invariant to rotation",
+        "The pooling makes the network equivariant to scale"
+      ],
+      "answer": 0,
+      "explanation": "Equivariant means the output moves with the input; invariant means it does not change. Interviewers like this distinction. Real networks are only approximately invariant because of strides, borders and aliasing."
+    },
+    {
+      "id": "cnn-rf-cheap",
+      "kind": "mcq",
+      "topic": "cnn-receptive",
+      "prompt": "You need a bigger receptive field at low cost. Which option is usually best?",
+      "choices": [
+        "Use one very large kernel such as 31x31 in the first layer",
+        "Remove the non-linearities so the layers merge",
+        "Increase the batch size",
+        "Stack small 3x3 layers and downsample with stride or pooling; dilation is a further option when resolution must stay high"
+      ],
+      "answer": 3,
+      "explanation": "Stacking small kernels reaches the same area with fewer weights and more non-linearities; downsampling grows the receptive field fastest. Dilation widens it without extra parameters but can leave gaps (gridding) if used carelessly."
+    },
+    {
+      "id": "cnn-bn-conv",
+      "kind": "mcq",
+      "topic": "cnn-arch",
+      "prompt": "In a convolutional network, what does BatchNorm2d compute its statistics over?",
+      "choices": [
+        "Each example separately, across channels and positions",
+        "Each pixel position separately, across the batch",
+        "Each channel separately, across the batch and all spatial positions",
+        "The whole tensor as a single group"
+      ],
+      "answer": 2,
+      "explanation": "One mean and variance per channel (plus a learned scale and shift), pooled over N, H and W. At inference it uses running averages, so remember eval mode. Per-example variants such as LayerNorm and GroupNorm are used when batches are tiny."
+    },
+    {
+      "id": "cnn-residual",
+      "kind": "mcq",
+      "topic": "cnn-arch",
+      "prompt": "Why do residual connections let very deep CNNs train?",
+      "choices": [
+        "They add capacity, so the network can fit the training set better",
+        "The identity path gives gradients a short route to early layers, so each block only has to learn a correction",
+        "They make every layer's weights orthogonal",
+        "They replace the need for normalisation and good initialisation"
+      ],
+      "answer": 1,
+      "explanation": "y = x + f(x) has derivative 1 + f'(x) along the skip, so the signal does not vanish through depth. The motivating observation was that plain deeper networks had higher training error, an optimisation problem rather than overfitting."
+    },
+    {
+      "id": "cnn-flip-augment",
+      "kind": "mcq",
+      "topic": "cnn-arch",
+      "prompt": "You train a classifier whose classes include '/' and '\\' strokes. Which augmentation can silently corrupt the labels?",
+      "choices": [
+        "Random horizontal flips: they turn one class into the other",
+        "Small random crops",
+        "Small brightness changes",
+        "Adding mild Gaussian noise"
+      ],
+      "answer": 0,
+      "explanation": "Augmentations must preserve the label. Flips are harmless for most animal photos but break handedness, text and these two classes. Check every augmentation against the task, and never augment the validation set."
+    },
+    {
+      "id": "cnn-transfer",
+      "kind": "mcq",
+      "topic": "cnn-arch",
+      "prompt": "You have 2,000 labelled images and a model pretrained on a large dataset. What is a sensible first recipe?",
+      "choices": [
+        "Train from random initialisation because pretrained features are always wrong for new tasks",
+        "Fine-tune everything at the usual learning rate from step one",
+        "Freeze the whole network including the new head",
+        "Replace the head, train it first with the backbone frozen, then fine-tune the backbone with a much smaller learning rate"
+      ],
+      "answer": 3,
+      "explanation": "Early layers learn generic edges and textures; a fresh head on top of random-magnitude gradients can wreck good features if the backbone is unfrozen too early. Compare against the frozen baseline and keep the pretrained preprocessing."
+    },
+    {
+      "id": "cnn-cost-levers",
+      "kind": "multi",
+      "topic": "cnn-cost",
+      "prompt": "Which of these reduce the multiply-accumulates of a convolution layer for one example? Pick all that apply.",
+      "choices": [
+        "Using a depthwise-separable convolution",
+        "Using stride 2",
+        "Reducing the number of output channels",
+        "Increasing the batch size"
+      ],
+      "answers": [
+        0,
+        1,
+        2
+      ],
+      "explanation": "MACs scale with output positions x output channels x input channels per group x kernel area. Batch size changes the total work per step, not the cost per example, and it does not make a layer cheaper."
+    },
+    {
+      "id": "cnn-bug-outsize",
+      "kind": "bug",
+      "topic": "cnn-shapes",
+      "prompt": "`out_size(32, 3, 1, 1)` should be 32 but returns 31. Tap the line to fix.",
+      "code": [
+        "def out_size(n, k, s, p):",
+        "    return (n - k + 2 * p) // s"
+      ],
+      "line": 2,
+      "explanation": "The count of window positions is the number of steps plus one: floor((n + 2p - k) / s) + 1. Forgetting the +1 is the classic off-by-one, and it compounds layer by layer until the flatten size no longer matches the Linear head."
+    },
+    {
+      "id": "cnn-bug-gap",
+      "kind": "bug",
+      "topic": "cnn-arch",
+      "prompt": "Global average pooling is meant to return one value per channel, shape (batch, channels), but returns (H, W). Tap the line to fix.",
+      "code": [
+        "import numpy as np",
+        "def gap(x):",
+        "    return x.mean(axis=(0, 1))"
+      ],
+      "line": 3,
+      "explanation": "In NCHW layout the spatial axes are 2 and 3. Averaging over batch and channels instead produces a map and silently mixes examples. Printing the shape after every reduction catches this at once."
+    },
+    {
+      "id": "cnn-bug-flip",
+      "kind": "bug",
+      "topic": "cnn-conv",
+      "prompt": "A hand-written 1-D layer must match a framework's convolution layer, but its edge filter responds with the opposite sign. Tap the line to fix.",
+      "code": [
+        "import numpy as np",
+        "def corr1d(x, k):",
+        "    return np.convolve(x, k, 'valid')"
+      ],
+      "line": 3,
+      "explanation": "np.convolve flips the kernel; deep-learning layers do not (they are cross-correlations). Ported weights or hand-built filters then come out mirrored. A unit test with an asymmetric kernel exposes it."
+    }
+  ]
+}

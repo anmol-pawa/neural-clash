@@ -771,3 +771,11 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Verification: lint (0 errors), typecheck, test (629 pass; `py.core` passes after build; `PATH=/usr/bin:$PATH`), build, build:pages, content:verify (all ok), smoke:labs (36 labs listed, desktop and iPhone 14 PASS, no console errors or overflow). CI/Pages confirmation not done: no gh CLI in session.
 - Known gaps: lab not yet credited by a Readiness skill or the Convling gate (D7d/D7f); Python-side reference is loop-over-offsets, not the fastest possible.
 - Next: D7d (CNN lessons + `cnn` card deck; Readiness skill).
+
+## 2026-11-11: D7d CNN lessons, deck and Readiness skill
+- `scripts/gen-cnn.mjs` -> `content/decks/cnn.json` (32 cards, 6 topics: cross-correlation/equivariance, size arithmetic, receptive fields, pooling, cost, architecture) and `content/lessons/cnn.json` (3 lessons). Every predict, shape and derive answer and every lesson output is computed by running numpy natively; `--check` guards staleness. Wired into `CNN_DECK`, `CNN_LESSONS`, Sync and Readiness.
+- New Readiness skill `convnets` (deck + `forge-conv` Lab + a *planned* Conv Caverns guardian), weighted into ML-engineer theory (2) and implement (1).
+- `tests/cnn.test.ts` (6): size/param/MAC/receptive-field answers cross-checked against `lib/solvers/conv.ts`, the by-hand stack/cost derivations against `summarize`, the 1-D conv backward answers against central finite differences, staleness and answer-slot spread. Readiness tests for the new skill.
+- Verification: lint (0 errors), typecheck, test (all pass; lessons `--check` for cnn lives in cnn.test to stay inside the timeout), build, build:pages, content:verify (all ok), smoke:readiness and smoke:sync at desktop and iPhone 14 (PASS, no console errors or overflow; list-only UI change, screenshots not viewed). CI/Pages confirmation: no gh CLI in this session.
+- Known gaps: cards not yet playable from a Conv Caverns map/guardian (D7e/D7f); `cnn-pool-shift` and the older shape-check generator use hand-rolled sizes, not yet the conv solver.
+- Next: D7e (Conv Caverns region art: tileset, guardian, trainers, backdrop; needs splitting).

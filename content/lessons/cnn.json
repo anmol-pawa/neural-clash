@@ -1,0 +1,184 @@
+{
+  "id": "cnn-lessons",
+  "title": "Conv Caverns lessons",
+  "lessons": [
+    {
+      "id": "cnn-conv-lesson",
+      "title": "Convolution, shapes and weight sharing",
+      "topics": [
+        "cnn-conv",
+        "cnn-shapes"
+      ],
+      "intro": "A convolutional layer is a dense layer with two constraints: each output sees only a small window, and every window uses the same weights. This lesson covers what the layer really computes (cross-correlation), the output-size formula you must be able to apply without a framework, and why weight sharing gives translation equivariance.",
+      "takeaways": [
+        "Framework 'convolution' = cross-correlation: no kernel flip.",
+        "Output side = floor((n + 2p - k) / s) + 1; dilation widens the kernel to d(k - 1) + 1.",
+        "Weight sharing: translation equivariance and far fewer parameters, with the same expressiveness limits of a constrained dense layer.",
+        "Backward: dK sums over positions, dX is a full convolution; overlapping windows accumulate."
+      ],
+      "trap": "Calling convolution 'translation invariant'. It is equivariant; invariance needs pooling or a global reduction, and even then only approximately.",
+      "sections": [
+        {
+          "heading": "Cross-correlation, not convolution",
+          "text": "Deep-learning 'convolutions' slide the kernel over the input without flipping it. The difference is invisible for learned kernels but shows up when you port hand-made filters or compare with np.convolve.",
+          "code": [
+            "x = np.array([1.0, 2.0, 4.0, 8.0])",
+            "k = np.array([1.0, 0.0, -1.0])",
+            "print('correlate', np.correlate(x, k, 'valid').tolist())",
+            "print('convolve ', np.convolve(x, k, 'valid').tolist())"
+          ],
+          "output": "correlate [-3.0, -6.0]\nconvolve  [3.0, 6.0]"
+        },
+        {
+          "heading": "The output-size formula",
+          "text": "Along each axis the output has floor((n + 2p - k) / s) + 1 positions, with dilation d replacing k by d(k - 1) + 1. Work through a few cases by hand before trusting a framework error message.",
+          "code": [
+            "def out(n, k, s=1, p=0, d=1):",
+            "    return (n + 2 * p - (d * (k - 1) + 1)) // s + 1",
+            "print([out(32, 3, 1, 1), out(32, 3, 2, 0), out(28, 5, 1, 2), out(32, 3, 1, 0, 2)])"
+          ],
+          "output": "[32, 15, 28, 28]"
+        },
+        {
+          "heading": "Weight sharing means equivariance",
+          "text": "The same filter is applied at every position, so shifting the input shifts the feature map by the same amount. Pooling or a global reduction on top is what turns this into (approximate) invariance.",
+          "code": [
+            "x = np.array([0.0, 0.0, 1.0, 2.0, 3.0, 0.0, 0.0, 0.0])",
+            "k = np.array([1.0, 0.0, -1.0])",
+            "r = lambda v: np.correlate(v, k, 'valid')",
+            "print(r(x).tolist())",
+            "print(r(np.roll(x, 1)).tolist())"
+          ],
+          "output": "[-1.0, -2.0, -2.0, 2.0, 3.0, 0.0]\n[0.0, -1.0, -2.0, -2.0, 2.0, 3.0]"
+        },
+        {
+          "heading": "Gradients of a convolution",
+          "text": "The kernel gradient sums dy[i] x x[i + j] over all positions; the input gradient is a full convolution of dy with the kernel. Implementations build both from the same sliding windows (im2col) and fold the result back with +=, because overlapping windows contribute to the same pixel.",
+          "code": [
+            "x = np.array([1.0, 2.0, 3.0, 4.0])",
+            "k = np.array([1.0, -1.0])",
+            "dy = np.correlate(x, k, 'valid')",
+            "dk = np.array([(dy * x[j:j + 3]).sum() for j in range(2)])",
+            "dx = np.zeros(4)",
+            "for i in range(3):",
+            "    dx[i:i + 2] += dy[i] * k",
+            "print('dk', dk.tolist(), 'dx', dx.tolist())"
+          ],
+          "output": "dk [-6.0, -9.0] dx [-1.0, 0.0, 0.0, 1.0]"
+        }
+      ]
+    },
+    {
+      "id": "cnn-cost-lesson",
+      "title": "Receptive fields, pooling and the cost of a conv net",
+      "topics": [
+        "cnn-receptive",
+        "cnn-pooling",
+        "cnn-cost"
+      ],
+      "intro": "Interviewers ask you to size a conv net on a whiteboard: how big an area does a unit see, what does pooling do in the backward pass, and where do the parameters and the FLOPs go. All of it is arithmetic you can do exactly.",
+      "takeaways": [
+        "Receptive field grows by (k - 1) x jump per layer; strides multiply the jump.",
+        "Max pool: gradient to the arg-max only. Average pool: even split.",
+        "Params do not depend on image size, MACs scale with H x W; 1 MAC = 2 FLOPs.",
+        "Depthwise-separable and 1x1 bottlenecks cut FLOPs; measure real latency as well."
+      ],
+      "trap": "Quoting FLOPs as if they were latency, or counting the parameters of a flattened dense head as if the conv layers were the expensive part.",
+      "sections": [
+        {
+          "heading": "Receptive field and jump",
+          "text": "Each layer adds (k - 1) x jump pixels to the receptive field, and a stride multiplies the jump for every later layer. Three plain 3x3 layers see 7x7; a stride-2 layer in the middle makes the last layer count double.",
+          "code": [
+            "rf, jump = 1, 1",
+            "for k, s in [(3, 1), (3, 2), (3, 1)]:",
+            "    rf += (k - 1) * jump",
+            "    jump *= s",
+            "    print('k', k, 'stride', s, '-> rf', rf, 'jump', jump)"
+          ],
+          "output": "k 3 stride 1 -> rf 3 jump 1\nk 3 stride 2 -> rf 5 jump 2\nk 3 stride 1 -> rf 9 jump 2"
+        },
+        {
+          "heading": "Max pooling routes the gradient",
+          "text": "Backward through a max pool sends the whole gradient to the arg-max of each window; average pooling spreads it evenly. Overlapping windows accumulate into the same pixel.",
+          "code": [
+            "w = np.array([[1.0, 5.0], [4.0, 2.0]])",
+            "g = np.zeros_like(w)",
+            "g[np.unravel_index(w.argmax(), w.shape)] = 1.0",
+            "print('max pool grad', g.tolist())",
+            "print('avg pool grad', (np.ones_like(w) / w.size).tolist())"
+          ],
+          "output": "max pool grad [[0.0, 1.0], [0.0, 0.0]]\navg pool grad [[0.25, 0.25], [0.25, 0.25]]"
+        },
+        {
+          "heading": "Parameters versus compute",
+          "text": "Parameters are independent of the image size; MACs are not: each output value costs (cin / groups) x kh x kw. High-resolution early layers dominate compute, wide late layers and dense heads dominate parameters.",
+          "code": [
+            "cin, cout, k = 64, 64, 3",
+            "for h in (56, 28, 14):",
+            "    print(h, 'params', cout * cin * k * k + cout, 'MACs', cout * h * h * cin * k * k)"
+          ],
+          "output": "56 params 36928 MACs 115605504\n28 params 36928 MACs 28901376\n14 params 36928 MACs 7225344"
+        },
+        {
+          "heading": "Cheaper layers",
+          "text": "A depthwise 3x3 plus a 1x1 pointwise convolution costs about 1/k^2 + 1/c of a standard convolution; a 1x1 bottleneck shrinks channels before an expensive 3x3. Cheaper in FLOPs does not always mean faster on hardware, where memory traffic often dominates.",
+          "code": [
+            "c, k = 64, 3",
+            "std = c * c * k * k",
+            "sep = c * k * k + c * c",
+            "print(std, sep, round(sep / std, 3))"
+          ],
+          "output": "36864 4672 0.127"
+        }
+      ]
+    },
+    {
+      "id": "cnn-arch-lesson",
+      "title": "Building and training a CNN",
+      "topics": [
+        "cnn-arch"
+      ],
+      "intro": "The architecture decisions that come up in interviews: where to normalise, why skip connections work, how to end the network without tying it to one resolution, how to augment safely and how to fine-tune a pretrained backbone.",
+      "takeaways": [
+        "BatchNorm2d: statistics per channel over N, H, W; eval mode uses running stats.",
+        "Residual: gradient 1 + f' on the skip; plain deep stacks are harder to optimise.",
+        "Global average pooling decouples the head from input resolution.",
+        "Fine-tune: new head first, then the backbone at a much smaller learning rate; augmentations must preserve labels."
+      ],
+      "trap": "Adding a flip or rotation augmentation without asking whether it can change the class, then reading the accuracy drop as 'the model is bad'.",
+      "sections": [
+        {
+          "heading": "Normalise per channel",
+          "text": "BatchNorm2d keeps one mean and variance per channel across batch and spatial axes. GroupNorm and LayerNorm avoid the batch dependence when batches are small.",
+          "code": [
+            "x = np.random.default_rng(0).normal(size=(8, 3, 4, 4))",
+            "m = x.mean(axis=(0, 2, 3))",
+            "v = x.var(axis=(0, 2, 3))",
+            "print(m.shape, v.shape)"
+          ],
+          "output": "(3,) (3,)"
+        },
+        {
+          "heading": "Skip connections and global pooling",
+          "text": "A residual block adds its input back, so the derivative along the skip is 1 + f'. Ending with global average pooling makes the head independent of the input size and removes the huge flatten layer.",
+          "code": [
+            "print('plain', round(0.5 ** 20, 8), 'residual', round(1.01 ** 20, 4))",
+            "x = np.zeros((8, 3, 32, 32))",
+            "print(x.mean(axis=(2, 3)).shape)"
+          ],
+          "output": "plain 9.5e-07 residual 1.2202\n(8, 3)"
+        },
+        {
+          "heading": "Augment without changing the label",
+          "text": "Crops, small shifts, colour jitter and noise preserve most labels; flips and rotations do not for handed shapes, text or digits like 6 and 9. Augment the training set only.",
+          "code": [
+            "classes = {'slash': '/', 'backslash': '\\\\'}",
+            "flipped = {'/': '\\\\', '\\\\': '/'}",
+            "print({n: flipped[c] for n, c in classes.items()})"
+          ],
+          "output": "{'slash': '\\\\', 'backslash': '/'}"
+        }
+      ]
+    }
+  ]
+}

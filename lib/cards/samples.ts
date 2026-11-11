@@ -6,6 +6,7 @@ import deckProbability from "@/content/decks/probability.json";
 import deckClassic from "@/content/decks/classic.json";
 import deckMetrics from "@/content/decks/metrics.json";
 import deckNn from "@/content/decks/nn.json";
+import deckCnn from "@/content/decks/cnn.json";
 import deckStrategy from "@/content/decks/foundations-strategy.json";
 import { loadDeck } from "./loader";
 import { GENERATORS } from "./generators";
@@ -71,6 +72,8 @@ export const CLASSIC_DECK = loadDeck(deckClassic);
 export const METRICS_DECK = loadDeck(deckMetrics);
 /** Neuron Nest (CUR F7): perceptron to MLP, backprop by hand, init, normalisation, regularisation, debugging. */
 export const NN_DECK = loadDeck(deckNn);
+/** Conv Caverns (CUR F8): cross-correlation, size arithmetic, receptive fields, pooling, cost, CNN architecture. */
+export const CNN_DECK = loadDeck(deckCnn);
 
 /** A varied deck: hand-written cards plus solver-generated ones, shuffled by a seed. */
 export function demoDeck(seed: number): Card[] {
