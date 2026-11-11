@@ -718,3 +718,9 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Verification: lint (0 errors), typecheck, test (572 pass), build, build:pages, smoke:readiness at desktop and iPhone 14 (all PASS, no console errors or overflow; list-only change, screenshots not viewed). content:verify not run (no content changed). CI/Pages confirmation: no `gh` CLI in this session.
 - Known gaps: guardian, art (D6f, D6g).
 - Next: D6f (Neuron Nest region art).
+
+## 2026-11-11: D6f1 Neuron Nest tileset
+- D6f was split into D6f1-D6f3 in ROADMAP. This run: `scripts/art/neuron-nest.mjs` -> `game/sprites/tiles/neuron-nest-tiles.ts`, 20 tiles in a twilight thicket look: moss threaded with faint synapse lines, glowing mushrooms, slate floor inscribed with a small network, a signal stream with travelling spikes, violet dendrite canopies over bark with a glowing axon seam, fern hedge, an XOR-scatter signboard, orb lamps, lichen-stone houses (window shows a 1-2-1 net, door a perceptron glyph), firing-neuron pillars, and a 2-3-1 network arena pad whose hidden units pulse. `NEST_PREVIEW` map registered in the roster; tileset and map validity tests extended.
+- Verification: lint (0 errors), typecheck, test (576 pass; `PATH=/usr/bin:$PATH`), build, build:pages; Playwright on `/dev/sprites/` at desktop and iPhone 14: no console errors, no overflow; tile sheet and preview map inspected, silhouettes legible. content:verify not run (art only).
+- Known gaps: no guardian, trainers or backdrop yet (D6f2, D6f3). Pushed to `main` and the session branch.
+- Next: D6f2 (Neuron Nest guardian sprite).

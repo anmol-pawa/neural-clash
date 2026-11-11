@@ -7,9 +7,10 @@ import { VECTOR_VALE_TILES } from "@/game/sprites/tiles/vector-vale-tiles";
 import { GRADIENT_GORGE_TILES } from "@/game/sprites/tiles/gradient-gorge-tiles";
 import { CLASSIC_GROVE_TILES } from "@/game/sprites/tiles/classic-grove-tiles";
 import { METRIC_MARKET_TILES } from "@/game/sprites/tiles/metric-market-tiles";
+import { NEURON_NEST_TILES } from "@/game/sprites/tiles/neuron-nest-tiles";
 import { PROBABILITY_PEAKS_TILES } from "@/game/sprites/tiles/probability-peaks-tiles";
 import { composeMap, TILE, validateMap } from "@/game/sprites/tilemap";
-import { LAB_GRID, LAB_LEGEND, PORT_GRID, PORT_LEGEND, VALE_GRID, VALE_LEGEND, GORGE_GRID, GORGE_LEGEND, PEAKS_GRID, PEAKS_LEGEND, GROVE_GRID, GROVE_LEGEND, MARKET_GRID, MARKET_LEGEND } from "@/game/sprites/maps";
+import { LAB_GRID, LAB_LEGEND, PORT_GRID, PORT_LEGEND, VALE_GRID, VALE_LEGEND, GORGE_GRID, GORGE_LEGEND, PEAKS_GRID, PEAKS_LEGEND, GROVE_GRID, GROVE_LEGEND, MARKET_GRID, MARKET_LEGEND, NEST_GRID, NEST_LEGEND } from "@/game/sprites/maps";
 
 const isCharacter = (d: { id: string }) => d.id === "player" || d.id === "okafor" || d.id === "cadet-shear" || d.id === "ranger-axis" || d.id === "climber-delta" || d.id === "surveyor-hess" || d.id === "analyst-quill" || d.id === "analyst-brun" || d.id === "botanist-fern" || d.id === "forester-birch" || d.id === "trader-mina" || d.id === "auditor-crowe" || d.id.endsWith("-portrait");
 const isWorld = (d: { id: string }) => d.id.endsWith("-tiles") || d.id.endsWith("-preview");
@@ -102,9 +103,10 @@ describe("tilesets", () => {
     "gradient-gorge-tiles": ["grass", "flowers", "water", "shore", "tree-top", "sign", "lamp", "window", "door", "statue", "pad"],
     "classic-grove-tiles": ["grass", "flowers", "water", "shore", "tree-top", "sign", "lamp", "window", "door", "statue", "pad"],
     "metric-market-tiles": ["grass", "flowers", "water", "shore", "tree-top", "sign", "lamp", "window", "door", "statue", "pad"],
+    "neuron-nest-tiles": ["grass", "flowers", "water", "shore", "tree-top", "sign", "lamp", "window", "door", "statue", "pad"],
     "probability-peaks-tiles": ["grass", "flowers", "water", "shore", "tree-top", "sign", "lamp", "window", "door", "statue", "pad"],
   };
-  for (const def of [PYTHON_PORT_TILES, LAB_TILES, VECTOR_VALE_TILES, GRADIENT_GORGE_TILES, PROBABILITY_PEAKS_TILES, CLASSIC_GROVE_TILES, METRIC_MARKET_TILES]) {
+  for (const def of [PYTHON_PORT_TILES, LAB_TILES, VECTOR_VALE_TILES, GRADIENT_GORGE_TILES, PROBABILITY_PEAKS_TILES, CLASSIC_GROVE_TILES, METRIC_MARKET_TILES, NEURON_NEST_TILES]) {
     describe(def.id, () => {
       it("is a valid sprite definition of 16×16 tiles", () => {
         expect(validateSprite(def)).toEqual([]);
@@ -146,6 +148,7 @@ describe("tile maps", () => {
     expect(validateMap(PROBABILITY_PEAKS_TILES, PEAKS_GRID, PEAKS_LEGEND)).toEqual([]);
     expect(validateMap(CLASSIC_GROVE_TILES, GROVE_GRID, GROVE_LEGEND)).toEqual([]);
     expect(validateMap(METRIC_MARKET_TILES, MARKET_GRID, MARKET_LEGEND)).toEqual([]);
+    expect(validateMap(NEURON_NEST_TILES, NEST_GRID, NEST_LEGEND)).toEqual([]);
   });
   it("validateMap reports unknown codes, unknown tiles and ragged rows", () => {
     const errs = validateMap(LAB_TILES, ["fz", "f"], { f: "floor", z: "nope" });
