@@ -724,3 +724,9 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Verification: lint (0 errors), typecheck, test (576 pass; `PATH=/usr/bin:$PATH`), build, build:pages; Playwright on `/dev/sprites/` at desktop and iPhone 14: no console errors, no overflow; tile sheet and preview map inspected, silhouettes legible. content:verify not run (art only).
 - Known gaps: no guardian, trainers or backdrop yet (D6f2, D6f3). Pushed to `main` and the session branch.
 - Next: D6f2 (Neuron Nest guardian sprite).
+
+## 2026-11-11: D6f2 Dimwarden guardian sprite
+- `scripts/art/nest-guardian.mjs` -> `game/sprites/creatures/dimwarden.ts` (96x96, 17 frames: idle 4, attack 6, hurt 3, faint 4): a totem of four layer-slabs whose glow fades from the bright output slab to a nearly dead head, a flat-line mouth (ReLU(x<0)=0), a ReLU hinge carved in the chest, and an attack where a returning-gradient pulse climbs and fades. Registered in the roster; the sprite test suite validates size, frames and palette.
+- Verification: lint (0 errors), typecheck, test (582 pass; `PATH=/usr/bin:$PATH`), build, build:pages; contact sheet rendered and inspected (silhouette and fade readable). CI/Pages confirmation skipped: no gh CLI in session. content:verify not run (art only).
+- Known gaps: hurt shake is subtle; not yet used in a fight (D6g); no `/dev/sprites` screenshot at iPhone size (roster page unchanged).
+- Next: D6f3 (two trainers + `theme: "nest"` backdrop).

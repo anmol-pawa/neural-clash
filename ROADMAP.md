@@ -120,7 +120,7 @@ Work top to bottom: take the **first unchecked box**, and split big boxes into r
   - [x] D6e. (done 2026-11-11) Readiness skill "neural-nets" (deck + six Forge labs; guardian planned).
   - [ ] D6f. Region art, split into:
     - [x] D6f1. (done 2026-11-11) Neuron Nest tileset (`scripts/art/neuron-nest.mjs`) and preview map.
-    - [ ] D6f2. Guardian sprite (96x96, the Vanishing Gradient / Dead Unit warden).
+    - [x] D6f2. (done 2026-11-11) Guardian sprite Dimwarden (96x96, `scripts/art/nest-guardian.mjs`: vanishing-gradient totem, dead-unit face, ReLU hinge).
     - [ ] D6f3. Two trainers (16x24 walks + 48x48 portraits) and the `theme: "nest"` battle backdrop.
   - [ ] D6g. Guardian fight and the companion → Multilayer evolution.
 - [ ] D7. Conv Caverns (F8), with module 9, the Glyphs dataset and the companion → Convling
