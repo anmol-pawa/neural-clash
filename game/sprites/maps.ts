@@ -5,6 +5,7 @@ import { VECTOR_VALE_TILES } from "./tiles/vector-vale-tiles";
 import { GRADIENT_GORGE_TILES } from "./tiles/gradient-gorge-tiles";
 import { CLASSIC_GROVE_TILES } from "./tiles/classic-grove-tiles";
 import { METRIC_MARKET_TILES } from "./tiles/metric-market-tiles";
+import { NEURON_NEST_TILES } from "./tiles/neuron-nest-tiles";
 import { PROBABILITY_PEAKS_TILES } from "./tiles/probability-peaks-tiles";
 
 /** Python Port, the harbour town where the game starts. */
@@ -127,3 +128,8 @@ export const GROVE_PREVIEW = mapSprite("classic-grove-preview", "CLASSIC GROVE (
 export const MARKET_LEGEND: TileLegend = VALE_LEGEND;
 export const MARKET_GRID: readonly string[] = GROVE_GRID;
 export const MARKET_PREVIEW = mapSprite("metric-market-preview", "METRIC MARKET (preview)", METRIC_MARKET_TILES, MARKET_GRID, MARKET_LEGEND);
+
+/** Neuron Nest: a woodland nest of woven twig paths, a signal stream and the guardian's XOR-boundary pad. Same tile names as the Vale. */
+export const NEST_LEGEND: TileLegend = VALE_LEGEND;
+export const NEST_GRID: readonly string[] = GROVE_GRID;
+export const NEST_PREVIEW = mapSprite("neuron-nest-preview", "NEURON NEST (preview)", NEURON_NEST_TILES, NEST_GRID, NEST_LEGEND);
