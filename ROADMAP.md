@@ -130,10 +130,10 @@ Work top to bottom: take the **first unchecked box**, and split big boxes into r
   - [x] D7b. (done 2026-11-11) Conv shape solvers (`lib/solvers/conv.ts`: output size with padding/stride/dilation/ceil, transposed conv, receptive field and jump, params/MACs/FLOPs, layer-stack summary) with brute-force tests.
   - [x] D7c. (done 2026-11-11) Forge module 9 Lab `forge-conv` (`Conv2D` via im2col with stride/padding, `MaxPool2D` with overlapping windows and tie rule; finite-difference checks, 14 wrong versions).
   - [x] D7d. (done 2026-11-11) CNN lessons (3) + 32-card `cnn` deck (`scripts/gen-cnn.mjs`); Readiness skill `convnets`.
-  - [ ] D7e. Region art, split into:
+  - [x] D7e. Region art, split into:
     - [x] D7e1. (done 2026-11-11) Conv Caverns tileset (`scripts/art/conv-caverns.mjs`) and preview map.
     - [x] D7e2. (done 2026-11-11) Guardian sprite Scanwarden (96x96, `scripts/art/caverns-guardian.mjs`).
-    - [ ] D7e3. Two trainers (16x24 walks + 48x48 portraits) and the `theme: "caverns"` battle backdrop.
+    - [x] D7e3. (done 2026-11-11) Two trainers (Scout Kern, Digger Stride: 16x24 walks + 48x48 portraits; `scripts/art/caverns-trainers.mjs`) and the `theme: "caverns"` battle backdrop.
   - [ ] D7f. Guardian fight and companion → Convling evolution.
 - [ ] D8. Recurrent Rapids (F9), with module 10 and the companion → Recurrent; plus the *Drift* boss
 

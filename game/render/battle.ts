@@ -45,7 +45,7 @@ function sprite(def: SpriteDef, anim: string, i: number, tint: Tint): HTMLCanvas
 
 const frameFor = (def: SpriteDef, anim: string, t: number) => Math.floor(t * (def.fps?.[anim] ?? 6));
 
-export type StageTheme = "grid" | "vale" | "gorge" | "peaks" | "grove" | "market" | "nest";
+export type StageTheme = "grid" | "vale" | "gorge" | "peaks" | "grove" | "market" | "nest" | "caverns";
 
 /** Vector Vale: a twilight meadow of crystals over a lattice floor, with slowly turning basis axes on the horizon. */
 function valeBackdrop(g: CanvasRenderingContext2D, t: number) {
@@ -498,6 +498,78 @@ function nestBackdrop(g: CanvasRenderingContext2D, t: number) {
   }
 }
 
+/** Conv Caverns: a crystal cave; a pixel-gridded rock wall with a 3x3 window sweeping across it (the lit centre cell is the output), teal and violet crystals, a dark floor with a faint grid and drifting glints. */
+function cavernsBackdrop(g: CanvasRenderingContext2D, t: number) {
+  const wall = g.createLinearGradient(0, 0, 0, 78);
+  wall.addColorStop(0, "#0e0c24");
+  wall.addColorStop(1, "#262050");
+  g.fillStyle = wall;
+  g.fillRect(0, 0, STAGE_W, STAGE_H);
+  // rock wall as a coarse pixel grid; every cell a slightly different shade
+  const cs = 12;
+  for (let cy = 0; cy < 6; cy++) {
+    for (let cx = 0; cx < Math.ceil(STAGE_W / cs); cx++) {
+      const v = (cx * 7 + cy * 13 + ((cx * cy) % 5)) % 4;
+      g.fillStyle = ["#1a1640", "#201a4c", "#2a2260", "#181438"][v];
+      g.fillRect(cx * cs + 1, cy * cs + 1, cs - 2, cs - 2);
+    }
+  }
+  // a 3x3 kernel window sweeping the grid; the centre cell lights up
+  const cols = Math.ceil(STAGE_W / cs) - 2;
+  const step = Math.floor(t * 3) % (cols * 4);
+  const col = step % cols, row = Math.floor(step / cols) % 4;
+  const wx = col * cs, wy = row * cs;
+  g.strokeStyle = "#ffd23a";
+  g.lineWidth = 1;
+  g.strokeRect(wx + 0.5, wy + 0.5, cs * 3 - 1, cs * 3 - 1);
+  g.fillStyle = "#ff5fd0";
+  g.fillRect(wx + cs + 1, wy + cs + 1, cs - 2, cs - 2);
+  // stalactites
+  g.fillStyle = "#14102e";
+  for (let i = 0; i < 9; i++) {
+    const x = i * 30 + 6, h = 10 + ((i * 7) % 4) * 5;
+    g.beginPath();
+    g.moveTo(x, 0);
+    g.lineTo(x + 9, 0);
+    g.lineTo(x + 4, h);
+    g.fill();
+  }
+  // crystals on the wall base
+  for (const [cx, cy, col2] of [[20, 70, "#6cf0d0"], [96, 66, "#b488f0"], [180, 72, "#6cf0d0"], [236, 66, "#b488f0"]] as const) {
+    const pulse = 0.65 + 0.35 * Math.sin(t * 2 + cx);
+    g.globalAlpha = pulse;
+    g.fillStyle = col2;
+    g.fillRect(cx, cy - 8, 4, 12);
+    g.fillRect(cx - 3, cy - 3, 3, 7);
+    g.fillRect(cx + 4, cy - 5, 3, 9);
+    g.globalAlpha = 1;
+  }
+  // dark stone floor with a faint grid
+  const floor = g.createLinearGradient(0, 74, 0, STAGE_H);
+  floor.addColorStop(0, "#2c2850");
+  floor.addColorStop(1, "#14122c");
+  g.fillStyle = floor;
+  g.fillRect(0, 74, STAGE_W, STAGE_H - 74);
+  g.strokeStyle = "rgba(140,130,230,0.25)";
+  g.beginPath();
+  for (let x = 0; x <= STAGE_W; x += 24) {
+    g.moveTo(x, 74);
+    g.lineTo(x, STAGE_H);
+  }
+  for (let y = 86; y <= STAGE_H; y += 24) {
+    g.moveTo(0, y);
+    g.lineTo(STAGE_W, y);
+  }
+  g.stroke();
+  // glints
+  for (let i = 0; i < 14; i++) {
+    const x = (i * 59 + t * (3 + (i % 4))) % STAGE_W;
+    const y = 30 + ((i * 37 + t * (2 + (i % 3))) % (STAGE_H - 40));
+    g.fillStyle = Math.sin(t * 3 + i) > 0 ? "#bffaf0" : "#8a70e0";
+    g.fillRect(Math.floor(x), Math.floor(y), 2, 2);
+  }
+}
+
 function backdrop(g: CanvasRenderingContext2D, t: number, theme: StageTheme = "grid") {
   if (theme === "vale") return valeBackdrop(g, t);
   if (theme === "gorge") return gorgeBackdrop(g, t);
@@ -505,6 +577,7 @@ function backdrop(g: CanvasRenderingContext2D, t: number, theme: StageTheme = "g
   if (theme === "grove") return groveBackdrop(g, t);
   if (theme === "market") return marketBackdrop(g, t);
   if (theme === "nest") return nestBackdrop(g, t);
+  if (theme === "caverns") return cavernsBackdrop(g, t);
   const sky = g.createLinearGradient(0, 0, 0, 78);
   sky.addColorStop(0, "#0d1033");
   sky.addColorStop(1, "#2a2a6e");

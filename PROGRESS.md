@@ -791,3 +791,9 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Verification: lint (0 errors), typecheck, test (656 incl. `py.core` after build; `PATH=/usr/bin:$PATH`), build, build:pages, content:verify (all ok); Playwright on `/dev/sprites/` at desktop and iPhone 14: no console errors, no overflow, Scanwarden listed; contact sheet inspected (grid, window and faint darkening read clearly). CI/Pages confirmation: no gh CLI in session.
 - Known gaps: hurt cracks are faint at 1x; not yet in a fight or on the map.
 - Next: D7e3 (two Caverns trainers + `theme: "caverns"` backdrop).
+
+## 2026-11-11: D7e3 Conv Caverns trainers and backdrop
+- `scripts/art/caverns-trainers.mjs` -> Scout Kern (hard hat with teal crystal lamp, slate-violet jacket, 3x3 window badge) and Digger Stride (high bun, rust scarf, deep-violet coat, pickaxe): 16x24 overworld sheets (stand/walk x4 directions) and 48x48 portraits (idle/talk/smile/think), registered in the roster. New `theme: "caverns"` battle backdrop (pixel-gridded rock wall with a 3x3 window sweeping across it and a lit centre cell, crystals, grid floor, glints); `StageTheme`, `GuardianDef.theme` and `/battle?theme=caverns` accept it.
+- Verification: lint (0 errors), typecheck, test (676 pass), build, build:pages, content:verify (all ok); Playwright on `/dev/sprites/` and `/battle/?theme=caverns` at desktop and iPhone 14: no console errors, no overflow; sheets, portraits and backdrop inspected and legible. Work pushed to the session branch `claude/wonderful-goodall-kl1tzt` (same commit as main's tip plus this change); CI/Pages not confirmed (no gh CLI in session).
+- Known gaps: trainers not yet placed on the Caverns map; Stride's hair ramp reads grey-violet rather than black.
+- Next: D7f (Scanwarden guardian fight `/guardian/caverns` and companion -> Convling evolution; needs splitting).
