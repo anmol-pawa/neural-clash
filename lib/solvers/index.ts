@@ -5,3 +5,4 @@ export * from "./linalg";
 export * from "./calculus";
 export * from "./probability";
 export * from "./classic";
+export * as conv from "./conv";

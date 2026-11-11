@@ -757,3 +757,10 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Verification: lint (0 errors), typecheck, test (621 pass; `PATH=/usr/bin:$PATH`), build, build:pages, content:verify (all ok). Templates inspected as ASCII renders; shapes read clearly. No UI change. CI/Pages confirmation skipped (Actions quota note).
 - Known gaps: Glyphs not yet wired into `/train` or the worker; no gallery view; slash is slightly clipped at its ends.
 - Next: D7b (conv shape / receptive-field / FLOPs solvers).
+
+## 2026-11-11: D7b Conv shape solvers
+- `lib/solvers/conv.ts` (exported as `conv` from `lib/solvers`): `outSize` (padding as number/"same"/"valid", stride, dilation, pool ceil mode), `transposedOutSize`, `convParams` (groups, bias), `convMacs`/`flopsFromMacs` (1 MAC = 2 FLOPs), `summarize` (per-layer shape, params, MACs, receptive field and jump over a conv/pool stack), `totals`, `denseParams`.
+- `tests/conv.test.ts` (15): output sizes checked against explicit window counting over a parameter grid (including dilation and ceil mode), "same" padding with dilated kernels, transposed-conv inverse, params/MACs against triple-loop counts (groups, depthwise), receptive field against backward dependency tracing at every depth, textbook values (three 3x3 convs see 7x7), conv vs dense parameter comparison on a 16x16 glyph.
+- Verification: lint (0 errors), typecheck, test (all pass incl. `py.core` after build; `PATH=/usr/bin:$PATH`), build, build:pages, content:verify (all ok). No UI change, no screenshots needed. CI/Pages not confirmed: no gh CLI in session.
+- Known gaps: not yet used by cards (existing `conv2d`/`convOut` in `shapes.ts` remain for the shape-check generator; D7d will migrate it to this module); receptive field assumes square kernels in `summarize` (uses `k[0]`).
+- Next: D7c (Forge module 9 Lab `forge-conv`).
