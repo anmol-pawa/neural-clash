@@ -1,0 +1,33 @@
+{
+  "id": "forge-conv",
+  "title": "Forge 9: Conv2D and max-pool with hand-written backward",
+  "phase": "forge",
+  "language": "python",
+  "functions": [
+    "Conv2D",
+    "MaxPool2D"
+  ],
+  "wrong": {
+    "flipped_kernel.py": "the kernel is flipped (true convolution); forward and gradients stay self-consistent but values differ from the cross-correlation every framework implements",
+    "overwrite_overlaps.py": "dx is assigned instead of accumulated, so overlapping windows overwrite each other",
+    "dx_keeps_padding.py": "dx is returned with the zero padding still attached, so its shape is wrong",
+    "db_first_example.py": "db uses only the first example instead of summing over the batch",
+    "dw_mean_over_batch.py": "dW is averaged over the batch; that scaling belongs to the loss",
+    "accumulating_grads.py": "dW accumulates across backward calls instead of being set",
+    "backward_stride_one.py": "backward scatters as if stride were 1",
+    "init_unscaled.py": "W ~ Normal(0, 1) instead of Normal(0, 1/(in_ch*k*k)): activations grow with the receptive field",
+    "pad_one_side.py": "padding is added only on the top and left",
+    "pool_grad_to_whole_window.py": "every input in a window receives the output's gradient, not just the winner",
+    "pool_average_gradient.py": "the gradient is split evenly (average-pool backward) although the forward takes the max",
+    "pool_ties_split.py": "every input tied for the maximum receives the full gradient, so gradient mass is not conserved",
+    "pool_ignores_stride.py": "the stride argument is ignored: windows never overlap",
+    "pool_overlap_overwrite.py": "with overlapping windows an input that wins two windows keeps only one of the two gradients"
+  },
+  "hints": [
+    "Do not loop over output pixels. Build an im2col matrix: for each of the k*k kernel offsets (i, j), slice the padded image with a stride, `xp[:, :, i:i+s*Ho:s, j:j+s*Wo:s]`. Stack them to (N, C*k*k, Ho*Wo) and the whole layer becomes one matmul with W reshaped to (out_ch, C*k*k).",
+    "Output size is (H + 2*pad - k) // stride + 1. np.pad with ((0,0),(0,0),(pad,pad),(pad,pad)) pads only the two spatial axes.",
+    "Backward mirrors forward: dW is the same matmul as Linear's x.T @ dout, only on columns; db sums dout over batch and both spatial axes; dcols = W.T @ dout. Then un-fold dcols with the same strided slices, adding (+=) because neighbouring windows read the same pixel. Finally crop the padding.",
+    "Max-pool backward: remember argmax over the window offsets in forward. In backward, each output sends its gradient to the offset that won, and nothing to the others. Overlapping windows (stride < size) add up again.",
+    "Check one thing at a time with finite differences: dx with stride 2 and padding 1 catches most scatter bugs; compare the sum of dx with the sum of the upstream for pooling."
+  ]
+}

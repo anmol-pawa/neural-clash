@@ -128,7 +128,7 @@ Work top to bottom: take the **first unchecked box**, and split big boxes into r
 - [ ] D7. Conv Caverns (F8), with module 9, the Glyphs dataset and the companion → Convling, split into:
   - [x] D7a. (done 2026-11-11) Glyphs dataset (`lib/datasets/glyphs.ts`, seeded 16x16, 6 classes, shift/rotation/brightness/noise jitter) with tests.
   - [x] D7b. (done 2026-11-11) Conv shape solvers (`lib/solvers/conv.ts`: output size with padding/stride/dilation/ceil, transposed conv, receptive field and jump, params/MACs/FLOPs, layer-stack summary) with brute-force tests.
-  - [ ] D7c. Forge module 9 Lab `forge-conv` (conv2d forward/backward, im2col, maxpool; finite-difference checks, wrong versions).
+  - [x] D7c. (done 2026-11-11) Forge module 9 Lab `forge-conv` (`Conv2D` via im2col with stride/padding, `MaxPool2D` with overlapping windows and tie rule; finite-difference checks, 14 wrong versions).
   - [ ] D7d. CNN lessons + `cnn` card deck; Readiness skill.
   - [ ] D7e. Region art (tileset, guardian, trainers, backdrop).
   - [ ] D7f. Guardian fight and companion → Convling evolution.
