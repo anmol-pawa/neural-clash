@@ -712,3 +712,9 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Honest finding: large init does not "starve" early gradients, it explodes them; copy and test say so.
 - Verification: lint (0 errors), typecheck, test (569 pass; `PATH=/usr/bin:$PATH`), build, build:pages, smoke:nest at desktop and iPhone 14 (PASS, no console errors or overflow; screenshots inspected, first bar scale was unreadable and was fixed). content:verify not run (no content changed). CI/Pages skipped: not applicable to the Actions quota note period check (no gh).
 - Known gaps: dev page only, not linked from lessons. Next: D6e (Readiness skill "neural networks").
+
+## 2026-11-11: D6e Readiness skill "neural-nets"
+- New Readiness skill `neural-nets` (evidence: `nn` deck, Labs forge-linear / forge-activations-loss / forge-mlp / forge-init-norm / forge-optim-reg / forge-trainer, plus a *planned* Neuron Nest guardian so coverage honestly shows 7/8). Weighted into ML-engineer theory (3) and implement (2). `components/Readiness.tsx` passes the nn deck ids. Tests added (coverage, assisted-discounted lab credit, round membership).
+- Verification: lint (0 errors), typecheck, test (572 pass), build, build:pages, smoke:readiness at desktop and iPhone 14 (all PASS, no console errors or overflow; list-only change, screenshots not viewed). content:verify not run (no content changed). CI/Pages confirmation: no `gh` CLI in this session.
+- Known gaps: guardian, art (D6f, D6g).
+- Next: D6f (Neuron Nest region art).

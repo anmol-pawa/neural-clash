@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { DAY, review, type SrsTable } from "@/lib/srs/srs";
-import { CALCULUS_DECK, CLASSIC_DECK, LINALG_DECK, METRICS_DECK, PROBABILITY_DECK } from "@/lib/cards/samples";
+import { CALCULUS_DECK, CLASSIC_DECK, LINALG_DECK, METRICS_DECK, NN_DECK, PROBABILITY_DECK } from "@/lib/cards/samples";
 import { ASSISTED_LAB_CREDIT, LOOPS, SKILLS, band, readiness, scoreSkill, type Loop, type ReadinessInput, type Skill } from "@/lib/readiness/readiness";
 import { LABS } from "@/lib/labs/catalog";
 
@@ -199,6 +199,27 @@ describe("evaluation skill", () => {
     const has = (loop: string, round: string) => LOOPS.find((l) => l.id === loop)!.rounds.find((r) => r.id === round)!.skills.some((s) => s.skill === "evaluation");
     expect(has("applied-ai", "takehome")).toBe(true);
     expect(has("ml-engineer", "theory")).toBe(true);
+  });
+});
+
+describe("neural-nets skill", () => {
+  const skill = SKILLS.find((s) => s.id === "neural-nets")!;
+  const labIds = new Set(LABS.map((l) => l.id));
+  const decks = { nn: NN_DECK.cards.map((c) => c.id) };
+  const LAB_LIST = ["forge-linear", "forge-activations-loss", "forge-mlp", "forge-init-norm", "forge-optim-reg", "forge-trainer"];
+  it("has its deck and six Forge labs available; the guardian is still planned", () => {
+    const r = scoreSkill(skill, { ...base(), labIds, decks });
+    expect(r.coverage).toBeCloseTo(7 / 8, 5);
+    expect(r.score).toBe(0);
+  });
+  it("gains credit per lab pass, assisted discounted", () => {
+    const labs = Object.fromEntries(LAB_LIST.map((id, i) => [id, { passed: true, assisted: i === 0 }]));
+    const r = scoreSkill(skill, { ...base(), labIds, labs, decks });
+    expect(r.score).toBeCloseTo((5 + ASSISTED_LAB_CREDIT) / 8, 5);
+  });
+  it("is tested in the ML-engineer theory and implement rounds", () => {
+    const loop = LOOPS.find((l) => l.id === "ml-engineer")!;
+    for (const id of ["theory", "implement"]) expect(loop.rounds.find((r) => r.id === id)!.skills.some((s) => s.skill === "neural-nets")).toBe(true);
   });
 });
 
