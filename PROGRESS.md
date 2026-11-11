@@ -757,3 +757,10 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Verification: lint (0 errors), typecheck, test (621 pass; `PATH=/usr/bin:$PATH`), build, build:pages, content:verify (all ok). Templates inspected as ASCII renders; shapes read clearly. No UI change. CI/Pages confirmation skipped (Actions quota note).
 - Known gaps: Glyphs not yet wired into `/train` or the worker; no gallery view; slash is slightly clipped at its ends.
 - Next: D7b (conv shape / receptive-field / FLOPs solvers).
+
+## 2026-11-11: D7b Conv shape solvers
+- New `lib/solvers/conv.ts` (exported from the solvers index): `convOutLen` (padding/stride/dilation, 0 when the kernel does not fit; the older `convOut` in `shapes.ts` is kept for the shape cards), `samePad`, `effectiveKernel`, `conv2dOut`, `conv2dParams` (groups, bias), `conv2dMacs`/`conv2dFlops` (FLOPs = 2 x MACs), `denseParams`, `receptiveField` (size and jump, dilation-aware), `stackedKernelsFor`, `poolOut`.
+- `tests/conv.test.ts` (12) checks everything against brute force rather than the formulas: window counting over ~1,700 setting combinations, loop-counted MACs, receptive field by dependency tracing on five stacks, plus the teaching facts (conv vs dense params > 5000x on a 16x16 map; depthwise-separable cost ratio = 1/cout + 1/k^2 exactly; three 3x3 = 27/49 of a 7x7's params at the same 7x7 field).
+- Verification: lint (0 errors), typecheck, test (633 pass; `PATH=/usr/bin:$PATH`), build, build:pages, content:verify (all ok). No UI change, no screenshots. CI/Pages confirmation: no `gh` CLI in this session; work is on the session branch `claude/wonderful-goodall-cd1ta2` per the session's branch instructions.
+- Known gaps: solvers are not yet used by any card or lesson (D7d). Name clash with `shapes.convOut` resolved by naming, not merging.
+- Next: D7c (Forge module 9 Lab `forge-conv`).
