@@ -27,6 +27,7 @@
     "smoke:guardian-peaks": "node scripts/smoke-guardian-peaks.mjs",
     "smoke:guardian-grove": "node scripts/smoke-guardian-grove.mjs",
     "smoke:guardian-leakage": "node scripts/smoke-guardian-leakage.mjs",
+    "smoke:guardian-nest": "node scripts/smoke-guardian-nest.mjs",
     "smoke:transform": "node scripts/smoke-transform.mjs",
     "smoke:descent": "node scripts/smoke-descent.mjs",
     "smoke:clt": "node scripts/smoke-clt.mjs",

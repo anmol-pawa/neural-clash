@@ -207,15 +207,17 @@ describe("neural-nets skill", () => {
   const labIds = new Set(LABS.map((l) => l.id));
   const decks = { nn: NN_DECK.cards.map((c) => c.id) };
   const LAB_LIST = ["forge-linear", "forge-activations-loss", "forge-mlp", "forge-init-norm", "forge-optim-reg", "forge-trainer"];
-  it("has its deck and six Forge labs available; the guardian is still planned", () => {
+  it("has its deck and six Forge labs and the Dimwarden guardian", () => {
     const r = scoreSkill(skill, { ...base(), labIds, decks });
-    expect(r.coverage).toBeCloseTo(7 / 8, 5);
+    expect(r.coverage).toBe(1);
     expect(r.score).toBe(0);
   });
   it("gains credit per lab pass, assisted discounted", () => {
     const labs = Object.fromEntries(LAB_LIST.map((id, i) => [id, { passed: true, assisted: i === 0 }]));
     const r = scoreSkill(skill, { ...base(), labIds, labs, decks });
     expect(r.score).toBeCloseTo((5 + ASSISTED_LAB_CREDIT) / 8, 5);
+    const g = scoreSkill(skill, { ...base(), labIds, labs, cleared: ["guardian:neuron-nest"], decks });
+    expect(g.score).toBeCloseTo((6 + ASSISTED_LAB_CREDIT) / 8, 5);
   });
   it("is tested in the ML-engineer theory and implement rounds", () => {
     const loop = LOOPS.find((l) => l.id === "ml-engineer")!;

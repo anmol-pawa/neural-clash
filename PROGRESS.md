@@ -737,3 +737,10 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Verification: lint (0 errors), typecheck, test (602 pass; `PATH=/usr/bin:$PATH`), build, build:pages, content:verify (all ok); Playwright on `/battle/?theme=nest` and `/dev/sprites/` at desktop and iPhone 14: no console errors, no overflow; trainer contact sheets and the backdrop inspected. CI/Pages confirmation skipped (Actions quota note).
 - Known gaps: Holt's portrait face is slightly streaky; trainers not yet placed on the Nest map.
 - Next: D6g (Dimwarden guardian fight and companion -> Multilayer evolution).
+
+## 2026-11-11: D6g1 Dimwarden guardian fight
+- D6g split into D6g1/D6g2. This run: `NEST_GUARDIAN` (Live Gradient Badge, Lab `forge-mlp`, nest backdrop, 37-card `nn` deck) in `lib/guardian/defs.ts`; route `/guardian/nest`; home link; `Guardian.tsx` picks the nn deck for the nest theme. The `neural-nets` Readiness skill now counts the badge (coverage 100%, planned item removed).
+- Tests: full-flow guardian test, readiness coverage and badge credit. `smoke:guardian-nest` plays cards, Lab (reference passes), fight and badge persistence.
+- Verification: lint (0 errors), typecheck, test (603 pass; `PATH=/usr/bin:$PATH`), build, build:pages, content:verify (all ok), smoke at desktop and iPhone 14 (all PASS, no console errors or overflow; screenshots inspected, Dimwarden on the nest backdrop reads well). CI/Pages confirmation skipped: GitHub Actions quota note.
+- Known gaps: Neuron Nest not yet on an overworld map; Multilayer evolution art/logic pending (D6g2).
+- Next: D6g2 (Multilayer companion sprite and evolution).

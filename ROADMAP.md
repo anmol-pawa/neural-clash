@@ -122,7 +122,9 @@ Work top to bottom: take the **first unchecked box**, and split big boxes into r
     - [x] D6f1. (done 2026-11-11) Neuron Nest tileset (`scripts/art/neuron-nest.mjs`) and preview map.
     - [x] D6f2. (done 2026-11-11) Guardian sprite Dimwarden (96x96, `scripts/art/nest-guardian.mjs`: vanishing-gradient totem, dead-unit face, ReLU hinge).
     - [x] D6f3. (done 2026-11-11) Two trainers (Wirer Tansy, Pruner Holt: 16x24 walks + 48x48 portraits; `scripts/art/nest-trainers.mjs`) and the `theme: "nest"` battle backdrop.
-  - [ ] D6g. Guardian fight and the companion → Multilayer evolution.
+  - [ ] D6g. Guardian fight and the companion → Multilayer evolution, split into:
+    - [x] D6g1. (done 2026-11-11) Dimwarden guardian fight `/guardian/nest` (nn deck, Lab `forge-mlp`, nest backdrop, Live Gradient Badge) and its readiness evidence.
+    - [ ] D6g2. Multilayer companion sprite (64x64 front/back, idle/attack/hurt/faint/evolve) and evolution requirements updated to the Forge Labs (`forge-mlp` etc.).
 - [ ] D7. Conv Caverns (F8), with module 9, the Glyphs dataset and the companion → Convling
 - [ ] D8. Recurrent Rapids (F9), with module 10 and the companion → Recurrent; plus the *Drift* boss
 

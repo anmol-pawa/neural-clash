@@ -252,6 +252,22 @@ describe("Metric Market bosses", () => {
       expect(summarizeGuardian(g, def.badge).badge).toBe(def.badge);
     });
   }
+  it("Dimwarden runs on the neural-network deck with the MLP Lab and awards its badge", async () => {
+    const { NEST_GUARDIAN } = await import("@/lib/guardian/defs");
+    const { NN_DECK } = await import("@/lib/cards/samples");
+    expect(spriteById(NEST_GUARDIAN.spriteId)).toBeTruthy();
+    expect(labById(NEST_GUARDIAN.labId)).toBeTruthy();
+    expect(NEST_GUARDIAN.theme).toBe("nest");
+    let g = startGuardian(NN_DECK.cards, NEST_GUARDIAN.labId);
+    for (let i = 0; i < 100 && g.phase === "cards" && g.cards.current; i++) {
+      g = guardianAnswer(g, correctResponse(g.cards.current));
+      if (g.phase === "cards") g = guardianNext(g);
+    }
+    expect(g.cards.phase).toBe("won");
+    g = guardianLabResult(guardianAdvanceFromCards(g), true);
+    g = guardianFight(g, { attack: 95, defence: 90, speed: 80 });
+    expect(summarizeGuardian(g, NEST_GUARDIAN.badge).badge).toBe(NEST_GUARDIAN.badge);
+  });
   it("guardian ids are unique", async () => {
     const { GUARDIANS } = await import("@/lib/guardian/defs");
     expect(new Set(GUARDIANS.map((d) => d.id)).size).toBe(GUARDIANS.length);

@@ -113,7 +113,21 @@ export const SWARM_BOSS: GuardianDef = {
   lessonsHref: "/learn",
 };
 
-export const GUARDIANS: readonly GuardianDef[] = [PYTHON_GUARDIAN, VALE_GUARDIAN, GORGE_GUARDIAN, PEAKS_GUARDIAN, GROVE_GUARDIAN, LEAKAGE_BOSS, SWARM_BOSS];
+export const NEST_GUARDIAN: GuardianDef = {
+  id: "guardian:neuron-nest",
+  slug: "nest",
+  name: "Dimwarden",
+  badge: "Live Gradient Badge",
+  region: "the Neuron Nest",
+  spriteId: "dimwarden",
+  labId: "forge-mlp",
+  theme: "nest",
+  deckLabel: "neural networks",
+  trials: { read: "you can diagnose a network that will not train", write: "build an MLP whose gradients check out", generalise: "keep the gradient alive through every layer" },
+  lessonsHref: "/learn",
+};
+
+export const GUARDIANS: readonly GuardianDef[] = [PYTHON_GUARDIAN, VALE_GUARDIAN, GORGE_GUARDIAN, PEAKS_GUARDIAN, GROVE_GUARDIAN, LEAKAGE_BOSS, SWARM_BOSS, NEST_GUARDIAN];
 
 export const guardianHref = (g: GuardianDef) => (g.slug ? `/guardian/${g.slug}` : "/guardian");
 
