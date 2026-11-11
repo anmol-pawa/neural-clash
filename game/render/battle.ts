@@ -45,7 +45,7 @@ function sprite(def: SpriteDef, anim: string, i: number, tint: Tint): HTMLCanvas
 
 const frameFor = (def: SpriteDef, anim: string, t: number) => Math.floor(t * (def.fps?.[anim] ?? 6));
 
-export type StageTheme = "grid" | "vale" | "gorge" | "peaks" | "grove";
+export type StageTheme = "grid" | "vale" | "gorge" | "peaks" | "grove" | "market";
 
 /** Vector Vale: a twilight meadow of crystals over a lattice floor, with slowly turning basis axes on the horizon. */
 function valeBackdrop(g: CanvasRenderingContext2D, t: number) {
@@ -332,11 +332,108 @@ function groveBackdrop(g: CanvasRenderingContext2D, t: number) {
   }
 }
 
+/** Metric Market: a sandstone bazaar at dusk; striped awnings, a canal, a giant ROC signboard whose operating point slides, a threshold dial and a confusion-matrix mosaic floor. */
+function marketBackdrop(g: CanvasRenderingContext2D, t: number) {
+  const sky = g.createLinearGradient(0, 0, 0, 72);
+  sky.addColorStop(0, "#f2b27a");
+  sky.addColorStop(1, "#fbe3b4");
+  g.fillStyle = sky;
+  g.fillRect(0, 0, STAGE_W, STAGE_H);
+  // skyline of stalls with violet / cream striped awnings
+  for (let i = 0; i < 6; i++) {
+    const x = i * 42 - 6;
+    g.fillStyle = "#c9a074";
+    g.fillRect(x, 44 + (i % 2) * 4, 38, 30);
+    for (let s = 0; s < 6; s++) {
+      g.fillStyle = s % 2 ? "#f6eed4" : "#7a4cc0";
+      g.fillRect(x + s * 6.5, 40 + (i % 2) * 4, 6.5, 9);
+    }
+    g.fillStyle = "#6a4a80";
+    g.fillRect(x + 6, 56 + (i % 2) * 4, 8, 14);
+  }
+  // ROC signboard: axes, a bowed curve and a sliding operating point
+  const bx = 92, by = 6;
+  g.fillStyle = "#5a3a2c";
+  g.fillRect(bx + 22, by + 44, 4, 24);
+  g.fillStyle = "#fff6dc";
+  g.fillRect(bx, by, 48, 44);
+  g.strokeStyle = "#2a2240";
+  g.lineWidth = 1;
+  g.strokeRect(bx + 0.5, by + 0.5, 47, 43);
+  g.beginPath();
+  g.moveTo(bx + 6, by + 38);
+  g.lineTo(bx + 6, by + 6);
+  g.moveTo(bx + 6, by + 38);
+  g.lineTo(bx + 42, by + 38);
+  g.stroke();
+  g.strokeStyle = "#cfc6a8";
+  g.beginPath();
+  g.moveTo(bx + 6, by + 38);
+  g.lineTo(bx + 42, by + 6);
+  g.stroke();
+  g.strokeStyle = "#7a4cc0";
+  g.lineWidth = 2;
+  g.beginPath();
+  const roc = (u: number) => Math.pow(u, 0.35);
+  for (let k = 0; k <= 20; k++) {
+    const u = k / 20;
+    const px = bx + 6 + u * 36, py = by + 38 - roc(u) * 32;
+    if (k === 0) g.moveTo(px, py);
+    else g.lineTo(px, py);
+  }
+  g.stroke();
+  const u = 0.5 + 0.4 * Math.sin(t * 0.8);
+  g.fillStyle = "#e8409a";
+  g.fillRect(Math.round(bx + 6 + u * 36) - 2, Math.round(by + 38 - roc(u) * 32) - 2, 5, 5);
+  // sandstone plaza with a confusion-matrix mosaic
+  const floor = g.createLinearGradient(0, 74, 0, STAGE_H);
+  floor.addColorStop(0, "#e6cc98");
+  floor.addColorStop(1, "#b8955a");
+  g.fillStyle = floor;
+  g.fillRect(0, 74, STAGE_W, STAGE_H - 74);
+  const mx = 104, my = 112;
+  for (let r = 0; r < 2; r++) for (let c = 0; c < 2; c++) {
+    g.fillStyle = r === c ? "#22b8c8" : "#d6b070";
+    if (r === 1 && c === 1) g.fillStyle = "#e8409a";
+    g.fillRect(mx + c * 16, my + r * 8, 15, 7);
+    g.fillStyle = "rgba(255,255,255,0.35)";
+    g.fillRect(mx + c * 16, my + r * 8, 15, 1);
+  }
+  // canal strip with shimmer
+  g.fillStyle = "#4aa8c0";
+  g.fillRect(0, 76, STAGE_W, 5);
+  g.fillStyle = "rgba(255,255,255,0.6)";
+  for (let i = 0; i < 14; i++) g.fillRect(Math.floor((i * 19 + t * 14) % STAGE_W), 77 + (i % 3), 4, 1);
+  // threshold dial: a half-circle gauge with a swinging needle
+  g.fillStyle = "#f6eed4";
+  g.beginPath();
+  g.arc(36, 126, 16, Math.PI, 0);
+  g.fill();
+  g.strokeStyle = "#2a2240";
+  g.lineWidth = 1;
+  g.stroke();
+  const a = Math.PI + (0.5 + 0.35 * Math.sin(t * 1.3)) * Math.PI;
+  g.strokeStyle = "#e8409a";
+  g.lineWidth = 2;
+  g.beginPath();
+  g.moveTo(36, 126);
+  g.lineTo(36 + Math.cos(a) * 13, 126 + Math.sin(a) * 13);
+  g.stroke();
+  // drifting price-tag confetti
+  for (let i = 0; i < 12; i++) {
+    const x = (i * 61 + t * (5 + (i % 4) * 2)) % STAGE_W;
+    const y = (i * 41 + t * (8 + (i % 3) * 3)) % STAGE_H;
+    g.fillStyle = i % 2 ? "#f6eed4" : "#b488f0";
+    g.fillRect(Math.floor(x), Math.floor(y), 2, 1);
+  }
+}
+
 function backdrop(g: CanvasRenderingContext2D, t: number, theme: StageTheme = "grid") {
   if (theme === "vale") return valeBackdrop(g, t);
   if (theme === "gorge") return gorgeBackdrop(g, t);
   if (theme === "peaks") return peaksBackdrop(g, t);
   if (theme === "grove") return groveBackdrop(g, t);
+  if (theme === "market") return marketBackdrop(g, t);
   const sky = g.createLinearGradient(0, 0, 0, 78);
   sky.addColorStop(0, "#0d1033");
   sky.addColorStop(1, "#2a2a6e");

@@ -671,3 +671,10 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Verification: lint (0 errors), typecheck, test (536 pass; `PATH=/usr/bin:$PATH`; the first run right after `npm ci` failed only because Pyodide assets were not staged yet), build, build:pages, content:verify (all ok); Playwright on `/dev/sprites/` at desktop and iPhone 14: no console errors, no overflow; both bosses' frames inspected.
 - Known gaps: not yet used in fights (D5f); trainers and backdrop pending (D5e3). CI/Pages confirmation: no `gh` CLI in this session.
 - Next: D5e3 (Market trainers + `theme: "market"` backdrop).
+
+## 2026-11-11: D5e3 Market trainers and battle backdrop (D5e complete)
+- `scripts/art/market-trainers.mjs`: Trader Mina (plum bob, green eyeshade visor, violet vest, price-tag ribbon) and Auditor Crowe (bald crown with white side hair, spectacles, charcoal suit, violet tie, ledger); 16x24 walks (4 directions) and 48x48 portraits (idle/talk/smile/think). First draft of Crowe's portrait read as a white hair-ball; fixed after inspecting the frames. Registered in the roster; sprite tests extended.
+- `game/render/battle.ts`: `StageTheme` gains `"market"` (dusk bazaar, striped awnings, canal, a ROC signboard whose operating point slides, threshold dial, confusion-matrix mosaic floor). `/battle?theme=market` previews it; `GuardianDef.theme` accepts it for D5f.
+- Verification: lint (0 errors), typecheck, test (556 pass; build first so Pyodide assets exist, `PATH=/usr/bin:$PATH`), build, build:pages; Playwright on `/battle/?theme=market` and `/dev/sprites/` at desktop and iPhone 14: no console errors, no overflow; backdrop and trainer frames inspected. content:verify not run (art only).
+- Known gaps: the threshold dial is mostly hidden behind the hero platform; trainers not yet placed in a map. CI/Pages confirmation skipped (Actions quota note).
+- Next: D5f (Leakage and Imbalance Swarm boss fights and readiness evidence).

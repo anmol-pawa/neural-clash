@@ -9,7 +9,7 @@ export interface GuardianDef {
   spriteId: string;
   labId: string;
   /** Battle backdrop theme. */
-  theme: "grid" | "vale" | "gorge" | "peaks" | "grove";
+  theme: "grid" | "vale" | "gorge" | "peaks" | "grove" | "market";
   deckLabel: string;
   trials: { read: string; write: string; generalise: string };
   lessonsHref: string;
