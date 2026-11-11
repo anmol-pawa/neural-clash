@@ -116,7 +116,7 @@ Work top to bottom: take the **first unchecked box**, and split big boxes into r
   - [x] D6a. (done 2026-11-11) Lessons (4) and a ~37-card deck (perceptron/XOR/activations, loss + backprop by hand, init, normalisation, regularisation, debugging training), numpy-computed and cross-checked by `lib/solvers/nn.ts`; wired into Learn and Daily Sync.
   - [x] D6b. (done 2026-11-11) Forge modules 3–5 Labs (`forge-linear` layers with backward, `forge-activations-loss`, `forge-mlp`) with hidden finite-difference gradient checks and known-wrong versions.
   - [x] D6c. (done 2026-11-11) Forge modules 6–8 Labs (`forge-init-norm`: Xavier/He, BatchNorm1d, LayerNorm; `forge-optim-reg`: Dropout, SGD momentum + L2, AdamW; `forge-trainer`: seeded mini-batches, EarlyStopping, `fit`).
-  - [ ] D6d. Interactive visualiser `/dev/nest` (XOR boundary with hidden units, activation/gradient flow by depth, init variance).
+  - [x] D6d. (done 2026-11-11) Interactive visualiser `/dev/nest` (XOR boundary with hidden units, activation/gradient flow by depth, init variance).
   - [ ] D6e. Readiness skill "neural networks" (deck + labs).
   - [ ] D6f. Region art: Neuron Nest tileset, guardian, trainers, backdrop.
   - [ ] D6g. Guardian fight and the companion → Multilayer evolution.

@@ -705,3 +705,10 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Verification: lint (0 errors), typecheck, test (564 pass; `PATH=/usr/bin:$PATH`, after build so Pyodide assets exist), build, build:pages, content:verify (44 ok incl. the three new Labs; every wrong version is rejected). No UI change; the existing Lab panel renders them (smoke:labs not extended, no screenshots needed).
 - Known gaps: the new Labs are not yet linked to a Readiness skill (D6e). Two of my first-draft thresholds (tanh signal level, momentum step count) were wrong and fixed by measuring.
 - Next: D6d (interactive visualiser `/dev/nest`).
+
+## 2026-11-11: D6d Neuron Nest visualiser
+- New pure `lib/nn/nest.ts` (seeded): one-hidden-layer tanh net trained on noisy XOR by full-batch GD (0 hidden = logistic baseline), probability grid, and `flowByDepth` (forward activation std and backward gradient std through a deep random net for tanh/ReLU x tiny/Xavier/He/large init). `tests/nest.test.ts` (5): linear stuck below 70% vs 4 hidden above 95%, determinism, He keeps ReLU alive while tiny collapses it (<1e-6), large init pins tanh and explodes the gradient (>1e3, measured about 5e5), Xavier balanced.
+- New `/dev/nest` (`components/NestLab.tsx`): XOR boundary canvas with hidden-units and steps sliders; Depth and init bars (log scale). `npm run smoke:nest`.
+- Honest finding: large init does not "starve" early gradients, it explodes them; copy and test say so.
+- Verification: lint (0 errors), typecheck, test (569 pass; `PATH=/usr/bin:$PATH`), build, build:pages, smoke:nest at desktop and iPhone 14 (PASS, no console errors or overflow; screenshots inspected, first bar scale was unreadable and was fixed). content:verify not run (no content changed). CI/Pages skipped: not applicable to the Actions quota note period check (no gh).
+- Known gaps: dev page only, not linked from lessons. Next: D6e (Readiness skill "neural networks").
