@@ -110,7 +110,7 @@ Work top to bottom: take the **first unchecked box**, and split big boxes into r
   - [ ] D5e. Region art, split into:
     - [x] D5e1. (done 2026-11-10) Metric Market tileset (`scripts/art/metric-market.mjs`: sandstone bazaar, striped awnings and stalls, confusion-matrix mosaic floor, ROC signboards, balance-scale pillars, threshold-dial pad) and preview map.
     - [x] D5e2. (done 2026-11-10) Imbalance Swarm and Leakage boss sprites (96x96, `scripts/art/market-bosses.mjs`).
-    - [ ] D5e3. Two trainers (16x24 walks + 48x48 portraits) and the Market battle backdrop (`theme: "market"`).
+    - [x] D5e3. (done 2026-11-11) Two trainers (16x24 walks + 48x48 portraits) and the Market battle backdrop (`theme: "market"`).
   - [ ] D5f. Boss fights (Leakage, Imbalance Swarm) and their readiness evidence.
 - [ ] D6. Neuron Nest (F7), with Forge modules 3–8 (split across runs) and the companion → Multilayer
 - [ ] D7. Conv Caverns (F8), with module 9, the Glyphs dataset and the companion → Convling

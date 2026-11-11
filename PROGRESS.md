@@ -671,3 +671,9 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Verification: lint (0 errors), typecheck, test (536 pass; `PATH=/usr/bin:$PATH`; the first run right after `npm ci` failed only because Pyodide assets were not staged yet), build, build:pages, content:verify (all ok); Playwright on `/dev/sprites/` at desktop and iPhone 14: no console errors, no overflow; both bosses' frames inspected.
 - Known gaps: not yet used in fights (D5f); trainers and backdrop pending (D5e3). CI/Pages confirmation: no `gh` CLI in this session.
 - Next: D5e3 (Market trainers + `theme: "market"` backdrop).
+
+## 2026-11-11: D5e3 Market trainers and backdrop
+- `scripts/art/market-trainers.mjs` -> Broker Tally (young stall-keeper: cream-and-violet head wrap, teal neckerchief, violet coat, freckles) and Auditor Rho (older: green eyeshade cap, round spectacles, silver moustache and beard, slate coat, ledger), each a 16x24 overworld sheet (idle/stand/4-frame walks) and a 48x48 portrait (idle/talk/smile/think); registered in the roster and sprite tests. New `theme: "market"` battle backdrop (dusk sandstone bazaar, striped-awning skyline, tilting balance scale, lantern ROC curve, faint confusion-matrix floor, class-coloured coins); available via `?theme=market` and the guardian theme type.
+- Verification: lint (0 errors), typecheck, test (556 pass; build first for Pyodide assets, `PATH=/usr/bin:$PATH`), build, build:pages; Playwright at desktop and iPhone 14 on `/dev/sprites/` and `/battle/?theme=market`: no console errors, no overflow; backdrop and trainer sheets inspected. content:verify not run (art only).
+- Known gaps: Tally's portrait hair is mostly hidden by the head wrap. Pushed to the session branch `claude/wonderful-goodall-3o3fp9` (the session mandates it); `main` is not updated by this run. CI/Pages not checked (no Actions access here).
+- Next: D5f (Leakage and Imbalance Swarm boss fights + readiness evidence).

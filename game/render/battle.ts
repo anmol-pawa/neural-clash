@@ -45,7 +45,7 @@ function sprite(def: SpriteDef, anim: string, i: number, tint: Tint): HTMLCanvas
 
 const frameFor = (def: SpriteDef, anim: string, t: number) => Math.floor(t * (def.fps?.[anim] ?? 6));
 
-export type StageTheme = "grid" | "vale" | "gorge" | "peaks" | "grove";
+export type StageTheme = "grid" | "vale" | "gorge" | "peaks" | "grove" | "market";
 
 /** Vector Vale: a twilight meadow of crystals over a lattice floor, with slowly turning basis axes on the horizon. */
 function valeBackdrop(g: CanvasRenderingContext2D, t: number) {
@@ -332,11 +332,89 @@ function groveBackdrop(g: CanvasRenderingContext2D, t: number) {
   }
 }
 
+/** Metric Market: a sandstone bazaar at dusk; striped awnings, a giant balance scale, a rising ROC curve in lanterns, class-coloured coins on the plaza. */
+function marketBackdrop(g: CanvasRenderingContext2D, t: number) {
+  const sky = g.createLinearGradient(0, 0, 0, 74);
+  sky.addColorStop(0, "#f4b88a");
+  sky.addColorStop(1, "#fbe6b8");
+  g.fillStyle = sky;
+  g.fillRect(0, 0, STAGE_W, STAGE_H);
+  // far skyline of stalls with striped awnings
+  for (let i = 0, x = 0; x < STAGE_W; i++, x += 30) {
+    const h = 20 + ((i * 7) % 3) * 6;
+    g.fillStyle = "#d8b890";
+    g.fillRect(x, 70 - h, 28, h);
+    for (let k = 0; k < 7; k++) {
+      g.fillStyle = k % 2 ? "#f4ead0" : "#7a48c8";
+      g.fillRect(x + k * 4, 70 - h, 4, 6);
+    }
+  }
+  // balance scale: post, beam tilting slowly, two hanging pans
+  const cx = 120;
+  const tilt = Math.sin(t * 0.8) * 5;
+  g.fillStyle = "#6a4a30";
+  g.fillRect(cx - 2, 20, 4, 54);
+  g.strokeStyle = "#6a4a30";
+  g.lineWidth = 2;
+  g.beginPath();
+  g.moveTo(cx - 40, 22 + tilt);
+  g.lineTo(cx + 40, 22 - tilt);
+  g.stroke();
+  for (const [dx, dy] of [[-40, tilt], [40, -tilt]] as const) {
+    g.lineWidth = 1;
+    g.beginPath();
+    g.moveTo(cx + dx, 22 + dy);
+    g.lineTo(cx + dx - 9, 44 + dy);
+    g.moveTo(cx + dx, 22 + dy);
+    g.lineTo(cx + dx + 9, 44 + dy);
+    g.stroke();
+    g.fillStyle = "#e8c04a";
+    g.fillRect(cx + dx - 11, 44 + dy, 22, 3);
+  }
+  g.fillStyle = "#ffe14a";
+  g.fillRect(cx - 3, 18, 7, 7);
+  // lantern ROC curve climbing the left sky
+  for (let i = 0; i < 9; i++) {
+    const x = 14 + i * 6;
+    const y = 56 - 40 * Math.sqrt(i / 8);
+    g.fillStyle = Math.floor(t * 3 + i) % 5 === 0 ? "#fff3a0" : "#ff9a3c";
+    g.fillRect(Math.round(x), Math.round(y), 3, 3);
+  }
+  // sandstone plaza with a faint confusion-matrix mosaic
+  const floor = g.createLinearGradient(0, 74, 0, STAGE_H);
+  floor.addColorStop(0, "#e8cc98");
+  floor.addColorStop(1, "#b88c58");
+  g.fillStyle = floor;
+  g.fillRect(0, 74, STAGE_W, STAGE_H - 74);
+  for (let r = 0; r < 4; r++) {
+    for (let c = 0; c < 4; c++) {
+      if ((r + c) % 2 === 0) continue;
+      g.fillStyle = r === c ? "rgba(34,184,200,0.18)" : "rgba(232,64,154,0.14)";
+      g.fillRect(20 + c * 50, 78 + r * 16, 46, 14);
+    }
+  }
+  // stray class-coloured coins and drifting petals
+  const coins: [number, number, number][] = [[28, 98, 0], [40, 108, 0], [204, 96, 1], [216, 110, 1], [70, 118, 1], [168, 120, 0]];
+  for (const [x, y, c] of coins) {
+    g.fillStyle = c ? "#e8409a" : "#22b8c8";
+    g.fillRect(x, y, 4, 4);
+    g.fillStyle = "rgba(255,255,255,0.6)";
+    g.fillRect(x, y, 1, 1);
+  }
+  for (let i = 0; i < 10; i++) {
+    const x = (i * 59 + t * (5 + (i % 3) * 2)) % STAGE_W;
+    const y = (i * 37 + t * (8 + (i % 4) * 2)) % STAGE_H;
+    g.fillStyle = i % 2 ? "#fff3d0" : "#c9a6ff";
+    g.fillRect(Math.floor(x), Math.floor(y), 2, 1);
+  }
+}
+
 function backdrop(g: CanvasRenderingContext2D, t: number, theme: StageTheme = "grid") {
   if (theme === "vale") return valeBackdrop(g, t);
   if (theme === "gorge") return gorgeBackdrop(g, t);
   if (theme === "peaks") return peaksBackdrop(g, t);
   if (theme === "grove") return groveBackdrop(g, t);
+  if (theme === "market") return marketBackdrop(g, t);
   const sky = g.createLinearGradient(0, 0, 0, 78);
   sky.addColorStop(0, "#0d1033");
   sky.addColorStop(1, "#2a2a6e");
