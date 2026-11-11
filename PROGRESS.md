@@ -692,3 +692,9 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Verification: lint (0 errors), typecheck, test (564 pass; `PATH=/usr/bin:$PATH`), build, build:pages, content:verify (all ok), smoke:learn and smoke:sync at desktop and iPhone 14 (all PASS, no console errors or overflow; no new visual surface, screenshots not viewed). CI/Pages confirmation: no `gh` CLI/Actions access in this session.
 - Known gaps: no Labs, visualiser, Readiness skill, art, guardian or evolution yet (D6b-D6g). Committed on `main` and the session branch.
 - Next: D6b (Forge modules 3-5 Labs).
+
+## 2026-11-11: D6b Forge modules 3-5 Labs
+- Three new Labs in the Forge phase (all with lesson, starter, visible + hidden tests, reference, documented wrong versions): `forge-linear` (Linear layer with hand-derived backward, N-D inputs, set-not-accumulate contract; 8 wrong versions), `forge-activations-loss` (ReLU/Tanh/Sigmoid, stable softmax cross-entropy, MSE, BCE-with-logits; overflow checks run with floating-point errors raised; 11 wrong versions), `forge-mlp` (trainable MLP: finite-difference checks on 1-3 hidden layers for tanh and ReLU, XOR learned, a linear model provably stuck near 50%; 12 wrong versions). `content:verify` caught two weak spots while writing (unstable softmax in the MLP loss, and an underflow false alarm from `errstate(all=raise)`); both fixed in the tests.
+- Verification: lint (0 errors), typecheck, test (564 pass; `PATH=/usr/bin:$PATH`), build, build:pages, content:verify (all ok, including the three new Labs). No UI change; Labs are rendered by the existing panel (smoke:labs not extended).
+- Known gaps: init/norm/optimiser Labs (D6c), visualiser, readiness skill, art, guardian (D6d-D6g).
+- Next: D6c (Forge modules 6-8 Labs).

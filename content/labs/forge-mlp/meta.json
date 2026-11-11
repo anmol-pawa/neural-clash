@@ -1,0 +1,28 @@
+{
+  "id": "forge-mlp",
+  "title": "Forge 5: a multilayer perceptron that learns XOR",
+  "phase": "forge",
+  "language": "python",
+  "functions": ["MLP"],
+  "wrong": {
+    "activation_on_logits.py": "the activation is also applied to the output layer, so logits are squashed (tanh caps them at 1)",
+    "skips_activation_grad.py": "backward multiplies by W.T but forgets the activation derivative of the hidden layer",
+    "act_grad_wrong_layer.py": "every layer's activation derivative is taken at the first layer's pre-activation",
+    "ascent_step.py": "SGD adds lr * g (gradient ascent) instead of subtracting it",
+    "rebinding_step.py": "step rebinds a local name (p = p - lr * g) instead of updating the array in place, so nothing changes",
+    "grad_not_averaged.py": "the logit gradient is not divided by the batch size although the loss is a mean",
+    "bias_grad_first_row.py": "db uses only the first example's gradient instead of summing over the batch",
+    "stale_input_cache.py": "every layer's cached input is the network input X, so dW of deeper layers is wrong",
+    "unstable_softmax.py": "no max-subtraction in the loss: logits near 1000 overflow",
+    "relu_grad_tanh_formula.py": "ReLU networks use the tanh derivative in backward",
+    "accumulating_grads.py": "dW accumulates across calls instead of being recomputed",
+    "zero_init.py": "all weights start at zero: every hidden unit is identical and gets the same gradient forever"
+  },
+  "hints": [
+    "Forward: for each layer a = act(a @ W + b), except the last, which returns raw logits. Keep two lists: the input of every linear layer, and the pre-activation z of every hidden layer.",
+    "Backward starts from d = (softmax(logits) - onehot(y)) / N. Then for layer i from the last down to the first: dW[i] = input[i].T @ d, db[i] = d.sum(axis=0). To move down a layer: d = (d @ W[i].T) * act'(pre[i-1]).",
+    "Modules 3 and 4 are exactly these two pieces. If you wrote Linear and the loss there, you are only wiring them together.",
+    "step must change the arrays that params() returns, in place: use `p -= lr * g`, never `p = p - lr * g`.",
+    "If XOR does not train, run a finite-difference check on one weight first. A wrong gradient is far more likely than a wrong learning rate."
+  ]
+}

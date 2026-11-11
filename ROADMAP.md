@@ -114,7 +114,7 @@ Work top to bottom: take the **first unchecked box**, and split big boxes into r
   - [x] D5f. (done 2026-11-11) Boss fights `/guardian/leakage` and `/guardian/swarm` (metrics deck, market backdrop, Labs `metrics-rank` / `metrics-classify`) and their readiness evidence.
 - [ ] D6. Neuron Nest (F7), with Forge modules 3–8 (split across runs) and the companion → Multilayer, split into:
   - [x] D6a. (done 2026-11-11) Lessons (4) and a ~37-card deck (perceptron/XOR/activations, loss + backprop by hand, init, normalisation, regularisation, debugging training), numpy-computed and cross-checked by `lib/solvers/nn.ts`; wired into Learn and Daily Sync.
-  - [ ] D6b. Forge modules 3–5 Labs (`forge-linear` layers with backward, `forge-activations-loss`, `forge-mlp`) with hidden finite-difference gradient checks and known-wrong versions.
+  - [x] D6b. (done 2026-11-11) Forge modules 3–5 Labs (`forge-linear` layers with backward, `forge-activations-loss`, `forge-mlp`) with hidden finite-difference gradient checks and known-wrong versions.
   - [ ] D6c. Forge modules 6–8 Labs (init + normalisation, dropout/weight decay/optimisers, training loop with early stopping).
   - [ ] D6d. Interactive visualiser `/dev/nest` (XOR boundary with hidden units, activation/gradient flow by depth, init variance).
   - [ ] D6e. Readiness skill "neural networks" (deck + labs).

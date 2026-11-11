@@ -1,0 +1,26 @@
+{
+  "id": "forge-activations-loss",
+  "title": "Forge 4: activations and numerically stable losses",
+  "phase": "forge",
+  "language": "python",
+  "functions": ["ReLU", "Tanh", "Sigmoid", "softmax_cross_entropy", "mse_loss", "bce_with_logits"],
+  "wrong": {
+    "tanh_derivative.py": "d tanh is 1 - y instead of 1 - y**2",
+    "sigmoid_derivative_of_input.py": "sigmoid backward uses x * (1 - x) instead of y * (1 - y)",
+    "relu_passes_negatives.py": "relu backward passes the upstream gradient everywhere, ignoring the mask",
+    "sigmoid_overflows.py": "sigmoid computes exp(-x) directly, which overflows for large negative x",
+    "softmax_no_shift.py": "softmax without subtracting the row max: exp overflows for logits near 1000",
+    "ce_grad_not_averaged.py": "the logit gradient (p - onehot) is not divided by N although the loss is a mean",
+    "ce_grad_missing_onehot.py": "dlogits is softmax(z) / N: the - onehot term is forgotten",
+    "ce_loss_sum.py": "the loss sums over the batch instead of averaging",
+    "mse_missing_two.py": "d/dpred of mean (p - t)**2 is 2 (p - t) / size, not (p - t) / size",
+    "mse_divides_by_rows.py": "the MSE gradient divides by the number of rows instead of the number of elements",
+    "bce_naive.py": "BCE built from sigmoid then log: log(0) = -inf for confident logits"
+  },
+  "hints": [
+    "Cache what backward needs: ReLU's mask (x > 0), Tanh's and Sigmoid's OUTPUT y. Then d tanh = 1 - y**2 and d sigmoid = y * (1 - y), both without recomputing anything.",
+    "Softmax is unchanged by subtracting a constant from every logit in a row. Subtract the row max first and no exp can overflow. Get log-probabilities as shifted - log(sum(exp(shifted))), never log(softmax(...)).",
+    "The gradient of mean cross-entropy w.r.t. the logits is (softmax(z) - onehot(target)) / N. Derive it once: dL/dz_j = p_j - [j == target].",
+    "Binary cross-entropy from logits: max(z, 0) - z*y + log1p(exp(-|z|)) is exact and finite for any z; its gradient is (sigmoid(z) - y) / size. For a stable sigmoid use exp(-|x|) and pick the branch by the sign of x."
+  ]
+}
