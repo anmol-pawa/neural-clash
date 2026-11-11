@@ -5,6 +5,7 @@ import deckCalculus from "@/content/decks/calculus.json";
 import deckProbability from "@/content/decks/probability.json";
 import deckClassic from "@/content/decks/classic.json";
 import deckMetrics from "@/content/decks/metrics.json";
+import deckNn from "@/content/decks/nn.json";
 import deckStrategy from "@/content/decks/foundations-strategy.json";
 import { loadDeck } from "./loader";
 import { GENERATORS } from "./generators";
@@ -68,6 +69,8 @@ export const PROBABILITY_DECK = loadDeck(deckProbability);
 export const CLASSIC_DECK = loadDeck(deckClassic);
 /** Metric Market (CUR F6): confusion matrix, ROC/PR, calibration, splits, ranking and regression metrics; numpy-computed (scripts/gen-metrics.mjs). */
 export const METRICS_DECK = loadDeck(deckMetrics);
+/** Neuron Nest (CUR F7): perceptron to MLP, backprop by hand, init, normalisation, regularisation, debugging. */
+export const NN_DECK = loadDeck(deckNn);
 
 /** A varied deck: hand-written cards plus solver-generated ones, shuffled by a seed. */
 export function demoDeck(seed: number): Card[] {

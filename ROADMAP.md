@@ -112,7 +112,14 @@ Work top to bottom: take the **first unchecked box**, and split big boxes into r
     - [x] D5e2. (done 2026-11-10) Imbalance Swarm and Leakage boss sprites (96x96, `scripts/art/market-bosses.mjs`).
     - [x] D5e3. (done 2026-11-11) Two trainers (Trader Mina, Auditor Crowe: 16x24 walks + 48x48 portraits; `scripts/art/market-trainers.mjs`) and the Market battle backdrop (`theme: "market"`).
   - [x] D5f. (done 2026-11-11) Boss fights `/guardian/leakage` and `/guardian/swarm` (metrics deck, market backdrop, Labs `metrics-rank` / `metrics-classify`) and their readiness evidence.
-- [ ] D6. Neuron Nest (F7), with Forge modules 3–8 (split across runs) and the companion → Multilayer
+- [ ] D6. Neuron Nest (F7), with Forge modules 3–8 (split across runs) and the companion → Multilayer, split into:
+  - [x] D6a. (done 2026-11-11) Lessons (4) and a ~37-card deck (perceptron/XOR/activations, loss + backprop by hand, init, normalisation, regularisation, debugging training), numpy-computed and cross-checked by `lib/solvers/nn.ts`; wired into Learn and Daily Sync.
+  - [ ] D6b. Forge modules 3–5 Labs (`forge-linear` layers with backward, `forge-activations-loss`, `forge-mlp`) with hidden finite-difference gradient checks and known-wrong versions.
+  - [ ] D6c. Forge modules 6–8 Labs (init + normalisation, dropout/weight decay/optimisers, training loop with early stopping).
+  - [ ] D6d. Interactive visualiser `/dev/nest` (XOR boundary with hidden units, activation/gradient flow by depth, init variance).
+  - [ ] D6e. Readiness skill "neural networks" (deck + labs).
+  - [ ] D6f. Region art: Neuron Nest tileset, guardian, trainers, backdrop.
+  - [ ] D6g. Guardian fight and the companion → Multilayer evolution.
 - [ ] D7. Conv Caverns (F8), with module 9, the Glyphs dataset and the companion → Convling
 - [ ] D8. Recurrent Rapids (F9), with module 10 and the companion → Recurrent; plus the *Drift* boss
 

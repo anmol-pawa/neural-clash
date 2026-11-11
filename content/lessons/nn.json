@@ -1,0 +1,252 @@
+{
+  "id": "nn-lessons",
+  "title": "Neuron Nest lessons",
+  "lessons": [
+    {
+      "id": "nn-perceptron-lesson",
+      "title": "From the perceptron to the MLP",
+      "topics": [
+        "nn-perceptron",
+        "nn-activations"
+      ],
+      "intro": "A neuron is a dot product, a bias and a non-linearity. This lesson shows what one unit can and cannot do (XOR), how a hidden layer fixes it, why the activation function matters, and how to count the parameters and compute of a network on a whiteboard.",
+      "takeaways": [
+        "A single unit is a linear classifier: XOR needs a hidden layer with a non-linearity.",
+        "Without activations, depth collapses to one matrix.",
+        "ReLU-family activations keep gradients alive; sigmoid and tanh saturate.",
+        "Parameters: sum of fan_in x fan_out + fan_out per layer; check shapes first when debugging."
+      ],
+      "trap": "Claiming a deep network is more expressive while leaving out the activations, or forgetting the bias terms in a parameter count.",
+      "sections": [
+        {
+          "heading": "One unit draws one line",
+          "text": "A threshold unit with weights [1, 1] and bias -1.5 fires only when both inputs are 1: it is AND. XOR needs the diagonal corners on the same side of the boundary, which no single line allows.",
+          "code": [
+            "X = np.array([[0, 0], [0, 1], [1, 0], [1, 1]], dtype=float)",
+            "w, b = np.array([1.0, 1.0]), -1.5",
+            "print('AND', (X @ w + b > 0).astype(int).tolist())",
+            "print('XOR target', [0, 1, 1, 0])"
+          ],
+          "output": "AND [0, 0, 0, 1]\nXOR target [0, 1, 1, 0]"
+        },
+        {
+          "heading": "A hidden layer bends the space",
+          "text": "Two ReLU units compute x1 + x2 and x1 + x2 - 1 (clipped at zero). A linear read-out h1 - 2 h2 now separates XOR, because (1, 1) is pulled back to zero while the mixed corners stay at one.",
+          "code": [
+            "X = np.array([[0, 0], [0, 1], [1, 0], [1, 1]], dtype=float)",
+            "h = np.maximum(0.0, X @ np.array([[1.0, 1.0], [1.0, 1.0]]) + np.array([0.0, -1.0]))",
+            "print(h.tolist())",
+            "print((h @ np.array([1.0, -2.0])).tolist())"
+          ],
+          "output": "[[0.0, 0.0], [1.0, 0.0], [1.0, 0.0], [2.0, 1.0]]\n[0.0, 1.0, 1.0, 0.0]"
+        },
+        {
+          "heading": "Activations, saturation and dead units",
+          "text": "Without a non-linearity, stacked linear layers collapse to a single matrix. Sigmoid's derivative never exceeds 0.25 and vanishes when saturated; ReLU passes gradient exactly 1 for positive inputs but a unit whose input is always negative gets none.",
+          "code": [
+            "z = np.array([-6.0, -2.0, 0.0, 2.0, 6.0])",
+            "s = 1 / (1 + np.exp(-z))",
+            "print('sigmoid grad', np.round(s * (1 - s), 4).tolist())",
+            "print('relu grad   ', (z > 0).astype(int).tolist())"
+          ],
+          "output": "sigmoid grad [0.0025, 0.105, 0.25, 0.105, 0.0025]\nrelu grad    [0, 0, 0, 1, 1]"
+        },
+        {
+          "heading": "Count parameters and compute",
+          "text": "Weights are fan_in x fan_out and there is one bias per output. A forward pass costs about one multiply-add per weight per example, so compute scales with batch size and memory with parameters.",
+          "code": [
+            "sizes = [784, 128, 10]",
+            "params = [a * b + b for a, b in zip(sizes, sizes[1:])]",
+            "print('per layer', params, 'total', sum(params))",
+            "print('multiply-adds per example', sum(a * b for a, b in zip(sizes, sizes[1:])))"
+          ],
+          "output": "per layer [100480, 1290] total 101770\nmultiply-adds per example 101632"
+        }
+      ]
+    },
+    {
+      "id": "nn-backprop-lesson",
+      "title": "Backpropagation by hand",
+      "topics": [
+        "nn-backprop"
+      ],
+      "intro": "Backprop is the chain rule applied in reverse order, reusing what the forward pass stored. Interviews ask you to derive it for a small network, to give the gradient of softmax cross-entropy, and to explain how you would test an implementation.",
+      "takeaways": [
+        "Backward = local derivative x incoming signal, in reverse order of the forward pass.",
+        "Softmax cross-entropy: dL/dlogits = p - y (divide by the batch size for a mean loss).",
+        "Verify any hand-written backward pass with central finite differences.",
+        "Gradients have the shape of their parameters; db sums over the batch axis."
+      ],
+      "trap": "Writing a correct per-example gradient and forgetting that the loss is a mean (or a sum), so the whole gradient is off by the batch size.",
+      "sections": [
+        {
+          "heading": "Forward, then backward",
+          "text": "Each backward step multiplies the signal from above by a local derivative: the loss gives dL/dy, the output layer gives dL/dw2 and the signal for h, the ReLU passes it only where z was positive, and the first layer gives dL/dW1 as an outer product with the input.",
+          "code": [
+            "x = np.array([1.0, 2.0])",
+            "W1 = np.array([[0.5, -0.5], [0.25, 1.0]])",
+            "w2 = np.array([1.0, -1.0])",
+            "t = 1.0",
+            "z = x @ W1",
+            "h = np.maximum(0.0, z)",
+            "y = float(h @ w2)",
+            "dy = y - t",
+            "dz = dy * w2 * (z > 0)",
+            "print('loss', 0.5 * dy ** 2)",
+            "print('dw2', (dy * h).tolist())",
+            "print('dW1', np.outer(x, dz).tolist())"
+          ],
+          "output": "loss 1.125\ndw2 [-1.5, -2.25]\ndW1 [[-1.5, 1.5], [-3.0, 3.0]]"
+        },
+        {
+          "heading": "Softmax plus cross-entropy gives p - y",
+          "text": "Combining the two, the gradient on the logits is the predicted probabilities minus the one-hot target. It is bounded, always sums to zero, and is what frameworks compute from fused log-softmax losses.",
+          "code": [
+            "z = np.array([1.0, 2.0, 3.0])",
+            "p = np.exp(z - z.max())",
+            "p /= p.sum()",
+            "y = np.array([0.0, 0.0, 1.0])",
+            "print('p', np.round(p, 3).tolist())",
+            "print('grad', np.round(p - y, 3).tolist(), 'sum', round(float((p - y).sum()), 6) + 0.0)"
+          ],
+          "output": "p [0.09, 0.245, 0.665]\ngrad [0.09, 0.245, -0.335] sum 0.0"
+        },
+        {
+          "heading": "Check it against finite differences",
+          "text": "A central difference (f(w + e) - f(w - e)) / 2e has O(e^2) error. If your analytic gradient matches it to about 1e-6 relative error you very likely have the right backward pass; if it is off by a constant factor, look at the batch mean.",
+          "code": [
+            "f = lambda w: np.tanh(w) ** 2",
+            "g = lambda w: 2 * np.tanh(w) * (1 - np.tanh(w) ** 2)",
+            "w, e = 0.7, 1e-5",
+            "numeric = (f(w + e) - f(w - e)) / (2 * e)",
+            "print('analytic', round(float(g(w)), 8), 'numeric', round(float(numeric), 8))"
+          ],
+          "output": "analytic 0.76723231 numeric 0.76723231"
+        },
+        {
+          "heading": "Shapes tell you the formulas",
+          "text": "For Z = X W + b, dW = X^T dZ, db sums dZ over the batch and dX = dZ W^T. If the shapes do not multiply, the formula is wrong; each gradient has the shape of the thing it differentiates.",
+          "code": [
+            "X = np.zeros((32, 784)); W = np.zeros((784, 128)); dZ = np.zeros((32, 128))",
+            "print('dW', (X.T @ dZ).shape, 'db', dZ.sum(axis=0).shape, 'dX', (dZ @ W.T).shape)"
+          ],
+          "output": "dW (784, 128) db (128,) dX (32, 784)"
+        }
+      ]
+    },
+    {
+      "id": "nn-training-craft-lesson",
+      "title": "Initialisation, normalisation and regularisation",
+      "topics": [
+        "nn-init",
+        "nn-norm",
+        "nn-regularisation"
+      ],
+      "intro": "These three decide whether a deep network trains at all and whether it generalises. Know the variance argument behind Xavier and He, what BatchNorm and LayerNorm normalise and when they differ, and how dropout and weight decay act.",
+      "takeaways": [
+        "Use He (ReLU family) or Xavier (tanh, roughly linear) initialisation; never all zeros.",
+        "BatchNorm: per-feature over the batch, running stats at eval. LayerNorm: per-example over features, same at train and eval.",
+        "Inverted dropout scales at training time; turn it (and BatchNorm's batch statistics) off for evaluation.",
+        "Weight decay shrinks weights every step; AdamW decouples it from the adaptive step."
+      ],
+      "trap": "Leaving the model in training mode at evaluation time (dropout still active, BatchNorm using batch statistics) and wondering why scores are noisy.",
+      "sections": [
+        {
+          "heading": "Initialisation keeps the signal scale",
+          "text": "A ReLU layer with weight variance 2 / fan_in preserves the activation scale; much smaller weights shrink the signal geometrically with depth, much larger ones blow it up.",
+          "code": [
+            "rng = np.random.default_rng(0)",
+            "x = rng.normal(size=(1000, 100))",
+            "for name, std in [('tiny', 0.01), ('He', (2 / 100) ** 0.5), ('big', 0.3)]:",
+            "    h = x",
+            "    for _ in range(10):",
+            "        h = np.maximum(0.0, h @ rng.normal(0.0, std, (100, 100)))",
+            "    print(name, float(h.std()) < 1e-5, float(h.std()) > 1e3)"
+          ],
+          "output": "tiny True False\nHe False False\nbig False True"
+        },
+        {
+          "heading": "Which axis do you normalise?",
+          "text": "BatchNorm standardises each feature over the batch (axis 0) and needs running statistics at inference; LayerNorm standardises each example over its features (axis 1) and is identical in training and inference.",
+          "code": [
+            "X = np.array([[1.0, 2.0, 3.0], [10.0, 20.0, 30.0]])",
+            "bn = (X - X.mean(axis=0)) / X.std(axis=0)",
+            "ln = (X - X.mean(axis=1, keepdims=True)) / X.std(axis=1, keepdims=True)",
+            "print('BatchNorm', np.round(bn, 2).tolist())",
+            "print('LayerNorm', np.round(ln, 2).tolist())"
+          ],
+          "output": "BatchNorm [[-1.0, -1.0, -1.0], [1.0, 1.0, 1.0]]\nLayerNorm [[-1.22, 0.0, 1.22], [-1.22, 0.0, 1.22]]"
+        },
+        {
+          "heading": "Dropout and weight decay",
+          "text": "Inverted dropout divides survivors by the keep probability so inference needs no change. Weight decay adds lambda * w to the gradient, shrinking weights each step; with Adam use the decoupled AdamW form.",
+          "code": [
+            "rng = np.random.default_rng(0)",
+            "x = np.ones(100000)",
+            "mask = rng.uniform(size=x.size) < 0.8",
+            "print('mean after dropout', round(float((x * mask / 0.8).mean()), 2))",
+            "w, g, lr, lam = 2.0, 0.5, 0.1, 0.01",
+            "print('decayed step', round(w - lr * (g + lam * w), 4))"
+          ],
+          "output": "mean after dropout 1.0\ndecayed step 1.948"
+        }
+      ]
+    },
+    {
+      "id": "nn-debugging-lesson",
+      "title": "Debugging training",
+      "topics": [
+        "nn-training"
+      ],
+      "intro": "Most failed training runs are plumbing, scale or learning-rate problems, not modelling problems. The reliable workflow is cheap and ordered: overfit a tiny batch, then fix scale and learning rate, then regularise.",
+      "takeaways": [
+        "Order of attack: overfit one batch, fix data/labels/shapes, tune the learning rate (range test), then add regularisation.",
+        "NaN means overflow or invalid maths: lower the LR, clip gradients, use stable fused losses.",
+        "Residual connections and normalisation exist mainly to make deep gradients behave.",
+        "Early stopping needs patience matched to validation noise, and a checkpoint to restore."
+      ],
+      "trap": "Adding dropout and a bigger model to a network that has a bug, instead of first proving it can fit eight examples.",
+      "sections": [
+        {
+          "heading": "Gradients that fade or survive",
+          "text": "A chain of sigmoid layers can shrink the backward signal by 0.25 per layer; a residual block contributes 1 + f' per layer, so the identity path keeps the gradient near one.",
+          "code": [
+            "print('ten sigmoids, best case', f'{0.25 ** 10:.2e}')",
+            "print('ten plain layers at 0.5', round(0.5 ** 10, 6))",
+            "print('ten residual blocks, branch 0.01', round(1.01 ** 10, 3))"
+          ],
+          "output": "ten sigmoids, best case 9.54e-07\nten plain layers at 0.5 0.000977\nten residual blocks, branch 0.01 1.105"
+        },
+        {
+          "heading": "Early stopping",
+          "text": "Stop when the validation loss has not improved for `patience` epochs and restore the best checkpoint. Too little patience stops on noise, too much wastes time and overfits.",
+          "code": [
+            "val = [0.9, 0.7, 0.6, 0.62, 0.61, 0.63, 0.5]",
+            "best, bad = float('inf'), 0",
+            "for i, v in enumerate(val):",
+            "    if v < best:",
+            "        best, bad, best_i = v, 0, i",
+            "    else:",
+            "        bad += 1",
+            "    if bad == 2:",
+            "        print('stop at epoch', i, 'restore epoch', best_i)",
+            "        break"
+          ],
+          "output": "stop at epoch 4 restore epoch 2"
+        },
+        {
+          "heading": "The overfit-one-batch test",
+          "text": "If a network cannot drive the loss on eight examples to near zero, something is broken. A closed-form linear model that memorises eight points shows what 'near zero' looks like.",
+          "code": [
+            "rng = np.random.default_rng(0)",
+            "X = rng.normal(size=(8, 20))",
+            "y = rng.normal(size=8)",
+            "w = np.linalg.lstsq(X, y, rcond=None)[0]",
+            "print('memorised loss', round(float(((X @ w - y) ** 2).mean()), 10))"
+          ],
+          "output": "memorised loss 0.0"
+        }
+      ]
+    }
+  ]
+}

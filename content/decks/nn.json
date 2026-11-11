@@ -1,0 +1,665 @@
+{
+  "id": "nn",
+  "title": "Neuron Nest: neural networks",
+  "cards": [
+    {
+      "id": "nn-and-unit",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "nn-perceptron",
+      "prompt": "What does this print? (A single threshold unit with weights [1, 1] and bias -1.5.)",
+      "code": [
+        "X = np.array([[0.0, 0.0], [0.0, 1.0], [1.0, 0.0], [1.0, 1.0]])",
+        "w, b = np.array([1.0, 1.0]), -1.5",
+        "print((X @ w + b > 0).astype(int).tolist())"
+      ],
+      "choices": [
+        "[0, 1, 1, 0]",
+        "[0, 0, 0, 1]",
+        "[0, 1, 1, 1]",
+        "[1, 1, 1, 0]"
+      ],
+      "answer": 1,
+      "explanation": "Only (1, 1) reaches 2 - 1.5 > 0, so this unit computes AND. One unit draws one straight line through the input plane; XOR needs the opposite corners on the same side, which no single line can do."
+    },
+    {
+      "id": "nn-xor-hidden",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "nn-perceptron",
+      "prompt": "What does this print? (Two ReLU hidden units, h1 = x1 + x2 and h2 = x1 + x2 - 1, then the output h1 - 2 * h2.)",
+      "code": [
+        "X = np.array([[0.0, 0.0], [0.0, 1.0], [1.0, 0.0], [1.0, 1.0]])",
+        "h = np.maximum(0.0, X @ np.array([[1.0, 1.0], [1.0, 1.0]]) + np.array([0.0, -1.0]))",
+        "print((h @ np.array([1.0, -2.0])).tolist())"
+      ],
+      "choices": [
+        "[0.0, 1.0, 1.0, 0.0]",
+        "[0.0, 1.0, 1.0, 2.0]",
+        "[0.0, 1.0, 1.0, 1.0]",
+        "[0.0, 0.0, 0.0, 1.0]"
+      ],
+      "answer": 0,
+      "explanation": "At (1, 1) the hidden units are 2 and 1, so the output is 2 - 2 = 0 while (0, 1) and (1, 0) give 1. The hidden layer bends the input space so that XOR becomes linearly separable; that is the whole point of depth plus a non-linearity."
+    },
+    {
+      "id": "nn-param-count",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "nn-perceptron",
+      "prompt": "What does this print? (Number of parameters, weights and biases, in an MLP 784 -> 128 -> 10.)",
+      "code": [
+        "sizes = [784, 128, 10]",
+        "print(sum(a * b + b for a, b in zip(sizes, sizes[1:])))"
+      ],
+      "choices": [
+        "100480",
+        "101760",
+        "101632",
+        "101770"
+      ],
+      "answer": 3,
+      "explanation": "Layer 1 has 784 x 128 weights + 128 biases = 100,480 and layer 2 has 128 x 10 + 10 = 1,290. Interviewers expect you to count this quickly: weights are fan_in x fan_out and there is one bias per output unit."
+    },
+    {
+      "id": "nn-sigmoid-grad",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "nn-activations",
+      "prompt": "What does this print? (The sigmoid derivative s(1 - s) at z = 0 and at z = 10, rounded to 5 places.)",
+      "code": [
+        "z = np.array([0.0, 10.0])",
+        "s = 1 / (1 + np.exp(-z))",
+        "print(np.round(s * (1 - s), 5).tolist())"
+      ],
+      "choices": [
+        "[0.25, 0.25]",
+        "[0.5, 0.0]",
+        "[0.25, 5e-05]",
+        "[0.25, 0.9999]"
+      ],
+      "answer": 2,
+      "explanation": "The derivative peaks at 0.25 and collapses once the unit saturates (0.00005 at z = 10). Stack many sigmoids and the backward signal is multiplied by at most 0.25 per layer."
+    },
+    {
+      "id": "nn-dead-relu",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "nn-activations",
+      "prompt": "What does this print? (How many of 11 inputs in [0, 1] get a non-zero ReLU gradient for a unit with weight 2 and bias -5?)",
+      "code": [
+        "x = np.linspace(0.0, 1.0, 11)",
+        "print(int((2.0 * x - 5.0 > 0).sum()))"
+      ],
+      "choices": [
+        "5",
+        "0",
+        "11",
+        "6"
+      ],
+      "answer": 1,
+      "explanation": "The pre-activation 2x - 5 is below zero for every input, so the gradient is zero for all of them and the weights can never recover: a dead ReLU. Large learning rates or a very negative bias cause it; Leaky ReLU and GELU keep a small gradient on the negative side."
+    },
+    {
+      "id": "nn-ce-loss",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "nn-backprop",
+      "prompt": "What does this print? (Cross-entropy loss for logits [2, 1, 0] when the true class is 0.)",
+      "code": [
+        "z = np.array([2.0, 1.0, 0.0])",
+        "p = np.exp(z - z.max())",
+        "p /= p.sum()",
+        "print(round(float(-np.log(p[0])), 4))"
+      ],
+      "choices": [
+        "0.4076",
+        "1.4076",
+        "0.7311",
+        "0.2689"
+      ],
+      "answer": 0,
+      "explanation": "softmax gives p0 = 0.6652, and the loss is -ln(0.6652) = 0.4076. The loss only looks at the probability of the true class; getting it from 0.67 to 0.99 would cut it to 0.01."
+    },
+    {
+      "id": "nn-softmax-grad",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "nn-backprop",
+      "prompt": "What does this print? (The gradient of cross-entropy with respect to the logits, p - y, for logits [2, 1, 0] and true class 0.)",
+      "code": [
+        "z = np.array([2.0, 1.0, 0.0])",
+        "p = np.exp(z - z.max())",
+        "p /= p.sum()",
+        "y = np.array([1.0, 0.0, 0.0])",
+        "print(np.round(p - y, 3).tolist())"
+      ],
+      "choices": [
+        "[0.665, 0.245, 0.09]",
+        "[-0.665, 0.245, 0.09]",
+        "[-0.335, -0.755, -0.91]",
+        "[-0.335, 0.245, 0.09]"
+      ],
+      "answer": 3,
+      "explanation": "Softmax followed by cross-entropy collapses to the elegant gradient p - y: push the true logit up by (1 - p0) and every other logit down by its probability. The components always sum to zero."
+    },
+    {
+      "id": "nn-linear-grad",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "nn-backprop",
+      "prompt": "What does this print? (dL/dw for y = w x + b with squared error L = (y - t)^2, at w = 2, b = 1, x = 3, t = 10.)",
+      "code": [
+        "w, b, x, t = 2.0, 1.0, 3.0, 10.0",
+        "y = w * x + b",
+        "print(2 * (y - t) * x)"
+      ],
+      "choices": [
+        "-6.0",
+        "18.0",
+        "-18.0",
+        "-36.0"
+      ],
+      "answer": 2,
+      "explanation": "y = 7, so dL/dy = 2(y - t) = -6, and the chain rule multiplies by dy/dw = x = 3 to give -18. Negative means increasing w lowers the loss; a gradient step moves w up."
+    },
+    {
+      "id": "nn-relu-chain",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "nn-backprop",
+      "prompt": "What does this print? (dL/dw1 for h = relu(w1 x), y = w2 h, L = (y - t)^2 / 2 with x = 2, w1 = 0.5, w2 = 3, t = 1.)",
+      "code": [
+        "x, w1, w2, t = 2.0, 0.5, 3.0, 1.0",
+        "h = max(0.0, w1 * x)",
+        "y = w2 * h",
+        "dy = y - t",
+        "print(dy * w2 * (1.0 if w1 * x > 0 else 0.0) * x)"
+      ],
+      "choices": [
+        "6.0",
+        "12.0",
+        "2.0",
+        "24.0"
+      ],
+      "answer": 1,
+      "explanation": "Forward: h = 1, y = 3. Backward: dL/dy = 2, times w2 = 6 reaches h, the ReLU passes it through because its input was positive, and the last factor x = 2 gives 12. Each backward step is a local derivative times the signal arriving from above."
+    },
+    {
+      "id": "nn-grad-check",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "nn-backprop",
+      "prompt": "What does this print? (A central-difference estimate of d/dw w^3 at w = 2 with eps = 1e-3, rounded to 4 places.)",
+      "code": [
+        "f = lambda w: w ** 3",
+        "e = 1e-3",
+        "print(round((f(2 + e) - f(2 - e)) / (2 * e), 4))"
+      ],
+      "choices": [
+        "12.0",
+        "3.0",
+        "12.006",
+        "8.0"
+      ],
+      "answer": 0,
+      "explanation": "The true derivative is 3w^2 = 12. Central differences have O(eps^2) error and land on 12.0; a one-sided difference (f(w+e) - f(w)) / e is O(eps) off and would print about 12.006. Gradient checking against this is how you verify a hand-written backward pass."
+    },
+    {
+      "id": "nn-init-scale",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "nn-init",
+      "prompt": "What does this print? (Variance of the Xavier/Glorot-style weights 2 / (fan_in + fan_out), and of He weights 2 / fan_in, for a 256 x 256 layer.)",
+      "code": [
+        "fan_in = fan_out = 256",
+        "print(round(2 / (fan_in + fan_out), 5), round(2 / fan_in, 5))"
+      ],
+      "choices": [
+        "0.00781 0.00391",
+        "0.00195 0.00391",
+        "0.00391 0.00391",
+        "0.00391 0.00781"
+      ],
+      "answer": 3,
+      "explanation": "Xavier balances forward and backward variance for roughly linear or tanh units: 2 / (fan_in + fan_out) = 0.00391 here. He initialisation uses 2 / fan_in = 0.00781 because ReLU zeroes half of the signal, so each weight needs twice the variance to keep the activation scale constant."
+    },
+    {
+      "id": "nn-init-depth",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "nn-init",
+      "prompt": "What does this print? ([weights std 0.01, He weights] -> is the final activation std below 1e-5 after 10 ReLU layers of width 100?)",
+      "code": [
+        "rng = np.random.default_rng(0)",
+        "x = rng.normal(size=(1000, 100))",
+        "def final_std(std):",
+        "    h = x",
+        "    for _ in range(10):",
+        "        h = np.maximum(0.0, h @ rng.normal(0.0, std, (100, 100)))",
+        "    return float(h.std())",
+        "print([final_std(0.01) < 1e-5, final_std((2 / 100) ** 0.5) < 1e-5])"
+      ],
+      "choices": [
+        "[False, False]",
+        "[False, True]",
+        "[True, False]",
+        "[True, True]"
+      ],
+      "answer": 2,
+      "explanation": "With std 0.01 each layer multiplies the activation scale by about 0.07, so ten layers shrink the signal by roughly 10^-12 and gradients vanish with it. He's std of sqrt(2 / fan_in) keeps the scale near one."
+    },
+    {
+      "id": "nn-batchnorm-axis",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "nn-norm",
+      "prompt": "What does this print? (Batch normalisation of the second example of a batch of two: statistics are taken over the batch, axis 0.)",
+      "code": [
+        "X = np.array([[1.0, 2.0, 3.0], [10.0, 20.0, 30.0]])",
+        "bn = (X - X.mean(axis=0)) / X.std(axis=0)",
+        "print(bn[1].tolist())"
+      ],
+      "choices": [
+        "[-1.0, -1.0, -1.0]",
+        "[1.0, 1.0, 1.0]",
+        "[-1.0, 0.0, 1.0]",
+        "[10.0, 20.0, 30.0]"
+      ],
+      "answer": 1,
+      "explanation": "Each feature (column) is standardised across the batch. With two examples, each column becomes -1 and +1, so the second example is +1 everywhere: BatchNorm's output for one example depends on who else is in the batch, which is why train and eval modes differ."
+    },
+    {
+      "id": "nn-layernorm-axis",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "nn-norm",
+      "prompt": "What does this print? (Layer normalisation of the same batch: statistics per example over the features, axis 1; second row, rounded to 3 places.)",
+      "code": [
+        "X = np.array([[1.0, 2.0, 3.0], [10.0, 20.0, 30.0]])",
+        "ln = (X - X.mean(axis=1, keepdims=True)) / X.std(axis=1, keepdims=True)",
+        "print(np.round(ln[1], 3).tolist())"
+      ],
+      "choices": [
+        "[-1.225, 0.0, 1.225]",
+        "[1.0, 1.0, 1.0]",
+        "[-1.0, 0.0, 1.0]",
+        "[-0.5, 0.0, 0.5]"
+      ],
+      "answer": 0,
+      "explanation": "Row [10, 20, 30] has mean 20 and std 8.165, so it becomes [-1.225, 0, 1.225], exactly the same as row [1, 2, 3]. LayerNorm ignores overall scale and never looks at other examples, which is why it behaves identically in training and inference."
+    },
+    {
+      "id": "nn-dropout-scale",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "nn-regularisation",
+      "prompt": "What does this print? (Mean of inverted dropout, keeping each unit with probability 0.8 and dividing the kept ones by 0.8, over 100,000 ones; rounded to 2 places.)",
+      "code": [
+        "rng = np.random.default_rng(0)",
+        "x = np.ones(100000)",
+        "mask = rng.uniform(size=x.size) < 0.8",
+        "print(round(float((x * mask / 0.8).mean()), 2))"
+      ],
+      "choices": [
+        "0.8",
+        "1.25",
+        "0.64",
+        "1.0"
+      ],
+      "answer": 3,
+      "explanation": "Each unit survives with probability 0.8 and is scaled by 1 / 0.8, so its expected value is 1. Dividing at training time (inverted dropout) means inference needs no change: just switch dropout off."
+    },
+    {
+      "id": "nn-weight-decay",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "nn-regularisation",
+      "prompt": "What does this print? (One SGD step with L2 regularisation: w - lr * (g + lambda * w) for w = 2, g = 0.5, lr = 0.1, lambda = 0.01.)",
+      "code": [
+        "w, g, lr, lam = 2.0, 0.5, 0.1, 0.01",
+        "print(round(w - lr * (g + lam * w), 4))"
+      ],
+      "choices": [
+        "1.95",
+        "1.998",
+        "1.948",
+        "1.9"
+      ],
+      "answer": 2,
+      "explanation": "The penalty adds lambda * w = 0.02 to the gradient, so the step is 0.1 x 0.52 = 0.052 and w becomes 1.948. Weights are shrunk toward zero every step ('weight decay'). With Adam, decoupled decay (AdamW) is preferred because adding L2 to the gradient is rescaled by the adaptive step."
+    },
+    {
+      "id": "nn-vanishing",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "nn-training",
+      "prompt": "What does this print? (The largest possible factor by which ten stacked sigmoid layers can scale the backward signal, 0.25^10, in scientific notation.)",
+      "code": [
+        "print(f'{0.25 ** 10:.2e}')"
+      ],
+      "choices": [
+        "9.54e-04",
+        "9.54e-07",
+        "2.50e-01",
+        "1.00e-10"
+      ],
+      "answer": 1,
+      "explanation": "The derivative of the sigmoid is at most 0.25, so after ten layers the gradient that reaches the first layer is at most about 1e-6 of its original size, before weights are even counted. This is why early layers stalled in deep sigmoid nets and why ReLU, normalisation and residual connections were adopted."
+    },
+    {
+      "id": "nn-residual",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "nn-training",
+      "prompt": "What does this print? (End-to-end derivative across ten blocks y = x + f(x) whose branch derivative is 0.01, then across ten plain layers with local derivative 0.5.)",
+      "code": [
+        "print(round(1.01 ** 10, 3), round(0.5 ** 10, 6))"
+      ],
+      "choices": [
+        "1.105 0.000977",
+        "1.0 0.5",
+        "0.0 0.0",
+        "1.105 0.5"
+      ],
+      "answer": 0,
+      "explanation": "Each residual block contributes 1 + f' to the product, so the identity path keeps the gradient near one (1.105), while ten plain layers shrink it to 0.000977. The skip connection is a gradient highway, which is how ResNets and transformers train at depth."
+    },
+    {
+      "id": "nn-early-stop",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "nn-training",
+      "prompt": "What does this print? (Index of the epoch where early stopping with patience 2 halts, given these validation losses.)",
+      "code": [
+        "val = [0.9, 0.7, 0.6, 0.62, 0.61, 0.63, 0.5]",
+        "best, bad = float('inf'), 0",
+        "for i, v in enumerate(val):",
+        "    if v < best:",
+        "        best, bad = v, 0",
+        "    else:",
+        "        bad += 1",
+        "    if bad == 2:",
+        "        print(i)",
+        "        break"
+      ],
+      "choices": [
+        "3",
+        "5",
+        "6",
+        "4"
+      ],
+      "answer": 3,
+      "explanation": "The best loss is 0.6 at epoch 2; epochs 3 and 4 fail to beat it, so training stops at epoch 4 and you restore the epoch-2 checkpoint. The late 0.5 shows the cost of patience: noisy validation curves can recover, so choose patience from the noise level."
+    },
+    {
+      "id": "nn-shape-forward",
+      "kind": "shape",
+      "topic": "nn-perceptron",
+      "prompt": "With `X = np.zeros((32, 784))` and `W1 = np.zeros((784, 128))` and `b1 = np.zeros(128)`, what is the shape of `X @ W1 + b1`? Type \"error\" if it raises.",
+      "answer": [
+        32,
+        128
+      ],
+      "explanation": "Result shape (32, 128). (32, 784) @ (784, 128) gives (32, 128); the bias (128,) is broadcast across the batch. A shape table of every layer is the fastest way to catch transposition mistakes."
+    },
+    {
+      "id": "nn-shape-dw",
+      "kind": "shape",
+      "topic": "nn-backprop",
+      "prompt": "With `X = np.zeros((32, 784))` and `dZ = np.zeros((32, 128))`, what is the shape of `X.T @ dZ`? Type \"error\" if it raises.",
+      "answer": [
+        784,
+        128
+      ],
+      "explanation": "Result shape (784, 128). The weight gradient sums an outer product over the batch: (784, 32) @ (32, 128) = (784, 128), the same shape as W1. A gradient always has the shape of its parameter."
+    },
+    {
+      "id": "nn-shape-db",
+      "kind": "shape",
+      "topic": "nn-backprop",
+      "prompt": "With `dZ = np.zeros((32, 128))`, what is the shape of `dZ.sum(axis=0)`? Type \"error\" if it raises.",
+      "answer": [
+        128
+      ],
+      "explanation": "Result shape (128,). A bias is shared by every example, so its gradient sums over the batch axis: (32, 128) -> (128,). Summing axis 1 would give (32,) and silently attach the wrong gradient to the bias."
+    },
+    {
+      "id": "nn-derive-two-layer",
+      "kind": "derive",
+      "topic": "nn-backprop",
+      "prompt": "A network has x = [1, 2], W1 = [[0.5, -0.5], [0.25, 1.0]] (so z = x W1), ReLU, then y = h . w2 with w2 = [1, -1]. The target is t = 1 and the loss is L = (y - t)^2 / 2. Enter L, dL/dw2[0] and dL/dW1[1][1].",
+      "fields": [
+        "loss",
+        "dL/dw2[0]",
+        "dL/dW1[1][1]"
+      ],
+      "answers": [
+        1.125,
+        -1.5,
+        3
+      ],
+      "tol": 0.001,
+      "explanation": "Forward: z = [1, 1.5], h = [1, 1.5], y = -0.5, so L = 1.125. Backward: dy = -1.5; dw2 = dy x h = [-1.5, -2.25]; the signal reaching h is dy x w2 = [-1.5, 1.5], both ReLUs are open, and dW1 = x^T dz gives dW1[1][1] = 2 x 1.5 = 3."
+    },
+    {
+      "id": "nn-derive-softmax",
+      "kind": "derive",
+      "topic": "nn-backprop",
+      "prompt": "Logits are [1, 2, 3] and the true class is 2. Enter the cross-entropy loss, the gradient on logit 0 and the gradient on logit 2.",
+      "fields": [
+        "loss",
+        "dz0",
+        "dz2"
+      ],
+      "answers": [
+        0.407606,
+        0.090031,
+        -0.334759
+      ],
+      "tol": 0.001,
+      "explanation": "p = [0.090, 0.245, 0.665], so the loss is -ln(0.665) = 0.408. The gradient is p - y: +0.090 on logit 0 and 0.665 - 1 = -0.335 on the true class. The negative entry says 'raise this logit'."
+    },
+    {
+      "id": "nn-derive-cost",
+      "kind": "derive",
+      "topic": "nn-perceptron",
+      "prompt": "An MLP is 100 -> 50 -> 10. Enter its parameter count and the multiply-adds in one forward pass for a single example (ignore biases and activations).",
+      "fields": [
+        "parameters",
+        "multiply-adds"
+      ],
+      "answers": [
+        5560,
+        5500
+      ],
+      "tol": 0.001,
+      "explanation": "Parameters: 100 x 50 + 50 + 50 x 10 + 10 = 5,560. Multiply-adds per example: 100 x 50 + 50 x 10 = 5,500, about one per weight. A dense layer is one multiply-add per weight per example, which is why batch size scales compute linearly."
+    },
+    {
+      "id": "nn-xor-why",
+      "kind": "mcq",
+      "topic": "nn-perceptron",
+      "prompt": "Why can a single perceptron not learn XOR, and what is the fix?",
+      "choices": [
+        "The learning rate is too small, so it needs many more epochs",
+        "A perceptron only accepts one-bit inputs, so XOR needs a wider input",
+        "XOR's classes are not linearly separable; a hidden layer with a non-linearity maps the inputs to a space where they are",
+        "A single sigmoid output unit can learn XOR once it is trained long enough"
+      ],
+      "answer": 2,
+      "explanation": "A single unit's decision boundary is a hyperplane; XOR's two positive corners sit diagonally from each other. Neither more training nor a smooth output helps, because the boundary is still one line. One hidden layer is enough, which is the first step of the universal-approximation story (with the caveat that it may need many units)."
+    },
+    {
+      "id": "nn-linear-collapse",
+      "kind": "mcq",
+      "topic": "nn-activations",
+      "prompt": "You stack five linear layers with no activation functions between them. What function class can the network represent?",
+      "choices": [
+        "Any continuous function, because five layers are deep enough",
+        "Only a single linear map, since W5 ... W2 W1 x collapses to one matrix",
+        "Piecewise-linear functions with up to five pieces",
+        "Linear maps only at train time; at inference it becomes non-linear"
+      ],
+      "answer": 1,
+      "explanation": "A product of matrices is a matrix, so depth without a non-linearity adds parameters but no capacity (and a harder optimisation problem). The activation function is what makes composition expressive."
+    },
+    {
+      "id": "nn-relu-vs-sigmoid",
+      "kind": "mcq",
+      "topic": "nn-activations",
+      "prompt": "Why are ReLU and its relatives (GELU, SiLU) the default hidden activations instead of sigmoid?",
+      "choices": [
+        "Their gradient does not saturate for positive inputs (ReLU's is exactly 1), so signals survive depth; they are also cheap",
+        "They are zero-centred, which sigmoid is not",
+        "They are differentiable everywhere, which sigmoid is not",
+        "They never produce dead units, unlike sigmoid"
+      ],
+      "answer": 0,
+      "explanation": "Sigmoid's derivative is at most 0.25 and near zero when saturated, so deep stacks starve early layers. ReLU is not zero-centred (a common wrong claim), is not differentiable at 0 (frameworks pick a subgradient), and can die; GELU and SiLU smooth the kink and keep a little gradient below zero."
+    },
+    {
+      "id": "nn-loss-choice",
+      "kind": "mcq",
+      "topic": "nn-backprop",
+      "prompt": "A 10-class image classifier needs an output layer and loss. Which pairing is standard?",
+      "choices": [
+        "Sigmoid on each output with mean squared error",
+        "ReLU outputs with mean absolute error",
+        "Tanh outputs with a hinge loss on the class index",
+        "Linear logits, then softmax cross-entropy computed together with log-sum-exp for stability"
+      ],
+      "answer": 3,
+      "explanation": "Softmax cross-entropy is the negative log-likelihood of a categorical model and its gradient p - y is well scaled. Squared error on probabilities gives tiny gradients exactly when the model is confidently wrong. Frameworks fuse softmax and log (log-softmax) to avoid overflow and log(0)."
+    },
+    {
+      "id": "nn-init-zero",
+      "kind": "mcq",
+      "topic": "nn-init",
+      "prompt": "What happens if every weight in an MLP is initialised to zero (biases too)?",
+      "choices": [
+        "Training works normally because the gradients are large",
+        "The loss is NaN on the first step",
+        "Units in a layer receive identical gradients and stay identical forever, so symmetry never breaks",
+        "Only the output layer learns, which is enough for a good model"
+      ],
+      "answer": 2,
+      "explanation": "With all weights equal, every hidden unit computes the same function and gets the same update, so a layer of 256 units behaves like one. (With ReLU and zero weights the hidden activations are also zero, so hidden weights get no gradient at all.) Small random values break the symmetry; their scale then follows Xavier or He."
+    },
+    {
+      "id": "nn-bn-eval",
+      "kind": "mcq",
+      "topic": "nn-norm",
+      "prompt": "At inference time, what statistics does a BatchNorm layer use?",
+      "choices": [
+        "The mean and variance of the current test batch",
+        "Running averages of the mean and variance collected during training (eval mode), so each example is processed independently",
+        "Zero mean and unit variance regardless of the input",
+        "The statistics of the first batch it ever saw"
+      ],
+      "answer": 1,
+      "explanation": "If it used test-batch statistics, a prediction would change with the other examples in the request, and a batch of one would be meaningless. Forgetting model.eval() (or evaluating with a tiny batch in train mode) is a classic cause of 'works in training, bad in production'."
+    },
+    {
+      "id": "nn-ln-vs-bn",
+      "kind": "mcq",
+      "topic": "nn-norm",
+      "prompt": "Why do transformers use LayerNorm rather than BatchNorm?",
+      "choices": [
+        "LayerNorm normalises each token over its features, so it is independent of batch size and padding and identical in training and inference",
+        "LayerNorm is faster because it has no parameters",
+        "BatchNorm cannot be differentiated through a softmax",
+        "LayerNorm makes the activations exactly zero in expectation, which attention requires"
+      ],
+      "answer": 0,
+      "explanation": "Sequence batches are small, variable-length and padded, so per-feature batch statistics are noisy and awkward. LayerNorm (and RMSNorm, which drops the mean) uses only the token's own vector. It still has learnable scale and shift parameters."
+    },
+    {
+      "id": "nn-lr-nan",
+      "kind": "mcq",
+      "topic": "nn-training",
+      "prompt": "A new model's loss goes to NaN within ten steps. What is the most likely first suspect?",
+      "choices": [
+        "Underfitting: the model needs more capacity",
+        "Too much dropout",
+        "The validation set is too small",
+        "Exploding updates: learning rate too high, missing gradient clipping, or an unstable op such as log(0) or an un-shifted softmax"
+      ],
+      "answer": 3,
+      "explanation": "NaN comes from overflow or invalid maths, which unstable or exploding updates produce quickly. Check the data for NaN or inf, lower the LR (an LR range test helps), clip gradients, and use fused stable losses. Underfitting shows up as a high but finite loss."
+    },
+    {
+      "id": "nn-overfit-one-batch",
+      "kind": "mcq",
+      "topic": "nn-training",
+      "prompt": "Your new network's training loss barely moves. What is the best first diagnostic?",
+      "choices": [
+        "Train ten times longer on the full dataset",
+        "Add dropout and weight decay",
+        "Try to overfit one tiny batch to near-zero loss; if it cannot, there is a bug in the labels, loss, gradients or learning rate",
+        "Replace the model with a larger one"
+      ],
+      "answer": 2,
+      "explanation": "A model with enough capacity must be able to memorise 8 examples. Failing that test isolates plumbing bugs (wrong labels, detached graph, frozen parameters, wrong sign) from modelling questions, and takes seconds instead of hours."
+    },
+    {
+      "id": "nn-overfit-fixes",
+      "kind": "multi",
+      "topic": "nn-regularisation",
+      "prompt": "Which of these are standard ways to reduce overfitting in a neural network? Pick all that apply.",
+      "choices": [
+        "Dropout",
+        "Weight decay (L2)",
+        "Early stopping on a validation set",
+        "Training longer on the same data without any validation"
+      ],
+      "answers": [
+        0,
+        1,
+        2
+      ],
+      "explanation": "Dropout injects noise, weight decay penalises large weights and early stopping halts before the validation loss turns up. Data augmentation and more data help too. Training longer without monitoring tends to increase overfitting."
+    },
+    {
+      "id": "nn-bug-softmax",
+      "kind": "bug",
+      "topic": "nn-backprop",
+      "prompt": "`softmax(z)` returns [nan, nan] for logits like [1000, 1000]. Tap the line to fix.",
+      "code": [
+        "import numpy as np",
+        "def softmax(z):",
+        "    e = np.exp(z)",
+        "    return e / e.sum()"
+      ],
+      "line": 3,
+      "explanation": "np.exp(1000) overflows to inf and inf / inf is nan. Subtracting the maximum leaves the softmax unchanged (the factor cancels) but keeps every exponent at or below zero."
+    },
+    {
+      "id": "nn-bug-batch-grad",
+      "kind": "bug",
+      "topic": "nn-backprop",
+      "prompt": "The loss is the mean cross-entropy over the batch, but `logits_grad` returns gradients that are batch-size times too large. Tap the line to fix.",
+      "code": [
+        "import numpy as np",
+        "def logits_grad(p, y):",
+        "    n = len(p)",
+        "    return p - y"
+      ],
+      "line": 4,
+      "explanation": "A mean over n examples contributes 1/n to every per-example gradient. Without it the effective learning rate grows with batch size and a gradient check against the mean loss fails by exactly a factor of n."
+    },
+    {
+      "id": "nn-bug-dropout",
+      "kind": "bug",
+      "topic": "nn-regularisation",
+      "prompt": "`dropout(x, mask, keep)` shifts the average activation down at training time, so inference no longer matches. Tap the line to fix.",
+      "code": [
+        "import numpy as np",
+        "def dropout(x, mask, keep):",
+        "    return x * mask"
+      ],
+      "line": 3,
+      "explanation": "Inverted dropout divides the surviving activations by the keep probability so that the expected value is unchanged. Without it, switching dropout off at inference makes every layer's output larger than anything the next layer saw in training."
+    }
+  ]
+}

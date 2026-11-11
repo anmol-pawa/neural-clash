@@ -685,3 +685,10 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Verification: lint (0 errors), typecheck, test (559 pass; `PATH=/usr/bin:$PATH`), build, build:pages, content:verify (all ok), smoke at desktop and iPhone 14 (all PASS, no console errors or overflow; boss screenshots inspected, sprites read well on the Market backdrop). CI/Pages confirmation skipped: no `gh` CLI/Actions access in this session.
 - Known gaps: bosses not yet on a Market overworld map. Committed on the session branch and pushed to `main`.
 - Next: D6 (Neuron Nest, to be split first).
+
+## 2026-11-11: D6a Neuron Nest lessons and deck
+- D6 was split into D6a-D6g in ROADMAP. This run: `scripts/gen-nn.mjs` generates `content/decks/nn.json` (37 cards over nn-perceptron / activations / backprop / init / norm / regularisation / training: 19 predict, 3 shape, 3 derive, 9 concept, 1 multi, 3 bug) and `content/lessons/nn.json` (4 lessons: perceptron to MLP + XOR; backprop by hand; init, normalisation and regularisation; debugging training). Every answer and lesson output is computed natively with numpy; bug cards are checked to change behaviour when fixed; `--check` guards staleness.
+- New `lib/solvers/nn.ts` (softmax/CE/logit gradient, parameter and MAC counts, Xavier/He variance, an analytic two-layer forward/backward and central differences) and `tests/nn.test.ts`: the by-hand backprop card answers are verified both analytically and by finite differences. Wired into Learn (39 lessons) and Daily Sync.
+- Verification: lint (0 errors), typecheck, test (564 pass; `PATH=/usr/bin:$PATH`), build, build:pages, content:verify (all ok), smoke:learn and smoke:sync at desktop and iPhone 14 (all PASS, no console errors or overflow; no new visual surface, screenshots not viewed). CI/Pages confirmation: no `gh` CLI/Actions access in this session.
+- Known gaps: no Labs, visualiser, Readiness skill, art, guardian or evolution yet (D6b-D6g). Committed on `main` and the session branch.
+- Next: D6b (Forge modules 3-5 Labs).
