@@ -6,6 +6,7 @@ import { GRADIENT_GORGE_TILES } from "./tiles/gradient-gorge-tiles";
 import { CLASSIC_GROVE_TILES } from "./tiles/classic-grove-tiles";
 import { METRIC_MARKET_TILES } from "./tiles/metric-market-tiles";
 import { NEURON_NEST_TILES } from "./tiles/neuron-nest-tiles";
+import { CONV_CAVERNS_TILES } from "./tiles/conv-caverns-tiles";
 import { PROBABILITY_PEAKS_TILES } from "./tiles/probability-peaks-tiles";
 
 /** Python Port, the harbour town where the game starts. */
@@ -133,3 +134,8 @@ export const MARKET_PREVIEW = mapSprite("metric-market-preview", "METRIC MARKET 
 export const NEST_LEGEND: TileLegend = VALE_LEGEND;
 export const NEST_GRID: readonly string[] = GROVE_GRID;
 export const NEST_PREVIEW = mapSprite("neuron-nest-preview", "NEURON NEST (preview)", NEURON_NEST_TILES, NEST_GRID, NEST_LEGEND);
+
+/** Conv Caverns: a crystal cave of pixel-gridded rock, a stream and the guardian's kernel-sweep pad. Same tile names as the Vale. */
+export const CAVERNS_LEGEND: TileLegend = VALE_LEGEND;
+export const CAVERNS_GRID: readonly string[] = GROVE_GRID;
+export const CAVERNS_PREVIEW = mapSprite("conv-caverns-preview", "CONV CAVERNS (preview)", CONV_CAVERNS_TILES, CAVERNS_GRID, CAVERNS_LEGEND);
