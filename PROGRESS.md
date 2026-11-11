@@ -718,3 +718,9 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Verification: lint (0 errors), typecheck, test (572 pass), build, build:pages, smoke:readiness at desktop and iPhone 14 (all PASS, no console errors or overflow; list-only change, screenshots not viewed). content:verify not run (no content changed). CI/Pages confirmation: no `gh` CLI in this session.
 - Known gaps: guardian, art (D6f, D6g).
 - Next: D6f (Neuron Nest region art).
+
+## 2026-11-11: D6f1 Neuron Nest tileset
+- D6f split into D6f1-D6f4. `scripts/art/neuron-nest.mjs` -> `game/sprites/tiles/neuron-nest-tiles.ts`: 20 tiles of a night garden of neurons (synapse-lattice floor, glowing spore mushrooms, pulsing signal stream and bank, dendrite canopies with blinking tips, soma trunk, myelin axon rail, sigmoid signboard with a travelling point, bioluminescent bulbs, violet roofs, myelin walls, synapse door with a crossing spark, stone-neuron statue, XOR four-corner arena pad). `NEST_PREVIEW` map registered in the roster; tileset and map validity tests extended.
+- Verification: lint (0 errors), typecheck, test (576 pass; `PATH=/usr/bin:$PATH`), build, build:pages; tile sheet PNG inspected (reads well, palette distinct from the Market). Playwright screenshots of `/dev/sprites/` and content:verify not run this run (art-only, no content change); map preview PNG helper could not load the TS map module under node, covered by `validateMap` test instead.
+- CI/Pages confirmation skipped (Actions quota note). Pushed to the session branch `claude/wonderful-goodall-4iokk7` (not `main`, per the session's branch rule).
+- Next: D6f2 (Neuron Nest guardian sprite).
