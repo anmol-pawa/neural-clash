@@ -125,7 +125,13 @@ Work top to bottom: take the **first unchecked box**, and split big boxes into r
   - [x] D6g. Guardian fight and the companion → Multilayer evolution, split into:
     - [x] D6g1. (done 2026-11-11) Dimwarden guardian fight `/guardian/nest` (nn deck, Lab `forge-mlp`, nest backdrop, Live Gradient Badge) and its readiness evidence.
     - [x] D6g2. (done 2026-11-11) Multilayer companion sprite (64x64 front/back, idle/attack/hurt/faint/evolve; `scripts/art/neuron-pup-multilayer.mjs`) and evolution requirements moved to the Forge Labs (`forge-value`, `forge-mlp`); Guardian battles use the current form's back sprite.
-- [ ] D7. Conv Caverns (F8), with module 9, the Glyphs dataset and the companion → Convling
+- [ ] D7. Conv Caverns (F8), with module 9, the Glyphs dataset and the companion → Convling, split into:
+  - [x] D7a. (done 2026-11-11) Glyphs dataset (`lib/datasets/glyphs.ts`, seeded 16x16, 6 classes, shift/rotation/brightness/noise jitter) with tests.
+  - [ ] D7b. Conv shape solvers (output size with padding/stride/dilation, receptive field, params/FLOPs) with tests.
+  - [ ] D7c. Forge module 9 Lab `forge-conv` (conv2d forward/backward, im2col, maxpool; finite-difference checks, wrong versions).
+  - [ ] D7d. CNN lessons + `cnn` card deck; Readiness skill.
+  - [ ] D7e. Region art (tileset, guardian, trainers, backdrop).
+  - [ ] D7f. Guardian fight and companion → Convling evolution.
 - [ ] D8. Recurrent Rapids (F9), with module 10 and the companion → Recurrent; plus the *Drift* boss
 
 ## Phase E: Act II regions

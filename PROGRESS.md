@@ -751,3 +751,9 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Verification: lint (0 errors), typecheck, test (608 pass + `py.core` needing Pyodide assets from build), build, build:pages; contact sheets inspected (crest and magenta hidden units read; belly network is slightly busy at 64px). Not browser-tested at iPhone size (no layout change). CI/Pages skipped (Actions quota note).
 - Known gaps: Battle demo page and Sync still show the Perceptron sprite; belly net could be cleaner; Neuron Nest not on an overworld map.
 - Next: D7 (Conv Caverns, needs splitting first).
+
+## 2026-11-11: D7a Glyphs dataset
+- D7 split into D7a-D7f in ROADMAP. This run: `lib/datasets/glyphs.ts`, a seeded 16x16 grayscale image dataset with six original classes (ring, plus, slash, box, twin dots, chevron) drawn from distance functions, with documented per-image jitter (translation +-2px, rotation +-15 degrees, scale 0.85-1.15, brightness, Gaussian noise). `tests/glyphs.test.ts` (5): determinism, shape/range/class balance, distinct templates, nearest-template matching is >90% on unjittered data but drops by >10 points with jitter (so the jitter is what makes it a vision problem), and translation preserves ink.
+- Verification: lint (0 errors), typecheck, test (621 pass; `PATH=/usr/bin:$PATH`), build, build:pages, content:verify (all ok). Templates inspected as ASCII renders; shapes read clearly. No UI change. CI/Pages confirmation skipped (Actions quota note).
+- Known gaps: Glyphs not yet wired into `/train` or the worker; no gallery view; slash is slightly clipped at its ends.
+- Next: D7b (conv shape / receptive-field / FLOPs solvers).
