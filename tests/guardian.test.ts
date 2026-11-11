@@ -231,3 +231,30 @@ describe("Warden Split", () => {
     expect(summarizeGuardian(g, GROVE_GUARDIAN.badge).badge).toBe("Split Badge");
   });
 });
+
+describe("Metric Market bosses", () => {
+  for (const key of ["LEAKAGE_BOSS", "SWARM_BOSS"] as const) {
+    it(`${key} runs on the metrics deck with its Lab and awards its badge`, async () => {
+      const defs = await import("@/lib/guardian/defs");
+      const { METRICS_DECK } = await import("@/lib/cards/samples");
+      const def = defs[key];
+      expect(spriteById(def.spriteId)).toBeTruthy();
+      expect(labById(def.labId)).toBeTruthy();
+      expect(def.theme).toBe("market");
+      let g = startGuardian(METRICS_DECK.cards, def.labId);
+      for (let i = 0; i < 100 && g.phase === "cards" && g.cards.current; i++) {
+        g = guardianAnswer(g, correctResponse(g.cards.current));
+        if (g.phase === "cards") g = guardianNext(g);
+      }
+      expect(g.cards.phase).toBe("won");
+      g = guardianLabResult(guardianAdvanceFromCards(g), true);
+      g = guardianFight(g, { attack: 95, defence: 90, speed: 80 });
+      expect(summarizeGuardian(g, def.badge).badge).toBe(def.badge);
+    });
+  }
+  it("guardian ids are unique", async () => {
+    const { GUARDIANS } = await import("@/lib/guardian/defs");
+    expect(new Set(GUARDIANS.map((d) => d.id)).size).toBe(GUARDIANS.length);
+    expect(new Set(GUARDIANS.map((d) => d.slug)).size).toBe(GUARDIANS.length);
+  });
+});

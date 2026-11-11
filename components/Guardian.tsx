@@ -9,7 +9,7 @@ import EditorWorkbench from "@/components/EditorWorkbench";
 import { RevealFight } from "@/components/Train";
 import { drawBattle, STAGE_H, STAGE_W, type StageFx, type StageOpts } from "@/game/render/battle";
 import { spriteById } from "@/game/sprites/roster";
-import { CALCULUS_DECK, CLASSIC_DECK, LINALG_DECK, PROBABILITY_DECK, PYTHON_DECK } from "@/lib/cards/samples";
+import { CALCULUS_DECK, CLASSIC_DECK, LINALG_DECK, METRICS_DECK, PROBABILITY_DECK, PYTHON_DECK } from "@/lib/cards/samples";
 import { PYTHON_GUARDIAN, type GuardianDef } from "@/lib/guardian/defs";
 import { shuffle, rng } from "@/lib/cards/rng";
 import type { Response } from "@/lib/cards/types";
@@ -21,7 +21,7 @@ import { getSaveManager, useSave } from "@/lib/save/react";
 
 /** Large (96px) foe: sits higher on its platform and moves its bar to the foot of the stage. */
 const stageOpts = (def: GuardianDef): StageOpts => ({ theme: def.theme, foeLabel: def.name.toUpperCase(), foeAt: { x: 128, y: 8 }, foePlatform: { cx: 176, cy: 100 }, foeBarAt: { x: 148, y: 108 } });
-const deckFor = (def: GuardianDef) => (def.id === "guardian:vector-vale" ? LINALG_DECK : def.id === "guardian:gradient-gorge" ? CALCULUS_DECK : def.id === "guardian:probability-peaks" ? PROBABILITY_DECK : def.id === "guardian:classic-grove" ? CLASSIC_DECK : PYTHON_DECK);
+const deckFor = (def: GuardianDef) => (def.id === "guardian:vector-vale" ? LINALG_DECK : def.id === "guardian:gradient-gorge" ? CALCULUS_DECK : def.id === "guardian:probability-peaks" ? PROBABILITY_DECK : def.id === "guardian:classic-grove" ? CLASSIC_DECK : def.theme === "market" ? METRICS_DECK : PYTHON_DECK);
 const freshFx = (): StageFx => ({ t: 0, attackAt: -1, hurtAt: -1, foeHitAt: -1, foeHp: 1, playerHp: 1, foeDown: false, playerDown: false, shake: 0, floaters: [] });
 
 /** The Warden's remaining resolve: each of the three trials removes a third of its bar. */

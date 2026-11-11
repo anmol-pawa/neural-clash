@@ -678,3 +678,10 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Verification: lint (0 errors), typecheck, test (556 pass; build first so Pyodide assets exist, `PATH=/usr/bin:$PATH`), build, build:pages; Playwright on `/battle/?theme=market` and `/dev/sprites/` at desktop and iPhone 14: no console errors, no overflow; backdrop and trainer frames inspected. content:verify not run (art only).
 - Known gaps: the threshold dial is mostly hidden behind the hero platform; trainers not yet placed in a map. CI/Pages confirmation skipped (Actions quota note).
 - Next: D5f (Leakage and Imbalance Swarm boss fights and readiness evidence).
+
+## 2026-11-11: D5f Metric Market boss fights (D5 complete)
+- `LEAKAGE_BOSS` (Clean Split Badge, Lab `metrics-rank`) and `SWARM_BOSS` (Minority Badge, Lab `metrics-classify`) in `lib/guardian/defs.ts`; routes `/guardian/leakage` and `/guardian/swarm` run on the 34-card `METRICS_DECK` with the market backdrop and their boss sprites; home links added. The `evaluation` Readiness skill now counts both badges (replacing the planned item; coverage 100%).
+- Tests: full-flow for both bosses, unique guardian ids/slugs, readiness credit. `smoke:guardian-leakage` plays both bosses end to end.
+- Verification: lint (0 errors), typecheck, test (559 pass; `PATH=/usr/bin:$PATH`), build, build:pages, content:verify (all ok), smoke at desktop and iPhone 14 (all PASS, no console errors or overflow; boss screenshots inspected, sprites read well on the Market backdrop). CI/Pages confirmation skipped: no `gh` CLI/Actions access in this session.
+- Known gaps: bosses not yet on a Market overworld map. Committed on the session branch and pushed to `main`.
+- Next: D6 (Neuron Nest, to be split first).

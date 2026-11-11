@@ -183,15 +183,17 @@ describe("evaluation skill", () => {
   const skill = SKILLS.find((s) => s.id === "evaluation")!;
   const labIds = new Set(LABS.map((l) => l.id));
   const decks = { metrics: METRICS_DECK.cards.map((c) => c.id) };
-  it("has its deck and both Metric Market labs; the boss fights are still planned", () => {
+  it("has its deck and both Metric Market labs and the two boss fights", () => {
     const r = scoreSkill(skill, { ...base(), labIds, decks });
-    expect(r.coverage).toBeCloseTo(0.75, 5);
+    expect(r.coverage).toBe(1);
     expect(r.score).toBe(0);
   });
-  it("gains credit from lab passes, assisted discounted; planned evidence adds nothing", () => {
+  it("gains credit from lab passes, assisted discounted, and from each boss badge", () => {
     const labs = { "metrics-classify": { passed: true, assisted: false }, "metrics-rank": { passed: true, assisted: true } };
     const r = scoreSkill(skill, { ...base(), labIds, labs, decks });
-    expect(r.score).toBeCloseTo((1 + ASSISTED_LAB_CREDIT) / 4, 5);
+    expect(r.score).toBeCloseTo((1 + ASSISTED_LAB_CREDIT) / 5, 5);
+    const g = scoreSkill(skill, { ...base(), labIds, labs, cleared: ["guardian:leakage", "guardian:imbalance-swarm"], decks });
+    expect(g.score).toBeCloseTo((1 + ASSISTED_LAB_CREDIT + 2) / 5, 5);
   });
   it("is tested in the applied-AI take-home and the ML-engineer theory round", () => {
     const has = (loop: string, round: string) => LOOPS.find((l) => l.id === loop)!.rounds.find((r) => r.id === round)!.skills.some((s) => s.skill === "evaluation");

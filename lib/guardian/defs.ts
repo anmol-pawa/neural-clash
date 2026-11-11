@@ -85,7 +85,35 @@ export const GROVE_GUARDIAN: GuardianDef = {
   lessonsHref: "/learn",
 };
 
-export const GUARDIANS: readonly GuardianDef[] = [PYTHON_GUARDIAN, VALE_GUARDIAN, GORGE_GUARDIAN, PEAKS_GUARDIAN, GROVE_GUARDIAN];
+export const LEAKAGE_BOSS: GuardianDef = {
+  id: "guardian:leakage",
+  slug: "leakage",
+  name: "Leakage",
+  badge: "Clean Split Badge",
+  region: "the Metric Market",
+  spriteId: "leakage",
+  labId: "metrics-rank",
+  theme: "market",
+  deckLabel: "evaluation and metrics",
+  trials: { read: "you can spot where the test set leaked", write: "implement ranking metrics and calibration error", generalise: "score honestly on data the model never saw" },
+  lessonsHref: "/learn",
+};
+
+export const SWARM_BOSS: GuardianDef = {
+  id: "guardian:imbalance-swarm",
+  slug: "swarm",
+  name: "Imbalance Swarm",
+  badge: "Minority Badge",
+  region: "the Metric Market",
+  spriteId: "imbalance-swarm",
+  labId: "metrics-classify",
+  theme: "market",
+  deckLabel: "evaluation and metrics",
+  trials: { read: "you can see past a 99% accuracy banner", write: "implement precision, recall, AUC and a cost-based threshold", generalise: "catch the rare class on data the model never saw" },
+  lessonsHref: "/learn",
+};
+
+export const GUARDIANS: readonly GuardianDef[] = [PYTHON_GUARDIAN, VALE_GUARDIAN, GORGE_GUARDIAN, PEAKS_GUARDIAN, GROVE_GUARDIAN, LEAKAGE_BOSS, SWARM_BOSS];
 
 export const guardianHref = (g: GuardianDef) => (g.slug ? `/guardian/${g.slug}` : "/guardian");
 

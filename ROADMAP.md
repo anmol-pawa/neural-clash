@@ -102,7 +102,7 @@ Work top to bottom: take the **first unchecked box**, and split big boxes into r
     - [x] D4e2. (done 2026-11-10) Guardian Warden Split (96x96 oak golem built as a decision tree; `scripts/art/warden-split.mjs`; idle/attack/hurt/faint).
     - [x] D4e3. (done 2026-11-10) Two trainers (16x24 walks + 48x48 portraits) and the Grove battle backdrop (`theme: "grove"`).
   - [x] D4f. (done 2026-11-10) Guardian fight `/guardian/grove` (Warden Split: classic deck duel, `classic-cluster` Lab, hidden-set fight, Split Badge) and its readiness evidence.
-- [ ] D5. Metric Market + Data Dojo (F6, GDD §5.4), with the *Leakage* and *Imbalance Swarm* bosses, split into:
+- [x] D5. Metric Market + Data Dojo (F6, GDD §5.4), with the *Leakage* and *Imbalance Swarm* bosses, split into:
   - [x] D5a. (done 2026-11-10) Lessons (3) and a 34-card deck (confusion matrix, ROC/PR, calibration, splits and significance, ranking and regression metrics), numpy-computed and cross-checked by `lib/solvers/evalMetrics.ts`; wired into Learn and Daily Sync.
   - [x] D5b. (done 2026-11-10) Labs `metrics-classify` (precision/recall/F1/Fβ, ROC-AUC, PR-AUC, best-cost threshold) and `metrics-rank` (P@k, recall@k, MRR, nDCG, ECE) with hidden tests and known-wrong versions.
   - [x] D5c. (done 2026-11-10) Data Dojo interactive: confusion-matrix minigame with cost-matrix threshold tuning, split-leakage demo, A/B peeking simulator (`/dev/dojo`).
@@ -111,7 +111,7 @@ Work top to bottom: take the **first unchecked box**, and split big boxes into r
     - [x] D5e1. (done 2026-11-10) Metric Market tileset (`scripts/art/metric-market.mjs`: sandstone bazaar, striped awnings and stalls, confusion-matrix mosaic floor, ROC signboards, balance-scale pillars, threshold-dial pad) and preview map.
     - [x] D5e2. (done 2026-11-10) Imbalance Swarm and Leakage boss sprites (96x96, `scripts/art/market-bosses.mjs`).
     - [x] D5e3. (done 2026-11-11) Two trainers (Trader Mina, Auditor Crowe: 16x24 walks + 48x48 portraits; `scripts/art/market-trainers.mjs`) and the Market battle backdrop (`theme: "market"`).
-  - [ ] D5f. Boss fights (Leakage, Imbalance Swarm) and their readiness evidence.
+  - [x] D5f. (done 2026-11-11) Boss fights `/guardian/leakage` and `/guardian/swarm` (metrics deck, market backdrop, Labs `metrics-rank` / `metrics-classify`) and their readiness evidence.
 - [ ] D6. Neuron Nest (F7), with Forge modules 3–8 (split across runs) and the companion → Multilayer
 - [ ] D7. Conv Caverns (F8), with module 9, the Glyphs dataset and the companion → Convling
 - [ ] D8. Recurrent Rapids (F9), with module 10 and the companion → Recurrent; plus the *Drift* boss
