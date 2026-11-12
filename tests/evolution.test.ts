@@ -31,7 +31,7 @@ describe("evolutionState", () => {
   });
 
   it("forms are strictly ordered: a later form needs every earlier one", () => {
-    const labs = { conv2d: pass, rnn: pass };
+    const labs = { "forge-conv": pass, rnn: pass };
     const s = evolutionState(labs, exists);
     expect(s.forms[2]!.met).toBe(true);
     expect(s.forms[2]!.reached).toBe(false);
@@ -58,5 +58,14 @@ describe("evolutionState", () => {
     const s = evolutionState({ "linear-gd": pass, "forge-value": pass, "forge-mlp": pass }, all);
     expect(s.forms[1]!.form.sprite).toBe("neuron-pup-multilayer");
     expect(heroBackSpriteId({ "linear-gd": pass, "forge-value": pass, "forge-mlp": pass }, all)).toBe("neuron-pup-multilayer-back");
+  });
+
+  it("reaches Convling on forge-conv and switches the battle sprite", () => {
+    const all = new Set(["linear-gd", "forge-value", "forge-mlp", "forge-conv"]);
+    const labs = { "linear-gd": pass, "forge-value": pass, "forge-mlp": pass };
+    expect(heroBackSpriteId(labs, all)).toBe("neuron-pup-multilayer-back");
+    expect(heroBackSpriteId({ ...labs, "forge-conv": pass }, all)).toBe("neuron-pup-convling-back");
+    // Convling needs every earlier form
+    expect(heroBackSpriteId({ "linear-gd": pass, "forge-conv": pass }, all)).toBe("neuron-pup-perceptron-back");
   });
 });

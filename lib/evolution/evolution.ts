@@ -17,7 +17,7 @@ export interface FormDef {
 export const FORMS: readonly FormDef[] = [
   { id: "perceptron", name: "Perceptron", blurb: "One weighted sum and a bias, trained by gradient descent.", requires: ["linear-gd"], sprite: "neuron-pup-perceptron" },
   { id: "multilayer", name: "Multilayer", blurb: "Autograd lets stacked layers learn what one line cannot.", requires: ["forge-value", "forge-mlp"], sprite: "neuron-pup-multilayer" },
-  { id: "convling", name: "Convling", blurb: "Shared filters that look for a pattern anywhere in the input.", requires: ["conv2d"], sprite: null },
+  { id: "convling", name: "Convling", blurb: "Shared filters that look for a pattern anywhere in the input.", requires: ["forge-conv"], sprite: "neuron-pup-convling" },
   { id: "recurrent", name: "Recurrent", blurb: "A hidden state carries memory along a sequence.", requires: ["rnn"], sprite: null },
   { id: "transformer", name: "Transformer", blurb: "Attention lets every token look at every other token.", requires: ["attention", "transformer-block"], sprite: null },
   { id: "foundation", name: "Foundation", blurb: "A tokenizer, a tiny language model and sampling, end to end.", requires: ["tokenizer", "tiny-lm", "sampling"], sprite: null },
