@@ -791,3 +791,10 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Verification: lint (0 errors), typecheck, test (656 incl. `py.core` after build; `PATH=/usr/bin:$PATH`), build, build:pages, content:verify (all ok); Playwright on `/dev/sprites/` at desktop and iPhone 14: no console errors, no overflow, Scanwarden listed; contact sheet inspected (grid, window and faint darkening read clearly). CI/Pages confirmation: no gh CLI in session.
 - Known gaps: hurt cracks are faint at 1x; not yet in a fight or on the map.
 - Next: D7e3 (two Caverns trainers + `theme: "caverns"` backdrop).
+
+## 2026-11-12: D7e3 Conv Caverns trainers and backdrop (D7e complete)
+- `scripts/art/caverns-trainers.mjs`: Delver Kern (yellow hard hat with a teal crystal lamp, slate vest, red neckerchief) and Lensmith Oriel (silver bun, brass spectacles, teal cloak, lens case); 16x24 walks (4 directions) and 48x48 portraits (idle/talk/smile/think). Registered in the roster; sprite tests extended.
+- `game/render/battle.ts`: `StageTheme` gains `"caverns"` (dark crystal cave; a 10x5 gridded wall swept by a 3x3 scan window whose centre cell lights magenta, stalactites, pulsing crystals, stream floor with glints). `/battle?theme=caverns` previews it; `GuardianDef.theme` and the battle route accept it for D7f.
+- Verification: lint (0 errors), typecheck, test (676 pass; `PATH=/usr/bin:$PATH`), build:pages, content:verify (all ok); Playwright on `/battle/?theme=caverns` and `/dev/sprites/` at desktop and iPhone 14: no console errors, no overflow; backdrop and trainer sheets inspected. CI/Pages confirmation not done: no gh CLI in this session.
+- Known gaps: the scan window can sit behind the enemy HP bar; Oriel's jaw shading reads slightly like stubble; trainers not yet placed on a Caverns map.
+- Next: D7f (Scanwarden guardian fight and companion -> Convling evolution).

@@ -45,7 +45,7 @@ function sprite(def: SpriteDef, anim: string, i: number, tint: Tint): HTMLCanvas
 
 const frameFor = (def: SpriteDef, anim: string, t: number) => Math.floor(t * (def.fps?.[anim] ?? 6));
 
-export type StageTheme = "grid" | "vale" | "gorge" | "peaks" | "grove" | "market" | "nest";
+export type StageTheme = "grid" | "vale" | "gorge" | "peaks" | "grove" | "market" | "nest" | "caverns";
 
 /** Vector Vale: a twilight meadow of crystals over a lattice floor, with slowly turning basis axes on the horizon. */
 function valeBackdrop(g: CanvasRenderingContext2D, t: number) {
@@ -498,6 +498,66 @@ function nestBackdrop(g: CanvasRenderingContext2D, t: number) {
   }
 }
 
+/** Conv Caverns: a dark crystal cave. A pixel-gridded back wall is swept by a 3x3 scan window (same weights at every position) whose centre cell lights up; stalactites, glowing crystals and a stream floor with glints. */
+function cavernsBackdrop(g: CanvasRenderingContext2D, t: number) {
+  const wall = g.createLinearGradient(0, 0, 0, 80);
+  wall.addColorStop(0, "#0c0a1e");
+  wall.addColorStop(1, "#2a2450");
+  g.fillStyle = wall;
+  g.fillRect(0, 0, STAGE_W, STAGE_H);
+  // 10x5 grid of 12px cells on the back wall; a 3x3 window sweeps across it
+  const cell = 12, gx = 60, gy = 14, cols = 10, rows = 5;
+  g.fillStyle = "#1c1840";
+  g.fillRect(gx, gy, cols * cell, rows * cell);
+  g.strokeStyle = "rgba(140,130,220,0.35)";
+  g.lineWidth = 1;
+  for (let c = 0; c <= cols; c++) { g.beginPath(); g.moveTo(gx + c * cell + 0.5, gy); g.lineTo(gx + c * cell + 0.5, gy + rows * cell); g.stroke(); }
+  for (let r = 0; r <= rows; r++) { g.beginPath(); g.moveTo(gx, gy + r * cell + 0.5); g.lineTo(gx + cols * cell, gy + r * cell + 0.5); g.stroke(); }
+  const pos = Math.floor(t * 2) % ((cols - 2) * (rows - 2));
+  const wc = pos % (cols - 2), wr = Math.floor(pos / (cols - 2));
+  g.fillStyle = "rgba(255,230,120,0.22)";
+  g.fillRect(gx + wc * cell, gy + wr * cell, cell * 3, cell * 3);
+  g.strokeStyle = "#ffe678";
+  g.strokeRect(gx + wc * cell + 0.5, gy + wr * cell + 0.5, cell * 3 - 1, cell * 3 - 1);
+  g.fillStyle = "#ff5ad0";
+  g.fillRect(gx + (wc + 1) * cell + 3, gy + (wr + 1) * cell + 3, cell - 5, cell - 5);
+  // stalactites
+  for (let i = 0; i < 9; i++) {
+    const x = i * 29 - 6, h = 12 + ((i * 7) % 4) * 6;
+    g.fillStyle = i % 2 ? "#14102e" : "#1e1a42";
+    g.beginPath();
+    g.moveTo(x, 0); g.lineTo(x + 22, 0); g.lineTo(x + 11, h);
+    g.fill();
+  }
+  // rock floor and stream
+  const floor = g.createLinearGradient(0, 74, 0, STAGE_H);
+  floor.addColorStop(0, "#3a3466");
+  floor.addColorStop(1, "#1a1638");
+  g.fillStyle = floor;
+  g.fillRect(0, 74, STAGE_W, STAGE_H - 74);
+  g.fillStyle = "#1c5a7a";
+  g.fillRect(0, 138, STAGE_W, 10);
+  for (let i = 0; i < 8; i++) {
+    const x = (i * 37 + t * 14) % STAGE_W;
+    g.fillStyle = "#8ae8ff";
+    g.fillRect(Math.floor(x), 140 + (i % 3) * 3, 3, 1);
+  }
+  // crystals, pulsing
+  for (const [cx, cy, col] of [[16, 96, "#5ef0e0"], [34, 106, "#b48aff"], [214, 90, "#b48aff"], [232, 104, "#5ef0e0"], [196, 122, "#5ef0e0"]] as const) {
+    const pulse = 0.55 + 0.45 * Math.sin(t * 2.2 + cx);
+    g.globalAlpha = 0.25 * pulse;
+    g.fillStyle = col;
+    g.fillRect(cx - 7, cy - 12, 16, 22);
+    g.globalAlpha = 1;
+    g.fillStyle = col;
+    g.beginPath();
+    g.moveTo(cx, cy - 12); g.lineTo(cx + 5, cy); g.lineTo(cx + 2, cy + 8); g.lineTo(cx - 3, cy + 8); g.lineTo(cx - 5, cy);
+    g.fill();
+    g.fillStyle = "#ffffff";
+    g.fillRect(cx - 1, cy - 6, 1, 6);
+  }
+}
+
 function backdrop(g: CanvasRenderingContext2D, t: number, theme: StageTheme = "grid") {
   if (theme === "vale") return valeBackdrop(g, t);
   if (theme === "gorge") return gorgeBackdrop(g, t);
@@ -505,6 +565,7 @@ function backdrop(g: CanvasRenderingContext2D, t: number, theme: StageTheme = "g
   if (theme === "grove") return groveBackdrop(g, t);
   if (theme === "market") return marketBackdrop(g, t);
   if (theme === "nest") return nestBackdrop(g, t);
+  if (theme === "caverns") return cavernsBackdrop(g, t);
   const sky = g.createLinearGradient(0, 0, 0, 78);
   sky.addColorStop(0, "#0d1033");
   sky.addColorStop(1, "#2a2a6e");
