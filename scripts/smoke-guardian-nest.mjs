@@ -28,6 +28,7 @@ const check = (ok, msg) => { console.log(`${ok ? "PASS" : "FAIL"} ${msg}`); if (
 
 const BOSSES = [
   { slug: "nest", name: "Dimwarden", lab: "forge-mlp", badge: "Live Gradient Badge" },
+  { slug: "caverns", name: "Scanwarden", lab: "forge-conv", badge: "Shared Kernel Badge" },
 ];
 
 const browser = await chromium.launch();

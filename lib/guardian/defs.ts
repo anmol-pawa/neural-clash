@@ -127,7 +127,21 @@ export const NEST_GUARDIAN: GuardianDef = {
   lessonsHref: "/learn",
 };
 
-export const GUARDIANS: readonly GuardianDef[] = [PYTHON_GUARDIAN, VALE_GUARDIAN, GORGE_GUARDIAN, PEAKS_GUARDIAN, GROVE_GUARDIAN, LEAKAGE_BOSS, SWARM_BOSS, NEST_GUARDIAN];
+export const CAVERNS_GUARDIAN: GuardianDef = {
+  id: "guardian:conv-caverns",
+  slug: "caverns",
+  name: "Scanwarden",
+  badge: "Shared Kernel Badge",
+  region: "the Conv Caverns",
+  spriteId: "scanwarden",
+  labId: "forge-conv",
+  theme: "caverns",
+  deckLabel: "convolutional networks",
+  trials: { read: "you can read a conv stack's shapes, receptive field and cost", write: "build Conv2D and MaxPool2D whose gradients check out", generalise: "reuse one kernel at every position" },
+  lessonsHref: "/learn",
+};
+
+export const GUARDIANS: readonly GuardianDef[] = [PYTHON_GUARDIAN, VALE_GUARDIAN, GORGE_GUARDIAN, PEAKS_GUARDIAN, GROVE_GUARDIAN, LEAKAGE_BOSS, SWARM_BOSS, NEST_GUARDIAN, CAVERNS_GUARDIAN];
 
 export const guardianHref = (g: GuardianDef) => (g.slug ? `/guardian/${g.slug}` : "/guardian");
 

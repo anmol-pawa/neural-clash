@@ -798,3 +798,10 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Verification: lint (0 errors), typecheck, test (676 pass; `PATH=/usr/bin:$PATH`), build:pages, content:verify (all ok); Playwright on `/battle/?theme=caverns` and `/dev/sprites/` at desktop and iPhone 14: no console errors, no overflow; backdrop and trainer sheets inspected. CI/Pages confirmation not done: no gh CLI in this session.
 - Known gaps: the scan window can sit behind the enemy HP bar; Oriel's jaw shading reads slightly like stubble; trainers not yet placed on a Caverns map.
 - Next: D7f (Scanwarden guardian fight and companion -> Convling evolution).
+
+## 2026-11-12: D7f1 Scanwarden guardian fight
+- D7f split into D7f1/D7f2 in ROADMAP. This run: `CAVERNS_GUARDIAN` (Shared Kernel Badge, Lab `forge-conv`, caverns backdrop, 32-card `cnn` deck) in `lib/guardian/defs.ts`; route `/guardian/caverns`; home link; `Guardian.tsx` picks the cnn deck for the caverns theme. The `convnets` Readiness skill now counts the badge (coverage 100%, planned item removed).
+- Tests: full-flow guardian test, readiness coverage and badge credit. `smoke:guardian-nest` extended to also play Scanwarden.
+- Verification: lint (0 errors), typecheck, test (678 pass after build), build:pages, content:verify (all ok), smoke at desktop and iPhone 14 (all PASS, no console errors or overflow; screenshots inspected, Scanwarden on the caverns backdrop reads well). CI/Pages confirmation: no gh CLI in this session.
+- Known gaps: Conv Caverns not yet on an overworld map; Convling evolution art/logic pending (D7f2).
+- Next: D7f2 (Convling companion sprite and evolution).

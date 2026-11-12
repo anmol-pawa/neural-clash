@@ -268,6 +268,22 @@ describe("Metric Market bosses", () => {
     g = guardianFight(g, { attack: 95, defence: 90, speed: 80 });
     expect(summarizeGuardian(g, NEST_GUARDIAN.badge).badge).toBe(NEST_GUARDIAN.badge);
   });
+  it("Scanwarden runs on the CNN deck with the conv Lab and awards its badge", async () => {
+    const { CAVERNS_GUARDIAN } = await import("@/lib/guardian/defs");
+    const { CNN_DECK } = await import("@/lib/cards/samples");
+    expect(spriteById(CAVERNS_GUARDIAN.spriteId)).toBeTruthy();
+    expect(labById(CAVERNS_GUARDIAN.labId)).toBeTruthy();
+    expect(CAVERNS_GUARDIAN.theme).toBe("caverns");
+    let g = startGuardian(CNN_DECK.cards, CAVERNS_GUARDIAN.labId);
+    for (let i = 0; i < 100 && g.phase === "cards" && g.cards.current; i++) {
+      g = guardianAnswer(g, correctResponse(g.cards.current));
+      if (g.phase === "cards") g = guardianNext(g);
+    }
+    expect(g.cards.phase).toBe("won");
+    g = guardianLabResult(guardianAdvanceFromCards(g), true);
+    g = guardianFight(g, { attack: 95, defence: 90, speed: 80 });
+    expect(summarizeGuardian(g, CAVERNS_GUARDIAN.badge).badge).toBe(CAVERNS_GUARDIAN.badge);
+  });
   it("guardian ids are unique", async () => {
     const { GUARDIANS } = await import("@/lib/guardian/defs");
     expect(new Set(GUARDIANS.map((d) => d.id)).size).toBe(GUARDIANS.length);
