@@ -805,3 +805,10 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Verification: lint (0 errors), typecheck, test (678 pass after build), build:pages, content:verify (all ok), smoke at desktop and iPhone 14 (all PASS, no console errors or overflow; screenshots inspected, Scanwarden on the caverns backdrop reads well). CI/Pages confirmation: no gh CLI in this session.
 - Known gaps: Conv Caverns not yet on an overworld map; Convling evolution art/logic pending (D7f2).
 - Next: D7f2 (Convling companion sprite and evolution).
+
+## 2026-11-12: D7f2 Convling companion (D7 complete)
+- `scripts/art/neuron-pup-convling.mjs` -> `neuron-pup-convling{,-back}.ts` (64x64; front: idle 4, attack 5, hurt 3, faint 4, evolve 4; back: idle 4, attack 3, hurt 2, faint 3): teal fur, a 3x3 cell grid on the belly with an amber 2x2 kernel window that slides each idle/attack phase and a magenta active cell, a 3x3 kernel badge on the brow, amber filter-knob tail. Registered in the roster.
+- `FORMS`: Convling now requires Forge Lab `forge-conv` (was planned id `conv2d`) and has its sprite, so guardian battles draw it once the Lab is passed unassisted. Evolution test extended (assisted pass does not switch the sprite); GDD §3 table updated.
+- Verification: lint (0 errors), typecheck, test (691 pass after build), build, build:pages, content:verify (all ok), smoke:companion (desktop + iPhone 14 PASS); Playwright on `/dev/sprites/` at desktop and iPhone 14: no console errors, no overflow; contact sheets inspected (grid, window, badge read; head is a little dark at 1x). CI/Pages: not applicable on this branch (work is on `claude/wonderful-goodall-yshgal`, not `main`); Actions quota note expired 2026-11-01 but no gh CLI here.
+- Known gaps: Battle demo page and Sync still show the Perceptron sprite; Conv Caverns not on an overworld map; belly grid is small at 1x.
+- Next: D8 (Recurrent Rapids, needs splitting first).
