@@ -229,13 +229,14 @@ describe("convnets skill", () => {
   const skill = SKILLS.find((s) => s.id === "convnets")!;
   const labIds = new Set(LABS.map((l) => l.id));
   const decks = { cnn: CNN_DECK.cards.map((c) => c.id) };
-  it("has its deck and the forge-conv lab; the guardian is still planned", () => {
+  it("has its deck, the forge-conv lab and the Scanwarden guardian", () => {
     const r = scoreSkill(skill, { ...base(), labIds, decks });
     expect(r.score).toBe(0);
-    expect(r.coverage).toBeCloseTo(2 / 3, 5);
+    expect(r.coverage).toBe(1);
   });
   it("gains credit from the lab pass, assisted discounted", () => {
     const solo = scoreSkill(skill, { ...base(), labIds, labs: { "forge-conv": { passed: true, assisted: false } }, decks });
+    expect(scoreSkill(skill, { ...base(), labIds, cleared: ["guardian:conv-caverns"], decks }).score).toBeCloseTo(1 / 3, 5);
     const helped = scoreSkill(skill, { ...base(), labIds, labs: { "forge-conv": { passed: true, assisted: true } }, decks });
     expect(solo.score).toBeCloseTo(1 / 3, 5);
     expect(helped.score).toBeCloseTo(ASSISTED_LAB_CREDIT / 3, 5);

@@ -798,3 +798,11 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Verification: lint (0 errors), typecheck, test (676 pass; `PATH=/usr/bin:$PATH`), build:pages, content:verify (all ok); Playwright on `/battle/?theme=caverns` and `/dev/sprites/` at desktop and iPhone 14: no console errors, no overflow; backdrop and trainer sheets inspected. CI/Pages confirmation not done: no gh CLI in this session.
 - Known gaps: the scan window can sit behind the enemy HP bar; Oriel's jaw shading reads slightly like stubble; trainers not yet placed on a Caverns map.
 - Next: D7f (Scanwarden guardian fight and companion -> Convling evolution).
+
+## 2026-11-12: D7f1 Scanwarden guardian fight
+- `CAVERNS_GUARDIAN` (`/guardian/caverns`, Shared Kernel Badge): cnn deck for the Read trial, Lab `forge-conv` for Write, caverns backdrop, Scanwarden sprite. Linked from the title page; readiness skill `convnets` now credits the guardian instead of a planned item.
+- Tests: guardian flow test (deck -> lab -> fight -> badge), readiness coverage/credit. `scripts/smoke-guardian-caverns.mjs` (new npm script) plays the Write trial with the reference solution.
+- Verification: lint (0 errors), typecheck, test (677 pass; `PATH=/usr/bin:$PATH`), build:pages, content:verify (ok), smoke:guardian-caverns desktop + iPhone 14 PASS (no console errors/overflow; won screen viewed). CI/Pages not confirmed: Actions quota note was stale-dated but no gh CLI in session.
+- Known gaps: badge copy says "the Conv Caverns is open" (generic template wording); Convling evolution not yet done.
+- Next: D7f2 (Convling companion sprite and evolution requirements).
+- Note: this run committed to the designated branch `claude/wonderful-goodall-9mkkfo`, not `main`.

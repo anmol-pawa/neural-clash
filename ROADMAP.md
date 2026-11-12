@@ -134,7 +134,9 @@ Work top to bottom: take the **first unchecked box**, and split big boxes into r
     - [x] D7e1. (done 2026-11-11) Conv Caverns tileset (`scripts/art/conv-caverns.mjs`) and preview map.
     - [x] D7e2. (done 2026-11-11) Guardian sprite Scanwarden (96x96, `scripts/art/caverns-guardian.mjs`).
     - [x] D7e3. (done 2026-11-12) Two trainers (16x24 walks + 48x48 portraits) and the `theme: "caverns"` battle backdrop.
-  - [ ] D7f. Guardian fight and companion → Convling evolution.
+  - [ ] D7f. Guardian fight and companion → Convling evolution, split into:
+    - [x] D7f1. (done 2026-11-12) Scanwarden guardian fight `/guardian/caverns` (cnn deck, Lab `forge-conv`, caverns backdrop) and its readiness evidence.
+    - [ ] D7f2. Convling companion sprite (64x64 front/back, idle/attack/hurt/faint/evolve) and evolution requirements (`forge-conv` + Scanwarden).
 - [ ] D8. Recurrent Rapids (F9), with module 10 and the companion → Recurrent; plus the *Drift* boss
 
 ## Phase E: Act II regions
