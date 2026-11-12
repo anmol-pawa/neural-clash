@@ -805,3 +805,10 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Verification: lint (0 errors), typecheck, test (678 pass after build), build:pages, content:verify (all ok), smoke at desktop and iPhone 14 (all PASS, no console errors or overflow; screenshots inspected, Scanwarden on the caverns backdrop reads well). CI/Pages confirmation: no gh CLI in this session.
 - Known gaps: Conv Caverns not yet on an overworld map; Convling evolution art/logic pending (D7f2).
 - Next: D7f2 (Convling companion sprite and evolution).
+
+## 2026-11-12: D7f2 Convling companion (D7 complete)
+- `scripts/art/neuron-pup-convling.mjs` -> `neuron-pup-convling{,-back}.ts` (64x64; front: idle 4, attack 5, hurt 3, faint 4, evolve 4; back: idle 4, attack 3, hurt 2, faint 3): cave-teal fur, a 4x4 pixel grid on the belly with a 3x3 window that moves each idle frame and a magenta output cell, a 3x3 kernel crest on the head. Registered in the roster.
+- `FORMS`: Convling now requires Forge Lab `forge-conv` (was planned `conv2d`) and has its sprite; guardian fights draw it via `heroBackSpriteId`. Evolution test updated (ordering test) and extended; GDD §3 table updated.
+- Verification: lint (0 errors), typecheck, test (691 pass), build, build:pages, content:verify (all ok); Playwright on `/dev/sprites/` at desktop and iPhone 14: no console errors, no overflow; contact sheet inspected (grid, window and crest read; belly grid is small at 64px). CI/Pages: Actions quota note is over (2026-11-12) but no gh CLI in session, so not confirmed.
+- Known gaps: Battle demo page and Sync still show the Perceptron sprite; Conv Caverns not on an overworld map.
+- Next: D8 (Recurrent Rapids, needs splitting first).

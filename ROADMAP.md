@@ -125,7 +125,7 @@ Work top to bottom: take the **first unchecked box**, and split big boxes into r
   - [x] D6g. Guardian fight and the companion → Multilayer evolution, split into:
     - [x] D6g1. (done 2026-11-11) Dimwarden guardian fight `/guardian/nest` (nn deck, Lab `forge-mlp`, nest backdrop, Live Gradient Badge) and its readiness evidence.
     - [x] D6g2. (done 2026-11-11) Multilayer companion sprite (64x64 front/back, idle/attack/hurt/faint/evolve; `scripts/art/neuron-pup-multilayer.mjs`) and evolution requirements moved to the Forge Labs (`forge-value`, `forge-mlp`); Guardian battles use the current form's back sprite.
-- [ ] D7. Conv Caverns (F8), with module 9, the Glyphs dataset and the companion → Convling, split into:
+- [x] D7. Conv Caverns (F8), with module 9, the Glyphs dataset and the companion → Convling, split into:
   - [x] D7a. (done 2026-11-11) Glyphs dataset (`lib/datasets/glyphs.ts`, seeded 16x16, 6 classes, shift/rotation/brightness/noise jitter) with tests.
   - [x] D7b. (done 2026-11-11) Conv shape solvers (`lib/solvers/conv.ts`: output size with padding/stride/dilation/ceil, transposed conv, receptive field and jump, params/MACs/FLOPs, layer-stack summary) with brute-force tests.
   - [x] D7c. (done 2026-11-11) Forge module 9 Lab `forge-conv` (`Conv2D` via im2col with stride/padding, `MaxPool2D` with overlapping windows and tie rule; finite-difference checks, 14 wrong versions).
@@ -134,9 +134,9 @@ Work top to bottom: take the **first unchecked box**, and split big boxes into r
     - [x] D7e1. (done 2026-11-11) Conv Caverns tileset (`scripts/art/conv-caverns.mjs`) and preview map.
     - [x] D7e2. (done 2026-11-11) Guardian sprite Scanwarden (96x96, `scripts/art/caverns-guardian.mjs`).
     - [x] D7e3. (done 2026-11-12) Two trainers (16x24 walks + 48x48 portraits) and the `theme: "caverns"` battle backdrop.
-  - [ ] D7f. Guardian fight and companion → Convling evolution, split into:
+  - [x] D7f. Guardian fight and companion → Convling evolution, split into:
     - [x] D7f1. (done 2026-11-12) Scanwarden guardian fight `/guardian/caverns` (cnn deck, Lab `forge-conv`, caverns backdrop, Shared Kernel Badge) and its readiness evidence.
-    - [ ] D7f2. Convling companion sprite (64x64 front/back, idle/attack/hurt/faint/evolve) and evolution requirements (`forge-conv`).
+    - [x] D7f2. (done 2026-11-12) Convling companion sprite (64x64 front/back, idle/attack/hurt/faint/evolve) and evolution requirements (`forge-conv`).
 - [ ] D8. Recurrent Rapids (F9), with module 10 and the companion → Recurrent; plus the *Drift* boss
 
 ## Phase E: Act II regions
