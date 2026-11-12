@@ -819,3 +819,10 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Verification: lint (0 errors), typecheck, test (698 pass; `PATH=/usr/bin:$PATH`), build, build:pages, content:verify (all ok). No visual change, so no screenshots. CI/Pages: not confirmed (no gh CLI in this session; the Actions quota note is over).
 - Known gaps: dataset is not yet used by any model, Lab or lesson.
 - Next: D8b (RNN solvers with finite-difference tests).
+
+## 2026-11-12: D8b RNN solvers
+- `lib/solvers/rnn.ts` (exported as `solvers.rnn`): unrolled vanilla RNN with a many-to-one softmax head, exact BPTT, `hiddenGradNorms` (||dL/dh_t|| per step) for the vanishing/exploding-gradient demo, `spectralNorm` (power iteration), plain SGD, and single-step `gruStep` / `lstmStep` gate maths (forward only; the Lab will reuse them).
+- `tests/rnn.test.ts` (10): central finite-difference check of every parameter (Wx, Wh, b, Wo, bo); loss = -log softmax; gradient norm shrinks >1000x over 30 steps with contracting Wh and grows with expanding Wh; SGD halves loss on the `first` rune task at T=4; GRU update/reset gate saturation; LSTM forget=1/input=0 preserves the cell over 100 steps; extreme pre-activations stay finite.
+- Verification: lint (0 errors), typecheck, test (708 pass; `PATH=/usr/bin:$PATH`), build, build:pages, content:verify (all ok). No visual change, so no screenshots. CI/Pages: not confirmed (no gh CLI in session). Work committed to the session branch `claude/wonderful-goodall-jtqyrf` (harness restricts pushes to it), not `main`.
+- Known gaps: GRU/LSTM have no backward pass (only forward gate maths); solvers not yet used by a Lab or lesson.
+- Next: D8c (Forge module 10 Lab `forge-rnn`).

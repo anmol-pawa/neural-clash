@@ -139,7 +139,7 @@ Work top to bottom: take the **first unchecked box**, and split big boxes into r
     - [x] D7f2. (done 2026-11-12) Convling companion sprite (64x64 front/back, idle/attack/hurt/faint/evolve) and evolution requirements (`forge-conv`).
 - [ ] D8. Recurrent Rapids (F9), with module 10 and the companion → Recurrent; plus the *Drift* boss, split into:
   - [x] D8a. (done 2026-11-12) Runes sequence dataset (`lib/datasets/runes.ts`: first-token recall, parity, balanced brackets) with tests.
-  - [ ] D8b. RNN solvers (`lib/solvers/rnn.ts`: unrolled forward, BPTT, gradient-norm-vs-time for the vanishing-gradient demo, LSTM/GRU gate maths) with finite-difference tests.
+  - [x] D8b. (done 2026-11-12) RNN solvers (`lib/solvers/rnn.ts`: unrolled forward, BPTT, gradient-norm-vs-time for the vanishing-gradient demo, LSTM/GRU gate maths) with finite-difference tests.
   - [ ] D8c. Forge module 10 Lab `forge-rnn` (RNN cell + BPTT, GRU/LSTM cell; finite-difference checks, known-wrong versions).
   - [ ] D8d. Sequence/embedding lessons + deck (`scripts/gen-seq.mjs`), Readiness skill.
   - [ ] D8e. Region art: tileset, guardian, trainers, rapids backdrop.
