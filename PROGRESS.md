@@ -812,3 +812,10 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Verification: lint (0 errors), typecheck, test (691 pass), build, build:pages, content:verify (all ok); Playwright on `/dev/sprites/` at desktop and iPhone 14: no console errors, no overflow; contact sheet inspected (grid, window and crest read; belly grid is small at 64px). CI/Pages: Actions quota note is over (2026-11-12) but no gh CLI in session, so not confirmed.
 - Known gaps: Battle demo page and Sync still show the Perceptron sprite; Conv Caverns not on an overworld map.
 - Next: D8 (Recurrent Rapids, needs splitting first).
+
+## 2026-11-12: D8a Runes sequence dataset
+- D8 split into D8a-D8f in ROADMAP (dataset, RNN solvers, Lab `forge-rnn`, lessons/deck, region art, guardian + evolution + Drift boss). This run: `lib/datasets/runes.ts` with three seeded tasks: `first` (recall token 0 across T-1 distractors, the vanishing-gradient probe), `parity` (XOR of all bits) and `brackets` (balanced vs. unbalanced, classes 50/50, unbalanced built by flipping 1-2 symbols and rejecting accidental balance), plus `isBalanced`, `runeLabel` and `oneHotRunes`.
+- `tests/runes.test.ts` (7): determinism per seed, labels vs. an independent definition, vocab range, class balance, bracket positives/negatives, edge cases, input validation.
+- Verification: lint (0 errors), typecheck, test (698 pass; `PATH=/usr/bin:$PATH`), build, build:pages, content:verify (all ok). No visual change, so no screenshots. CI/Pages: not confirmed (no gh CLI in this session; the Actions quota note is over).
+- Known gaps: dataset is not yet used by any model, Lab or lesson.
+- Next: D8b (RNN solvers with finite-difference tests).
