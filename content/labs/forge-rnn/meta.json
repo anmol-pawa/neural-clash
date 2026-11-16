@@ -1,0 +1,30 @@
+{
+  "id": "forge-rnn",
+  "title": "Forge 10: RNN with backprop through time, and a GRU cell",
+  "phase": "forge",
+  "language": "python",
+  "functions": [
+    "RNN",
+    "GRUCell"
+  ],
+  "wrong": {
+    "no_recurrent_gradient.py": "BPTT stops after one step: dh never flows to the previous hidden state, so early inputs get no gradient",
+    "tanh_derivative_slip.py": "the tanh derivative is taken as 1 - h instead of 1 - h^2",
+    "overwrite_over_time.py": "dWxh is assigned at every step, so only the earliest time step survives instead of the sum over time",
+    "whh_grad_uses_new_state.py": "dWhh pairs the gradient with h_t instead of h_{t-1}",
+    "state_carried_over.py": "the hidden state is not reset: the previous call's last state leaks into the next sequence",
+    "mean_over_batch.py": "dWhy is averaged over the batch; that scaling belongs to the loss",
+    "gru_swapped_gate.py": "h' = z*n + (1-z)*h (the gate convention flipped): forward and backward agree with each other but not with the spec",
+    "gru_missing_reset_gradient.py": "the reset gate gets no gradient, so Wx_r, Wh_r and b_r are never trained",
+    "gru_sigmoid_derivative.py": "the update gate's sigmoid derivative drops the (1 - z) factor",
+    "gru_forgets_direct_path.py": "dh omits the direct z * dh_new path, so the gradient cannot skip through an open update gate",
+    "gru_grads_accumulate.py": "dWx accumulates across backward calls instead of being set"
+  },
+  "hints": [
+    "Forward: keep the list of hidden states h_0..h_T (h_0 = zeros). You need h_{t-1} and h_t at every step during backward, so cache all of them, not just the last.",
+    "Backward starts at the end: dh = dlogits @ Why.T, dWhy = h_T.T @ dlogits, dby = sum over the batch. Then walk t = T-1 down to 0: da = dh * (1 - h_{t+1}**2) is the gradient at the pre-activation, because d tanh(a)/da = 1 - tanh(a)**2.",
+    "The weights are shared across time, so each step ADDS to dWxh (x_t.T @ da), dWhh (h_{t-1}.T @ da) and dbh (sum of da). The gradient handed to the previous step is dh = da @ Whh.T, and dx_t = da @ Wxh.T. Start the three accumulators at zero inside backward so repeated calls do not pile up.",
+    "GRU backward, working back from h' = (1 - z)*n + z*h: dn = dh'*(1-z), dz = dh'*(h-n), and h also receives dh'*z directly. Then through the activations: da_n = dn*(1-n**2); da_z = dz*z*(1-z); the reset gate only touches the candidate through r * (h Wh_n), so dr = da_n * (h Wh_n) and da_r = dr*r*(1-r).",
+    "Pack the gate gradients like the weights: da = [da_z | da_r | da_n] for x, but for h the third block is da_n * r because the candidate sees r * (h Wh_n). Then dWx = x.T @ da, dWh = h.T @ dah, db = da.sum(0), dx = da @ Wx.T and dh = dh'*z + dah @ Wh.T. A finite-difference check on dh and on the reset gate's weights finds most slips."
+  ]
+}
