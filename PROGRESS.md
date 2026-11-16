@@ -819,3 +819,10 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Verification: lint (0 errors), typecheck, test (698 pass; `PATH=/usr/bin:$PATH`), build, build:pages, content:verify (all ok). No visual change, so no screenshots. CI/Pages: not confirmed (no gh CLI in this session; the Actions quota note is over).
 - Known gaps: dataset is not yet used by any model, Lab or lesson.
 - Next: D8b (RNN solvers with finite-difference tests).
+
+## 2026-11-16: D8b RNN solvers
+- `lib/solvers/rnn.ts` (exported as `rnn`): many-to-one vanilla RNN forward, full BPTT (grads for all params plus dL/dh_t and its norm per step), `gradNormByDistance` and `decayRate` for the vanishing/exploding-gradient demo, param flatten/unflatten for gradient checks, and single-step `lstmStep` / `gruStep` gate maths plus `cellPathGain` (product of forget gates).
+- `tests/rnn.test.ts` (18): BPTT vs central finite differences for every parameter over four shapes (T up to 12), dL/dh_t vs finite differences, hand-computed forward, gradient norm vanishing with small recurrent weights and far slower decay with large ones, flat norm for identity recurrence, LSTM forget=1/input=0 copy and the 0.99^50 cell-path gain checked by finite differences, GRU update/reset gate limits and a hand computation.
+- Verification: lint (0 errors), typecheck, test (all pass; one run flaked while build ran in parallel, clean rerun passed), build:pages, content:verify (all ok). No UI change, no screenshots. CI/Pages: no gh CLI in this session, not confirmed.
+- Known gaps: LSTM/GRU have forward only (no BPTT); not yet used by a Lab or lesson.
+- Next: D8c (Forge module 10 Lab `forge-rnn`).
