@@ -1,0 +1,41 @@
+{
+  "id": "forge-rnn",
+  "title": "Forge 10: an RNN with BPTT, and a GRU cell",
+  "phase": "forge",
+  "language": "python",
+  "functions": [
+    "RNN",
+    "GRUCell"
+  ],
+  "wrong": {
+    "no_tanh_derivative.py": "backward skips the (1 - h^2) factor, so the gradient ignores the tanh squashing",
+    "tanh_derivative_off_by_one.py": "the tanh derivative is taken at the previous state h_{t-1} instead of h_t",
+    "dh_not_transposed.py": "the gradient flows to the previous state through Wh instead of Wh transposed (looks right for symmetric Wh)",
+    "truncated_after_one_step.py": "BPTT stops after one step: dh is reset to zero instead of flowing back, so long-range dependencies get no gradient",
+    "dwh_last_step_only.py": "dWh only counts the final step; the shared weight gets no gradient from earlier steps",
+    "dwx_overwritten_per_step.py": "dWx is assigned at every step instead of added, so only the first step survives",
+    "dwx_averaged_over_batch.py": "dWx is divided by the batch size; averaging belongs to the loss",
+    "dbh_first_example.py": "dbh uses only the first example in the batch",
+    "dx_uses_recurrent_weights.py": "dx is computed with Wh instead of Wx (shape-compatible only when in_dim equals hidden)",
+    "state_leaks_between_calls.py": "the last hidden state is kept and used as the next call's start, so the same input gives different outputs",
+    "grads_accumulate_across_calls.py": "gradients are not zeroed at the start of backward and keep growing with every call",
+    "wh_unscaled_init.py": "Wh ~ Normal(0, 1) instead of Normal(0, 1/hidden): the recurrent map explodes for wide layers",
+    "dh_norms_reversed.py": "dh_norms is indexed from the end of the sequence instead of by time step",
+    "loops_over_examples.py": "forward loops over the batch in Python instead of vectorising over it",
+    "gru_update_gate_swapped.py": "the interpolation is reversed: h' = z * n + (1 - z) * h, so z=1 now overwrites instead of keeping",
+    "gru_reset_after_matmul.py": "the reset gate scales h @ Un instead of h before the matmul (a legitimate variant, but not this spec)",
+    "gru_no_gradient_through_reset.py": "the reset gate is treated as a constant: no gradient flows into Wr, Ur, br",
+    "gru_no_skip_path.py": "dh omits the direct z * dh_new path, so the identity gradient route is lost",
+    "gru_dz_wrong_sign.py": "dL/dz uses (n - h) instead of (h - n)",
+    "gru_gate_uses_tanh_derivative.py": "the update-gate pre-activation derivative uses 1 - z^2 (the tanh rule) instead of z (1 - z)",
+    "gru_naive_sigmoid.py": "sigmoid computed as 1 / (1 + exp(-a)), which overflows for large negative pre-activations",
+    "gru_dh_misses_reset_path.py": "dh omits the gradient that reaches h through the reset gate product r * h"
+  },
+  "hints": [
+    "RNN forward: keep every hidden state in one array `hs` of shape (N, T+1, H) with hs[:, 0] = 0. Loop over time only; each step is two matmuls and a tanh over the whole batch.",
+    "BPTT mirrors forward in reverse. Start with dh = dlogits @ Wy.T. At each step, da = dh * (1 - h_t**2) (tanh'), then dWx += x_t.T @ da, dWh += h_{t-1}.T @ da, dbh += da.sum(0), dx_t = da @ Wx.T, and the gradient for the previous state is dh = da @ Wh.T. The `+=` matters: the same weights are used at every step.",
+    "Record np.linalg.norm(dh) at each step before you push it through tanh. Plot or print it for gain 0.5 and gain 1.5 on Wh and you will see vanishing and exploding gradients directly.",
+    "GRU backward, one gate at a time: dn = dh'*(1-z), dz = dh'*(h-n), and the skip path dh = dh'*z. Then go through each activation: tanh' = 1-n**2, sigmoid' = z*(1-z). The candidate reads r*h, so d(r*h) = dan @ Un.T splits into dr = d(r*h)*h and dh += d(r*h)*r.",
+    "Check one cell at a time with finite differences: dx, then dh, then each parameter. Set z's bias to +40 or -40 to test the two limits (copy the old state / ignore it) by hand."
+  ]
+}

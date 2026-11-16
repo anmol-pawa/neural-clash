@@ -31,7 +31,7 @@ describe("evolutionState", () => {
   });
 
   it("forms are strictly ordered: a later form needs every earlier one", () => {
-    const labs = { "forge-conv": pass, rnn: pass };
+    const labs = { "forge-conv": pass, "forge-rnn": pass };
     const s = evolutionState(labs, exists);
     expect(s.forms[2]!.met).toBe(true);
     expect(s.forms[2]!.reached).toBe(false);
