@@ -819,3 +819,10 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Verification: lint (0 errors), typecheck, test (698 pass; `PATH=/usr/bin:$PATH`), build, build:pages, content:verify (all ok). No visual change, so no screenshots. CI/Pages: not confirmed (no gh CLI in this session; the Actions quota note is over).
 - Known gaps: dataset is not yet used by any model, Lab or lesson.
 - Next: D8b (RNN solvers with finite-difference tests).
+
+## 2026-11-16: D8b RNN solvers
+- `lib/solvers/rnn.ts` (exported as `rnn` from `lib/solvers`): vanilla tanh RNN, GRU (z gates the new candidate; the convention is stated, libraries differ) and LSTM single-step forward/backward, `unroll` (many-to-one, softmax-CE readout), full `bptt` returning parameter gradients, `gradNormByStep` (||dL/dh_t||, the vanishing-gradient curve) and `inputGradNorm`, seeded `initParams` with a `recurrentScale` knob, `paramCount`.
+- `tests/rnn.test.ts` (17): BPTT gradients for every parameter of all three cells against central finite differences (non-zero biases, T=5), input gradients, hand-checked gate behaviour (z=0 copies state, forget~1/input~0 carries the cell), vanishing-gradient demos (vanilla RNN step-1/step-T ratio < 1e-6, GRU with closed update gate and LSTM with forget bias +3 preserve gradient), param counts vs initialised tensors.
+- Verification: lint (0 errors), typecheck, test (715 pass), build, build:pages, content:verify (all ok). No UI change, no screenshots. Worked on the session branch `claude/wonderful-goodall-sx53ki` (platform rule: push only there), not `main`. CI/Pages not confirmed: no gh CLI in this session.
+- Known gaps: solver unused by Lab/lessons yet; no exploding-gradient clipping helper (add with D8c if the Lab needs it).
+- Next: D8c (Forge module 10 Lab `forge-rnn`).
