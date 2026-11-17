@@ -7,6 +7,7 @@ import { CLASSIC_GROVE_TILES } from "./tiles/classic-grove-tiles";
 import { METRIC_MARKET_TILES } from "./tiles/metric-market-tiles";
 import { NEURON_NEST_TILES } from "./tiles/neuron-nest-tiles";
 import { CONV_CAVERNS_TILES } from "./tiles/conv-caverns-tiles";
+import { RECURRENT_RAPIDS_TILES } from "./tiles/recurrent-rapids-tiles";
 import { PROBABILITY_PEAKS_TILES } from "./tiles/probability-peaks-tiles";
 
 /** Python Port, the harbour town where the game starts. */
@@ -139,3 +140,8 @@ export const NEST_PREVIEW = mapSprite("neuron-nest-preview", "NEURON NEST (previ
 export const CAVERNS_LEGEND: TileLegend = VALE_LEGEND;
 export const CAVERNS_GRID: readonly string[] = GROVE_GRID;
 export const CAVERNS_PREVIEW = mapSprite("conv-caverns-preview", "CONV CAVERNS (preview)", CONV_CAVERNS_TILES, CAVERNS_GRID, CAVERNS_LEGEND);
+
+/** Recurrent Rapids: a river gorge where the current loops back; mossy banks, chevron foam and a state-arrow arena pad. Same tile names as the Vale. */
+export const RAPIDS_LEGEND: TileLegend = VALE_LEGEND;
+export const RAPIDS_GRID: readonly string[] = GROVE_GRID;
+export const RAPIDS_PREVIEW = mapSprite("recurrent-rapids-preview", "RECURRENT RAPIDS (preview)", RECURRENT_RAPIDS_TILES, RAPIDS_GRID, RAPIDS_LEGEND);
