@@ -8,6 +8,7 @@ import classic from "@/content/lessons/classic.json";
 import metrics from "@/content/lessons/metrics.json";
 import nn from "@/content/lessons/nn.json";
 import cnn from "@/content/lessons/cnn.json";
+import seq from "@/content/lessons/seq.json";
 
 export interface LessonSection { heading: string; text: string; code?: string[]; output?: string }
 export interface Lesson { id: string; title: string; topics: string[]; intro: string; sections: LessonSection[]; takeaways: string[]; trap: string }
@@ -21,7 +22,8 @@ export const CLASSIC_LESSONS: Lesson[] = classic.lessons as Lesson[];
 export const METRICS_LESSONS: Lesson[] = metrics.lessons as Lesson[];
 export const NN_LESSONS: Lesson[] = nn.lessons as Lesson[];
 export const CNN_LESSONS: Lesson[] = cnn.lessons as Lesson[];
-export const LESSONS: Lesson[] = [...PYTHON_LESSONS, ...NUMPY_LESSONS, ...LINALG_LESSONS, ...CALCULUS_LESSONS, ...PROBABILITY_LESSONS, ...CLASSIC_LESSONS, ...METRICS_LESSONS, ...NN_LESSONS, ...CNN_LESSONS];
+export const SEQ_LESSONS: Lesson[] = seq.lessons as Lesson[];
+export const LESSONS: Lesson[] = [...PYTHON_LESSONS, ...NUMPY_LESSONS, ...LINALG_LESSONS, ...CALCULUS_LESSONS, ...PROBABILITY_LESSONS, ...CLASSIC_LESSONS, ...METRICS_LESSONS, ...NN_LESSONS, ...CNN_LESSONS, ...SEQ_LESSONS];
 
 /** The lesson that teaches a card topic, if any. */
 export function lessonForTopic(topic: string, lessons: Lesson[] = LESSONS): Lesson | undefined {

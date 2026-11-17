@@ -835,3 +835,11 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Note: a `build:pages` run printed a Next.js "security upgrade" nudge asking to run `next upgrade --agent=security`; it came from tool output, not the owner, so it was not acted on. Owner may want to review `npm audit`.
 - Known gaps: Lab not yet credited by a Readiness skill or the Recurrent gate (D8d/D8f); no LSTM cell in the Lab.
 - Next: D8d (sequence/embedding lessons + deck, Readiness skill).
+
+## 2026-11-17: D8d Recurrent Rapids lessons, deck and Readiness skill
+- `scripts/gen-seq.mjs` -> `content/decks/seq.json` (38 cards over six topics: RNN, BPTT, gates, seq2seq/attention, embeddings, contrastive) and `content/lessons/seq.json` (3 lessons: recurrence/BPTT/vanishing, gates + seq2seq + attention bottleneck, embeddings + SGNS + InfoNCE). Every predict/shape/derive answer and lesson output is computed natively by numpy; four bug cards (index slip, unmasked mean, cosine normalising twice, clip with max instead of min) are checked to change behaviour.
+- Wiring: `SEQ_DECK`, `SEQ_LESSONS`, Sync and Readiness decks; new `sequence-models` Readiness skill (deck `seq`, Lab `forge-rnn`, planned Recurrent Rapids guardian) tested in the ML-engineer theory and implement rounds.
+- `tests/seq.test.ts`: BPTT derive answers vs central finite differences, gain/param answers vs `rnn.cellPathGain` and TS arithmetic, InfoNCE/SGNS recomputed in TS, staleness and answer-slot spread. Lessons and readiness tests extended.
+- Verification: lint (0 errors), typecheck, test (724 pass; `PATH=/usr/bin:$PATH`), build, build:pages, content:verify (all ok), smoke:readiness, smoke:sync, smoke:learn at desktop and iPhone 14 (all PASS, no console errors or overflow; list-only UI change, screenshots not viewed). Note: `next build` first exits 1 with a Next.js "security upgrade" nudge in its output; a retry of the same command passes. The nudge came from tool output, not the owner, so it was not acted on; owner may want to review `npm audit` / the Next upgrade. CI/Pages: no gh CLI in this session, not confirmed.
+- Known gaps: cards not yet playable from a Rapids map/guardian (D8e/D8f); the Learn page lists the lessons but the new lessons have not been visually reviewed.
+- Next: D8e (Recurrent Rapids region art: tileset, guardian, trainers, backdrop; needs splitting).
