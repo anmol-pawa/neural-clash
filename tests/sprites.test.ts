@@ -9,6 +9,7 @@ import { CLASSIC_GROVE_TILES } from "@/game/sprites/tiles/classic-grove-tiles";
 import { METRIC_MARKET_TILES } from "@/game/sprites/tiles/metric-market-tiles";
 import { NEURON_NEST_TILES } from "@/game/sprites/tiles/neuron-nest-tiles";
 import { CONV_CAVERNS_TILES } from "@/game/sprites/tiles/conv-caverns-tiles";
+import { RECURRENT_RAPIDS_TILES } from "@/game/sprites/tiles/recurrent-rapids-tiles";
 import { PROBABILITY_PEAKS_TILES } from "@/game/sprites/tiles/probability-peaks-tiles";
 import { composeMap, TILE, validateMap } from "@/game/sprites/tilemap";
 import { LAB_GRID, LAB_LEGEND, PORT_GRID, PORT_LEGEND, VALE_GRID, VALE_LEGEND, GORGE_GRID, GORGE_LEGEND, PEAKS_GRID, PEAKS_LEGEND, GROVE_GRID, GROVE_LEGEND, MARKET_GRID, MARKET_LEGEND, NEST_GRID, NEST_LEGEND, CAVERNS_GRID, CAVERNS_LEGEND } from "@/game/sprites/maps";
@@ -105,10 +106,11 @@ describe("tilesets", () => {
     "classic-grove-tiles": ["grass", "flowers", "water", "shore", "tree-top", "sign", "lamp", "window", "door", "statue", "pad"],
     "metric-market-tiles": ["grass", "flowers", "water", "shore", "tree-top", "sign", "lamp", "window", "door", "statue", "pad"],
     "conv-caverns-tiles": ["grass", "flowers", "water", "shore", "tree-top", "sign", "lamp", "window", "door", "statue", "pad"],
+    "recurrent-rapids-tiles": ["grass", "flowers", "water", "shore", "tree-top", "sign", "lamp", "window", "door", "statue", "pad"],
     "neuron-nest-tiles": ["grass", "flowers", "water", "shore", "tree-top", "sign", "lamp", "window", "door", "statue", "pad"],
     "probability-peaks-tiles": ["grass", "flowers", "water", "shore", "tree-top", "sign", "lamp", "window", "door", "statue", "pad"],
   };
-  for (const def of [PYTHON_PORT_TILES, LAB_TILES, VECTOR_VALE_TILES, GRADIENT_GORGE_TILES, PROBABILITY_PEAKS_TILES, CLASSIC_GROVE_TILES, METRIC_MARKET_TILES, NEURON_NEST_TILES, CONV_CAVERNS_TILES]) {
+  for (const def of [PYTHON_PORT_TILES, LAB_TILES, VECTOR_VALE_TILES, GRADIENT_GORGE_TILES, PROBABILITY_PEAKS_TILES, CLASSIC_GROVE_TILES, METRIC_MARKET_TILES, NEURON_NEST_TILES, CONV_CAVERNS_TILES, RECURRENT_RAPIDS_TILES]) {
     describe(def.id, () => {
       it("is a valid sprite definition of 16×16 tiles", () => {
         expect(validateSprite(def)).toEqual([]);
