@@ -142,7 +142,10 @@ Work top to bottom: take the **first unchecked box**, and split big boxes into r
   - [x] D8b. (done 2026-11-16) RNN solvers (`lib/solvers/rnn.ts`: unrolled forward, BPTT, gradient-norm-vs-time for the vanishing-gradient demo, LSTM/GRU gate maths) with finite-difference tests.
   - [x] D8c. (done 2026-11-17) Forge module 10 Lab `forge-rnn` (`RNN` with BPTT, `GRUCell`; finite-difference checks, 16 known-wrong versions). LSTM stays a solver/lesson topic (D8d).
   - [x] D8d. (done 2026-11-17) Sequence/embedding lessons + 38-card deck (`scripts/gen-seq.mjs`), `sequence-models` Readiness skill.
-  - [ ] D8e. Region art: tileset, guardian, trainers, rapids backdrop.
+  - [ ] D8e. Region art, split into:
+    - [x] D8e1. (done 2026-11-17) Recurrent Rapids tileset (`scripts/art/recurrent-rapids.mjs`) and preview map.
+    - [ ] D8e2. Guardian sprite (96x96, `scripts/art/rapids-guardian.mjs`).
+    - [ ] D8e3. Two trainers (16x24 walks + 48x48 portraits) and the `theme: "rapids"` battle backdrop.
   - [ ] D8f. Guardian fight, companion → Recurrent evolution, and the *Drift* boss.
 
 ## Phase E: Act II regions
