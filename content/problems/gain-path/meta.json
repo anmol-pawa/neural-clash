@@ -1,0 +1,40 @@
+{
+  "id": "gain-path",
+  "title": "Gain Path",
+  "difficulty": "H",
+  "language": "cpp",
+  "tags": ["tree", "dp", "ai-decision-tree"],
+  "similar": "LeetCode 124 Binary Tree Maximum Path Sum",
+  "compare": "tokens",
+  "timeLimitMs": 1000,
+  "complexity": { "time": "O(n)", "space": "O(n)" },
+  "groups": {
+    "sample": [1],
+    "edge": [1, 2, 3, 4, 5, 6, 7, 8],
+    "random": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
+    "perf": [1, 2]
+  },
+  "hints": [
+    "A best path has a highest node (closest to the root). Imagine you fix that node: what two things hang off it?",
+    "Each side is a downward chain that starts at a child. Define down[v] = the best sum of a chain that starts at v and only goes downward. A side that would make the total smaller can simply be skipped.",
+    "down[v] = gain[v] + max(0, down[left], down[right]); the best path through v is gain[v] + max(0, down[left]) + max(0, down[right]); answer = the maximum over all v. Children have larger indices than their parent, so a loop from n-1 down to 0 visits children first and needs no recursion."
+  ],
+  "wrong": {
+    "root_to_leaf.cpp": "only considers paths that start at the root",
+    "no_clamp.cpp": "adds a child's chain even when it is negative",
+    "tle_rewalk.cpp": "re-walks the whole subtree below every node (fails the perf group)"
+  },
+  "wrongExpect": { "root_to_leaf.cpp": "WA", "no_clamp.cpp": "WA", "tle_rewalk.cpp": "TLE" },
+  "strategy": {
+    "question": "Scout the statement: a tree of up to 2*10^5 nodes with signed gains, find the best connected path (it may bend at one node and need not touch the root). Which plan fits?",
+    "options": [
+      "Try every pair of nodes and sum the path between them",
+      "One bottom-up pass: for each node, combine its two best downward chains (skipping negative ones) and keep a running maximum",
+      "Sort nodes by gain and add the largest ones that stay connected",
+      "Take the root and follow the larger child at every step"
+    ],
+    "answer": 1,
+    "why": "Pairs of nodes cost O(n^2) pairs times a path walk. Sorting by gain ignores that the chosen nodes must form a path. Following the larger child misses paths that bend and paths that avoid the root. A bottom-up pass computes down[v] once per node, so the whole tree costs O(n)."
+  },
+  "browserPerfN": 40000
+}

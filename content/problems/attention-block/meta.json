@@ -1,0 +1,40 @@
+{
+  "id": "attention-block",
+  "title": "Attention Block",
+  "difficulty": "H",
+  "language": "cpp",
+  "tags": ["monotonic-stack", "histogram", "matrix", "attention"],
+  "similar": "LeetCode 85 Maximal Rectangle",
+  "compare": "tokens",
+  "timeLimitMs": 1000,
+  "complexity": { "time": "O(R*C)", "space": "O(C)" },
+  "groups": {
+    "sample": [1],
+    "edge": [1, 2, 3, 4, 5, 6],
+    "random": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+    "perf": [1, 2]
+  },
+  "hints": [
+    "Fix the bottom row of a candidate rectangle. For each column, how tall is the run of allowed cells ending at that row?",
+    "That turns every row into a histogram of heights. The question becomes: what is the largest rectangle inside one histogram, and how do you do it for all R rows without rebuilding from scratch?",
+    "Update heights row by row (reset to 0 on a blocked cell). For one histogram keep a stack of columns with increasing heights; when a shorter column arrives, pop taller ones and price the rectangle each could have formed, whose width is bounded by the new top of the stack and the current column. Sweep a sentinel 0 at the end. Total O(R*C)."
+  ],
+  "wrong": {
+    "square_only.cpp": "finds the largest square instead of the largest rectangle",
+    "row_runs_only.cpp": "only considers rectangles of height 1 (the longest run in a single row) and full-height columns",
+    "tle_column_scan.cpp": "for every bottom-right cell scans upward tracking the minimum width, O(R*R*C) (fails the perf group)"
+  },
+  "wrongExpect": { "square_only.cpp": "WA", "row_runs_only.cpp": "WA", "tle_column_scan.cpp": "TLE" },
+  "strategy": {
+    "question": "Scout the statement: an R x C attention mask (up to 1500 x 1500) of allowed (1) and blocked (0) cells; find the area of the largest rectangle made only of allowed cells. Which plan fits?",
+    "options": [
+      "Try every pair of corners and check the rectangle with prefix sums",
+      "Find the largest square with a DP on the neighbours and report its area",
+      "Turn each row into a histogram of consecutive allowed heights and find the largest rectangle in each histogram with a monotonic stack",
+      "Sort the rows by how many allowed cells they have and merge the biggest ones"
+    ],
+    "answer": 2,
+    "why": "Trying all corner pairs is O(R^2 C^2), about 5*10^12 at the limit. A rectangle need not be a square, so the square DP undercounts. Sorting rows ignores that the allowed cells must line up in the same columns. Heights per column plus a monotonic stack price every maximal rectangle once, O(R*C)."
+  },
+  "browserPerfN": 40000
+}

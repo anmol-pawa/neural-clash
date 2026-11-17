@@ -1,0 +1,40 @@
+{
+  "id": "strongest-chain",
+  "title": "Strongest Chain",
+  "difficulty": "M",
+  "language": "cpp",
+  "tags": ["tree", "dp", "ai-decision-tree"],
+  "similar": "LeetCode 124 Binary Tree Maximum Path Sum (general tree, parent-array input)",
+  "compare": "tokens",
+  "timeLimitMs": 1000,
+  "complexity": { "time": "O(n)", "space": "O(n)" },
+  "groups": {
+    "sample": [1],
+    "edge": [1, 2, 3, 4, 5, 6, 7, 8],
+    "random": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
+    "perf": [1, 2]
+  },
+  "hints": [
+    "A path in a tree goes up from one node to some highest node, then down to another. Which node is the highest one on the best path?",
+    "For every node, compute the best sum of a chain that starts at it and only goes downwards. A negative chain is never worth extending.",
+    "gain[v] = value[v] + max(0, best child gain). A path whose top is v is value[v] + the two largest non-negative child gains. Parents have smaller indices than children, so a reverse loop replaces recursion."
+  ],
+  "wrong": {
+    "through_root.cpp": "only considers paths whose highest node is the root",
+    "keep_negative.cpp": "adds child chains even when they are negative",
+    "tle_every_start.cpp": "walks the whole tree from every start node (fails the perf group)"
+  },
+  "wrongExpect": { "through_root.cpp": "WA", "keep_negative.cpp": "WA", "tle_every_start.cpp": "TLE" },
+  "strategy": {
+    "question": "Scout the statement: up to 2*10^5 nodes, values can be negative, a path may start and end anywhere, and a tree can be one long chain. Which plan fits?",
+    "options": [
+      "Try every pair of nodes and add up the path between them",
+      "Run a search from every node and keep the best sum seen",
+      "One pass from the leaves up: each node's best downward chain, combined with its two best children at the top of a path",
+      "Sort the values and add the largest ones"
+    ],
+    "answer": 2,
+    "why": "Pairs and per-node searches are quadratic or worse, far too slow at 2*10^5 nodes. Sorting ignores that a path must be connected. A bottom-up pass computes, for each node, the best downward chain in O(children) and lets that node act as the top of a path, giving O(n) overall."
+  },
+  "browserPerfN": 40000
+}
