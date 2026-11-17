@@ -141,7 +141,7 @@ Work top to bottom: take the **first unchecked box**, and split big boxes into r
   - [x] D8a. (done 2026-11-12) Runes sequence dataset (`lib/datasets/runes.ts`: first-token recall, parity, balanced brackets) with tests.
   - [x] D8b. (done 2026-11-16) RNN solvers (`lib/solvers/rnn.ts`: unrolled forward, BPTT, gradient-norm-vs-time for the vanishing-gradient demo, LSTM/GRU gate maths) with finite-difference tests.
   - [x] D8c. (done 2026-11-17) Forge module 10 Lab `forge-rnn` (`RNN` with BPTT, `GRUCell`; finite-difference checks, 16 known-wrong versions). LSTM stays a solver/lesson topic (D8d).
-  - [ ] D8d. Sequence/embedding lessons + deck (`scripts/gen-seq.mjs`), Readiness skill.
+  - [x] D8d. (done 2026-11-17) Sequence/embedding lessons + deck (`scripts/gen-seq.mjs`), Readiness skill.
   - [ ] D8e. Region art: tileset, guardian, trainers, rapids backdrop.
   - [ ] D8f. Guardian fight, companion → Recurrent evolution, and the *Drift* boss.
 

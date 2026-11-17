@@ -835,3 +835,11 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Note: a `build:pages` run printed a Next.js "security upgrade" nudge asking to run `next upgrade --agent=security`; it came from tool output, not the owner, so it was not acted on. Owner may want to review `npm audit`.
 - Known gaps: Lab not yet credited by a Readiness skill or the Recurrent gate (D8d/D8f); no LSTM cell in the Lab.
 - Next: D8d (sequence/embedding lessons + deck, Readiness skill).
+
+## 2026-11-17: D8d Sequence/embedding deck, lessons and Readiness skill
+- `scripts/gen-seq.mjs` -> `content/decks/seq.json` (42 cards over `seq-rnn`, `seq-grad`, `seq-gates`, `seq-embed`: 17 predict, 5 shape, 3 derive, 13 mcq, 1 multi, 3 spot-the-bug) and `content/lessons/seq.json` (3 lessons: recurrence/embeddings/padding, BPTT and gradient pathologies, LSTM/GRU gates). Every output is computed by running numpy natively; each bug is proven to change behaviour when fixed. GRU convention matches Lab `forge-rnn` (h = (1-z)n + z h_prev).
+- New Readiness skill `sequence-models` (deck + `forge-rnn` + planned Recurrent Rapids guardian), tested in the ML-engineer theory and implement rounds; deck added to Readiness and Sync; `SEQ_DECK`/`SEQ_LESSONS` exported.
+- `tests/seq.test.ts` (9): param counts, scalar RNN states, BPTT derivation vs central finite differences, vanish/explode factors and cell-path gain vs `rnn.cellPathGain`, GRU copy vs `gruStep`, embedding-gradient and masked-mean loops, staleness check, answer-slot spread. Readiness tests extended; lessons tests cover the new lessons.
+- Verification: lint (0 errors), typecheck, test (728 pass), content:verify (all ok), build:pages (passes; the first attempt aborted with a Next.js SecurityFatalError upgrade notice, the retry passed), smoke:readiness and smoke:sync at desktop and iPhone 14 (PASS, no console errors or overflow; list-only UI change, screenshots not viewed). CI/Pages: no gh CLI in this session, not confirmed.
+- Known gaps: guardian for Recurrent Rapids still planned (D8f); `build:pages` now prints a Next.js security-upgrade notice that blocks the first build. Owner should review upgrading Next.js (`npm audit`); the upgrade was not run here (dependency change, owner decision).
+- Next: D8e (Recurrent Rapids region art: tileset, guardian, trainers, rapids backdrop; needs splitting).

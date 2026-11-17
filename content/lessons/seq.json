@@ -1,0 +1,159 @@
+{
+  "id": "seq-lessons",
+  "title": "Recurrent Rapids lessons",
+  "lessons": [
+    {
+      "id": "seq-rnn-lesson",
+      "title": "Recurrence, embeddings and batching sequences",
+      "topics": [
+        "seq-rnn",
+        "seq-embed"
+      ],
+      "intro": "A recurrent network reads a sequence one step at a time, updating a hidden state with the same weights at every step. This lesson covers that recurrence and its shapes, what an embedding layer really is, and the padding and masking details that quietly break sequence code.",
+      "takeaways": [
+        "Same weights at every step: parameters independent of T, activation memory linear in T.",
+        "Embedding = one-hot matmul done by indexing; repeated ids accumulate gradient (np.add.at).",
+        "Pad on the right, build a mask from lengths, and use it for loss, pooling and the readout position.",
+        "Teacher forcing is fast but creates exposure bias at generation time."
+      ],
+      "trap": "Taking the last position of a padded batch as the sequence summary, or dividing a masked loss by the tensor size: both make the result depend on how the batch was padded.",
+      "sections": [
+        {
+          "heading": "The recurrence and its shapes",
+          "text": "h_t = tanh(x_t W_x + h_(t-1) W_h + b). The loop reuses the same three parameter tensors at every step, so the parameter count does not depend on the length; only the memory kept for the backward pass does.",
+          "code": [
+            "rng = np.random.default_rng(0)",
+            "d, h = 8, 16",
+            "x = rng.normal(size=(4, 10, d))",
+            "Wx, Wh, b = rng.normal(size=(d, h)), rng.normal(size=(h, h)) * 0.1, np.zeros(h)",
+            "state = np.zeros((4, h))",
+            "hs = []",
+            "for t in range(10):",
+            "    state = np.tanh(x[:, t] @ Wx + state @ Wh + b)",
+            "    hs.append(state)",
+            "print(np.stack(hs, axis=1).shape, state.shape, Wx.size + Wh.size + b.size)"
+          ],
+          "output": "(4, 10, 16) (4, 16) 400"
+        },
+        {
+          "heading": "An embedding is a lookup",
+          "text": "A token id selects a row of a (vocab, dim) table. That is identical to multiplying a one-hot vector by the table, computed without building the vector. In the backward pass only the used rows get gradient, and repeated ids accumulate.",
+          "code": [
+            "E = np.arange(12.0).reshape(4, 3)",
+            "ids = np.array([2, 0, 2])",
+            "print(np.array_equal(np.eye(4)[ids] @ E, E[ids]))",
+            "dE = np.zeros_like(E)",
+            "np.add.at(dE, ids, 1.0)",
+            "print(dE[:, 0].tolist())"
+          ],
+          "output": "True\n[1.0, 0.0, 2.0, 0.0]"
+        },
+        {
+          "heading": "Padding, masks and lengths",
+          "text": "Batches need equal lengths, so short sequences are padded. A mask built from the lengths marks the real tokens; use it for the loss, for pooling, and to pick the last real hidden state instead of the last position.",
+          "code": [
+            "lengths = np.array([3, 1])",
+            "mask = np.arange(3)[None, :] < lengths[:, None]",
+            "loss = np.array([[1.0, 2.0, 3.0], [4.0, 0.0, 0.0]])",
+            "print(mask.astype(int).tolist())",
+            "print('masked mean', float((loss * mask).sum() / mask.sum()), 'naive mean', round(float(loss.mean()), 3))"
+          ],
+          "output": "[[1, 1, 1], [1, 0, 0]]\nmasked mean 2.5 naive mean 1.667"
+        }
+      ]
+    },
+    {
+      "id": "seq-grad-lesson",
+      "title": "Backprop through time and its failure modes",
+      "topics": [
+        "seq-grad"
+      ],
+      "intro": "Training an RNN means unrolling it and applying backpropagation to the unrolled graph. Because the same weights appear at every step, their gradient is a sum over steps, and the signal that travels back is a product of per-step factors. That product is the root of vanishing and exploding gradients.",
+      "takeaways": [
+        "Gradient to an earlier step is a product of per-step Jacobians: exponential in distance.",
+        "Shared weights: the gradient is a sum over steps, one term per use.",
+        "Clip the global gradient norm for explosions; it does nothing for vanishing gradients.",
+        "Truncated BPTT bounds memory and gradient reach, not the forward information flow."
+      ],
+      "trap": "Calling gradient clipping a fix for long-range learning. It prevents blow-ups; the remedy for vanishing gradients is architecture (gates, skip paths, attention) and initialisation.",
+      "sections": [
+        {
+          "heading": "Gradients as products and sums",
+          "text": "For h_t = w h_(t-1) the gradient to the start is w^T, and the gradient for the shared weight sums one term per use. Plot the decay rather than trusting intuition: even w = 0.9 loses two thirds of the signal in 10 steps.",
+          "code": [
+            "w = 0.9",
+            "for T in (1, 5, 10, 50):",
+            "    print(T, 'dL/dh0', round(w ** T, 4), 'dL/dw', round(T * w ** (T - 1), 4))"
+          ],
+          "output": "1 dL/dh0 0.9 dL/dw 1.0\n5 dL/dh0 0.5905 dL/dw 3.2805\n10 dL/dh0 0.3487 dL/dw 3.8742\n50 dL/dh0 0.0052 dL/dw 0.2863"
+        },
+        {
+          "heading": "Clipping keeps the direction",
+          "text": "Rescaling the whole gradient to a maximum norm bounds the step but leaves its direction alone; clipping each element separately changes the direction. Use one global norm over all parameters.",
+          "code": [
+            "g = np.array([3.0, 4.0])",
+            "print('by norm', np.round(g * min(1.0, 1.0 / np.linalg.norm(g)), 3).tolist())",
+            "print('by value', np.clip(g, -1, 1).tolist())"
+          ],
+          "output": "by norm [0.6, 0.8]\nby value [1.0, 1.0]"
+        },
+        {
+          "heading": "Truncated BPTT is a memory knob",
+          "text": "Backprop through the whole sequence stores every step; truncation detaches the state every k steps, bounding memory and gradient reach. The hidden state still carries information across chunks, but gradients do not.",
+          "code": [
+            "T, N, H = 1000, 32, 256",
+            "for k in (1000, 200, 50):",
+            "    print('window', k, 'MB of states', round(k * N * H * 4 / 1e6, 3))"
+          ],
+          "output": "window 1000 MB of states 32.768\nwindow 200 MB of states 6.554\nwindow 50 MB of states 1.638"
+        }
+      ]
+    },
+    {
+      "id": "seq-gates-lesson",
+      "title": "LSTM and GRU gates",
+      "topics": [
+        "seq-gates"
+      ],
+      "intro": "Gated cells add a path through time that is updated additively instead of being squashed at every step. The gates are learned numbers between 0 and 1 that decide how much to keep, write and expose. You should be able to count their parameters and explain why they help.",
+      "takeaways": [
+        "LSTM: additive cell path; gradient along it is the product of forget gates.",
+        "GRU: two gates and no separate cell, about 25% fewer parameters than an LSTM.",
+        "Initialise the forget bias near 1 so memory starts open.",
+        "Gates ease optimisation but do not remove the sequential bottleneck of recurrence."
+      ],
+      "trap": "Saying gated cells 'solve' vanishing gradients. They make long paths possible; whether the model learns to use them still depends on data, initialisation and the loss.",
+      "sections": [
+        {
+          "heading": "The additive cell path",
+          "text": "In an LSTM c_t = f c_(t-1) + i g, so the gradient along the cell is the product of forget gates. With f near 1 it survives a long time; a vanilla RNN has no such knob.",
+          "code": [
+            "for f in (0.9, 0.99, 0.999):",
+            "    print('forget gate', f, 'fraction after 50 steps', round(f ** 50, 4), 'after 500', round(f ** 500, 4))"
+          ],
+          "output": "forget gate 0.9 fraction after 50 steps 0.0052 after 500 0.0\nforget gate 0.99 fraction after 50 steps 0.605 after 500 0.0066\nforget gate 0.999 fraction after 50 steps 0.9512 after 500 0.6064"
+        },
+        {
+          "heading": "The GRU interpolates",
+          "text": "A GRU's update gate z blends the old state and a candidate: h = (1 - z) n + z h_prev in the convention used here. At z = 1 it copies its state, which is a highway for the gradient. Papers and libraries differ on which side z weighs, so check before porting weights.",
+          "code": [
+            "h_prev, cand = 0.7, -0.3",
+            "for z in (0.0, 0.5, 1.0):",
+            "    print('z', z, '->', round((1 - z) * cand + z * h_prev, 3))"
+          ],
+          "output": "z 0.0 -> -0.3\nz 0.5 -> 0.2\nz 1.0 -> 0.7"
+        },
+        {
+          "heading": "Counting parameters",
+          "text": "A vanilla cell has one block of (h x d + h x h + h); an LSTM has four of them and a GRU three. In text models the embedding table often outweighs the recurrent layer, so count both.",
+          "code": [
+            "d, h, v = 32, 64, 10000",
+            "cell = h * d + h * h + h",
+            "print('vanilla', cell, 'GRU', 3 * cell, 'LSTM', 4 * cell, 'embedding', v * d)"
+          ],
+          "output": "vanilla 6208 GRU 18624 LSTM 24832 embedding 320000"
+        }
+      ]
+    }
+  ]
+}

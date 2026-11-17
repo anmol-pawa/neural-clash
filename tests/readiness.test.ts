@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { DAY, review, type SrsTable } from "@/lib/srs/srs";
-import { CALCULUS_DECK, CLASSIC_DECK, CNN_DECK, LINALG_DECK, METRICS_DECK, NN_DECK, PROBABILITY_DECK } from "@/lib/cards/samples";
+import { CALCULUS_DECK, CLASSIC_DECK, CNN_DECK, LINALG_DECK, METRICS_DECK, NN_DECK, PROBABILITY_DECK, SEQ_DECK } from "@/lib/cards/samples";
 import { ASSISTED_LAB_CREDIT, LOOPS, SKILLS, band, readiness, scoreSkill, type Loop, type ReadinessInput, type Skill } from "@/lib/readiness/readiness";
 import { LABS } from "@/lib/labs/catalog";
 
@@ -253,5 +253,26 @@ describe("convnets skill", () => {
 describe("band", () => {
   it("is coarse", () => {
     expect([0, 0.1, 0.4, 0.7, 0.9].map(band)).toEqual(["not started", "early", "building", "solid", "interview-ready"]);
+  });
+});
+
+describe("sequence-models skill", () => {
+  const skill = SKILLS.find((s) => s.id === "sequence-models")!;
+  const labIds = new Set(LABS.map((l) => l.id));
+  const decks = { seq: SEQ_DECK.cards.map((c) => c.id) };
+  it("has its deck and the forge-rnn lab, with the guardian still planned", () => {
+    const r = scoreSkill(skill, { ...base(), labIds, decks });
+    expect(r.score).toBe(0);
+    expect(r.coverage).toBeCloseTo(2 / 3, 5);
+  });
+  it("gains credit from the lab pass, assisted discounted", () => {
+    const solo = scoreSkill(skill, { ...base(), labIds, labs: { "forge-rnn": { passed: true, assisted: false } }, decks });
+    const helped = scoreSkill(skill, { ...base(), labIds, labs: { "forge-rnn": { passed: true, assisted: true } }, decks });
+    expect(solo.score).toBeCloseTo(1 / 3, 5);
+    expect(helped.score).toBeCloseTo(ASSISTED_LAB_CREDIT / 3, 5);
+  });
+  it("is tested in the ML-engineer theory and implement rounds", () => {
+    const loop = LOOPS.find((l) => l.id === "ml-engineer")!;
+    for (const id of ["theory", "implement"]) expect(loop.rounds.find((r) => r.id === id)!.skills.some((s) => s.skill === "sequence-models")).toBe(true);
   });
 });

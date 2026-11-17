@@ -7,6 +7,7 @@ import deckClassic from "@/content/decks/classic.json";
 import deckMetrics from "@/content/decks/metrics.json";
 import deckNn from "@/content/decks/nn.json";
 import deckCnn from "@/content/decks/cnn.json";
+import deckSeq from "@/content/decks/seq.json";
 import deckStrategy from "@/content/decks/foundations-strategy.json";
 import { loadDeck } from "./loader";
 import { GENERATORS } from "./generators";
@@ -74,6 +75,8 @@ export const METRICS_DECK = loadDeck(deckMetrics);
 export const NN_DECK = loadDeck(deckNn);
 /** Conv Caverns (CUR F8): cross-correlation, size arithmetic, receptive fields, pooling, cost, CNN architecture. */
 export const CNN_DECK = loadDeck(deckCnn);
+/** Recurrent Rapids (CUR F9): RNN recurrence, BPTT, gradient pathologies, LSTM/GRU, embeddings and padding. */
+export const SEQ_DECK = loadDeck(deckSeq);
 
 /** A varied deck: hand-written cards plus solver-generated ones, shuffled by a seed. */
 export function demoDeck(seed: number): Card[] {

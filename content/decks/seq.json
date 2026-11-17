@@ -1,0 +1,689 @@
+{
+  "id": "seq",
+  "title": "Recurrent Rapids: sequences, RNNs and embeddings",
+  "cards": [
+    {
+      "id": "seq-rnn-params",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "seq-rnn",
+      "prompt": "What does this print? (Parameters, with one bias vector, of a vanilla RNN cell with input size 8 and hidden size 16.)",
+      "code": [
+        "d, h = 8, 16",
+        "print(h * d + h * h + h)"
+      ],
+      "choices": [
+        "384",
+        "400",
+        "272",
+        "416"
+      ],
+      "answer": 1,
+      "explanation": "Three pieces: W_xh is h x d = 128, W_hh is h x h = 256, and the bias has h = 16, so 400. The recurrent matrix is square and usually the biggest part, which is why hidden size drives cost quadratically."
+    },
+    {
+      "id": "seq-lstm-params",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "seq-gates",
+      "prompt": "What does this print? (Parameters of an LSTM cell and of a GRU cell, both input size 8, hidden size 16, one bias vector each.)",
+      "code": [
+        "d, h = 8, 16",
+        "cell = h * d + h * h + h",
+        "print(4 * cell, 3 * cell)"
+      ],
+      "choices": [
+        "1600 1200",
+        "400 400",
+        "1600 1600",
+        "1200 1600"
+      ],
+      "answer": 0,
+      "explanation": "An LSTM has four gate blocks (input, forget, output, candidate) and a GRU has three (update, reset, candidate), each the size of a vanilla cell: 1600 versus 1200. That 25% saving is the usual reason to try a GRU first. Frameworks that keep two bias vectors per gate report slightly more."
+    },
+    {
+      "id": "seq-state-shape",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "seq-rnn",
+      "prompt": "What does this print? (The shape of the final hidden state after running a vanilla RNN over a batch of 4 sequences of length 10, with input size 8 and hidden size 16.)",
+      "code": [
+        "rng = np.random.default_rng(0)",
+        "x = rng.normal(size=(4, 10, 8))",
+        "Wx, Wh = rng.normal(size=(8, 16)), rng.normal(size=(16, 16)) * 0.1",
+        "h = np.zeros((4, 16))",
+        "for t in range(10):",
+        "    h = np.tanh(x[:, t] @ Wx + h @ Wh)",
+        "print(h.shape)"
+      ],
+      "choices": [
+        "(4, 10, 16)",
+        "(10, 16)",
+        "(16,)",
+        "(4, 16)"
+      ],
+      "answer": 3,
+      "explanation": "The loop overwrites h, so only the last state is left, one row per sequence: (batch, hidden). Keeping every step needs a list or a preallocated (batch, time, hidden) array, which is also what BPTT must store."
+    },
+    {
+      "id": "seq-weight-share",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "seq-rnn",
+      "prompt": "What does this print? (Parameter count of the same RNN cell when it is unrolled over 5 steps and over 500 steps.)",
+      "code": [
+        "d, h = 8, 16",
+        "print([h * d + h * h + h for T in (5, 500)])"
+      ],
+      "choices": [
+        "[400, 40000]",
+        "[2000, 200000]",
+        "[400, 400]",
+        "[400, 2000]"
+      ],
+      "answer": 2,
+      "explanation": "Unrolling copies the computation, not the weights: every step reuses the same W_xh, W_hh and bias. What grows with T is the activation memory and the length of the gradient path, not the parameter count."
+    },
+    {
+      "id": "seq-bptt-memory",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "seq-grad",
+      "prompt": "What does this print? (Megabytes of float32 hidden states that backprop through time must keep for T = 1000 steps, batch 32, hidden size 256, hidden states only.)",
+      "code": [
+        "T, N, H = 1000, 32, 256",
+        "print(T * N * H * 4 / 1e6)"
+      ],
+      "choices": [
+        "8.192",
+        "32.768",
+        "0.256",
+        "131.072"
+      ],
+      "answer": 1,
+      "explanation": "BPTT needs every step's state for the backward pass: T x N x H floats, 4 bytes each, 32.768 MB here, before counting gate activations (an LSTM keeps several per step). That linear-in-T memory is what truncated BPTT, checkpointing and chunked training cut."
+    },
+    {
+      "id": "seq-vanish-product",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "seq-grad",
+      "prompt": "What does this print? (The factor by which a gradient shrinks after flowing back 20 steps through a scalar recurrence with weight 0.5 and activation slope 1.)",
+      "code": [
+        "print(f'{0.5 ** 20:.2e}')"
+      ],
+      "choices": [
+        "9.54e-07",
+        "1.05e+06",
+        "1.00e-01",
+        "5.00e-01"
+      ],
+      "answer": 0,
+      "explanation": "The backward pass multiplies one Jacobian per step, so the factor is 0.5^20, about 1e-6. A signal from 20 steps ago is a millionth as loud, far below the noise of other terms. The same arithmetic with a factor above 1 is the exploding case."
+    },
+    {
+      "id": "seq-explode-product",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "seq-grad",
+      "prompt": "What does this print? (The same experiment with weight 1.5.)",
+      "code": [
+        "print(f'{1.5 ** 20:.1f}')"
+      ],
+      "choices": [
+        "30.0",
+        "3.0",
+        "33252.6",
+        "3325.3"
+      ],
+      "answer": 3,
+      "explanation": "1.5^20 is about 3325: after 20 steps the gradient is thousands of times too large, which shows up as loss spikes and NaNs. The product is exponential in the number of steps whichever side of 1 the factor sits."
+    },
+    {
+      "id": "seq-clip-norm",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "seq-grad",
+      "prompt": "What does this print? (A gradient [3, 4] clipped to a global norm of at most 1.)",
+      "code": [
+        "g = np.array([3.0, 4.0])",
+        "scale = min(1.0, 1.0 / np.linalg.norm(g))",
+        "print(np.round(g * scale, 3).tolist())"
+      ],
+      "choices": [
+        "[1.0, 1.0]",
+        "[3.0, 4.0]",
+        "[0.6, 0.8]",
+        "[0.2, 0.2]"
+      ],
+      "answer": 2,
+      "explanation": "The norm is 5, so the whole vector is scaled by 0.2 to [0.6, 0.8]: same direction, length 1. Clipping each element to [-1, 1] (the first distractor) would give [1, 1] and change the direction. Clip by norm and clip the global norm across all parameters."
+    },
+    {
+      "id": "seq-cell-path",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "seq-gates",
+      "prompt": "What does this print? (How much of an LSTM cell value survives 50 steps with the forget gate held at 0.99, versus at 0.9.)",
+      "code": [
+        "print(round(0.99 ** 50, 3), round(0.9 ** 50, 3))"
+      ],
+      "choices": [
+        "0.007 0.99",
+        "0.605 0.005",
+        "0.605 0.605",
+        "0.5 0.5"
+      ],
+      "answer": 1,
+      "explanation": "The cell state is updated additively, c_t = f * c_(t-1) + i * g, so along the cell path the gradient is just the product of forget gates. At 0.99 about 60% survives 50 steps; at 0.9 only half a percent does. The gates learn how long each unit remembers."
+    },
+    {
+      "id": "seq-gru-copy",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "seq-gates",
+      "prompt": "What does this print? (A GRU update with update gate z = 1, using h = (1 - z) * candidate + z * h_prev, h_prev = 0.7 and candidate = -0.3.)",
+      "code": [
+        "z, h_prev, cand = 1.0, 0.7, -0.3",
+        "print((1 - z) * cand + z * h_prev)"
+      ],
+      "choices": [
+        "0.7",
+        "-0.3",
+        "0.4",
+        "0.0"
+      ],
+      "answer": 0,
+      "explanation": "With z = 1 the unit copies its old state unchanged, 0.7, and the gradient flows straight through. Be careful with conventions: some write the interpolation the other way round (z weighs the candidate), so check which one a codebase or a paper uses before porting weights."
+    },
+    {
+      "id": "seq-embed-lookup",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "seq-embed",
+      "prompt": "What does this print? (Rows of a 4 x 3 embedding table selected by token ids [2, 0, 2].)",
+      "code": [
+        "E = np.arange(12).reshape(4, 3)",
+        "print(E[[2, 0, 2]].tolist())"
+      ],
+      "choices": [
+        "[[3, 4, 5], [0, 1, 2], [3, 4, 5]]",
+        "[[6, 7, 8], [6, 7, 8], [0, 1, 2]]",
+        "[[0, 1, 2], [6, 7, 8], [0, 1, 2]]",
+        "[[6, 7, 8], [0, 1, 2], [6, 7, 8]]"
+      ],
+      "answer": 3,
+      "explanation": "An embedding layer is a table indexed by token id, one row per vocabulary entry; the same id gives the same row. The output has one vector per input token, in input order."
+    },
+    {
+      "id": "seq-embed-onehot",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "seq-embed",
+      "prompt": "What does this print? (Is a one-hot matrix times the embedding table equal to indexing the table?)",
+      "code": [
+        "E = np.arange(12.0).reshape(4, 3)",
+        "ids = np.array([2, 0, 2])",
+        "print(np.array_equal(np.eye(4)[ids] @ E, E[ids]))"
+      ],
+      "choices": [
+        "False",
+        "None",
+        "True",
+        "error"
+      ],
+      "answer": 2,
+      "explanation": "A lookup is exactly a one-hot matrix product, so the two are the same function. Implementations index instead, which costs O(d) per token instead of O(V x d), and the backward pass only touches the rows that were used."
+    },
+    {
+      "id": "seq-embed-grad",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "seq-embed",
+      "prompt": "What does this print? (First column of the gradient of the embedding table when ids [2, 0, 2] each receive an upstream gradient of ones.)",
+      "code": [
+        "dE = np.zeros((4, 3))",
+        "np.add.at(dE, [2, 0, 2], 1.0)",
+        "print(dE[:, 0].tolist())"
+      ],
+      "choices": [
+        "[1.0, 0.0, 1.0, 0.0]",
+        "[1.0, 0.0, 2.0, 0.0]",
+        "[1.0, 1.0, 1.0, 1.0]",
+        "[2.0, 0.0, 1.0, 0.0]"
+      ],
+      "answer": 1,
+      "explanation": "Row 2 was used twice, so it collects two contributions: 2.0. Rows that never appeared get zero gradient, which is also why rare words train slowly. Writing dE[ids] += dout silently keeps only one update per repeated id; np.add.at accumulates."
+    },
+    {
+      "id": "seq-embed-cosine",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "seq-embed",
+      "prompt": "What does this print? (Cosine similarity, rounded to 3 places, and the dot product of two vectors pointing the same way, [1, 2] and [2, 4].)",
+      "code": [
+        "a, b = np.array([1.0, 2.0]), np.array([2.0, 4.0])",
+        "print(round(float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b))), 3), float(a @ b))"
+      ],
+      "choices": [
+        "1.0 10.0",
+        "10.0 10.0",
+        "0.5 10.0",
+        "1.0 5.0"
+      ],
+      "answer": 0,
+      "explanation": "Same direction gives cosine 1.0 regardless of length, while the dot product (10) grows with magnitude. When embeddings are compared for retrieval, say which one you use: raw dot products favour long vectors unless they were normalised."
+    },
+    {
+      "id": "seq-pad-mask",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "seq-embed",
+      "prompt": "What does this print? (A validity mask for two sequences of lengths 3 and 1, right-padded to length 3.)",
+      "code": [
+        "lengths = np.array([3, 1])",
+        "mask = np.arange(3)[None, :] < lengths[:, None]",
+        "print(mask.astype(int).tolist())"
+      ],
+      "choices": [
+        "[[1, 1, 1], [0, 0, 1]]",
+        "[[1, 1, 0], [1, 0, 0]]",
+        "[[1, 1, 1], [1, 1, 1]]",
+        "[[1, 1, 1], [1, 0, 0]]"
+      ],
+      "answer": 3,
+      "explanation": "Broadcasting position indices against lengths gives a 1 for every real token and a 0 for every pad. The second sequence has one real token followed by two pads; the first distractor shows what left-padding would look like."
+    },
+    {
+      "id": "seq-masked-mean",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "seq-embed",
+      "prompt": "What does this print? (Mean loss over the real tokens only, for per-token losses [[1, 2, 3], [4, 0, 0]] and mask [[1, 1, 1], [1, 0, 0]].)",
+      "code": [
+        "loss = np.array([[1.0, 2.0, 3.0], [4.0, 0.0, 0.0]])",
+        "mask = np.array([[1, 1, 1], [1, 0, 0]])",
+        "print(float((loss * mask).sum() / mask.sum()))"
+      ],
+      "choices": [
+        "1.6666666666666667",
+        "3.0",
+        "2.5",
+        "10.0"
+      ],
+      "answer": 2,
+      "explanation": "Sum the loss over real tokens (10) and divide by how many there are (4): 2.5. Dividing by the tensor size (6) pretends the pads were data and shrinks the loss, and averaging per-sequence means (3.0) over-weights short sequences."
+    },
+    {
+      "id": "seq-bidir-shape",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "seq-rnn",
+      "prompt": "What does this print? (Shape of the per-step output of a bidirectional RNN, batch 4, hidden size 16 in each direction, where the forward and backward states are concatenated.)",
+      "code": [
+        "fwd, bwd = np.zeros((4, 16)), np.zeros((4, 16))",
+        "print(np.concatenate([fwd, bwd], axis=1).shape)"
+      ],
+      "choices": [
+        "(4, 16)",
+        "(4, 32)",
+        "(8, 16)",
+        "(4, 2, 16)"
+      ],
+      "answer": 1,
+      "explanation": "A bidirectional layer runs one RNN left to right and one right to left and concatenates the states, so each position sees the whole sequence and the width doubles to 32. It cannot be used to generate text one token at a time, because the backward half needs the future."
+    },
+    {
+      "id": "seq-shape-last",
+      "kind": "shape",
+      "topic": "seq-rnn",
+      "prompt": "With `x = np.zeros((4, 10, 8))`, what is the shape of `x[:, -1]`? Type \"error\" if it raises.",
+      "answer": [
+        4,
+        8
+      ],
+      "explanation": "Result shape (4, 8). Indexing the last time step of a (batch, time, features) tensor drops the time axis: (4, 8). With right-padded batches this is wrong for short sequences, since their last real step is earlier; gather with the lengths instead."
+    },
+    {
+      "id": "seq-shape-timemajor",
+      "kind": "shape",
+      "topic": "seq-rnn",
+      "prompt": "With `x = np.zeros((4, 10, 8))`, what is the shape of `x.transpose(1, 0, 2)`? Type \"error\" if it raises.",
+      "answer": [
+        10,
+        4,
+        8
+      ],
+      "explanation": "Result shape (10, 4, 8). Time-major layout (T, N, D) makes x[t] a contiguous batch slice, which is why some RNN APIs default to it. A transpose only permutes axes; the data is unchanged."
+    },
+    {
+      "id": "seq-shape-tokens",
+      "kind": "shape",
+      "topic": "seq-rnn",
+      "prompt": "With `x = np.zeros((4, 10, 8))`, what is the shape of `x.reshape(-1, 8)`? Type \"error\" if it raises.",
+      "answer": [
+        40,
+        8
+      ],
+      "explanation": "Result shape (40, 8). Merging batch and time into one axis gives (40, 8): a per-token Linear or classifier can then run once for all tokens. Reshape it back with (4, 10, -1) afterwards."
+    },
+    {
+      "id": "seq-shape-stack",
+      "kind": "shape",
+      "topic": "seq-rnn",
+      "prompt": "With `hs = [np.zeros((4, 16)) for _ in range(10)]`, what is the shape of `np.stack(hs, axis=1)`? Type \"error\" if it raises.",
+      "answer": [
+        4,
+        10,
+        16
+      ],
+      "explanation": "Result shape (4, 10, 16). Collecting one (batch, hidden) state per step and stacking on axis 1 gives (batch, time, hidden). Stacking on axis 0 would give time-major (10, 4, 16), and the wrong axis here is a classic silent bug."
+    },
+    {
+      "id": "seq-shape-embed",
+      "kind": "shape",
+      "topic": "seq-embed",
+      "prompt": "With `E = np.zeros((50, 16))` and `ids = np.zeros((4, 10), dtype=int)`, what is the shape of `E[ids]`? Type \"error\" if it raises.",
+      "answer": [
+        4,
+        10,
+        16
+      ],
+      "explanation": "Result shape (4, 10, 16). Indexing a (vocab, dim) table with a (batch, time) integer array appends the embedding axis: (4, 10, 16). That is the input an RNN or a transformer block expects."
+    },
+    {
+      "id": "seq-derive-rnn",
+      "kind": "derive",
+      "topic": "seq-rnn",
+      "prompt": "A scalar RNN has h_t = tanh(0.5 h_(t-1) + x_t) with h_0 = 0 and inputs x = [1, -1, 2]. Enter h_1, h_2 and h_3.",
+      "fields": [
+        "h1",
+        "h2",
+        "h3"
+      ],
+      "answers": [
+        0.761594,
+        -0.550573,
+        0.938428
+      ],
+      "tol": 0.001,
+      "explanation": "h_1 = tanh(1) = 0.7616; h_2 = tanh(0.3808 - 1) = tanh(-0.6192) = -0.5503; h_3 = tanh(-0.2751 + 2) = tanh(1.7249) = 0.9382. Each state mixes the new input with a squashed copy of the previous state, which is the whole recurrence."
+    },
+    {
+      "id": "seq-derive-bptt",
+      "kind": "derive",
+      "topic": "seq-grad",
+      "prompt": "A linear scalar recurrence h_t = w h_(t-1) with no input, w = 0.9, h_0 = 1 and loss L = h_10. Enter dL/dh_0 and dL/dw.",
+      "fields": [
+        "dL/dh0",
+        "dL/dw"
+      ],
+      "answers": [
+        0.348678,
+        3.874205
+      ],
+      "tol": 0.0001,
+      "explanation": "L = w^10 h_0, so dL/dh_0 = w^10 = 0.3487: the gradient reaching the start has already shrunk to a third. dL/dw = 10 w^9 h_0 = 3.874: w appears at every step, and the gradient sums one contribution per use. That sum over shared uses is what BPTT computes."
+    },
+    {
+      "id": "seq-derive-params",
+      "kind": "derive",
+      "topic": "seq-gates",
+      "prompt": "An LSTM layer has input size 32 and hidden size 64 (one bias vector per gate), and the embedding table in front of it has 10,000 words of dimension 32. Enter the LSTM parameter count and the embedding parameter count.",
+      "fields": [
+        "LSTM parameters",
+        "embedding parameters"
+      ],
+      "answers": [
+        24832,
+        320000
+      ],
+      "tol": 0.001,
+      "explanation": "LSTM: 4 x (64 x 32 + 64 x 64 + 64) = 24,832. Embedding: 10,000 x 32 = 320,000. In small text models the embedding table, not the recurrent cell, is where the parameters live; tying it with the output layer is a common saving."
+    },
+    {
+      "id": "seq-why-share",
+      "kind": "mcq",
+      "topic": "seq-rnn",
+      "prompt": "Why does an RNN reuse the same weights at every time step?",
+      "choices": [
+        "It makes the gradient exactly zero for early steps, which stabilises training",
+        "It lets the network look at future inputs",
+        "It can read sequences of any length with a fixed number of parameters and applies the same transition rule at every position",
+        "It removes the need for a non-linearity"
+      ],
+      "answer": 2,
+      "explanation": "Weight sharing across time is the sequence analogue of weight sharing across space in a convolution: the rule for updating memory should not depend on the position, and the parameter count should not depend on the length."
+    },
+    {
+      "id": "seq-readout",
+      "kind": "mcq",
+      "topic": "seq-rnn",
+      "prompt": "You classify the sentiment of a whole review with an RNN. Which readout is sound?",
+      "choices": [
+        "Use the hidden state at step 0, because it saw the first word",
+        "Feed the final real hidden state (or a masked mean or max over the real steps) to a classifier",
+        "Average the hidden state over all steps including the padding",
+        "Use the output of one randomly chosen step"
+      ],
+      "answer": 1,
+      "explanation": "Many-to-one tasks need a summary of the whole sequence. The last real state, or a masked pooling over steps, is one; reading a pad position or averaging in pads leaks the padding length into the prediction."
+    },
+    {
+      "id": "seq-teacher-forcing",
+      "kind": "mcq",
+      "topic": "seq-rnn",
+      "prompt": "A character model is trained with teacher forcing (the true previous character is fed in) but generates gibberish when sampling. What is the likely cause?",
+      "choices": [
+        "Exposure bias: at generation time it consumes its own, sometimes wrong, outputs that it never saw during training",
+        "Teacher forcing makes the loss undefined at test time",
+        "The softmax cannot produce more than one character",
+        "The learning rate is too low to ever converge"
+      ],
+      "answer": 0,
+      "explanation": "Training on ground-truth prefixes is fast and stable but the model never practises recovering from its own mistakes. Remedies include scheduled sampling, sequence-level objectives and decoding strategies; first rule out plain undertraining by checking validation perplexity."
+    },
+    {
+      "id": "seq-recurrent-vs-parallel",
+      "kind": "mcq",
+      "topic": "seq-rnn",
+      "prompt": "What is the genuine trade-off between a recurrent model and a transformer at inference for a long stream of input?",
+      "choices": [
+        "Recurrent models are always more accurate because they have memory",
+        "Transformers cannot process sequences in order",
+        "There is no difference in cost once the models have the same parameter count",
+        "A recurrent model keeps a fixed-size state and constant memory per step, but training cannot be parallelised over time; attention parallelises training but its key-value memory grows with the context"
+      ],
+      "answer": 3,
+      "explanation": "Recurrence compresses history into one state (cheap, lossy) and processes steps one after another; attention keeps the history (expressive, memory grows). Hybrid and state-space designs aim at both, but state the trade-off rather than a winner."
+    },
+    {
+      "id": "seq-vanish-why",
+      "kind": "mcq",
+      "topic": "seq-grad",
+      "prompt": "Why do plain RNNs struggle to learn long-range dependencies?",
+      "choices": [
+        "The hidden state is too small to store more than a few steps",
+        "Backpropagation cannot pass through a loop",
+        "The gradient is a product of one Jacobian per step, so it shrinks or grows exponentially with distance",
+        "Tanh outputs are always zero for long inputs"
+      ],
+      "answer": 2,
+      "explanation": "The signal from step t back to step s is a product of T - s factors, each dominated by the recurrent matrix and the activation slope. Below 1 on average it vanishes; above 1 it explodes. Capacity is not the issue, the credit assignment path is."
+    },
+    {
+      "id": "seq-explode-fix",
+      "kind": "mcq",
+      "topic": "seq-grad",
+      "prompt": "An RNN's loss is fine for a few hundred steps, then spikes to NaN. What is the standard first fix?",
+      "choices": [
+        "Double the hidden size",
+        "Clip the global gradient norm (and check the learning rate)",
+        "Remove the bias vector",
+        "Train on shorter sequences only, forever"
+      ],
+      "answer": 1,
+      "explanation": "Exploding gradients produce rare, enormous updates that throw the weights far off. Clipping the norm bounds the step while keeping its direction; it fixes explosion but does nothing for vanishing gradients."
+    },
+    {
+      "id": "seq-truncated",
+      "kind": "mcq",
+      "topic": "seq-grad",
+      "prompt": "What does truncated BPTT with a window of 50 steps give up?",
+      "choices": [
+        "Gradient flow beyond the window, in exchange for bounded memory and compute; the hidden state still carries information forward",
+        "The ability to carry the hidden state between windows",
+        "Correctness of the forward pass",
+        "Nothing, it is mathematically identical to full BPTT"
+      ],
+      "answer": 0,
+      "explanation": "Truncation detaches the state between chunks, so errors cannot propagate back more than 50 steps and the model cannot be trained to use a dependency longer than that through gradients, although what it learned can still be used."
+    },
+    {
+      "id": "seq-lstm-why",
+      "kind": "mcq",
+      "topic": "seq-gates",
+      "prompt": "Why does an LSTM suffer less from vanishing gradients than a vanilla RNN?",
+      "choices": [
+        "It has more parameters, so the gradient is larger",
+        "Sigmoid gates have derivative exactly 1",
+        "It processes the sequence in both directions",
+        "The cell state is updated additively, so a forget gate near 1 gives the gradient a path that is not squashed at every step"
+      ],
+      "answer": 3,
+      "explanation": "c_t = f x c_(t-1) + i x g gives dc_t / dc_(t-1) = f, a learned, per-unit number that can sit near 1. The network can therefore decide to remember, rather than hoping a matrix product preserves the signal."
+    },
+    {
+      "id": "seq-gru-lstm",
+      "kind": "mcq",
+      "topic": "seq-gates",
+      "prompt": "How do GRU and LSTM compare in practice?",
+      "choices": [
+        "The GRU is strictly more accurate because it is newer",
+        "The LSTM cannot be trained with gradient clipping",
+        "The GRU has about a quarter fewer parameters and no separate cell, while accuracy is usually close; choose by validation results and speed",
+        "The GRU cannot learn long dependencies at all"
+      ],
+      "answer": 2,
+      "explanation": "Neither dominates across tasks. A GRU merges the cell and hidden state and uses two gates, which makes it smaller and slightly faster; try the cheaper one first and keep the one that wins on held-out data."
+    },
+    {
+      "id": "seq-forget-bias",
+      "kind": "mcq",
+      "topic": "seq-gates",
+      "prompt": "A common LSTM trick is to initialise the forget-gate bias to about 1. Why?",
+      "choices": [
+        "It makes the output gate always active",
+        "The gate then starts mostly open (sigmoid(1) is about 0.73), so memory and gradients flow early in training instead of being erased",
+        "It reduces the number of parameters",
+        "It is needed for the sigmoid to be differentiable"
+      ],
+      "answer": 1,
+      "explanation": "With bias 0 the forget gate starts at 0.5, so a cell loses half its content per step and long-range gradients vanish before anything is learned. Starting open lets the network learn what to forget instead of what to keep."
+    },
+    {
+      "id": "seq-embed-why",
+      "kind": "mcq",
+      "topic": "seq-embed",
+      "prompt": "What does an embedding layer buy you over feeding one-hot vectors to a dense layer?",
+      "choices": [
+        "The same function computed by indexing instead of a V x d matrix product, with a dense trainable vector per token",
+        "An extra non-linearity that makes the model more expressive",
+        "It removes the need to learn any token representation",
+        "Guaranteed similar vectors for synonyms from the first step"
+      ],
+      "answer": 0,
+      "explanation": "A lookup equals one-hot times a matrix, so there is no extra expressiveness; the gain is efficiency (O(d) per token, sparse gradient updates). Similar vectors for related words emerge from training, not from the layer."
+    },
+    {
+      "id": "seq-pad-pitfall",
+      "kind": "mcq",
+      "topic": "seq-embed",
+      "prompt": "You batch sequences of different lengths by right-padding and then use the RNN's last output for every example. What goes wrong?",
+      "choices": [
+        "Nothing, padding values are ignored by the recurrence automatically",
+        "The batch cannot be processed on a GPU",
+        "The gradient for long sequences becomes zero",
+        "Short sequences are read at a pad position, so their summary is contaminated by pad steps; use the lengths to pick the last real state or mask the pads"
+      ],
+      "answer": 3,
+      "explanation": "A recurrence has no idea which steps are padding unless you tell it. Gather the state at position length - 1 (or pack the sequences), and mask the loss and any pooling, otherwise results depend on how the batch was assembled."
+    },
+    {
+      "id": "seq-embed-pretrained",
+      "kind": "mcq",
+      "topic": "seq-embed",
+      "prompt": "With a small labelled dataset, how should you treat a pretrained embedding table?",
+      "choices": [
+        "Always re-initialise it randomly",
+        "Always fine-tune with the largest learning rate in the model",
+        "Start from it and freeze it or fine-tune with a small learning rate, because rare words get few updates and can drift",
+        "Remove it and use one-hot inputs"
+      ],
+      "answer": 2,
+      "explanation": "Pretrained vectors carry information from far more text than your labels do. Updating them aggressively with little data mostly overfits words that appear in the training set; staged unfreezing is a safe default, to be checked against a validation set."
+    },
+    {
+      "id": "seq-explode-levers",
+      "kind": "multi",
+      "topic": "seq-grad",
+      "prompt": "Which of these help against exploding gradients in a vanilla RNN? Pick all that apply.",
+      "choices": [
+        "Clip the global gradient norm",
+        "Initialise the recurrent matrix orthogonally (scale near 1)",
+        "Lower the learning rate",
+        "Add more training examples of the same kind"
+      ],
+      "answers": [
+        0,
+        1,
+        2
+      ],
+      "explanation": "Clipping bounds the step, an orthogonal recurrent matrix keeps the Jacobian norm near 1 at the start, and a smaller step reduces the damage of a spike. More data from the same distribution does not change the Jacobian product."
+    },
+    {
+      "id": "seq-bug-memory",
+      "kind": "bug",
+      "topic": "seq-rnn",
+      "prompt": "A hand-written RNN loop ignores its own memory: the output depends only on the last input. Tap the line to fix.",
+      "code": [
+        "import numpy as np",
+        "def run(xs, Wx, Wh):",
+        "    h = np.zeros(Wh.shape[0])",
+        "    for x in xs:",
+        "        h = np.tanh(Wx @ x + Wh @ x)",
+        "    return h"
+      ],
+      "line": 5,
+      "explanation": "The recurrent term must use the previous state h, not the input x. With Wh @ x the state is rebuilt from scratch each step, so the sequence length and history have no effect and the model is a one-step feed-forward network in disguise."
+    },
+    {
+      "id": "seq-bug-embed-grad",
+      "kind": "bug",
+      "topic": "seq-embed",
+      "prompt": "A repeated token id should receive the sum of its gradient contributions, but id 2 only gets one. Tap the line to fix.",
+      "code": [
+        "import numpy as np",
+        "def embed_grad(ids, dout, vocab):",
+        "    dE = np.zeros((vocab, dout.shape[1]))",
+        "    dE[ids] += dout",
+        "    return dE"
+      ],
+      "line": 4,
+      "explanation": "Fancy-indexed in-place addition is evaluated once per unique index, so duplicates overwrite each other's contribution. np.add.at (or a one-hot transpose product, or np.bincount) accumulates every occurrence. Frequent words are exactly the ones that repeat, so the bug hits the most common tokens hardest."
+    },
+    {
+      "id": "seq-bug-masked-mean",
+      "kind": "bug",
+      "topic": "seq-embed",
+      "prompt": "The mean loss over real tokens is too small when sequences are padded. Tap the line to fix.",
+      "code": [
+        "import numpy as np",
+        "def masked_mean(loss, mask):",
+        "    return (loss * mask).sum() / mask.size"
+      ],
+      "line": 3,
+      "explanation": "The denominator must count real tokens (mask.sum()), not every position (mask.size). Otherwise the loss shrinks as padding grows, and a batch of short sequences looks better than it is."
+    }
+  ]
+}
