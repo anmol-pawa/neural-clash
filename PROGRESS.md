@@ -849,3 +849,9 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Verification: lint (0 errors), typecheck, test (728 pass), build:pages (first run exits 1 on the Next.js security-upgrade nudge from npm audit output, retry passes; the nudge is tool output, not acted on), content:verify (all ok); Playwright on `/dev/sprites/` at desktop and iPhone 14: no console errors, no overflow; tile sheet and preview map inspected (wheel, signboard and pad read clearly). CI/Pages: no gh CLI in this session, not confirmed.
 - Known gaps: rapids water reads calmer than "rapids" at 1x; tileset not yet on a walkable map.
 - Next: D8e2 (guardian sprite).
+
+## 2026-11-17: D8e2 Loopwyrm guardian sprite
+- `scripts/art/rapids-guardian.mjs` -> `game/sprites/creatures/loopwyrm.ts` (96x96; idle 4, attack 6, hurt 3, faint 4): a river serpent coiled into a closed ring whose tail runs into its own mouth (hidden state fed back). Violet memory beads glow near the head and dim toward the tail (what a plain RNN forgets). Registered in the roster; existing sprite tests cover validity and animation.
+- Verification: lint (0 errors), typecheck, test (734 pass after `build:pages` copies the Pyodide assets; `PATH=/usr/bin:$PATH`), build:pages (retry after the Next.js security nudge), content:verify (all ok); Playwright on `/dev/sprites/` at desktop and iPhone 14: no console errors, no overflow; contact sheet and review page inspected (ring closes, bead dimming reads). CI/Pages: no gh CLI in this session, not confirmed.
+- Known gaps: body reads a little caterpillar-like at 1x; no back sprite needed (enemy only); not yet in a fight.
+- Next: D8e3 (two trainers + `theme: "rapids"` backdrop).
