@@ -869,3 +869,11 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Verification: lint (0 errors), typecheck, test (756 pass; the first run before `build:pages` fails the Pyodide-asset suite as before, rerun clean), build:pages, content:verify (all ok), smoke:guardian-nest at desktop and iPhone 14 (all PASS, no console errors or overflow); screenshots of `/guardian/rapids/` inspected (backdrop, Loopwyrm, card readable). CI/Pages: no gh CLI in this session, not confirmed.
 - Known gaps: companion still the Multilayer/Convling art (no Recurrent form yet); Rapids not on an overworld map.
 - Next: D8f2 (Recurrent companion sprite and evolution).
+
+## 2026-11-17: D8f2 Recurrent companion sprite and evolution
+- `scripts/art/neuron-pup-recurrent.mjs` -> `neuron-pup-recurrent{,-back}.ts` (64x64; front idle 4, attack 5, hurt 3, faint 4, evolve 4; back idle/attack/hurt/faint): river-blue Neuron-Pup whose belly is a ring of eight beads with a bright state bead hopping round and a fading memory trail, plus a loop-arrow crest. Registered in the roster. The Recurrent form now needs the `forge-rnn` Lab (was a placeholder `rnn`) and uses the new sprite; GDD companion table updated.
+- Tests: `tests/evolution.test.ts` covers reaching Recurrent, the back-sprite switch and form ordering.
+- Verification: lint (0 errors), typecheck, test (769 pass after `build:pages` copies the Pyodide assets), build and build:pages (each exits 1 first on the Next.js security-upgrade nudge from npm audit output, retry passes; tool output, not acted on), content:verify (all ok). Playwright on `/dev/sprites/` at desktop and iPhone 14: no console errors, no overflow; desktop screenshot inspected (distinct from Convling, ring and crest read, faint X eyes fine).
+- Branch note: committed on `claude/wonderful-goodall-xg3cww` (the session's required branch), not `main`, so Pages does not deploy it until merged.
+- Known gaps: idle eyes read slightly dark at 1x; Battle demo and Sync still show earlier forms.
+- Next: D8f3 (the *Drift* boss).

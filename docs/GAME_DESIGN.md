@@ -65,7 +65,7 @@ Source of truth for what the game is. `docs/CURRICULUM.md` covers what it teache
 | **Perceptron** | linear model + gradient descent |
 | **Multilayer** | autograd `Value` + MLP (Forge Labs `forge-value`, `forge-mlp`) |
 | **Convling** | conv layers (Forge Lab `forge-conv`) |
-| **Recurrent** | sequence models |
+| **Recurrent** | sequence models (Forge Lab `forge-rnn`) |
 | **Transformer** | attention + transformer block |
 | **Foundation** | tokenizer + training a tiny language model + sampling |
 

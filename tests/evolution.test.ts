@@ -69,4 +69,14 @@ describe("evolutionState", () => {
     expect(heroBackSpriteId({ "linear-gd": pass, "forge-conv": pass }, all)).toBe("neuron-pup-perceptron-back");
     expect(FORMS[2]!.sprite).toBe("neuron-pup-convling");
   });
+
+  it("reaches Recurrent after the Forge rnn Lab and switches the battle sprite", () => {
+    const all = new Set(["linear-gd", "forge-value", "forge-mlp", "forge-conv", "forge-rnn"]);
+    const labs = { "linear-gd": pass, "forge-value": pass, "forge-mlp": pass, "forge-conv": pass };
+    expect(heroBackSpriteId(labs, all)).toBe("neuron-pup-convling-back");
+    expect(heroBackSpriteId({ ...labs, "forge-rnn": pass }, all)).toBe("neuron-pup-recurrent-back");
+    // rnn alone is not enough: forms are ordered
+    expect(heroBackSpriteId({ "linear-gd": pass, "forge-rnn": pass }, all)).toBe("neuron-pup-perceptron-back");
+    expect(FORMS[3]!.sprite).toBe("neuron-pup-recurrent");
+  });
 });
