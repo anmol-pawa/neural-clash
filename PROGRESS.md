@@ -869,3 +869,9 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Verification: lint (0 errors), typecheck, test (756 pass; the first run before `build:pages` fails the Pyodide-asset suite as before, rerun clean), build:pages, content:verify (all ok), smoke:guardian-nest at desktop and iPhone 14 (all PASS, no console errors or overflow); screenshots of `/guardian/rapids/` inspected (backdrop, Loopwyrm, card readable). CI/Pages: no gh CLI in this session, not confirmed.
 - Known gaps: companion still the Multilayer/Convling art (no Recurrent form yet); Rapids not on an overworld map.
 - Next: D8f2 (Recurrent companion sprite and evolution).
+
+## 2026-11-17: D8f2 Recurrent companion sprite and evolution
+- `scripts/art/neuron-pup-recurrent.mjs` -> `neuron-pup-recurrent{,-back}.ts` (64x64; front idle 4/attack 5/hurt 3/faint 4/evolve 4, back idle/attack/hurt/faint): dusk-indigo fur, a three-cell loop on the belly whose state bead hops cell to cell, a ring crest and a tail curling back on itself. Registered in the roster. The Recurrent form now requires `forge-rnn` (was the placeholder `rnn`) and uses the new sprite; GDD table updated; evolution test added.
+- Verification: lint (0 errors), typecheck, test (769 pass), build:pages (first run exits 1 on the Next.js security nudge, retry passes), content:verify (all ok), smoke:companion at desktop and iPhone 14 (PASS, no console errors or overflow); contact sheets of front and back inspected (reads as the pup; belly loop is small at 1x).
+- Known gaps: readiness skill `dl-scratch` still cites legacy Lab id `rnn`; the loop tail reads as beads, not a closed ring. CI/Pages not confirmed (no gh CLI).
+- Next: D8f3 (the Drift boss).
