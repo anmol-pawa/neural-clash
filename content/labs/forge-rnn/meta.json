@@ -1,0 +1,35 @@
+{
+  "id": "forge-rnn",
+  "title": "Forge 10: RNN with backprop through time, and a GRU cell",
+  "phase": "forge",
+  "language": "python",
+  "functions": [
+    "RNN",
+    "GRUCell"
+  ],
+  "wrong": {
+    "no_tanh_derivative.py": "the (1 - h^2) factor of tanh is missing from backward, so every gradient is too large",
+    "truncated_bptt.py": "the gradient is not sent back through Whh (dh_next = 0): each step only learns from its own loss",
+    "dwhh_uses_current_state.py": "dWhh pairs the gradient with h_t instead of h_{t-1}",
+    "dwhh_overwritten.py": "dWhh is assigned at each step instead of summed, so only the first step's contribution survives",
+    "dwxh_last_step_only.py": "dWxh keeps only the last step's contribution instead of the sum over time",
+    "ignores_intermediate_gradients.py": "per-step gradients dhs[:, t] are ignored except at the last step, so a loss on every step is wrong",
+    "accumulating_grads.py": "gradients accumulate across backward calls instead of being reset",
+    "stateful_start.py": "forward starts from the previous call's final state instead of zeros",
+    "init_whh_unscaled.py": "Whh ~ Normal(0, 1) instead of Normal(0, 1/hidden): the spectral radius grows with width and the state saturates",
+    "db_not_summed_over_time.py": "dbh keeps only the first-processed step instead of summing over time",
+    "db_first_example.py": "dbh uses only the first example of the batch",
+    "gru_gate_swapped.py": "h' = z*n + (1-z)*h: the update gate has the wrong direction",
+    "gru_reset_before_matmul.py": "the reset gate multiplies h before the matmul (the other published variant), which is not the cell specified here",
+    "gru_no_highway_gradient.py": "dh drops the direct z * dh' path, which is exactly what lets gradients survive long spans",
+    "gru_dz_sign.py": "the update-gate gradient has the wrong sign",
+    "gru_gate_sigmoid_derivative_missing.py": "the sigmoid derivative z(1-z) is missing from the update-gate gradient"
+  },
+  "hints": [
+    "Forward is a loop over time (that part cannot be vectorised away), but each step is batch-wide matmuls. Keep a (N, T+1, H) array of states with hs[:, 0] = 0 so step t reads hs[:, t] and writes hs[:, t+1].",
+    "Backward walks time in reverse with a running dh_next. At step t the gradient on the state is dhs[:, t] + dh_next. Push it through tanh with (1 - h_t^2), then you have da.",
+    "The same Wxh, Whh and bh are used at every step, so their gradients are sums over time: dWxh += x_t.T @ da, dWhh += h_{t-1}.T @ da (the PREVIOUS state), dbh += da.sum(0). Then dx_t = da @ Wxh.T and dh_next = da @ Whh.T.",
+    "For the GRU, h' = (1 - z) * n + z * h. Work from the end: dn = dh' * (1 - z), dz = dh' * (h - n), and the direct path dh' * z. Through the tanh and sigmoids you get da for the three blocks; the candidate block's recurrent matmul is scaled by r, so its dh path gets r and r's gradient gets q = h @ Wh_n.",
+    "Debug with finite differences one parameter at a time. If only dWhh is off, check you used h_{t-1}; if only early inputs are off, check dh_next is being carried."
+  ]
+}

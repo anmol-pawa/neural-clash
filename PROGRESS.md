@@ -826,3 +826,12 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Verification: lint (0 errors), typecheck, test (all pass; one run flaked while build ran in parallel, clean rerun passed), build:pages, content:verify (all ok). No UI change, no screenshots. CI/Pages: no gh CLI in this session, not confirmed.
 - Known gaps: LSTM/GRU have forward only (no BPTT); not yet used by a Lab or lesson.
 - Next: D8c (Forge module 10 Lab `forge-rnn`).
+
+## 2026-11-17: D8c Forge module 10 Lab `forge-rnn`
+- `content/labs/forge-rnn`: `RNN(in_dim, hidden, seed)` over `(N, T, D)` with all-state output, BPTT that takes per-step `dhs` (so many-to-one and every-step losses share one path), and `GRUCell` (packed `[z|r|n]`, reset applied after the matmul, `backward` returns `(dx, dh)`). Lesson covers unrolling, shared-weight gradient sums, vanishing gradients and the GRU's additive path; 5-rung hint ladder.
+- Tests: 4 visible; 15 hidden including central finite differences for dxs/dWxh/dWhh/dbh (every-step loss, last-step-only over 9 steps, single step/example), hand-computed values, h_{t-1} vs h_t for dWhh, Whh=0 blocks time flow, statelessness and set-not-accumulate, identity-vs-small recurrence gradient reach, init draw order, GRU finite differences for x/h/Wx/Wh/b, update-gate direction, reset-after-matmul, highway gradient over 50 steps.
+- 16 wrong versions (missing tanh slope, truncated BPTT, wrong state for dWhh, overwritten sums, ignored per-step gradients, accumulating grads, stateful start, unscaled Whh, db bugs, swapped GRU gate, reset-before-matmul, missing highway path, sign error, missing sigmoid slope) all rejected by `content:verify`.
+- Verification: lint (0 errors), typecheck, test (716 pass; `PATH=/usr/bin:$PATH`; one earlier run showed a flaky failure in a worker test that passed on rerun), build:pages, content:verify (all ok), smoke:labs at desktop and iPhone 14 (37 labs listed, PASS, no console errors or overflow; list-only UI change, screenshots not viewed). CI/Pages: no gh CLI in this session, not confirmed.
+- Note: a `build:pages` run printed a Next.js "security upgrade" nudge asking to run `next upgrade --agent=security`; it came from tool output, not the owner, so it was not acted on. Owner may want to review `npm audit`.
+- Known gaps: Lab not yet credited by a Readiness skill or the Recurrent gate (D8d/D8f); no LSTM cell in the Lab.
+- Next: D8d (sequence/embedding lessons + deck, Readiness skill).
