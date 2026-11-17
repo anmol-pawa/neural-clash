@@ -849,3 +849,9 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Verification: lint (0 errors), typecheck, test (728 pass), build:pages (first run exits 1 on the Next.js security-upgrade nudge from npm audit output, retry passes; the nudge is tool output, not acted on), content:verify (all ok); Playwright on `/dev/sprites/` at desktop and iPhone 14: no console errors, no overflow; tile sheet and preview map inspected (wheel, signboard and pad read clearly). CI/Pages: no gh CLI in this session, not confirmed.
 - Known gaps: rapids water reads calmer than "rapids" at 1x; tileset not yet on a walkable map.
 - Next: D8e2 (guardian sprite).
+
+## 2026-11-17: D8e2 Loopwyrm guardian sprite
+- `scripts/art/rapids-guardian.mjs` -> `game/sprites/creatures/loopwyrm.ts` (96x96; idle 4, attack 6, hurt 3, faint 4): a river serpent coiled into a ring of eight segments with an amber orb (the hidden state) handed on each frame and a tail that feeds back into the head's mouth. Registered in the roster (sprite tests cover validity and animation).
+- Verification: lint (0 errors), typecheck, test (726 pass, 8 skipped; first run had a flaky worker error, clean rerun passed), build:pages (first run exits 1 on the Next.js security-upgrade nudge from npm audit output, retry passes; tool output, not acted on); Playwright on `/dev/sprites/` at desktop and iPhone 14: no console errors, no overflow; contact sheet inspected (ring, orb and head read; segments look a bit like separate bubbles).
+- Known gaps: not yet wired to a guardian def or fight; body could be more continuous. Run was on branch `claude/wonderful-goodall-xjjmgh` as required by the session, not `main`. CI/Pages not confirmed (no gh CLI).
+- Next: D8e3 (two trainers + `theme: "rapids"` backdrop).

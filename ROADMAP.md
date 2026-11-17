@@ -144,7 +144,7 @@ Work top to bottom: take the **first unchecked box**, and split big boxes into r
   - [x] D8d. (done 2026-11-17) Sequence/embedding lessons + 38-card deck (`scripts/gen-seq.mjs`), `sequence-models` Readiness skill.
   - [ ] D8e. Region art, split into:
     - [x] D8e1. (done 2026-11-17) Recurrent Rapids tileset (`scripts/art/recurrent-rapids.mjs`) and preview map.
-    - [ ] D8e2. Guardian sprite (96x96, a looping-state creature).
+    - [x] D8e2. (done 2026-11-17) Guardian sprite Loopwyrm (96x96, a ring-coiled river serpent passing a state orb).
     - [ ] D8e3. Two trainers (16x24 walks + 48x48 portraits) and the `theme: "rapids"` battle backdrop.
   - [ ] D8f. Guardian fight, companion → Recurrent evolution, and the *Drift* boss.
 
