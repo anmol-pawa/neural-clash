@@ -45,7 +45,7 @@ function sprite(def: SpriteDef, anim: string, i: number, tint: Tint): HTMLCanvas
 
 const frameFor = (def: SpriteDef, anim: string, t: number) => Math.floor(t * (def.fps?.[anim] ?? 6));
 
-export type StageTheme = "grid" | "vale" | "gorge" | "peaks" | "grove" | "market" | "nest" | "caverns";
+export type StageTheme = "grid" | "vale" | "gorge" | "peaks" | "grove" | "market" | "nest" | "caverns" | "rapids";
 
 /** Vector Vale: a twilight meadow of crystals over a lattice floor, with slowly turning basis axes on the horizon. */
 function valeBackdrop(g: CanvasRenderingContext2D, t: number) {
@@ -558,6 +558,70 @@ function cavernsBackdrop(g: CanvasRenderingContext2D, t: number) {
   }
 }
 
+/** Recurrent Rapids: dusk river under willows. Three lanterns on a rope hand a glowing state orb from one to the next, looping back (the recurrence); each hop leaves a fading trail. Rapids streak the lower half and a mill wheel turns on the far bank. */
+function rapidsBackdrop(g: CanvasRenderingContext2D, t: number) {
+  const sky = g.createLinearGradient(0, 0, 0, 80);
+  sky.addColorStop(0, "#1a1440");
+  sky.addColorStop(1, "#8a4a6a");
+  g.fillStyle = sky;
+  g.fillRect(0, 0, STAGE_W, STAGE_H);
+  // far bank with willows
+  g.fillStyle = "#1c3a3a";
+  g.fillRect(0, 62, STAGE_W, 22);
+  for (let i = 0; i < 7; i++) {
+    const x = 12 + i * 36, h = 22 + ((i * 5) % 3) * 6;
+    g.fillStyle = i % 2 ? "#164a3a" : "#206a4a";
+    g.beginPath(); g.ellipse(x, 62 - h / 3, 14, h / 2, 0, 0, Math.PI * 2); g.fill();
+    g.fillStyle = "#2a8a5a";
+    for (let k = -2; k <= 2; k++) g.fillRect(x + k * 5, 62 - h / 3, 1, 10 + ((k * k + i) % 3) * 4);
+  }
+  // mill wheel (right bank)
+  const wx = 214, wy = 56;
+  g.fillStyle = "#4a2a1a"; g.fillRect(wx - 14, wy + 2, 28, 18);
+  g.strokeStyle = "#c48a3a"; g.lineWidth = 2;
+  g.beginPath(); g.arc(wx, wy, 12, 0, Math.PI * 2); g.stroke();
+  for (let k = 0; k < 6; k++) { const a = t * 0.8 + (k * Math.PI) / 3; g.beginPath(); g.moveTo(wx, wy); g.lineTo(wx + Math.cos(a) * 12, wy + Math.sin(a) * 12); g.stroke(); }
+  // three lanterns on a rope; the state orb hops 0 -> 1 -> 2 -> 0
+  const L = [[60, 30], [128, 20], [196, 30]] as const;
+  g.strokeStyle = "#c8a870"; g.lineWidth = 1;
+  g.beginPath(); g.moveTo(0, 36); g.quadraticCurveTo(60, 22, L[0][0], L[0][1]); g.quadraticCurveTo(94, 28, L[1][0], L[1][1]); g.quadraticCurveTo(162, 28, L[2][0], L[2][1]); g.quadraticCurveTo(230, 22, STAGE_W, 36); g.stroke();
+  const phase = (((t * 0.75) % 3) + 3) % 3, from = Math.floor(phase), k = phase - from;
+  const ease = k * k * (3 - 2 * k);
+  const a = L[from], b = L[(from + 1) % 3];
+  const ox = a[0] + (b[0] - a[0]) * ease, oy = a[1] + (b[1] - a[1]) * ease - Math.sin(ease * Math.PI) * 10;
+  for (let i = 0; i < 3; i++) {
+    const [lx, ly] = L[i];
+    const lit = i === (k < 0.5 ? from : (from + 1) % 3);
+    g.fillStyle = "#3a2a1a"; g.fillRect(lx - 1, ly - 6, 2, 5);
+    g.fillStyle = lit ? "#ffe08a" : "#a8742a";
+    g.fillRect(lx - 4, ly - 1, 8, 9);
+    g.fillStyle = "#3a2a1a"; g.fillRect(lx - 5, ly - 2, 10, 2); g.fillRect(lx - 5, ly + 8, 10, 2);
+  }
+  for (let i = 3; i >= 1; i--) {
+    const kk = Math.max(0, ease - i * 0.12);
+    g.globalAlpha = 0.45 - i * 0.12;
+    g.fillStyle = "#ff8ae0";
+    g.fillRect(Math.floor(a[0] + (b[0] - a[0]) * kk) - 1, Math.floor(a[1] + (b[1] - a[1]) * kk - Math.sin(kk * Math.PI) * 10) - 1, 3, 3);
+  }
+  g.globalAlpha = 1;
+  g.fillStyle = "#ff8ae0"; g.fillRect(Math.floor(ox) - 2, Math.floor(oy) - 2, 5, 5);
+  g.fillStyle = "#ffffff"; g.fillRect(Math.floor(ox) - 1, Math.floor(oy) - 1, 2, 2);
+  // river with streaks
+  const river = g.createLinearGradient(0, 84, 0, STAGE_H);
+  river.addColorStop(0, "#2a6a9a");
+  river.addColorStop(1, "#123a66");
+  g.fillStyle = river;
+  g.fillRect(0, 84, STAGE_W, STAGE_H - 84);
+  for (let i = 0; i < 14; i++) {
+    const y = 88 + ((i * 17) % 38), x = ((i * 53 + t * (20 + (i % 3) * 8)) % (STAGE_W + 20)) - 10;
+    g.fillStyle = i % 2 ? "#8ac8f0" : "#d8f0ff";
+    g.fillRect(Math.floor(x), y, 8 + (i % 3) * 4, 1);
+  }
+  // reeds along the near edge
+  g.fillStyle = "#1c4a2a";
+  for (let i = 0; i < 12; i++) { const x = i * 22 + 4; g.fillRect(x, 114 - (i % 3) * 3, 1, 14 + (i % 3) * 3); g.fillRect(x + 3, 118, 1, 10); }
+}
+
 function backdrop(g: CanvasRenderingContext2D, t: number, theme: StageTheme = "grid") {
   if (theme === "vale") return valeBackdrop(g, t);
   if (theme === "gorge") return gorgeBackdrop(g, t);
@@ -566,6 +630,7 @@ function backdrop(g: CanvasRenderingContext2D, t: number, theme: StageTheme = "g
   if (theme === "market") return marketBackdrop(g, t);
   if (theme === "nest") return nestBackdrop(g, t);
   if (theme === "caverns") return cavernsBackdrop(g, t);
+  if (theme === "rapids") return rapidsBackdrop(g, t);
   const sky = g.createLinearGradient(0, 0, 0, 78);
   sky.addColorStop(0, "#0d1033");
   sky.addColorStop(1, "#2a2a6e");

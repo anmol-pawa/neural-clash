@@ -129,9 +129,9 @@ export function CardForm({ card, onSubmit }: { card: Card; onSubmit: (r: Respons
   );
 }
 
-function stageTheme(): "grid" | "vale" | "gorge" | "peaks" | "grove" | "market" | "nest" | "caverns" {
+function stageTheme(): "grid" | "vale" | "gorge" | "peaks" | "grove" | "market" | "nest" | "caverns" | "rapids" {
   const q = new URLSearchParams(window.location.search).get("theme");
-  return q === "vale" || q === "gorge" || q === "peaks" || q === "grove" || q === "market" || q === "nest" || q === "caverns" ? q : "grid";
+  return q === "vale" || q === "gorge" || q === "peaks" || q === "grove" || q === "market" || q === "nest" || q === "caverns" || q === "rapids" ? q : "grid";
 }
 
 export default function Battle() {

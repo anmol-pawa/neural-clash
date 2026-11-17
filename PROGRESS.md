@@ -855,3 +855,10 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Verification: lint (0 errors), typecheck, test (734 pass after `build:pages` copies the Pyodide assets; `PATH=/usr/bin:$PATH`), build:pages (retry after the Next.js security nudge), content:verify (all ok); Playwright on `/dev/sprites/` at desktop and iPhone 14: no console errors, no overflow; contact sheet and review page inspected (ring closes, bead dimming reads). CI/Pages: no gh CLI in this session, not confirmed.
 - Known gaps: body reads a little caterpillar-like at 1x; no back sprite needed (enemy only); not yet in a fight.
 - Next: D8e3 (two trainers + `theme: "rapids"` backdrop).
+
+## 2026-11-17: D8e3 Rapids trainers and backdrop (D8e complete)
+- `scripts/art/rapids-trainers.mjs` -> Ferrier Rill (straw hat, ochre oilskin, blue neckerchief, rope coil) and Scribe Wend (plum robe, long braid, looped scroll): 16x24 walk/stand cycles in four directions and 48x48 portraits (idle/talk/smile/think). Registered in the roster; sprite tests extended.
+- `theme: "rapids"` battle backdrop (`?theme=rapids`): dusk river, willows, turning mill wheel, three lanterns on a rope with a state orb hopping 0->1->2->0 and a fading trail (the recurrence), streaking rapids and reeds. Added to `StageTheme`, `GuardianDef.theme` and the Battle theme parser.
+- Verification: lint (0 errors), typecheck, test (754 pass), build:pages, content:verify (all ok); Playwright on `/battle/?theme=rapids` and `/dev/sprites/` at desktop and iPhone 14: no console errors, no overflow; screenshots inspected (first run caught a negative-time crash in the backdrop, fixed). CI/Pages not confirmed: no gh CLI in this session.
+- Known gaps: Rill's straw hat reads slightly blonde in the portrait; trainers not yet on a Rapids map.
+- Next: D8f (guardian fight, companion -> Recurrent evolution, Drift boss; needs splitting).
