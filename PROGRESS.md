@@ -869,3 +869,10 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Verification: lint (0 errors), typecheck, test (756 pass; the first run before `build:pages` fails the Pyodide-asset suite as before, rerun clean), build:pages, content:verify (all ok), smoke:guardian-nest at desktop and iPhone 14 (all PASS, no console errors or overflow); screenshots of `/guardian/rapids/` inspected (backdrop, Loopwyrm, card readable). CI/Pages: no gh CLI in this session, not confirmed.
 - Known gaps: companion still the Multilayer/Convling art (no Recurrent form yet); Rapids not on an overworld map.
 - Next: D8f2 (Recurrent companion sprite and evolution).
+
+## 2026-11-17: D8f2 Recurrent companion sprite and evolution
+- `scripts/art/neuron-pup-recurrent.mjs` -> `neuron-pup-recurrent{,-back}.ts` (64x64; front idle 4, attack 5, hurt 3, faint 4, evolve 4; back idle 4, attack 3, hurt 2, faint 3): river-indigo fur, an eight-bead ring on the belly whose lit hidden-state bead hops round it each idle frame (trail dims behind it, arrowhead shows the feedback), and a three-bead memory crest on the head. Registered in the roster.
+- `FORMS`: Recurrent now requires Forge Lab `forge-rnn` (was planned `rnn`) and has its sprite; evolution test extended (ordering and back-sprite switch).
+- Verification: lint (0 errors), typecheck, test (769 pass), build:pages, content:verify (all ok); Playwright on `/dev/sprites/` at desktop and iPhone 14: no console errors, no overflow; front sheet inspected (ring and bead read well; crest beads are small at 64px). Back sheet not individually inspected. CI/Pages: no gh CLI in this session, not confirmed. Pushed to branch `claude/wonderful-goodall-q51fre` (session rules), not `main`, so Pages is not redeployed until merged.
+- Known gaps: `readiness.ts` still references legacy lab ids `rnn`/`conv2d`; Battle demo/Sync still show the Perceptron sprite.
+- Next: D8f3 (the Drift boss).
