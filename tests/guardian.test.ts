@@ -284,6 +284,22 @@ describe("Metric Market bosses", () => {
     g = guardianFight(g, { attack: 95, defence: 90, speed: 80 });
     expect(summarizeGuardian(g, CAVERNS_GUARDIAN.badge).badge).toBe(CAVERNS_GUARDIAN.badge);
   });
+  it("Loopwyrm runs on the sequence deck with the RNN Lab and awards its badge", async () => {
+    const { RAPIDS_GUARDIAN } = await import("@/lib/guardian/defs");
+    const { SEQ_DECK } = await import("@/lib/cards/samples");
+    expect(spriteById(RAPIDS_GUARDIAN.spriteId)).toBeTruthy();
+    expect(labById(RAPIDS_GUARDIAN.labId)).toBeTruthy();
+    expect(RAPIDS_GUARDIAN.theme).toBe("rapids");
+    let g = startGuardian(SEQ_DECK.cards, RAPIDS_GUARDIAN.labId);
+    for (let i = 0; i < 100 && g.phase === "cards" && g.cards.current; i++) {
+      g = guardianAnswer(g, correctResponse(g.cards.current));
+      if (g.phase === "cards") g = guardianNext(g);
+    }
+    expect(g.cards.phase).toBe("won");
+    g = guardianLabResult(guardianAdvanceFromCards(g), true);
+    g = guardianFight(g, { attack: 95, defence: 90, speed: 80 });
+    expect(summarizeGuardian(g, RAPIDS_GUARDIAN.badge).badge).toBe(RAPIDS_GUARDIAN.badge);
+  });
   it("guardian ids are unique", async () => {
     const { GUARDIANS } = await import("@/lib/guardian/defs");
     expect(new Set(GUARDIANS.map((d) => d.id)).size).toBe(GUARDIANS.length);

@@ -141,7 +141,21 @@ export const CAVERNS_GUARDIAN: GuardianDef = {
   lessonsHref: "/learn",
 };
 
-export const GUARDIANS: readonly GuardianDef[] = [PYTHON_GUARDIAN, VALE_GUARDIAN, GORGE_GUARDIAN, PEAKS_GUARDIAN, GROVE_GUARDIAN, LEAKAGE_BOSS, SWARM_BOSS, NEST_GUARDIAN, CAVERNS_GUARDIAN];
+export const RAPIDS_GUARDIAN: GuardianDef = {
+  id: "guardian:recurrent-rapids",
+  slug: "rapids",
+  name: "Loopwyrm",
+  badge: "Unrolled Badge",
+  region: "the Recurrent Rapids",
+  spriteId: "loopwyrm",
+  labId: "forge-rnn",
+  theme: "rapids",
+  deckLabel: "sequence models",
+  trials: { read: "you can trace an RNN, its gates and its gradient through time", write: "build an RNN with BPTT and a GRU cell whose gradients check out", generalise: "carry the state across a long sequence without losing it" },
+  lessonsHref: "/learn",
+};
+
+export const GUARDIANS: readonly GuardianDef[] = [PYTHON_GUARDIAN, VALE_GUARDIAN, GORGE_GUARDIAN, PEAKS_GUARDIAN, GROVE_GUARDIAN, LEAKAGE_BOSS, SWARM_BOSS, NEST_GUARDIAN, CAVERNS_GUARDIAN, RAPIDS_GUARDIAN];
 
 export const guardianHref = (g: GuardianDef) => (g.slug ? `/guardian/${g.slug}` : "/guardian");
 

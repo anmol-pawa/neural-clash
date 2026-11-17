@@ -862,3 +862,10 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Verification: lint (0 errors), typecheck, test (754 pass), build:pages, content:verify (all ok); Playwright on `/battle/?theme=rapids` and `/dev/sprites/` at desktop and iPhone 14: no console errors, no overflow; screenshots inspected (first run caught a negative-time crash in the backdrop, fixed). CI/Pages not confirmed: no gh CLI in this session.
 - Known gaps: Rill's straw hat reads slightly blonde in the portrait; trainers not yet on a Rapids map.
 - Next: D8f (guardian fight, companion -> Recurrent evolution, Drift boss; needs splitting).
+
+## 2026-11-17: D8f1 Loopwyrm guardian fight
+- D8f split into D8f1-D8f3 in ROADMAP. This run: `RAPIDS_GUARDIAN` (`/guardian/rapids`): Loopwyrm on the `seq` deck, Lab `forge-rnn`, `rapids` backdrop, Unrolled Badge; home link; `sequence-models` Readiness skill now credits `guardian:recurrent-rapids` instead of a planned stub.
+- Tests: guardian test runs the full flow (deck -> Lab -> hidden-set fight -> badge); readiness tests updated (coverage 1, badge credit 1/3). `smoke:guardian-nest` extended with the rapids boss.
+- Verification: lint (0 errors), typecheck, test (756 pass; the first run before `build:pages` fails the Pyodide-asset suite as before, rerun clean), build:pages, content:verify (all ok), smoke:guardian-nest at desktop and iPhone 14 (all PASS, no console errors or overflow); screenshots of `/guardian/rapids/` inspected (backdrop, Loopwyrm, card readable). CI/Pages: no gh CLI in this session, not confirmed.
+- Known gaps: companion still the Multilayer/Convling art (no Recurrent form yet); Rapids not on an overworld map.
+- Next: D8f2 (Recurrent companion sprite and evolution).

@@ -254,10 +254,14 @@ describe("sequence-models skill", () => {
   const skill = SKILLS.find((s) => s.id === "sequence-models")!;
   const labIds = new Set(LABS.map((l) => l.id));
   const decks = { seq: SEQ_DECK.cards.map((c) => c.id) };
-  it("has its deck and the forge-rnn lab; the guardian is still planned", () => {
+  it("has its deck, the forge-rnn lab and the Loopwyrm guardian", () => {
     const r = scoreSkill(skill, { ...base(), labIds, decks });
     expect(r.score).toBe(0);
-    expect(r.coverage).toBeCloseTo(2 / 3, 5);
+    expect(r.coverage).toBe(1);
+  });
+  it("credits the Unrolled Badge", () => {
+    const r = scoreSkill(skill, { ...base(), labIds, decks, cleared: ["guardian:recurrent-rapids"] });
+    expect(r.score).toBeCloseTo(1 / 3, 5);
   });
   it("gains credit from the lab pass, assisted discounted", () => {
     const solo = scoreSkill(skill, { ...base(), labIds, labs: { "forge-rnn": { passed: true, assisted: false } }, decks });

@@ -146,7 +146,10 @@ Work top to bottom: take the **first unchecked box**, and split big boxes into r
     - [x] D8e1. (done 2026-11-17) Recurrent Rapids tileset (`scripts/art/recurrent-rapids.mjs`) and preview map.
     - [x] D8e2. (done 2026-11-17) Guardian sprite: Loopwyrm (96x96, a ring-coiled serpent whose tail feeds its mouth; memory beads dim away from the head).
     - [x] D8e3. (done 2026-11-17) Two trainers (Ferrier Rill, Scribe Wend; 16x24 walks + 48x48 portraits) and the `theme: "rapids"` battle backdrop.
-  - [ ] D8f. Guardian fight, companion → Recurrent evolution, and the *Drift* boss.
+  - [ ] D8f. Guardian fight, companion → Recurrent evolution, and the *Drift* boss, split into:
+    - [x] D8f1. (done 2026-11-17) Loopwyrm guardian fight `/guardian/rapids` (seq deck, Lab `forge-rnn`, rapids backdrop, Unrolled Badge) and its readiness evidence.
+    - [ ] D8f2. Recurrent companion sprite (64x64 front/back, idle/attack/hurt/faint/evolve) and evolution requirements (`forge-rnn`).
+    - [ ] D8f3. The *Drift* boss (sprite, fight, vanishing-gradient / drift-detection theme).
 
 ## Phase E: Act II regions
 
