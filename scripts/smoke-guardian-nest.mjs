@@ -30,6 +30,7 @@ const BOSSES = [
   { slug: "nest", name: "Dimwarden", lab: "forge-mlp", badge: "Live Gradient Badge" },
   { slug: "caverns", name: "Scanwarden", lab: "forge-conv", badge: "Shared Kernel Badge" },
   { slug: "rapids", name: "Loopwyrm", lab: "forge-rnn", badge: "Unrolled Badge" },
+  { slug: "drift", name: "Drift", lab: "forge-rnn", badge: "Steady Course Badge" },
 ];
 
 const browser = await chromium.launch();

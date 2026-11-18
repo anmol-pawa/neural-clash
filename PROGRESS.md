@@ -875,3 +875,10 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Verification: lint (0 errors), typecheck, test (769 pass), build:pages (first run exits 1 on the Next.js security nudge, retry passes), content:verify (all ok), smoke:companion at desktop and iPhone 14 (PASS, no console errors or overflow); contact sheets of front and back inspected (reads as the pup; belly loop is small at 1x).
 - Known gaps: readiness skill `dl-scratch` still cites legacy Lab id `rnn`; the loop tail reads as beads, not a closed ring. CI/Pages not confirmed (no gh CLI).
 - Next: D8f3 (the Drift boss).
+
+## 2026-11-18: D8f3 Drift boss
+- `scripts/art/rapids-boss.mjs` -> `game/sprites/creatures/drift.ts` (96x96; idle 4, attack 5, hurt 3, faint 4): a driftwood-raft spirit whose sail plots a faint dashed training distribution and a live curve that slides away (with a drift gauge); lantern eyes, log-end rings, ripples. Registered in the roster.
+- `DRIFT_BOSS` (`/guardian/drift`, Steady Course Badge, `rapids` backdrop) on the `seq` deck with Lab `forge-rnn`; home link; credited by the `sequence-models` Readiness skill (now 1/4 per evidence item; tests updated). `smoke:guardian-nest` extended.
+- Verification: lint (0 errors), typecheck, test (777 pass; guardian/readiness/sprite suites rerun after fixing the readiness fractions), build:pages (first run exits 1 on the Next.js security nudge, retry passes), content:verify (all ok), smoke:guardian-nest at desktop and iPhone 14 (all PASS, no console errors or overflow); contact sheet and fight screenshot inspected (raft and sail read clearly; faint frames sink below the frame by design). CI/Pages: checked below.
+- Known gaps: the boss reuses the `seq` deck and RNN Lab, so drift detection is only named, not taught: split out as D8g (PSI/KS solvers + deck). Companion in the fight still shows Multilayer art on the guardian page.
+- Next: D8g, then E1 (Attention Atoll).

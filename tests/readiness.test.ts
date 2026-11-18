@@ -259,15 +259,15 @@ describe("sequence-models skill", () => {
     expect(r.score).toBe(0);
     expect(r.coverage).toBe(1);
   });
-  it("credits the Unrolled Badge", () => {
+  it("credits the Unrolled Badge (one of four evidence items)", () => {
     const r = scoreSkill(skill, { ...base(), labIds, decks, cleared: ["guardian:recurrent-rapids"] });
-    expect(r.score).toBeCloseTo(1 / 3, 5);
+    expect(r.score).toBeCloseTo(1 / 4, 5);
   });
   it("gains credit from the lab pass, assisted discounted", () => {
     const solo = scoreSkill(skill, { ...base(), labIds, labs: { "forge-rnn": { passed: true, assisted: false } }, decks });
     const helped = scoreSkill(skill, { ...base(), labIds, labs: { "forge-rnn": { passed: true, assisted: true } }, decks });
-    expect(solo.score).toBeCloseTo(1 / 3, 5);
-    expect(helped.score).toBeCloseTo(ASSISTED_LAB_CREDIT / 3, 5);
+    expect(solo.score).toBeCloseTo(1 / 4, 5);
+    expect(helped.score).toBeCloseTo(ASSISTED_LAB_CREDIT / 4, 5);
   });
   it("is tested in the ML-engineer theory and implement rounds", () => {
     const loop = LOOPS.find((l) => l.id === "ml-engineer")!;

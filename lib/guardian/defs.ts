@@ -155,7 +155,21 @@ export const RAPIDS_GUARDIAN: GuardianDef = {
   lessonsHref: "/learn",
 };
 
-export const GUARDIANS: readonly GuardianDef[] = [PYTHON_GUARDIAN, VALE_GUARDIAN, GORGE_GUARDIAN, PEAKS_GUARDIAN, GROVE_GUARDIAN, LEAKAGE_BOSS, SWARM_BOSS, NEST_GUARDIAN, CAVERNS_GUARDIAN, RAPIDS_GUARDIAN];
+export const DRIFT_BOSS: GuardianDef = {
+  id: "guardian:drift",
+  slug: "drift",
+  name: "Drift",
+  badge: "Steady Course Badge",
+  region: "the Recurrent Rapids",
+  spriteId: "drift",
+  labId: "forge-rnn",
+  theme: "rapids",
+  deckLabel: "sequence models",
+  trials: { read: "you can tell a vanishing gradient from a drifting input", write: "build the recurrent core whose gradients check out", generalise: "stay on course when the data slides away from what you trained on" },
+  lessonsHref: "/learn",
+};
+
+export const GUARDIANS: readonly GuardianDef[] = [PYTHON_GUARDIAN, VALE_GUARDIAN, GORGE_GUARDIAN, PEAKS_GUARDIAN, GROVE_GUARDIAN, LEAKAGE_BOSS, SWARM_BOSS, NEST_GUARDIAN, CAVERNS_GUARDIAN, RAPIDS_GUARDIAN, DRIFT_BOSS];
 
 export const guardianHref = (g: GuardianDef) => (g.slug ? `/guardian/${g.slug}` : "/guardian");
 

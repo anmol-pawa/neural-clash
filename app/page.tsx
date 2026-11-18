@@ -34,6 +34,7 @@ export default function Home() {
         <Link href="/guardian/nest" className="px-btn px-4 py-2 text-center">Dimwarden (guardian)</Link>
         <Link href="/guardian/caverns" className="px-btn px-4 py-2 text-center">Scanwarden (guardian)</Link>
         <Link href="/guardian/rapids" className="px-btn px-4 py-2 text-center">Loopwyrm (guardian)</Link>
+        <Link href="/guardian/drift" className="px-btn px-4 py-2 text-center">Drift (boss)</Link>
         <AudioControls />
         <p className="text-xs text-white/50">The Python Port opens soon. Work in progress.</p>
       </div>
