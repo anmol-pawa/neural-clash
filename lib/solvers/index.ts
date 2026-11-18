@@ -7,3 +7,4 @@ export * from "./probability";
 export * from "./classic";
 export * as conv from "./conv";
 export * as rnn from "./rnn";
+export * as drift from "./drift";

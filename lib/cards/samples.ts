@@ -8,6 +8,7 @@ import deckMetrics from "@/content/decks/metrics.json";
 import deckNn from "@/content/decks/nn.json";
 import deckCnn from "@/content/decks/cnn.json";
 import deckSeq from "@/content/decks/seq.json";
+import deckDrift from "@/content/decks/drift.json";
 import deckStrategy from "@/content/decks/foundations-strategy.json";
 import { loadDeck } from "./loader";
 import { GENERATORS } from "./generators";
@@ -77,6 +78,9 @@ export const NN_DECK = loadDeck(deckNn);
 export const CNN_DECK = loadDeck(deckCnn);
 /** Recurrent Rapids (CUR F9): RNNs, BPTT, vanishing gradients, LSTM/GRU, seq2seq and attention, embeddings, contrastive loss. */
 export const SEQ_DECK = loadDeck(deckSeq);
+
+/** Drift boss (CUR F9 monitoring): PSI, two-sample KS, rolling alarms, covariate vs concept drift and the first response. */
+export const DRIFT_DECK = loadDeck(deckDrift);
 
 /** A varied deck: hand-written cards plus solver-generated ones, shuffled by a seed. */
 export function demoDeck(seed: number): Card[] {

@@ -300,14 +300,14 @@ describe("Metric Market bosses", () => {
     g = guardianFight(g, { attack: 95, defence: 90, speed: 80 });
     expect(summarizeGuardian(g, RAPIDS_GUARDIAN.badge).badge).toBe(RAPIDS_GUARDIAN.badge);
   });
-  it("Drift runs on the sequence deck with the RNN Lab and awards its badge", async () => {
+  it("Drift runs on the drift deck with the RNN Lab and awards its badge", async () => {
     const { DRIFT_BOSS, RAPIDS_GUARDIAN } = await import("@/lib/guardian/defs");
-    const { SEQ_DECK } = await import("@/lib/cards/samples");
+    const { DRIFT_DECK } = await import("@/lib/cards/samples");
     expect(spriteById(DRIFT_BOSS.spriteId)).toBeTruthy();
     expect(labById(DRIFT_BOSS.labId)).toBeTruthy();
     expect(DRIFT_BOSS.theme).toBe("rapids");
     expect(DRIFT_BOSS.badge).not.toBe(RAPIDS_GUARDIAN.badge);
-    let g = startGuardian(SEQ_DECK.cards, DRIFT_BOSS.labId);
+    let g = startGuardian(DRIFT_DECK.cards, DRIFT_BOSS.labId);
     for (let i = 0; i < 100 && g.phase === "cards" && g.cards.current; i++) {
       g = guardianAnswer(g, correctResponse(g.cards.current));
       if (g.phase === "cards") g = guardianNext(g);

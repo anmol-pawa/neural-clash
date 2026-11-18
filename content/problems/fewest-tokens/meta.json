@@ -6,7 +6,7 @@
   "tags": ["dp", "strings", "ai-tokenizer"],
   "similar": "LeetCode 139 Word Break (minimum-count variant)",
   "compare": "tokens",
-  "timeLimitMs": 1000,
+  "timeLimitMs": 400,
   "complexity": { "time": "O(n * L)", "space": "O(n)" },
   "groups": {
     "sample": [1],

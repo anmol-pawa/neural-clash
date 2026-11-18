@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { DAY, review, type SrsTable } from "@/lib/srs/srs";
-import { CALCULUS_DECK, CLASSIC_DECK, CNN_DECK, LINALG_DECK, METRICS_DECK, NN_DECK, PROBABILITY_DECK, SEQ_DECK } from "@/lib/cards/samples";
+import { CALCULUS_DECK, CLASSIC_DECK, CNN_DECK, LINALG_DECK, METRICS_DECK, NN_DECK, PROBABILITY_DECK, SEQ_DECK, DRIFT_DECK } from "@/lib/cards/samples";
 import { ASSISTED_LAB_CREDIT, LOOPS, SKILLS, band, readiness, scoreSkill, type Loop, type ReadinessInput, type Skill } from "@/lib/readiness/readiness";
 import { LABS } from "@/lib/labs/catalog";
 
@@ -259,19 +259,34 @@ describe("sequence-models skill", () => {
     expect(r.score).toBe(0);
     expect(r.coverage).toBe(1);
   });
-  it("credits the Unrolled Badge (one of four evidence items)", () => {
+  it("credits the Unrolled Badge (one of three evidence items)", () => {
     const r = scoreSkill(skill, { ...base(), labIds, decks, cleared: ["guardian:recurrent-rapids"] });
-    expect(r.score).toBeCloseTo(1 / 4, 5);
+    expect(r.score).toBeCloseTo(1 / 3, 5);
   });
   it("gains credit from the lab pass, assisted discounted", () => {
     const solo = scoreSkill(skill, { ...base(), labIds, labs: { "forge-rnn": { passed: true, assisted: false } }, decks });
     const helped = scoreSkill(skill, { ...base(), labIds, labs: { "forge-rnn": { passed: true, assisted: true } }, decks });
-    expect(solo.score).toBeCloseTo(1 / 4, 5);
-    expect(helped.score).toBeCloseTo(ASSISTED_LAB_CREDIT / 4, 5);
+    expect(solo.score).toBeCloseTo(1 / 3, 5);
+    expect(helped.score).toBeCloseTo(ASSISTED_LAB_CREDIT / 3, 5);
   });
   it("is tested in the ML-engineer theory and implement rounds", () => {
     const loop = LOOPS.find((l) => l.id === "ml-engineer")!;
     for (const id of ["theory", "implement"]) expect(loop.rounds.find((r) => r.id === id)!.skills.some((s) => s.skill === "sequence-models")).toBe(true);
+  });
+});
+
+describe("drift-monitoring skill", () => {
+  const skill = SKILLS.find((s) => s.id === "drift-monitoring")!;
+  const decks = { drift: DRIFT_DECK.cards.map((c) => c.id) };
+  it("has its deck and the Drift boss, and the boss badge is half the credit", () => {
+    const r = scoreSkill(skill, { ...base(), decks });
+    expect(r.score).toBe(0);
+    expect(r.coverage).toBe(1);
+    expect(scoreSkill(skill, { ...base(), decks, cleared: ["guardian:drift"] }).score).toBeCloseTo(1 / 2, 5);
+  });
+  it("is tested in the ML-engineer theory round", () => {
+    const loop = LOOPS.find((l) => l.id === "ml-engineer")!;
+    expect(loop.rounds.find((r) => r.id === "theory")!.skills.some((s) => s.skill === "drift-monitoring")).toBe(true);
   });
 });
 

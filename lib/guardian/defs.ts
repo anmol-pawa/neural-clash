@@ -164,7 +164,7 @@ export const DRIFT_BOSS: GuardianDef = {
   spriteId: "drift",
   labId: "forge-rnn",
   theme: "rapids",
-  deckLabel: "sequence models",
+  deckLabel: "drift monitoring",
   trials: { read: "you can tell a vanishing gradient from a drifting input", write: "build the recurrent core whose gradients check out", generalise: "stay on course when the data slides away from what you trained on" },
   lessonsHref: "/learn",
 };

@@ -137,7 +137,7 @@ Work top to bottom: take the **first unchecked box**, and split big boxes into r
   - [x] D7f. Guardian fight and companion → Convling evolution, split into:
     - [x] D7f1. (done 2026-11-12) Scanwarden guardian fight `/guardian/caverns` (cnn deck, Lab `forge-conv`, caverns backdrop, Shared Kernel Badge) and its readiness evidence.
     - [x] D7f2. (done 2026-11-12) Convling companion sprite (64x64 front/back, idle/attack/hurt/faint/evolve) and evolution requirements (`forge-conv`).
-- [ ] D8. Recurrent Rapids (F9), with module 10 and the companion → Recurrent; plus the *Drift* boss, split into:
+- [x] D8. (done 2026-11-18) Recurrent Rapids (F9), with module 10 and the companion → Recurrent; plus the *Drift* boss, split into:
   - [x] D8a. (done 2026-11-12) Runes sequence dataset (`lib/datasets/runes.ts`: first-token recall, parity, balanced brackets) with tests.
   - [x] D8b. (done 2026-11-16) RNN solvers (`lib/solvers/rnn.ts`: unrolled forward, BPTT, gradient-norm-vs-time for the vanishing-gradient demo, LSTM/GRU gate maths) with finite-difference tests.
   - [x] D8c. (done 2026-11-17) Forge module 10 Lab `forge-rnn` (`RNN` with BPTT, `GRUCell`; finite-difference checks, 16 known-wrong versions). LSTM stays a solver/lesson topic (D8d).
@@ -150,7 +150,7 @@ Work top to bottom: take the **first unchecked box**, and split big boxes into r
     - [x] D8f1. (done 2026-11-17) Loopwyrm guardian fight `/guardian/rapids` (seq deck, Lab `forge-rnn`, rapids backdrop, Unrolled Badge) and its readiness evidence.
     - [x] D8f2. (done 2026-11-17) Recurrent companion sprite (64x64 front/back, idle/attack/hurt/faint/evolve) and evolution requirements (`forge-rnn`).
     - [x] D8f3. (done 2026-11-18) The *Drift* boss: sprite (96x96 raft with a drifting-distribution sail), `/guardian/drift` fight on the `seq` deck + `forge-rnn`, Steady Course Badge, Readiness credit.
-  - [ ] D8g. Drift-detection content for the boss: solvers (`lib/solvers/drift.ts`: PSI, two-sample KS, rolling-window alarm) with tests, a ~12-card `drift` deck generated natively, and switch `DRIFT_BOSS` to that deck.
+  - [x] D8g. (done 2026-11-18) Drift-detection content for the boss: solvers (`lib/solvers/drift.ts`: PSI, two-sample KS, rolling-window alarm) with tests, a ~12-card `drift` deck generated natively, and switch `DRIFT_BOSS` to that deck.
 
 ## Phase E: Act II regions
 
