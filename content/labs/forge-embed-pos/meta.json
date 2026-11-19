@@ -1,0 +1,35 @@
+{
+  "id": "forge-embed-pos",
+  "title": "Forge 11: Embedding, sinusoidal positions and RoPE",
+  "phase": "forge",
+  "language": "python",
+  "functions": [
+    "Embedding",
+    "sinusoidal_pe",
+    "rope"
+  ],
+  "wrong": {
+    "scatter_assign.py": "dW[ids] = dout overwrites: when a token appears twice, only one occurrence's gradient survives",
+    "scatter_buffered_add.py": "dW[ids] += dout looks like accumulation but NumPy buffers it, so repeated ids still count once; np.add.at is the unbuffered scatter-add",
+    "accumulating_grad.py": "dW is not reset in backward, so gradients pile up across calls",
+    "init_unscaled.py": "W ~ Normal(0, 1) instead of Normal(0, 1)/sqrt(dim): embeddings start with norm sqrt(dim) and dominate the position signal",
+    "pe_sin_cos_swapped.py": "sin and cos are swapped inside each pair, so position 0 is [1, 0, 1, 0] instead of [0, 1, 0, 1]",
+    "pe_wrong_frequency_exponent.py": "the exponent is i/d instead of 2i/d, so the wavelengths are the wrong geometric progression",
+    "pe_ignores_base.py": "the base argument is ignored and 10000 is hard-coded",
+    "pe_odd_dim_rounds_down.py": "an odd d is silently rounded down instead of rejected, so the table has the wrong width",
+    "pe_interleave_halves.py": "all sines first then all cosines instead of interleaving (sin, cos) pairs: a different, non-standard layout",
+    "rope_same_angle_every_pair.py": "every pair rotates at the same speed (no frequency ladder), so far positions alias and long-range structure is lost",
+    "rope_wrong_rotation_direction.py": "rotation matrix transposed: rope and its inverse are swapped, so the backward pass is wrong",
+    "rope_inverse_ignored.py": "the inverse flag is ignored, so rope(rope(x), inverse=True) does not undo the rotation and the gradient is wrong",
+    "rope_split_halves_pairing.py": "pairs are (x[i], x[i + D/2]) instead of neighbours (x[2i], x[2i+1]): the 'rotate-half' layout, which is a different convention from the one specified here",
+    "rope_position_starts_at_one.py": "positions are 1-based, so position 0 is rotated and the first token does not match its unrotated value",
+    "rope_mutates_input.py": "the caller's array is overwritten in place"
+  },
+  "hints": [
+    "Embedding.forward is a single fancy-index: W[ids]. The interesting part is backward: the gradient of a lookup is a scatter. Row v of dW is the sum of dout over every position whose id is v.",
+    "dW[ids] += dout silently drops repeats (NumPy buffers the add). Use np.add.at(dW, ids, dout), the unbuffered version, and start from zeros each call.",
+    "For sinusoidal_pe build pos as a column (n, 1) and i as a row (1, d/2), compute angle = pos / base ** (2 * i / d), then fill the even columns with sin and the odd columns with cos.",
+    "RoPE rotates each neighbouring pair (x[2i], x[2i+1]) by the angle t * base ** (-2i/D): new_a = a*cos - b*sin, new_b = a*sin + b*cos. Build the (T, D/2) angle table once and let broadcasting handle the batch.",
+    "A rotation's gradient is the inverse rotation (its transpose), so backward is the same code with sin negated. Check it with finite differences, and check the key property: the dot product of a rotated query and key depends only on their position difference."
+  ]
+}

@@ -899,3 +899,12 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Housekeeping: stale branches `claude/wonderful-goodall-q51fre` and `-xg3cww` duplicate D8f2 already on main; archive tag push is refused (HTTP 403), so they are left in place, nothing discarded.
 - Known gaps: none for this slice; solvers are not yet used by a Lab or card.
 - Next: E1b (Lab module 11 `forge-embed-pos`).
+
+## 2026-11-19: E1b Lab module 11 `forge-embed-pos`
+
+- Added `content/labs/forge-embed-pos` (lesson, spec, reference, 4 visible + 14 hidden tests, 15 wrong implementations documented in `meta.json`) and regenerated `lib/labs/labs.gen.ts`.
+- `Embedding` (scatter-add backward via `np.add.at`; traps: assign, buffered `+=`, un-reset grads, unscaled init), `sinusoidal_pe` (matches definition, rotation-by-offset property, base honoured, odd d rejected) and `rope` (pairwise rotation, norm preserved, scores depend only on relative offset, inverse = backward checked by finite differences, no input mutation).
+- Verification: lint (0 errors), typecheck, test (all pass after `npm run stage:pyodide`; `tests/py.core.test.ts` needs the staged Pyodide runtime), content:verify (forge-embed-pos has no errors), build, build:pages. No visual change, so no screenshots. The first verify run caught a too-weak wrong version (odd d raised by accident via a NumPy broadcast error); replaced with `pe_odd_dim_rounds_down`.
+- CI/Pages: not confirmed (no gh CLI in this session).
+- Known gaps: the lab is not yet linked from a region, guardian or Readiness skill (comes with E1g/E1e).
+- Next: E1c (`forge-attention`).
