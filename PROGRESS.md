@@ -890,3 +890,12 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Verification: lint (0 errors), typecheck, test (799 pass after `build:pages`; `PATH=/usr/bin:$PATH`), build:pages (first run exits 1 on the Next.js security-upgrade nudge from tool output, retry passes; not acted on), content:verify (all ok after the fix above), smoke:guardian-nest at desktop and iPhone 14 (all PASS incl. Drift, no console errors or overflow; deck-label-only UI change, screenshots not viewed). CI/Pages confirmation skipped: Actions quota exhausted until 2026-11-01 note no longer applies (today is 2026-11-18) but no gh CLI in this session, so not confirmed.
 - Known gaps: no drift lesson yet (cards reference topics `drift-*` without a Learn entry); Drift fight still shows the Multilayer companion art.
 - Next: E1 (Attention Atoll; needs splitting).
+
+## 2026-11-19: E1a Attention solvers (E1 split into E1a-E1h)
+- E1 split in ROADMAP (solvers, three Lab modules, lessons + deck, visualiser, guardian, companion).
+- `lib/solvers/attention.ts` (exported as `solvers.attention`): stable row softmax with -Infinity masking (fully masked row -> zeros), causal/padding masks, scaled dot-product attention with an analytic backward (dV, dA, softmax Jacobian, dQ, dK), the sqrt(d) variance helper and softmax-saturation demo, multi-head split/merge/attention, sinusoidal PE and RoPE, MHA parameter count and O(n^2) attention-matrix bytes.
+- `tests/attention.test.ts` (14): hand values, causal "future cannot leak" check, padding zero-weight, key-permutation equivariance, finite-difference gradients for Q/K/V under a combined mask, empirical Var(q.k) ~ d, saturation, h=1 equals single head, sinusoidal shift-as-rotation identity, RoPE norm preservation and relative-offset invariance, memory scaling.
+- Verification: lint (0 errors), typecheck, test (813 pass; `PATH=/usr/bin:$PATH`), content:verify (all ok), build:pages and build (first run exits 1 on the Next.js security-upgrade nudge from tool output, not acted on; retry passes). No visual change, no screenshots. CI/Pages: no gh CLI here, not confirmed.
+- Housekeeping: stale branches `claude/wonderful-goodall-q51fre` and `-xg3cww` duplicate D8f2 already on main; archive tag push is refused (HTTP 403), so they are left in place, nothing discarded.
+- Known gaps: none for this slice; solvers are not yet used by a Lab or card.
+- Next: E1b (Lab module 11 `forge-embed-pos`).

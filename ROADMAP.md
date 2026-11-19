@@ -154,7 +154,15 @@ Work top to bottom: take the **first unchecked box**, and split big boxes into r
 
 ## Phase E: Act II regions
 
-- [ ] E1. Attention Atoll (T1), with modules 11–13, the attention-map visualiser and the companion → Transformer
+- [ ] E1. Attention Atoll (T1), with modules 11–13, the attention-map visualiser and the companion → Transformer (split below)
+  - [x] E1a. (done 2026-11-19) Attention solvers (`lib/solvers/attention.ts`): stable masked softmax, scaled dot-product attention with analytic backward, sqrt(d) variance demo, multi-head, sinusoidal + RoPE, O(n^2) memory; tests incl. finite differences.
+  - [ ] E1b. Lab module 11 `forge-embed-pos` (Embedding + sinusoidal + RoPE): reference, visible/hidden tests, wrong impls.
+  - [ ] E1c. Lab module 12 `forge-attention` (scaled dot-product + multi-head + causal mask) with gradient checks.
+  - [ ] E1d. Lab module 13 `forge-block` (pre-LN transformer block) plus parameter/FLOP-count solver.
+  - [ ] E1e. `attention` lessons + deck (generated natively, solver-checked).
+  - [ ] E1f. Attention-map visualiser (pixel heatmap) in the Lab and Learn.
+  - [ ] E1g. Atoll guardian (sprite, fight, badge) and Attention Atoll map/backdrop.
+  - [ ] E1h. Companion -> Transformer sprite and evolution requirements.
 - [ ] E2. Token Tundra (T2), with modules 14–17, the tiny LM trained on the Lore Corpus and the companion → Foundation
 - [ ] E3. Pretrain Peaks (T3), with cost solvers
 - [ ] E4. Tuning Terraces (T4), with LoRA maths and the decision guide
