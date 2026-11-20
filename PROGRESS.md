@@ -908,3 +908,12 @@ Append a dated entry after every run: what changed, how it was verified (command
 - CI/Pages: not confirmed (no gh CLI in this session).
 - Known gaps: the lab is not yet linked from a region, guardian or Readiness skill (comes with E1g/E1e).
 - Next: E1c (`forge-attention`).
+
+## 2026-11-20: E1c Lab module 12 `forge-attention`
+
+- Added `content/labs/forge-attention` (lesson, spec, reference, 4 visible + 18 hidden tests, 22 documented wrong implementations) and regenerated `lib/labs/labs.gen.ts`.
+- API: `causal_mask`, `masked_softmax` (stable, -inf masking, fully masked row -> zeros), `sdpa` / `sdpa_backward` over any leading batch/head axes, and `MultiHeadAttention` (Wq/Wk/Wv/Wo, causal flag, `attn` weights kept for the visualiser).
+- Tests: hand example, pinned sqrt(d) divisor, overflow stability, renormalised-subset check, future-cannot-leak, padding mask, no gradient to masked keys, per-head loop equivalence, h=1 equals sdpa, permutation equivariance, finite-difference gradients for Q/K/V (masked and unmasked, with head axis) and for x, Wq, Wk, Wv, Wo (causal and not). Wrongs cover scaling, softmax axis, mask-after-softmax, zero-fill, NaN rows, instability, strict/flipped masks, softmax-Jacobian mistakes, swapped dQ/dK, bare-reshape heads, missing Wo, wrong head scale, dropped dx paths, accumulating grads and a shared init matrix.
+- Verification: lint (0 errors), typecheck, test (813 pass after `stage:pyodide`; `PATH=/usr/bin:$PATH`), content:verify (all 48 packages ok), build and build:pages (each exits 1 on the Next.js security-upgrade nudge on the first run, retry passes; not acted on). No visual change, no screenshots. CI/Pages not confirmed: no gh CLI in this session.
+- Known gaps: the Lab is not yet linked from a region, guardian or Readiness skill (E1e/E1g).
+- Next: E1d (`forge-block`: pre-LN transformer block plus parameter/FLOP-count solver).

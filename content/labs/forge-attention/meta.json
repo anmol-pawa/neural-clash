@@ -1,0 +1,44 @@
+{
+  "id": "forge-attention",
+  "title": "Forge 12: Scaled dot-product and multi-head attention",
+  "phase": "forge",
+  "language": "python",
+  "functions": [
+    "causal_mask",
+    "masked_softmax",
+    "sdpa",
+    "sdpa_backward",
+    "MultiHeadAttention"
+  ],
+  "wrong": {
+    "no_scale.py": "no 1/sqrt(d): scores grow with the head size, so softmax saturates and attention turns near one-hot",
+    "scale_by_d.py": "divides by d instead of sqrt(d): over-corrects, attention becomes too flat",
+    "softmax_over_queries.py": "normalises down the columns (axis -2) so each key's weights sum to 1 instead of each query's",
+    "mask_after_softmax.py": "zeroes forbidden weights after the softmax without renormalising, so rows no longer sum to 1 and the future still steals probability mass",
+    "mask_fill_zero.py": "masked scores are set to 0 instead of -inf, so forbidden keys still get e^0 weight",
+    "fully_masked_nan.py": "a row with nothing allowed gives NaN (-inf minus -inf) instead of zeros",
+    "softmax_unstable.py": "no max-subtraction: exp overflows for scores around 1000 and the result is NaN",
+    "causal_strict.py": "mask excludes the diagonal (k < q), so a token cannot see itself and row 0 is fully masked",
+    "causal_flipped.py": "upper-triangular mask: every token sees the FUTURE and nothing before it",
+    "backward_ignores_softmax.py": "treats softmax as the identity in the backward pass (dS = dA)",
+    "backward_drops_row_term.py": "softmax backward uses A * dA and forgets the -A * sum(dA * A) term (only the diagonal of the Jacobian)",
+    "backward_missing_scale.py": "backward forgets the 1/sqrt(d) chain-rule factor from the forward scaling",
+    "backward_dq_dk_swapped.py": "dQ and dK are swapped (dQ = dS^T Q, dK = dS K)",
+    "backward_dv_not_transposed.py": "dV = A dout instead of A^T dout: wrong whenever attention is not symmetric",
+    "mha_heads_reshape_without_transpose.py": "splits heads with a bare reshape to (N, h, T, d_head): time and feature axes get mixed instead of giving each head a contiguous block of features",
+    "mha_no_output_projection.py": "skips the output projection Wo, so heads are only concatenated, never mixed",
+    "mha_scale_by_model_dim.py": "each head scales by sqrt(d_model) instead of sqrt(d_head)",
+    "mha_dx_only_from_q.py": "dx only sums the query path; the key and value paths into x are dropped",
+    "mha_causal_flag_ignored.py": "always applies the causal mask, even when causal=False is requested",
+    "mha_accumulating_grads.py": "weight gradients accumulate (+=) across backward calls instead of being set",
+    "mha_shared_init_matrix.py": "Wq, Wk, Wv are the same matrix (one draw reused), so queries, keys and values are identical projections",
+    "mha_no_divisibility_check.py": "does not reject d_model not divisible by n_heads; the reshape fails later with an obscure error or silently misbehaves"
+  },
+  "hints": [
+    "Start with masked_softmax. Subtract the row max before exp (a score of 1000 overflows otherwise), put -inf where the mask forbids, and give a row with nothing allowed zeros: guard the max and the denominator so you never compute -inf minus -inf or divide by 0.",
+    "sdpa is three lines: scores = Q @ K^T / sqrt(d), A = masked_softmax(scores, mask), out = A @ V. Use np.swapaxes(K, -1, -2) so it works with any leading batch and head axes.",
+    "For sdpa_backward walk the graph in reverse: dV = A^T dout, dA = dout V^T, then the softmax step dS = A * (dA - rowsum(dA * A)), then undo the scale and the two matmuls: dQ = dS K / sqrt(d), dK = dS^T Q / sqrt(d). Masked entries have A = 0, so they get zero gradient for free.",
+    "Heads are a reshape, not a loop: (N, T, d) -> (N, T, h, d/h) -> transpose to (N, h, T, d/h). Merge is the inverse. Each head gets a contiguous block of d/h feature columns; sdpa then runs on all heads at once.",
+    "In MultiHeadAttention.backward the order is: dWo from the merged context, push dout through Wo, split into heads, sdpa_backward, merge, then dWq/dWk/dWv = x^T d(q/k/v) and dx is the SUM of the three paths back into x. Verify every weight and dx with finite differences."
+  ]
+}

@@ -157,7 +157,7 @@ Work top to bottom: take the **first unchecked box**, and split big boxes into r
 - [ ] E1. Attention Atoll (T1), with modules 11–13, the attention-map visualiser and the companion → Transformer (split below)
   - [x] E1a. (done 2026-11-19) Attention solvers (`lib/solvers/attention.ts`): stable masked softmax, scaled dot-product attention with analytic backward, sqrt(d) variance demo, multi-head, sinusoidal + RoPE, O(n^2) memory; tests incl. finite differences.
   - [x] E1b. (done 2026-11-19) Lab module 11 `forge-embed-pos` (`Embedding` with scatter-add backward, `sinusoidal_pe`, `rope` with inverse = backward): reference, visible/hidden tests incl. finite differences and the relative-position property, 15 known-wrong versions.
-  - [ ] E1c. Lab module 12 `forge-attention` (scaled dot-product + multi-head + causal mask) with gradient checks.
+  - [x] E1c. (done 2026-11-20) Lab module 12 `forge-attention` (`causal_mask`, `masked_softmax`, `sdpa` + `sdpa_backward`, `MultiHeadAttention`) with finite-difference checks and 22 known-wrong versions.
   - [ ] E1d. Lab module 13 `forge-block` (pre-LN transformer block) plus parameter/FLOP-count solver.
   - [ ] E1e. `attention` lessons + deck (generated natively, solver-checked).
   - [ ] E1f. Attention-map visualiser (pixel heatmap) in the Lab and Learn.
