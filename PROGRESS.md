@@ -917,3 +917,14 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Verification: lint (0 errors), typecheck, test (813 pass after `stage:pyodide`; `PATH=/usr/bin:$PATH`), content:verify (all 48 packages ok), build and build:pages (each exits 1 on the Next.js security-upgrade nudge on the first run, retry passes; not acted on). No visual change, no screenshots. CI/Pages not confirmed: no gh CLI in this session.
 - Known gaps: the Lab is not yet linked from a region, guardian or Readiness skill (E1e/E1g).
 - Next: E1d (`forge-block`: pre-LN transformer block plus parameter/FLOP-count solver).
+
+## 2026-11-20: E1d Lab module 13 `forge-block`
+
+- Added `content/labs/forge-block` (lesson, spec with the Forge 12 attention provided, reference, 4 visible + 19 hidden tests, 27 documented wrong implementations) and regenerated `lib/labs/labs.gen.ts`.
+- API: `gelu` / `gelu_backward` (tanh form), `LayerNorm` over the last axis, `FeedForward`, pre-LN `TransformerBlock` (separate LN objects, `attn_weights` kept for the visualiser), `block_param_count`, `block_flops` (matmuls only, multiply-add = 2 FLOPs).
+- Tests: definition checks, finite-difference gradients for GELU, LayerNorm (x, gamma, beta), FeedForward and the whole block (input and all 12 parameter arrays), the identity-highway property (zeroed sublayers give out == x and dx == dout, which post-LN fails), causality, no input mutation, set-not-accumulate grads, param count equal to the arrays actually allocated, FLOP quadratic scaling. Wrongs cover post-LN, missing/forgotten residual terms (forward and backward), shared LayerNorm, wrong LN axis/eps/ddof/backward/dgamma, ReLU, sigmoid-GELU, three GELU-derivative mistakes, no activation, bias-grad shape, init scale, and four counting mistakes.
+- `lib/solvers/transformer.ts` (exported as `solvers.transformer`): `blockParams`, `blockFlops`, `attentionFlopShare`, `attentionCrossoverT` (= 2d + d_ff), `modelParams`; `tests/transformer.test.ts` shares the Lab hand values (840 params, 6656 FLOPs).
+- Verification: lint (0 errors), typecheck, test (817 pass after `stage:pyodide`; `PATH=/usr/bin:$PATH`), `verifyLab` on forge-block ok (reference passes, all 27 wrongs fail hidden tests) and full content:verify ok, build and build:pages (each exits 1 on the Next.js security-upgrade nudge first run, retry passes). No visual change, no screenshots.
+- CI/Pages: no gh CLI in this session; GitHub MCP only, see final check below.
+- Known gaps: the Lab is not yet linked from a region, guardian or Readiness skill (E1e/E1g).
+- Next: E1e (`attention` lessons + deck, solver-checked).

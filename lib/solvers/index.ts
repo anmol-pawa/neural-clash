@@ -9,3 +9,4 @@ export * as conv from "./conv";
 export * as rnn from "./rnn";
 export * as drift from "./drift";
 export * as attention from "./attention";
+export * as transformer from "./transformer";

@@ -1,0 +1,51 @@
+{
+  "id": "forge-block",
+  "title": "Forge 13: LayerNorm, GELU and the pre-LN transformer block",
+  "phase": "forge",
+  "language": "python",
+  "functions": [
+    "gelu",
+    "gelu_backward",
+    "LayerNorm",
+    "FeedForward",
+    "TransformerBlock",
+    "block_param_count",
+    "block_flops"
+  ],
+  "wrong": {
+    "post_ln_block.py": "post-LN layout: normalises AFTER each residual add (out = LN(x + sublayer(x))), so the residual stream is renormalised at every layer and no longer a clean identity highway",
+    "no_attention_residual.py": "forgets the skip connection around attention: x1 = Attn(LN1(x)); the input is thrown away and gradients must squeeze through every layer",
+    "no_ffn_residual.py": "forgets the skip connection around the FFN: out = FFN(LN2(x1))",
+    "backward_drops_attention_skip.py": "forward is right but backward omits the residual term for attention (returns only the LN1 -> attention path), so dx loses the identity gradient",
+    "backward_drops_ffn_skip.py": "forward is right but backward omits the residual term for the FFN (dx1 = LN2/FFN path only)",
+    "shared_layernorm.py": "ln2 is the same object as ln1: the second call overwrites the cached statistics of the first, so the backward pass uses the wrong xhat and the two norms cannot learn separate scales",
+    "block_not_causal.py": "ignores the causal flag and always runs unmasked attention, so every token reads the future",
+    "block_mutates_input.py": "adds the sublayer outputs into x in place (x += ...), silently corrupting the caller's array",
+    "layernorm_over_tokens.py": "normalises over the time axis (axis=-2) instead of the feature axis: each feature is standardised across tokens, so a token's output depends on every other token (including future ones)",
+    "layernorm_no_eps.py": "eps is dropped from the variance, so a constant token divides 0 by 0 and returns NaN",
+    "layernorm_unbiased_variance.py": "uses the unbiased variance (ddof=1); the pinned definition is the biased one, so every output is slightly off",
+    "layernorm_backward_no_mean_terms.py": "backward is inv_std * dxhat only: it forgets that the mean and variance also depend on x, so dx is wrong and does not sum to zero over features",
+    "layernorm_dgamma_missing_xhat.py": "dgamma sums dout instead of dout * xhat (it equals dbeta)",
+    "gelu_is_relu.py": "uses ReLU max(0, x) in place of GELU, so small negative inputs are clipped to zero",
+    "gelu_sigmoid_approximation.py": "uses the other well-known approximation x * sigmoid(1.702 x): a legitimate GELU variant, but not the tanh form the spec pins, so values differ by ~1e-2 (the backward matches its own forward, so only the value tests catch it)",
+    "gelu_backward_no_product_rule.py": "backward is 0.5 (1 + tanh(.)) only: differentiates the gate but forgets that x multiplies it (drops the 0.5 x tanh' term)",
+    "gelu_backward_missing_cubic_term.py": "chain rule through the inner polynomial forgets the 3 * 0.044715 x^2 term, so the derivative is close for small x and wrong for large |x|",
+    "gelu_backward_uses_output.py": "treats its x argument as if it were the gelu OUTPUT; the feed-forward caches the activation instead of the pre-activation",
+    "ffn_linear_only.py": "forgets the activation: the FFN is two stacked linear maps (W1 W2) and cannot add any nonlinearity",
+    "ffn_bias_grad_not_summed.py": "db1 sums over the batch only (axis=0), leaving a (T, d_ff) array instead of a (d_ff,) bias gradient",
+    "ffn_accumulating_grads.py": "weight gradients accumulate (+=) across backward calls instead of being set",
+    "ffn_wrong_init_scale.py": "W2 is scaled by 1/sqrt(d_model) instead of 1/sqrt(d_ff), so the output variance grows with the expansion factor",
+    "params_forget_biases_and_norms.py": "counts only the weight matrices (4 d^2 + 2 d d_ff), forgetting the FFN biases and both LayerNorms",
+    "params_assume_4x_ffn.py": "ignores d_ff and hard-codes the textbook expansion d_ff = 4 d",
+    "flops_forget_quadratic_term.py": "omits the two T x T attention matmuls, so the cost looks linear in context length",
+    "flops_count_macs.py": "counts one operation per multiply-add instead of two, so every FLOP figure is half of the pinned convention",
+    "flops_ffn_single_matmul.py": "counts only one FFN matmul (forgets the down-projection)"
+  },
+  "hints": [
+    "GELU first. The tanh form is 0.5 x (1 + tanh(c (x + 0.044715 x^3))) with c = sqrt(2/pi). For the backward, let t be the tanh and differentiate the product: gelu'(x) = 0.5 (1 + t) + 0.5 x (1 - t^2) c (1 + 3 * 0.044715 x^2). Check it with finite differences before moving on.",
+    "LayerNorm is the one you wrote in Forge 8 with a leading-axes twist: statistics over the last axis only, so each token is normalised on its own. Backward: dx = inv_std / d * (d dxhat - sum(dxhat) - xhat * sum(dxhat * xhat)) with sums over the feature axis; dgamma and dbeta sum over every leading axis.",
+    "FeedForward is two matmuls and one GELU. Cache x, h = x W1 + b1 and a = gelu(h). In backward use the pre-activation h in gelu_backward, not the activation a. Biases sum over batch and time: dout.sum(axis=(0, 1)).",
+    "The block is x1 = x + attn(ln1(x)); out = x1 + ff(ln2(x1)). The residual add is a fork in the graph, so backward ADDS the two paths: dx1 = dout + ln2_path(dout), then dx = dx1 + ln1_path(dx1). Forget either '+ dout' and gradients have to fight through every layer, which is exactly what residuals exist to avoid.",
+    "Counting: attention 4 d^2, FFN 2 d d_ff + d_ff + d, two LayerNorms 4 d. FLOPs: a multiply-add is 2 FLOPs, projections 8 T d^2, the two attention matmuls 4 T^2 d, the FFN 4 T d d_ff. The T^2 term is why long contexts get expensive."
+  ]
+}
