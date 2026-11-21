@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { LESSONS, lessonById } from "@/lib/lessons/lessons";
+import AttentionMap from "@/components/AttentionMap";
 
 /** Renders `inline code` spans. */
 function Rich({ text }: { text: string }) {
@@ -42,6 +43,7 @@ export default function Learn() {
               )}
             </section>
           ))}
+          {lesson.id.startsWith("attention-") && <AttentionMap compact />}
           <section className="rounded border-2 border-indigo-300/40 bg-slate-900/60 p-3">
             <h2 className="font-display text-base">Remember</h2>
             <ul className="mt-1 list-disc pl-5 text-sm text-slate-200">{lesson.takeaways.map((t) => <li key={t}><Rich text={t} /></li>)}</ul>

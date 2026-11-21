@@ -937,3 +937,11 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Verification (`PATH=/usr/bin:$PATH`): lint (0 errors), typecheck, test (822 pass), content:verify (all ok), build and build:pages (each exits 1 intermittently on the Next.js security-upgrade nudge, rerun exits 0). No UI change beyond new Learn/Sync content, so no screenshots. CI/Pages not checked: GitHub Actions quota note (no gh CLI here either).
 - Known gaps: the `transformers` Readiness skill still cites legacy Lab ids and does not yet use the attention deck; the Learn page lists the lessons but there is no Atoll region or guardian yet (E1g).
 - Next: E1f (attention-map pixel heatmap visualiser in the Lab and Learn).
+
+## 2026-11-21: E1f Attention-map visualiser
+
+- `lib/viz/attentionMap.ts` (pure): 5-step quantised heat ramp, seeded toy Q/K/V demo built on `solvers.attention` (causal/padding masks, optional 1/sqrt(d) scaling), pixel rasteriser (cell gutters, hatched masked cells so "masked" differs from "small weight"), row peak and entropy. `tests/attention-map.test.ts` (8): rows sum to 1, exact zeros on future/padding, determinism, saturation without scaling lowers entropy, ramp monotone, raster pixels.
+- `components/AttentionMap.tsx` (canvas, nearest-neighbour): sentence picker, causal/scale toggles, head-size and padding sliders, peak/entropy readouts. Labelled as seeded random toy vectors, not a trained model. New `/dev/attention` page and embedded in the three `attention-*` lessons on `/learn`. `npm run smoke:attention` (desktop + iPhone 14).
+- Verification (`PATH=/usr/bin:$PATH`): lint (0 errors), typecheck, test (830 pass), content:verify and build (see final line), build:pages (first run exits 1 on the Next.js security nudge and then lacks `sw.js`, which makes every smoke script report a 404 console error; rerun exits 0), smoke:attention all PASS at desktop and iPhone 14; screenshots viewed: map readable, hatched causal triangle clear, no overflow.
+- Known gaps: not yet on the Labs page for forge-attention; no multi-head view.
+- Next: E1g (Atoll guardian sprite, fight, badge, and region map/backdrop).

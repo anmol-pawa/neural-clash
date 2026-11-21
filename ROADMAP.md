@@ -160,7 +160,7 @@ Work top to bottom: take the **first unchecked box**, and split big boxes into r
   - [x] E1c. (done 2026-11-20) Lab module 12 `forge-attention` (`causal_mask`, `masked_softmax`, `sdpa` + `sdpa_backward`, `MultiHeadAttention`) with finite-difference checks and 22 known-wrong versions.
   - [x] E1d. (done 2026-11-20) Lab module 13 `forge-block` (GELU, LayerNorm, FeedForward, pre-LN `TransformerBlock`, `block_param_count`, `block_flops`) plus `lib/solvers/transformer.ts` (params/FLOPs/crossover/model size).
   - [x] E1e. (done 2026-11-21) `attention` lessons (3) + 32-card deck (`scripts/gen-attention.mjs`, computed natively, solver-checked in tests).
-  - [ ] E1f. Attention-map visualiser (pixel heatmap) in the Lab and Learn.
+  - [x] E1f. (done 2026-11-21) Attention-map visualiser (pixel heatmap) at `/dev/attention` and embedded in the attention lessons; pure logic in `lib/viz/attentionMap.ts`. (Lab-page embed deferred to E1g/E1h with the Atoll.)
   - [ ] E1g. Atoll guardian (sprite, fight, badge) and Attention Atoll map/backdrop.
   - [ ] E1h. Companion -> Transformer sprite and evolution requirements.
 - [ ] E2. Token Tundra (T2), with modules 14–17, the tiny LM trained on the Lore Corpus and the companion → Foundation
