@@ -159,7 +159,7 @@ Work top to bottom: take the **first unchecked box**, and split big boxes into r
   - [x] E1b. (done 2026-11-19) Lab module 11 `forge-embed-pos` (`Embedding` with scatter-add backward, `sinusoidal_pe`, `rope` with inverse = backward): reference, visible/hidden tests incl. finite differences and the relative-position property, 15 known-wrong versions.
   - [x] E1c. (done 2026-11-20) Lab module 12 `forge-attention` (`causal_mask`, `masked_softmax`, `sdpa` + `sdpa_backward`, `MultiHeadAttention`) with finite-difference checks and 22 known-wrong versions.
   - [x] E1d. (done 2026-11-20) Lab module 13 `forge-block` (GELU, LayerNorm, FeedForward, pre-LN `TransformerBlock`, `block_param_count`, `block_flops`) plus `lib/solvers/transformer.ts` (params/FLOPs/crossover/model size).
-  - [ ] E1e. `attention` lessons + deck (generated natively, solver-checked).
+  - [x] E1e. (done 2026-11-21) `attention` lessons (3) + 32-card deck (`scripts/gen-attention.mjs`, computed natively, solver-checked in tests).
   - [ ] E1f. Attention-map visualiser (pixel heatmap) in the Lab and Learn.
   - [ ] E1g. Atoll guardian (sprite, fight, badge) and Attention Atoll map/backdrop.
   - [ ] E1h. Companion -> Transformer sprite and evolution requirements.

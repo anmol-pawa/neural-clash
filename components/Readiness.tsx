@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useMemo } from "react";
-import { CALCULUS_DECK, CLASSIC_DECK, CNN_DECK, LINALG_DECK, METRICS_DECK, NN_DECK, NUMPY_DECK, PROBABILITY_DECK, PYTHON_DECK, SEQ_DECK, STRATEGY_DECK, DRIFT_DECK } from "@/lib/cards/samples";
+import { CALCULUS_DECK, CLASSIC_DECK, CNN_DECK, LINALG_DECK, METRICS_DECK, NN_DECK, NUMPY_DECK, PROBABILITY_DECK, PYTHON_DECK, SEQ_DECK, STRATEGY_DECK, DRIFT_DECK, ATTENTION_DECK } from "@/lib/cards/samples";
 import { LABS } from "@/lib/labs/catalog";
 import { band, readiness, type LoopResult } from "@/lib/readiness/readiness";
 import { useSave } from "@/lib/save/react";
@@ -21,6 +21,7 @@ const DECKS = {
   cnn: CNN_DECK.cards.map((c) => c.id),
   seq: SEQ_DECK.cards.map((c) => c.id),
   drift: DRIFT_DECK.cards.map((c) => c.id),
+  attention: ATTENTION_DECK.cards.map((c) => c.id),
   strategy: STRATEGY_DECK.cards.map((c) => c.id),
 };
 

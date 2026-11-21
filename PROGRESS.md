@@ -928,3 +928,12 @@ Append a dated entry after every run: what changed, how it was verified (command
 - CI/Pages: no gh CLI in this session; GitHub MCP only, see final check below.
 - Known gaps: the Lab is not yet linked from a region, guardian or Readiness skill (E1e/E1g).
 - Next: E1e (`attention` lessons + deck, solver-checked).
+
+## 2026-11-21: E1e Attention lessons and deck
+
+- `scripts/gen-attention.mjs` -> `content/decks/attention.json` (32 cards over six topics: softmax, sdpa, mask, mha, pos, block; 11 predict, 3 shape, 3 derive, 8 concept, 2 multi, 5 bug) and `content/lessons/attention.json` (3 lessons, 10 sections). Every predict/shape/derive answer, bug fix effect and lesson output is computed natively by numpy; `--check` guards staleness.
+- `tests/attention-deck.test.ts` cross-checks answers against the independent TypeScript solvers (`solvers.attention` weights, causal mask, sinusoidal PE, MHA params; `solvers.transformer` block params, crossover T, attention FLOP share) and the Lab hand values. `ATTENTION_DECK` / `ATTENTION_LESSONS` wired into Sync, the Readiness deck map and the lessons test (topic coverage, outputs re-run natively).
+- Caught while writing: three explanation numbers I had typed by hand disagreed with the computed ones (FFN params, attention FLOP share); fixed to match the computed values.
+- Verification (`PATH=/usr/bin:$PATH`): lint (0 errors), typecheck, test (822 pass), content:verify (all ok), build and build:pages (each exits 1 intermittently on the Next.js security-upgrade nudge, rerun exits 0). No UI change beyond new Learn/Sync content, so no screenshots. CI/Pages not checked: GitHub Actions quota note (no gh CLI here either).
+- Known gaps: the `transformers` Readiness skill still cites legacy Lab ids and does not yet use the attention deck; the Learn page lists the lessons but there is no Atoll region or guardian yet (E1g).
+- Next: E1f (attention-map pixel heatmap visualiser in the Lab and Learn).

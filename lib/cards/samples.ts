@@ -9,6 +9,7 @@ import deckNn from "@/content/decks/nn.json";
 import deckCnn from "@/content/decks/cnn.json";
 import deckSeq from "@/content/decks/seq.json";
 import deckDrift from "@/content/decks/drift.json";
+import deckAttention from "@/content/decks/attention.json";
 import deckStrategy from "@/content/decks/foundations-strategy.json";
 import { loadDeck } from "./loader";
 import { GENERATORS } from "./generators";
@@ -81,6 +82,8 @@ export const SEQ_DECK = loadDeck(deckSeq);
 
 /** Drift boss (CUR F9 monitoring): PSI, two-sample KS, rolling alarms, covariate vs concept drift and the first response. */
 export const DRIFT_DECK = loadDeck(deckDrift);
+/** Attention Atoll (CUR G1): softmax, scaled dot-product attention, masks, heads, positions, the pre-LN block and its cost. */
+export const ATTENTION_DECK = loadDeck(deckAttention);
 
 /** A varied deck: hand-written cards plus solver-generated ones, shuffled by a seed. */
 export function demoDeck(seed: number): Card[] {

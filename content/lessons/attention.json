@@ -1,0 +1,188 @@
+{
+  "id": "attention-lessons",
+  "title": "Attention Atoll lessons",
+  "lessons": [
+    {
+      "id": "attention-sdpa-lesson",
+      "title": "Softmax, scores and the sqrt(d) scale",
+      "topics": [
+        "attn-softmax",
+        "attn-sdpa"
+      ],
+      "intro": "Attention lets every position take a weighted average of the other positions' values, with weights computed from how well its query matches their keys. The whole mechanism is two matrix multiplies around a softmax. This lesson builds it from the numerically stable softmax up, and shows why the scale factor exists.",
+      "takeaways": [
+        "Subtract the row max before exp; the softmax is unchanged and cannot overflow.",
+        "output = softmax(Q K^T / sqrt(d_k)) V; weights are (T, T) and each row sums to 1.",
+        "Std of q.k grows like sqrt(d), so divide by sqrt(d) to keep the softmax trainable.",
+        "Keys choose where to look, values choose what to copy."
+      ],
+      "trap": "Dividing by d instead of sqrt(d), or applying the softmax down the columns. Both produce plausible-looking weights; only a row-sum check or a pinned test catches them.",
+      "sections": [
+        {
+          "heading": "A stable softmax",
+          "text": "Softmax turns scores into weights that are positive and sum to 1. It only depends on score differences, so subtract the row maximum first: the result is identical and exp can no longer overflow.",
+          "code": [
+            "s = np.array([1000.0, 1001.0, 1002.0])",
+            "print('naive', np.exp(s) / np.exp(s).sum())",
+            "e = np.exp(s - s.max())",
+            "print('stable', np.round(e / e.sum(), 3).tolist())"
+          ],
+          "output": "naive [nan nan nan]\nstable [0.09, 0.245, 0.665]"
+        },
+        {
+          "heading": "Scores, weights, output",
+          "text": "For queries Q, keys K and values V: scores = Q K^T / sqrt(d), weights = softmax(scores) over keys, output = weights V. The keys decide where to look, the values decide what is read. Shapes: (T, d) times (d, T) gives a (T, T) matrix of weights.",
+          "code": [
+            "rng = np.random.default_rng(0)",
+            "Q, K, V = (rng.normal(size=(4, 8)) for _ in range(3))",
+            "s = Q @ K.T / np.sqrt(8)",
+            "e = np.exp(s - s.max(axis=-1, keepdims=True))",
+            "w = e / e.sum(axis=-1, keepdims=True)",
+            "print(w.shape, np.round(w.sum(axis=-1), 3).tolist(), (w @ V).shape)"
+          ],
+          "output": "(4, 4) [1.0, 1.0, 1.0, 1.0] (4, 8)"
+        },
+        {
+          "heading": "Why divide by sqrt(d)",
+          "text": "If q and k have independent unit-variance entries, q.k has variance d. Without the scale, large d pushes the softmax into a one-hot regime where gradients vanish. Measure the spread, then the effect on the weights.",
+          "code": [
+            "rng = np.random.default_rng(1)",
+            "for d in (4, 64, 1024):",
+            "    q, k = rng.normal(size=(2, 20000, d))",
+            "    print(d, round(float((q * k).sum(axis=1).std()), 1), round(float((q * k).sum(axis=1).std() / np.sqrt(d)), 2))"
+          ],
+          "output": "4 2.0 1.0\n64 8.0 1.0\n1024 31.5 0.99"
+        }
+      ]
+    },
+    {
+      "id": "attention-mask-heads-lesson",
+      "title": "Masks and multiple heads",
+      "topics": [
+        "attn-mask",
+        "attn-mha"
+      ],
+      "intro": "Two small ideas make attention usable: masks control who may see whom, and heads let the model attend in several ways at once. Both are easy to get subtly wrong, so this lesson shows the exact mechanics and the invariants worth testing.",
+      "takeaways": [
+        "Mask with -inf on the scores, before the softmax; zeroing afterwards breaks the row sums.",
+        "Causal test: perturb a future token and assert earlier positions are unchanged.",
+        "Padding and causal masks answer different questions and combine with OR.",
+        "Heads reshape (T, d) -> (h, T, d/h) with a transpose; the parameter count is independent of h."
+      ],
+      "trap": "Using a reshape without the transpose when splitting heads. The shapes are right, the data is scrambled, and a loss that still goes down hides it.",
+      "sections": [
+        {
+          "heading": "Masks act before the softmax",
+          "text": "Set forbidden scores to minus infinity so their weight is exactly 0 and the rest renormalise. Zeroing the weights after the softmax leaves rows that no longer sum to 1.",
+          "code": [
+            "s = np.log(np.array([2.0, 1.0, 1.0]))",
+            "w = np.exp(s) / np.exp(s).sum()",
+            "after = w.copy(); after[2] = 0.0",
+            "m = s.copy(); m[2] = -np.inf",
+            "before = np.exp(m) / np.exp(m).sum()",
+            "print('after', after.tolist(), after.sum())",
+            "print('before', np.round(before, 3).tolist(), before.sum())"
+          ],
+          "output": "after [0.5, 0.25, 0.0] 0.75\nbefore [0.667, 0.333, 0.0] 1.0"
+        },
+        {
+          "heading": "The causal mask and the leak test",
+          "text": "A decoder may only attend to the past. The test that proves it: change a later token and check that earlier outputs do not move.",
+          "code": [
+            "def attn(x):",
+            "    s = x @ x.T / np.sqrt(x.shape[1])",
+            "    s = np.where(np.triu(np.ones(s.shape, bool), 1), -np.inf, s)",
+            "    e = np.exp(s - s.max(axis=-1, keepdims=True))",
+            "    return (e / e.sum(axis=-1, keepdims=True)) @ x",
+            "x = np.random.default_rng(3).normal(size=(5, 4))",
+            "y = x.copy(); y[4] += 3.0",
+            "print([bool(np.allclose(attn(x)[i], attn(y)[i])) for i in range(5)])"
+          ],
+          "output": "[True, True, True, True, False]"
+        },
+        {
+          "heading": "Splitting into heads",
+          "text": "Multi-head attention projects to d_model, reshapes to (T, h, d/h), moves the head axis forward, runs attention per head, then merges and applies Wo. The parameter count (4 d^2) does not depend on h.",
+          "code": [
+            "T, d, h = 5, 8, 2",
+            "x = np.arange(T * d, dtype=float).reshape(T, d)",
+            "heads = x.reshape(T, h, d // h).transpose(1, 0, 2)",
+            "print(heads.shape, np.allclose(heads[1], x[:, 4:]))",
+            "merged = heads.transpose(1, 0, 2).reshape(T, d)",
+            "print(np.allclose(merged, x), 4 * d * d)"
+          ],
+          "output": "(2, 5, 4) True\nTrue 256"
+        }
+      ]
+    },
+    {
+      "id": "attention-position-block-lesson",
+      "title": "Position, the block and the cost of length",
+      "topics": [
+        "attn-pos",
+        "attn-block"
+      ],
+      "intro": "Attention alone cannot tell token order, so positions are injected: sinusoidal vectors, learned tables, or rotations of queries and keys. Around attention sits the rest of the transformer block, and this lesson ends by counting what it costs, so you can reason about context length from first principles.",
+      "takeaways": [
+        "Attention is permutation-equivariant: it needs positions injected (sinusoidal, learned or rotary).",
+        "RoPE rotates q and k so the score depends on the offset only.",
+        "Pre-LN: x + Attn(LN(x)), then x + FFN(LN(x)); the FFN holds about twice the weights of attention at d_ff = 4 d.",
+        "Attention FLOPs and stored matrix grow with T^2; they overtake the linear parts around T = 2 d + d_ff."
+      ],
+      "trap": "Quoting a context length as free. Doubling it quadruples the attention matrix and, past the crossover, most of the block's FLOPs.",
+      "sections": [
+        {
+          "heading": "Order has to be added",
+          "text": "Without positions, permuting the input only permutes the outputs. Check it with a tiny attention.",
+          "code": [
+            "def attn(x):",
+            "    s = x @ x.T / np.sqrt(x.shape[1])",
+            "    e = np.exp(s - s.max(axis=-1, keepdims=True))",
+            "    return (e / e.sum(axis=-1, keepdims=True)) @ x",
+            "x = np.random.default_rng(5).normal(size=(4, 3))",
+            "p = [2, 0, 3, 1]",
+            "print(np.allclose(attn(x)[p], attn(x[p])))"
+          ],
+          "output": "True"
+        },
+        {
+          "heading": "Rotations make position relative",
+          "text": "Rotate q by its position angle and k by its own. The dot product then depends only on the offset between them, which is the idea behind rotary embeddings.",
+          "code": [
+            "def rot(v, pos, theta=0.5):",
+            "    a = pos * theta",
+            "    return np.array([v[0] * np.cos(a) - v[1] * np.sin(a), v[0] * np.sin(a) + v[1] * np.cos(a)])",
+            "q, k = np.array([1.0, 2.0]), np.array([0.5, -1.0])",
+            "print([round(float(rot(q, m) @ rot(k, m - 2)), 4) for m in (2, 5, 40)])"
+          ],
+          "output": "[-2.4934, -2.4934, -2.4934]"
+        },
+        {
+          "heading": "Pre-LN block and its parameters",
+          "text": "A pre-LN block is x + Attn(LN(x)) followed by x + FFN(LN(x)). With d_model 512 and d_ff 2048 the feed-forward network holds about twice the weights of attention.",
+          "code": [
+            "d, f = 512, 2048",
+            "attn = 4 * d * d",
+            "ffn = 2 * d * f + f + d",
+            "ln = 4 * d",
+            "print(attn, ffn, ln, attn + ffn + ln)"
+          ],
+          "output": "1048576 2099712 2048 3150336"
+        },
+        {
+          "heading": "Where the quadratic term bites",
+          "text": "Per token the projections and FFN cost 8 d^2 + 4 d d_ff, the attention matmuls 4 T d. They cross at T = 2 d + d_ff, and the stored attention matrix grows with T^2.",
+          "code": [
+            "d, f = 512, 2048",
+            "print('crossover T', 2 * d + f)",
+            "for T in (512, 2048, 8192):",
+            "    lin = 8 * T * d * d + 4 * T * d * f",
+            "    quad = 4 * T * T * d",
+            "    print(T, round(quad / (lin + quad), 3))"
+          ],
+          "output": "crossover T 3072\n512 0.143\n2048 0.4\n8192 0.727"
+        }
+      ]
+    }
+  ]
+}

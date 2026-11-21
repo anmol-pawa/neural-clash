@@ -1,0 +1,557 @@
+{
+  "id": "attention",
+  "title": "Attention Atoll: attention, heads, positions and the block",
+  "cards": [
+    {
+      "id": "attn-softmax-stable",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "attn-softmax",
+      "prompt": "What does this print? (Softmax of the large scores [1000, 1001, 1002], computed by subtracting the row maximum first, rounded to 3 places.)",
+      "code": [
+        "def softmax(s):",
+        "    e = np.exp(s - s.max(axis=-1, keepdims=True))",
+        "    return e / e.sum(axis=-1, keepdims=True)",
+        "print(np.round(softmax(np.array([1000.0, 1001.0, 1002.0])), 3).tolist())"
+      ],
+      "choices": [
+        "[nan, nan, nan]",
+        "[0.09, 0.245, 0.665]",
+        "[0.333, 0.333, 0.333]",
+        "[0.0, 0.0, 1.0]"
+      ],
+      "answer": 1,
+      "explanation": "Softmax only depends on differences between scores, so subtracting the maximum changes nothing mathematically and keeps every exponent at or below 0. The naive form exp(1000) overflows to infinity and returns nan. The weights are the same as for [0, 1, 2]."
+    },
+    {
+      "id": "attn-scale-saturation",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "attn-sdpa",
+      "prompt": "What does this print? (Weight on key 1 when the query equals key 1 and key 2 is all zeros, for d = 16: first with raw logits q.k, then with logits divided by sqrt(d). Rounded to 3 places.)",
+      "code": [
+        "def softmax(s):",
+        "    e = np.exp(s - s.max(axis=-1, keepdims=True))",
+        "    return e / e.sum(axis=-1, keepdims=True)",
+        "d = 16",
+        "q = np.ones(d)",
+        "K = np.stack([np.ones(d), np.zeros(d)])",
+        "print([round(float(softmax(q @ K.T / s)[0]), 3) for s in (1.0, np.sqrt(d))])"
+      ],
+      "choices": [
+        "[1.0, 0.982]",
+        "[0.5, 0.5]",
+        "[0.982, 1.0]",
+        "[1.0, 1.0]"
+      ],
+      "answer": 0,
+      "explanation": "Raw logits are [16, 0], so the softmax is saturated: all weight on one key and almost no gradient to the others. Dividing by sqrt(d) gives [4, 0], a confident but still trainable 0.982. Dot products of random vectors have variance proportional to d, which is why the scale is sqrt(d) and not d."
+    },
+    {
+      "id": "attn-causal-weights",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "attn-mask",
+      "prompt": "What does this print? (Attention weights for three tokens whose scores are all equal, with a causal mask that hides future keys, rounded to 3 places.)",
+      "code": [
+        "def softmax(s):",
+        "    e = np.exp(s - s.max(axis=-1, keepdims=True))",
+        "    return e / e.sum(axis=-1, keepdims=True)",
+        "s = np.where(np.triu(np.ones((3, 3), bool), 1), -np.inf, 0.0)",
+        "print(np.round(softmax(s), 3).tolist())"
+      ],
+      "choices": [
+        "[[0.333, 0.333, 0.333], [0.333, 0.333, 0.333], [0.333, 0.333, 0.333]]",
+        "[[0.333, 0.333, 0.333], [0.0, 0.5, 0.5], [0.0, 0.0, 1.0]]",
+        "[[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]",
+        "[[1.0, 0.0, 0.0], [0.5, 0.5, 0.0], [0.333, 0.333, 0.333]]"
+      ],
+      "answer": 3,
+      "explanation": "Position i may only look at positions 0..i, so row i spreads its weight equally over i + 1 keys: 1, 1/2 and 1/3. Masked entries are set to minus infinity before the softmax, so they get exactly zero weight and the remaining weights still sum to 1."
+    },
+    {
+      "id": "attn-mask-after",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "attn-mask",
+      "prompt": "What does this print? (Weights [0.5, 0.25, 0.25] from a softmax. The last key is padding, and the code 'masks' it by setting its weight to 0 after the softmax. Sum of the weights, rounded to 2 places.)",
+      "code": [
+        "w = np.array([0.5, 0.25, 0.25])",
+        "w[2] = 0.0",
+        "print(round(float(w.sum()), 2))"
+      ],
+      "choices": [
+        "1.0",
+        "0.5",
+        "0.75",
+        "0.67"
+      ],
+      "answer": 2,
+      "explanation": "Zeroing after the softmax leaves a row that sums to 0.75, so the real keys are quietly down-weighted. The mask has to act on the scores (minus infinity) before the softmax so the surviving weights renormalise to 1."
+    },
+    {
+      "id": "attn-future-leak",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "attn-mask",
+      "prompt": "What does this print? (Causal self-attention with identity projections. The last token of x is changed. Are the outputs of the first three positions unchanged, then the output of the last position unchanged?)",
+      "code": [
+        "def attn(x):",
+        "    s = x @ x.T / np.sqrt(x.shape[1])",
+        "    s = np.where(np.triu(np.ones(s.shape, bool), 1), -np.inf, s)",
+        "    e = np.exp(s - s.max(axis=-1, keepdims=True))",
+        "    return (e / e.sum(axis=-1, keepdims=True)) @ x",
+        "x = np.random.default_rng(0).normal(size=(4, 2))",
+        "x2 = x.copy()",
+        "x2[3] += 5.0",
+        "print(np.allclose(attn(x)[:3], attn(x2)[:3]), np.allclose(attn(x)[3], attn(x2)[3]))"
+      ],
+      "choices": [
+        "False False",
+        "True False",
+        "True True",
+        "False True"
+      ],
+      "answer": 1,
+      "explanation": "Under a causal mask, position i is computed from tokens 0..i only, so editing token 3 cannot change positions 0 to 2. It does change position 3, which reads itself. This is exactly the property the Lab's 'future cannot leak' test checks, and what makes next-token training at every position valid."
+    },
+    {
+      "id": "attn-mha-params",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "attn-mha",
+      "prompt": "What does this print? (Weights of multi-head attention with d_model 64 and 4 heads: Wq, Wk, Wv and Wo, each d x d, no biases.)",
+      "code": [
+        "d, h = 64, 4",
+        "print(4 * d * d)"
+      ],
+      "choices": [
+        "16384",
+        "4096",
+        "65536",
+        "16640"
+      ],
+      "answer": 0,
+      "explanation": "The heads split d_model between them (each head is 16-dimensional), so four d x d matrices cover all heads together: 16,384. The head count does not appear in the parameter count at all, only in how the work is divided."
+    },
+    {
+      "id": "attn-matrix-bytes",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "attn-block",
+      "prompt": "What does this print? (MiB needed to store the full attention matrices of one layer for one sequence of 4096 tokens with 16 heads in 2-byte numbers.)",
+      "code": [
+        "n, h, nbytes = 4096, 16, 2",
+        "print(n * n * h * nbytes / 2 ** 20)"
+      ],
+      "choices": [
+        "32.0",
+        "8192.0",
+        "0.125",
+        "512.0"
+      ],
+      "answer": 3,
+      "explanation": "The matrix is n x n per head, so 4096 x 4096 x 16 x 2 bytes = 512 MiB for a single layer if it is materialised, and it grows 4x when the context doubles. Fused kernels in the FlashAttention family avoid storing it by tiling the computation; the arithmetic is still quadratic in n."
+    },
+    {
+      "id": "attn-pe-sinusoid",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "attn-pos",
+      "prompt": "What does this print? (The sinusoidal position vector for position 1 with d = 4, in the original sin/cos pairing with base 10000, rounded to 3 places.)",
+      "code": [
+        "d, pos = 4, 1",
+        "pe = np.zeros(d)",
+        "for i in range(d // 2):",
+        "    f = pos / 10000 ** (2 * i / d)",
+        "    pe[2 * i], pe[2 * i + 1] = np.sin(f), np.cos(f)",
+        "print(np.round(pe, 3).tolist())"
+      ],
+      "choices": [
+        "[0.0, 1.0, 0.0, 1.0]",
+        "[0.841, 0.841, 0.01, 0.01]",
+        "[0.841, 0.54, 0.01, 1.0]",
+        "[0.54, 0.841, 1.0, 0.01]"
+      ],
+      "answer": 2,
+      "explanation": "Each pair of dimensions is a sine and cosine at one frequency; the first pair rotates fastest (angle 1 radian per position), the second 100 times slower. Position 0 would be [0, 1, 0, 1]. The slowly varying pairs let the model tell far positions apart, the fast ones near positions."
+    },
+    {
+      "id": "attn-rope-relative",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "attn-pos",
+      "prompt": "What does this print? (Query and key are each rotated by an angle proportional to their position. Is the score the same for positions (5, 3) and (12, 10), and the same for (5, 3) and (5, 4)?)",
+      "code": [
+        "def rot(v, pos, theta=0.5):",
+        "    a = pos * theta",
+        "    return np.array([v[0] * np.cos(a) - v[1] * np.sin(a), v[0] * np.sin(a) + v[1] * np.cos(a)])",
+        "q, k = np.array([1.0, 2.0]), np.array([0.5, -1.0])",
+        "score = lambda m, n: float(rot(q, m) @ rot(k, n))",
+        "print(np.isclose(score(5, 3), score(12, 10)), np.isclose(score(5, 3), score(5, 4)))"
+      ],
+      "choices": [
+        "True True",
+        "True False",
+        "False False",
+        "False True"
+      ],
+      "answer": 1,
+      "explanation": "Rotating q by m and k by n makes their dot product depend only on the offset m - n, because the two rotations combine into one by the difference. (5, 3) and (12, 10) share offset 2; (5, 4) has offset 1. This is the idea behind rotary position embeddings: relative position falls out of the dot product."
+    },
+    {
+      "id": "attn-ffn-ratio",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "attn-block",
+      "prompt": "What does this print? (Ratio of feed-forward weights, d to 4d and back, to attention weights, four d x d matrices, for any d. Biases ignored.)",
+      "code": [
+        "d = 64",
+        "print((2 * d * 4 * d) / (4 * d * d))"
+      ],
+      "choices": [
+        "2.0",
+        "0.5",
+        "4.0",
+        "1.0"
+      ],
+      "answer": 0,
+      "explanation": "The feed-forward network holds 8 d^2 weights and attention 4 d^2, so about two thirds of a standard block's parameters are in the FFN. Much of what the model 'knows' is stored there; attention mostly moves information between positions."
+    },
+    {
+      "id": "attn-layernorm",
+      "kind": "mcq",
+      "variant": "predict",
+      "topic": "attn-block",
+      "prompt": "What does this print? (LayerNorm of the vector [1, 2, 3] using the population variance and eps = 1e-5, without learned scale or shift, rounded to 3 places.)",
+      "code": [
+        "x = np.array([1.0, 2.0, 3.0])",
+        "y = (x - x.mean()) / np.sqrt(x.var() + 1e-5)",
+        "print(np.round(y, 3).tolist())"
+      ],
+      "choices": [
+        "[-1.0, 0.0, 1.0]",
+        "[0.0, 0.5, 1.0]",
+        "[-0.5, 0.0, 0.5]",
+        "[-1.225, 0.0, 1.225]"
+      ],
+      "answer": 3,
+      "explanation": "The mean is 2 and the variance is 2/3, so the entries become +-1/sqrt(2/3) = +-1.225. Using the sample variance (divide by n - 1) would give exactly [-1, 0, 1], a small but real convention difference between implementations."
+    },
+    {
+      "id": "attn-shape-scores",
+      "kind": "shape",
+      "topic": "attn-sdpa",
+      "prompt": "With `q = np.zeros((2, 4, 5, 16))` and `k = np.zeros((2, 4, 5, 16))`, what is the shape of `q @ k.swapaxes(-1, -2)`? Type \"error\" if it raises.",
+      "answer": [
+        2,
+        4,
+        5,
+        5
+      ],
+      "explanation": "Result shape (2, 4, 5, 5). Per batch element and head, (T, Dh) times (Dh, T) is a (T, T) score matrix: one score for every query/key pair. Matmul broadcasts over the leading batch and head axes."
+    },
+    {
+      "id": "attn-shape-split",
+      "kind": "shape",
+      "topic": "attn-mha",
+      "prompt": "With `x = np.zeros((2, 5, 64))`, what is the shape of `x.reshape(2, 5, 4, 16).transpose(0, 2, 1, 3)`? Type \"error\" if it raises.",
+      "answer": [
+        2,
+        4,
+        5,
+        16
+      ],
+      "explanation": "Result shape (2, 4, 5, 16). Split the model dimension into 4 heads of 16, then move the head axis in front of the time axis so each head is a (T, 16) matrix. Forgetting the transpose is a classic bug: the reshape alone interleaves positions and heads."
+    },
+    {
+      "id": "attn-shape-merge",
+      "kind": "shape",
+      "topic": "attn-mha",
+      "prompt": "With `out = np.zeros((2, 4, 5, 16))`, what is the shape of `out.transpose(0, 2, 1, 3).reshape(2, 5, 64)`? Type \"error\" if it raises.",
+      "answer": [
+        2,
+        5,
+        64
+      ],
+      "explanation": "Result shape (2, 5, 64). Merging heads reverses the split: bring time back before the head axis, then flatten (4, 16) into 64. The result goes through the output projection Wo, which mixes the heads."
+    },
+    {
+      "id": "attn-derive-weights",
+      "kind": "derive",
+      "topic": "attn-sdpa",
+      "prompt": "One query q = [2, 0] attends over two keys K = [[1, 0], [0, 1]] with values V = [[10, 0], [0, 10]], using scaled dot-product attention (d = 2). Enter the weight on key 1, the weight on key 2, and the first component of the output.",
+      "fields": [
+        "weight on key 1",
+        "weight on key 2",
+        "output[0]"
+      ],
+      "answers": [
+        0.80443,
+        0.19557,
+        8.044297
+      ],
+      "tol": 0.001,
+      "explanation": "The scores are [2, 0] / sqrt(2) = [1.414, 0]. The softmax gives 0.804 and 0.196. The output is the weighted average of the value rows, so its first component is 0.804 x 10 = 8.04. The values only matter through these weights; the keys decide where to look, the values decide what is read."
+    },
+    {
+      "id": "attn-derive-block",
+      "kind": "derive",
+      "topic": "attn-block",
+      "prompt": "A pre-LN block with d_model 512 and d_ff 2048 has attention weights without biases, a feed-forward network with biases, and two LayerNorms with scale and shift. Enter the attention parameters, the FFN parameters, the LayerNorm parameters and the total.",
+      "fields": [
+        "attention",
+        "FFN",
+        "LayerNorms",
+        "total"
+      ],
+      "answers": [
+        1048576,
+        2099712,
+        2048,
+        3150336
+      ],
+      "tol": 0.5,
+      "explanation": "Attention: 4 x 512^2 = 1,048,576. FFN: 512 x 2048 twice plus the biases 2048 and 512 = 2,099,712. Two LayerNorms with scale and shift: 2048. Total 3,150,336, the count the Forge 13 helper `block_param_count` returns for this shape. The FFN is twice the size of attention."
+    },
+    {
+      "id": "attn-derive-crossover",
+      "kind": "derive",
+      "topic": "attn-block",
+      "prompt": "Per token and layer, projections and the FFN cost 8 d^2 + 4 d d_ff multiply-add FLOPs and the two attention matmuls cost 4 T d (a multiply-add counted as 2 FLOPs). For d = 512 and d_ff = 2048, at what sequence length T are they equal? Then enter the attention share of block FLOPs at T = 1024, as a fraction.",
+      "fields": [
+        "crossover T",
+        "attention share at T = 1024"
+      ],
+      "answers": [
+        3072,
+        0.25
+      ],
+      "tol": 0.001,
+      "explanation": "Setting 4 T d = 8 d^2 + 4 d d_ff gives T = 2 d + d_ff = 3072. Below that length the linear parts dominate; at T = 1024 the attention matmuls are exactly a quarter of block FLOPs for this shape. Quadratic growth only takes over at long contexts, but it takes over fast."
+    },
+    {
+      "id": "attn-why-scale",
+      "kind": "mcq",
+      "topic": "attn-sdpa",
+      "prompt": "Why are the scores divided by sqrt(d_k) before the softmax?",
+      "choices": [
+        "It makes the weights add up to 1",
+        "It lets the model use fewer heads",
+        "A dot product of d-dimensional vectors has variance that grows with d, so unscaled scores saturate the softmax and starve it of gradient; dividing by sqrt(d) keeps the scale about constant",
+        "It hides future tokens from the query"
+      ],
+      "answer": 2,
+      "explanation": "With unit-variance entries, q.k has variance d. Large-magnitude logits push the softmax to a one-hot output whose Jacobian is nearly zero, so learning stalls. Dividing by sqrt(d) restores unit variance. Normalising to sum 1 is the softmax's job."
+    },
+    {
+      "id": "attn-causal-why",
+      "kind": "mcq",
+      "topic": "attn-mask",
+      "prompt": "Why does a decoder-only language model use a causal mask during training?",
+      "choices": [
+        "To make attention cheaper than quadratic",
+        "Every position is trained to predict its next token in parallel, so it must not be able to read that token; without the mask the loss can be driven to zero by copying",
+        "To ignore padding tokens",
+        "To give earlier tokens a higher weight"
+      ],
+      "answer": 1,
+      "explanation": "Training computes all positions at once. If position i could attend to token i + 1 it would simply copy its label and learn nothing useful, and generation (where the future does not exist) would then fail. The mask makes training match inference."
+    },
+    {
+      "id": "attn-pad-vs-causal",
+      "kind": "mcq",
+      "topic": "attn-mask",
+      "prompt": "A batch of padded sentences goes through an encoder with no causal mask. Which mask is still required?",
+      "choices": [
+        "A padding mask, so real tokens never attend to pad positions and pads do not leak into the softmax",
+        "None: padding tokens are zero vectors and do not matter",
+        "A causal mask, to keep the batch independent",
+        "A mask on the values only"
+      ],
+      "answer": 0,
+      "explanation": "Padding is not zero influence: a pad key still gets a score and a share of the softmax unless it is masked. A padding mask and a causal mask answer different questions (who exists vs. who is allowed) and are combined with a logical OR when both apply."
+    },
+    {
+      "id": "attn-heads-why",
+      "kind": "mcq",
+      "topic": "attn-mha",
+      "prompt": "What is the practical benefit of several heads over one head of the full model width?",
+      "choices": [
+        "Each head multiplies the model's parameter count",
+        "Heads remove the need for position information",
+        "Heads make attention linear in sequence length",
+        "Each head has its own query, key and value projections, so it can attend by a different relation at about the same total cost and parameter count"
+      ],
+      "answer": 3,
+      "explanation": "Splitting d_model into h subspaces costs the same matmul work as one wide head, but gives h separate attention patterns (for example syntax-like, copy-like or positional). Pruning studies show that many heads are redundant, so treat 'one head per concept' as a tendency, not a rule."
+    },
+    {
+      "id": "attn-position-why",
+      "kind": "mcq",
+      "topic": "attn-pos",
+      "prompt": "Why does a transformer need position information added to its inputs?",
+      "choices": [
+        "Embeddings cannot be negative",
+        "Without it the softmax overflows",
+        "Self-attention treats the sequence as an unordered set: permuting the tokens just permutes the outputs, so order must be injected",
+        "To make the sequence length fixed"
+      ],
+      "answer": 2,
+      "explanation": "Dot-product attention has no notion of order: swap two tokens and the outputs swap too (permutation equivariance). Sinusoidal, learned or rotary positions break that symmetry. Causal masking also leaks some order information, but it is not a substitute."
+    },
+    {
+      "id": "attn-rope-vs-abs",
+      "kind": "mcq",
+      "topic": "attn-pos",
+      "prompt": "What distinguishes rotary position embeddings (RoPE) from adding an absolute position vector to the input?",
+      "choices": [
+        "RoPE stores one trainable vector per position",
+        "RoPE rotates queries and keys inside attention so the score depends on the relative offset between tokens",
+        "RoPE removes the need for a softmax",
+        "RoPE only works with a fixed context length"
+      ],
+      "answer": 1,
+      "explanation": "Rotating q and k by position-dependent angles makes q.k a function of the offset. As of late 2026 rotary schemes are widely used in open-weight decoder models, and context-extension methods work by rescaling the angles. Treat that adoption as a snapshot, but the offset property is exact."
+    },
+    {
+      "id": "attn-residual-why",
+      "kind": "mcq",
+      "topic": "attn-block",
+      "prompt": "What does the residual connection x + sublayer(x) buy a deep transformer?",
+      "choices": [
+        "An identity path for the signal and the gradient through every layer, so each block only has to learn a correction",
+        "It halves the number of parameters",
+        "It makes the layers run in parallel",
+        "It removes the need for normalisation"
+      ],
+      "answer": 0,
+      "explanation": "The derivative of x + f(x) contains the identity, so the gradient reaches early layers without passing through every sublayer's Jacobian. Pre-LN places the normalisation inside the branch, which keeps that highway clean and is why deep stacks train with less warm-up fuss than post-LN."
+    },
+    {
+      "id": "attn-quadratic-fix",
+      "kind": "mcq",
+      "topic": "attn-block",
+      "prompt": "A team wants to double the context window. What happens to the attention matrix memory if it is stored in full, and what does a fused attention kernel change?",
+      "choices": [
+        "It grows 2x; a fused kernel makes the compute linear",
+        "It stays constant; attention is linear in length",
+        "It grows 8x; a fused kernel makes it constant",
+        "It grows 4x; a fused kernel avoids storing it by tiling, but the compute still grows quadratically"
+      ],
+      "answer": 3,
+      "explanation": "The matrix is n x n, so doubling n quadruples it. FlashAttention-style kernels compute the softmax in tiles on-chip and never write the matrix to memory, saving memory and bandwidth. They compute the same exact result; FLOPs stay quadratic, so long contexts still cost."
+    },
+    {
+      "id": "attn-which-mask",
+      "kind": "multi",
+      "topic": "attn-mask",
+      "prompt": "Which of these need a mask on the attention scores? Pick all that apply.",
+      "choices": [
+        "Next-token training of a decoder-only language model",
+        "A batch where sentences were padded to the same length",
+        "An encoder reading a complete sentence with no padding",
+        "Cross-attention over a padded source batch"
+      ],
+      "answers": [
+        0,
+        1,
+        3
+      ],
+      "explanation": "The decoder needs the causal mask, padded batches need a padding mask, and cross-attention must not read the source's pad positions. A single unpadded sentence in an encoder can attend freely in both directions, so it needs none."
+    },
+    {
+      "id": "attn-quadratic-which",
+      "kind": "multi",
+      "topic": "attn-block",
+      "prompt": "Which of these grow quadratically with the sequence length n for a fixed model? Pick all that apply.",
+      "choices": [
+        "FLOPs of the QK^T and attention-times-V matmuls",
+        "Memory of a fully stored attention matrix",
+        "FLOPs of the feed-forward network",
+        "Number of trainable parameters"
+      ],
+      "answers": [
+        0,
+        1
+      ],
+      "explanation": "The two attention matmuls and the stored n x n matrix scale with n^2. The FFN and projections touch each token independently, so they are linear in n, and the parameter count does not depend on n at all (except for learned absolute position tables)."
+    },
+    {
+      "id": "attn-bug-axis",
+      "kind": "bug",
+      "topic": "attn-softmax",
+      "prompt": "Each row of the attention weights should sum to 1 (a query's weights over keys), but the printed row sums are not 1. Tap the line to fix.",
+      "code": [
+        "import numpy as np",
+        "def softmax(s):",
+        "    axis = 0",
+        "    e = np.exp(s - s.max(axis=axis, keepdims=True))",
+        "    return e / e.sum(axis=axis, keepdims=True)"
+      ],
+      "line": 3,
+      "explanation": "Row i holds query i's scores over all keys, so the softmax must normalise along the last axis. Normalising down the columns makes each key's weights sum to 1 across queries instead, which is a different (and meaningless) quantity. The shifted max must use the same axis."
+    },
+    {
+      "id": "attn-bug-scale",
+      "kind": "bug",
+      "topic": "attn-sdpa",
+      "prompt": "A single query over two keys with d = 4 should give weights [[0.982, 0.018]] but gives [[0.881, 0.119]]. Tap the line to fix.",
+      "code": [
+        "import numpy as np",
+        "def weights(q, K):",
+        "    d = q.shape[-1]",
+        "    s = q @ K.T / d",
+        "    e = np.exp(s - s.max(axis=-1, keepdims=True))",
+        "    return e / e.sum(axis=-1, keepdims=True)"
+      ],
+      "line": 4,
+      "explanation": "The scale is the square root of the key dimension, because the standard deviation of q.k grows like sqrt(d). Dividing by d over-corrects and flattens the weights, which wastes the model's ability to focus. The Lab's pinned-divisor test catches exactly this."
+    },
+    {
+      "id": "attn-bug-fill",
+      "kind": "bug",
+      "topic": "attn-mask",
+      "prompt": "The masked keys should get exactly zero weight, so the weights for scores [[1, 2, 3]] with keys 2 and 3 masked should be [[1, 0, 0]]. The code gives [[0.576, 0.212, 0.212]]. Tap the line to fix.",
+      "code": [
+        "import numpy as np",
+        "def masked_weights(s, masked):",
+        "    s = np.where(masked, 0.0, s)",
+        "    e = np.exp(s - s.max(axis=-1, keepdims=True))",
+        "    return e / e.sum(axis=-1, keepdims=True)"
+      ],
+      "line": 3,
+      "explanation": "A score of 0 is not 'absent': exp(0) = 1 still gets a share of the softmax. Only minus infinity gives exp = 0 and removes the key. (Fully masked rows then need explicit handling to avoid nan; the Lab's masked_softmax returns zeros for them.)"
+    },
+    {
+      "id": "attn-bug-heads",
+      "kind": "bug",
+      "topic": "attn-mha",
+      "prompt": "Splitting a (T, d) matrix into heads should give head 0 the first column of x here (T = 4, d = 2, 2 heads), [0, 2, 4, 6], but it holds [0, 1, 2, 3]. Tap the line to fix.",
+      "code": [
+        "import numpy as np",
+        "def split_heads(x, h):",
+        "    T, d = x.shape",
+        "    return x.reshape(h, T, d // h)"
+      ],
+      "line": 4,
+      "explanation": "A reshape only reinterprets memory in row-major order. To give each head a slice of the feature dimension, first reshape to (T, h, d/h) and then move the head axis forward with a transpose. The shortcut produces the right shape with the wrong data, so it passes shape checks and silently mixes positions across heads."
+    },
+    {
+      "id": "attn-bug-ln-axis",
+      "kind": "bug",
+      "topic": "attn-block",
+      "prompt": "LayerNorm should normalise each token over its own features, so [[1, 2, 3], [3, 2, 1]] gives rows [-1.225, 0, 1.225] and [1.225, 0, -1.225]. The code mixes the two tokens. Tap the line to fix.",
+      "code": [
+        "import numpy as np",
+        "def layer_norm(x, eps=1e-5):",
+        "    axis = 0",
+        "    mu = x.mean(axis=axis, keepdims=True)",
+        "    var = x.var(axis=axis, keepdims=True)",
+        "    return (x - mu) / np.sqrt(var + eps)"
+      ],
+      "line": 3,
+      "explanation": "LayerNorm statistics are per token over the feature axis, so one example never depends on its batch neighbours. Normalising over axis 0 is batch-norm-like: it couples examples, behaves differently at batch size 1, and breaks autoregressive decoding."
+    }
+  ]
+}
