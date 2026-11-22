@@ -53,7 +53,7 @@ export const SKILLS: readonly Skill[] = [
   { id: "sequence-models", title: "Sequence models and embeddings (RNN/BPTT, gates, seq2seq, embeddings, contrastive loss)", evidence: [{ kind: "deck", id: "seq" }, { kind: "lab", id: "forge-rnn" }, { kind: "guardian", id: "guardian:recurrent-rapids" }] },
   { id: "drift-monitoring", title: "Monitoring and drift (PSI, KS, rolling alarms, covariate vs concept drift)", evidence: [{ kind: "deck", id: "drift" }, { kind: "guardian", id: "guardian:drift" }] },
   { id: "dl-scratch", title: "Deep learning from scratch", evidence: [{ kind: "lab", id: "autograd" }, { kind: "lab", id: "mlp" }, { kind: "lab", id: "conv2d" }, { kind: "lab", id: "rnn" }] },
-  { id: "transformers", title: "Attention and transformers", evidence: [{ kind: "lab", id: "attention" }, { kind: "lab", id: "transformer-block" }, { kind: "lab", id: "tokenizer" }, { kind: "lab", id: "tiny-lm" }] },
+  { id: "transformers", title: "Attention and transformers", evidence: [{ kind: "deck", id: "attention" }, { kind: "lab", id: "forge-attention" }, { kind: "lab", id: "forge-block" }, { kind: "guardian", id: "guardian:attention-atoll" }, { kind: "lab", id: "forge-embed-pos" }, { kind: "lab", id: "tokenizer" }, { kind: "lab", id: "tiny-lm" }] },
   { id: "retrieval-evals", title: "Retrieval, RAG and evals", evidence: [{ kind: "planned", label: "Retrieval Reef labs: recall@k, MRR, judge calibration" }] },
   { id: "agents-safety", title: "Agents, guardrails, injection defence", evidence: [{ kind: "planned", label: "Agent Arena labs" }] },
   { id: "dsa-cpp", title: "DSA in C++ (LeetCode medium/hard)", evidence: [{ kind: "planned", label: "Code Dojo problems" }] },
