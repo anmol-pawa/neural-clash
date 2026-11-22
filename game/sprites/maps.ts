@@ -8,6 +8,7 @@ import { METRIC_MARKET_TILES } from "./tiles/metric-market-tiles";
 import { NEURON_NEST_TILES } from "./tiles/neuron-nest-tiles";
 import { CONV_CAVERNS_TILES } from "./tiles/conv-caverns-tiles";
 import { RECURRENT_RAPIDS_TILES } from "./tiles/recurrent-rapids-tiles";
+import { ATOLL_TILES } from "./tiles/atoll-tiles";
 import { PROBABILITY_PEAKS_TILES } from "./tiles/probability-peaks-tiles";
 
 /** Python Port, the harbour town where the game starts. */
@@ -145,3 +146,21 @@ export const CAVERNS_PREVIEW = mapSprite("conv-caverns-preview", "CONV CAVERNS (
 export const RAPIDS_LEGEND: TileLegend = VALE_LEGEND;
 export const RAPIDS_GRID: readonly string[] = GROVE_GRID;
 export const RAPIDS_PREVIEW = mapSprite("recurrent-rapids-preview", "RECURRENT RAPIDS (preview)", RECURRENT_RAPIDS_TILES, RAPIDS_GRID, RAPIDS_LEGEND);
+
+/** Attention Atoll: a coral atoll ringed by lagoon. Palms, a pearl pedestal (the query shell), a softmax-row signboard and the guardian's query/key pearl pad. Same tile names as the Vale. */
+export const ATOLL_LEGEND: TileLegend = VALE_LEGEND;
+export const ATOLL_GRID: readonly string[] = [
+  "TTgGgggfggggTTgggTTg",
+  "ttgggg<==>gggttgggtt",
+  "gggfgg<==>ggfgggggfg",
+  "ggggggWNDWgggggXggSg",
+  "FFFgggppppppppppgggg",
+  "gSgggLpgBgpgBgpLgggf",
+  "gggfggpggggpggpgGggg",
+  "ggggggppppppAAppgggg",
+  "gggGgggggggpAAgggfgg",
+  "sssssssssspppsssssss",
+  "wwwwwwwwwwpppwwwwwww",
+  "wwwwwwwwwwwwwwwwwwww",
+];
+export const ATOLL_PREVIEW = mapSprite("attention-atoll-preview", "ATTENTION ATOLL (preview)", ATOLL_TILES, ATOLL_GRID, ATOLL_LEGEND);

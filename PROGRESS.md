@@ -954,3 +954,12 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Verification (`PATH=/usr/bin:$PATH`): lint (0 errors), typecheck, test (838 pass), content:verify (all ok), build, build:pages (first run exits 1 on the Next.js security nudge, rerun exits 0), smoke:guardian-nest all PASS at desktop and iPhone 14 (no overflow, no console errors); screenshot viewed: backdrop and sprite read clearly. CI/Pages: no gh CLI here, not confirmed.
 - Known gaps: Heedray's fight uses the generic "Overfit's minion" text (shared by all guardians); no Atoll overworld map yet.
 - Next: E1g2 (Attention Atoll map + NPCs), then E1h (companion -> Transformer).
+
+## 2026-11-22: E1g2 Attention Atoll map, tiles and trainers
+
+- `scripts/art/attention-atoll.mjs` -> `game/sprites/tiles/atoll-tiles.ts`: 16x16 opaque tileset for a coral atoll (sand, sea grass with pink anemones, palms, turquoise lagoon with 4-frame animation, driftwood boardwalk, pearl lanterns, a softmax-row signboard whose tallest bar hops, a pearl pedestal whose glow rotates, and a query/key pearl arena pad whose highlight hops between four keys). `ATOLL_GRID` / `ATOLL_PREVIEW` in `game/sprites/maps.ts`.
+- `scripts/art/atoll-trainers.mjs`: Diver Pell (deep-coral sun hat, teal wetsuit, pearl net) and Tidewatcher Sable (silver braid, sea-green robe, tide chart), each with 4-direction walk (4f) and stand cycles plus 48x48 portraits (idle/talk/smile/think). Fixed on review: Pell's first hat colour blended with his skin tone, so it is now deep coral.
+- Tests: atoll tileset joins the tileset suite (valid, opaque, animated tiles really change); the two characters join the character/portrait checks.
+- Verification (`PATH=/usr/bin:$PATH`): lint (0 errors), typecheck, test (862 pass), content:verify, build, build:pages (rerun after the Next.js security-nudge exit). Screenshots of `/dev/sprites` at desktop and iPhone 14 viewed: map, tiles, walk cycles and portraits read clearly, no console errors, no horizontal overflow.
+- Known gaps: no playable overworld exists yet for any region (maps are previews), so region wiring is limited to the sprite roster; trainers have no battle decks yet.
+- Next: E1h (companion -> Transformer sprite and evolution requirements).

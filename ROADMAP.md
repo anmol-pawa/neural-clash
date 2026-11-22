@@ -162,7 +162,7 @@ Work top to bottom: take the **first unchecked box**, and split big boxes into r
   - [x] E1e. (done 2026-11-21) `attention` lessons (3) + 32-card deck (`scripts/gen-attention.mjs`, computed natively, solver-checked in tests).
   - [x] E1f. (done 2026-11-21) Attention-map visualiser (pixel heatmap) at `/dev/attention` and embedded in the attention lessons; pure logic in `lib/viz/attentionMap.ts`. (Lab-page embed deferred to E1g/E1h with the Atoll.)
   - [x] E1g1. (done 2026-11-22) Heedray guardian: 96x96 sprite (front, 4 anims), `/guardian/atoll` fight on the `attention` deck + `forge-attention`, atoll battle backdrop, Softmax Badge, Readiness evidence.
-  - [ ] E1g2. Attention Atoll overworld map (tiles, NPCs with portraits) and region wiring.
+  - [x] E1g2. (done 2026-11-22) Attention Atoll tileset (`scripts/art/attention-atoll.mjs`, 11 animated tile kinds), `ATOLL_PREVIEW` map, and two trainers with walk cycles + portraits (Diver Pell, Tidewatcher Sable); registered on `/dev/sprites`. Playable overworld wiring follows when the overworld engine ships (no region has one yet).
   - [ ] E1h. Companion -> Transformer sprite and evolution requirements.
 - [ ] E2. Token Tundra (T2), with modules 14–17, the tiny LM trained on the Lore Corpus and the companion → Foundation
 - [ ] E3. Pretrain Peaks (T3), with cost solvers
