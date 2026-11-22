@@ -9,7 +9,7 @@ export interface GuardianDef {
   spriteId: string;
   labId: string;
   /** Battle backdrop theme. */
-  theme: "grid" | "vale" | "gorge" | "peaks" | "grove" | "market" | "nest" | "caverns" | "rapids";
+  theme: "grid" | "vale" | "gorge" | "peaks" | "grove" | "market" | "nest" | "caverns" | "rapids" | "atoll";
   deckLabel: string;
   trials: { read: string; write: string; generalise: string };
   lessonsHref: string;
@@ -169,7 +169,21 @@ export const DRIFT_BOSS: GuardianDef = {
   lessonsHref: "/learn",
 };
 
-export const GUARDIANS: readonly GuardianDef[] = [PYTHON_GUARDIAN, VALE_GUARDIAN, GORGE_GUARDIAN, PEAKS_GUARDIAN, GROVE_GUARDIAN, LEAKAGE_BOSS, SWARM_BOSS, NEST_GUARDIAN, CAVERNS_GUARDIAN, RAPIDS_GUARDIAN, DRIFT_BOSS];
+export const ATOLL_GUARDIAN: GuardianDef = {
+  id: "guardian:attention-atoll",
+  slug: "atoll",
+  name: "Heedray",
+  badge: "Softmax Badge",
+  region: "the Attention Atoll",
+  spriteId: "heedray",
+  labId: "forge-attention",
+  theme: "atoll",
+  deckLabel: "attention and transformers",
+  trials: { read: "you can read an attention map and a mask", write: "build masked multi-head attention that passes gradient checks", generalise: "keep the maths right when the sequence, heads or mask change" },
+  lessonsHref: "/learn",
+};
+
+export const GUARDIANS: readonly GuardianDef[] = [PYTHON_GUARDIAN, VALE_GUARDIAN, GORGE_GUARDIAN, PEAKS_GUARDIAN, GROVE_GUARDIAN, LEAKAGE_BOSS, SWARM_BOSS, NEST_GUARDIAN, CAVERNS_GUARDIAN, RAPIDS_GUARDIAN, DRIFT_BOSS, ATOLL_GUARDIAN];
 
 export const guardianHref = (g: GuardianDef) => (g.slug ? `/guardian/${g.slug}` : "/guardian");
 

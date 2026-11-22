@@ -945,3 +945,12 @@ Append a dated entry after every run: what changed, how it was verified (command
 - Verification (`PATH=/usr/bin:$PATH`): lint (0 errors), typecheck, test (830 pass), content:verify and build (see final line), build:pages (first run exits 1 on the Next.js security nudge and then lacks `sw.js`, which makes every smoke script report a 404 console error; rerun exits 0), smoke:attention all PASS at desktop and iPhone 14; screenshots viewed: map readable, hatched causal triangle clear, no overflow.
 - Known gaps: not yet on the Labs page for forge-attention; no multi-head view.
 - Next: E1g (Atoll guardian sprite, fight, badge, and region map/backdrop).
+
+## 2026-11-22: E1g1 Heedray guardian (E1g split into E1g1/E1g2)
+
+- `scripts/art/atoll-guardian.mjs` -> `game/sprites/creatures/heedray.ts` (96x96, idle x4, attack x5, hurt x3, faint x4): a manta ray whose big query eye sends beams to five pearls; beam width comes from a real softmax row that sharpens and slides between pearls, so it reads as attention. New `atoll` battle backdrop (lagoon, palms, five buoys with softmax-weighted arcs from a cycling query buoy).
+- `ATOLL_GUARDIAN` (`/guardian/atoll`, Softmax Badge): trials on the `attention` deck, Write trial = `forge-attention`. Home page link, smoke coverage (`smoke:guardian-nest`), guardian test (sprite, lab, deck win, badge).
+- Readiness `transformers` skill now cites the real evidence (attention deck, `forge-attention`, `forge-block`, `forge-embed-pos`, Atoll guardian) instead of non-existent legacy lab ids.
+- Verification (`PATH=/usr/bin:$PATH`): lint (0 errors), typecheck, test (838 pass), content:verify (all ok), build, build:pages (first run exits 1 on the Next.js security nudge, rerun exits 0), smoke:guardian-nest all PASS at desktop and iPhone 14 (no overflow, no console errors); screenshot viewed: backdrop and sprite read clearly. CI/Pages: no gh CLI here, not confirmed.
+- Known gaps: Heedray's fight uses the generic "Overfit's minion" text (shared by all guardians); no Atoll overworld map yet.
+- Next: E1g2 (Attention Atoll map + NPCs), then E1h (companion -> Transformer).

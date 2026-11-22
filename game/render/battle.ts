@@ -45,7 +45,7 @@ function sprite(def: SpriteDef, anim: string, i: number, tint: Tint): HTMLCanvas
 
 const frameFor = (def: SpriteDef, anim: string, t: number) => Math.floor(t * (def.fps?.[anim] ?? 6));
 
-export type StageTheme = "grid" | "vale" | "gorge" | "peaks" | "grove" | "market" | "nest" | "caverns" | "rapids";
+export type StageTheme = "grid" | "vale" | "gorge" | "peaks" | "grove" | "market" | "nest" | "caverns" | "rapids" | "atoll";
 
 /** Vector Vale: a twilight meadow of crystals over a lattice floor, with slowly turning basis axes on the horizon. */
 function valeBackdrop(g: CanvasRenderingContext2D, t: number) {
@@ -622,6 +622,57 @@ function rapidsBackdrop(g: CanvasRenderingContext2D, t: number) {
   for (let i = 0; i < 12; i++) { const x = i * 22 + 4; g.fillRect(x, 114 - (i % 3) * 3, 1, 14 + (i % 3) * 3); g.fillRect(x + 3, 118, 1, 10); }
 }
 
+/** Attention Atoll: a turquoise lagoon at noon. Five buoys float in a row; arcs leap from a query buoy to the others and their thickness shifts over time like a softmax row (weights sum to one). Palms and a sand ring frame the pool. */
+function atollBackdrop(g: CanvasRenderingContext2D, t: number) {
+  const sky = g.createLinearGradient(0, 0, 0, 70);
+  sky.addColorStop(0, "#58b8e8");
+  sky.addColorStop(1, "#d8f4f0");
+  g.fillStyle = sky;
+  g.fillRect(0, 0, STAGE_W, STAGE_H);
+  // clouds
+  g.fillStyle = "#ffffff";
+  for (let i = 0; i < 3; i++) { const x = ((i * 90 + t * 3) % (STAGE_W + 60)) - 30; g.fillRect(Math.floor(x), 14 + i * 9, 26, 4); g.fillRect(Math.floor(x) + 5, 11 + i * 9, 14, 3); }
+  // far reef line and palms
+  g.fillStyle = "#e0c88a"; g.fillRect(0, 66, STAGE_W, 6);
+  for (let i = 0; i < 5; i++) {
+    const x = 20 + i * 52, h = 18 + (i % 2) * 6;
+    g.fillStyle = "#7a4a22"; g.fillRect(x, 66 - h, 2, h);
+    g.fillStyle = i % 2 ? "#2a9a4a" : "#1f7a3a";
+    for (let k = -2; k <= 2; k++) g.fillRect(x + k * 4 - 1, 66 - h - 2 + Math.abs(k), 7, 2);
+  }
+  // lagoon
+  const sea = g.createLinearGradient(0, 72, 0, STAGE_H);
+  sea.addColorStop(0, "#38c8d0");
+  sea.addColorStop(1, "#1a6a9a");
+  g.fillStyle = sea;
+  g.fillRect(0, 72, STAGE_W, STAGE_H - 72);
+  for (let i = 0; i < 16; i++) {
+    const y = 76 + ((i * 13) % 50), x = ((i * 47 + t * (10 + (i % 3) * 5)) % (STAGE_W + 20)) - 10;
+    g.fillStyle = i % 2 ? "#a8f0f0" : "#e8ffff";
+    g.fillRect(Math.floor(x), y, 6 + (i % 3) * 3, 1);
+  }
+  // five buoys; query buoy cycles, arcs carry softmax-like widths
+  const B = [30, 79, 128, 177, 226];
+  const q = Math.floor(t * 0.5) % 5;
+  const phase = (t * 0.5) % 1;
+  const raw = B.map((_, j) => Math.exp(-1.2 * (j - ((q + phase) % 5)) ** 2) + 0.05);
+  const z = raw.reduce((a, b) => a + b, 0);
+  B.forEach((bx, j) => {
+    const w = raw[j] / z, th = Math.max(1, Math.round(w * 5));
+    if (j !== q) {
+      g.strokeStyle = "#fff2a0"; g.lineWidth = th;
+      g.beginPath(); g.moveTo(B[q], 104); g.quadraticCurveTo((B[q] + bx) / 2, 74 - Math.abs(bx - B[q]) / 6, bx, 104); g.stroke();
+    }
+  });
+  B.forEach((bx, j) => {
+    const bob = Math.round(Math.sin(t * 2 + j) * 1.5);
+    g.fillStyle = j === q ? "#ff8ae0" : "#ffffff"; g.fillRect(bx - 4, 100 + bob, 8, 8);
+    g.fillStyle = "#c8326a"; g.fillRect(bx - 4, 104 + bob, 8, 2);
+    g.fillStyle = "#3a2a1a"; g.fillRect(bx, 94 + bob, 1, 6);
+  });
+  g.lineWidth = 1;
+}
+
 function backdrop(g: CanvasRenderingContext2D, t: number, theme: StageTheme = "grid") {
   if (theme === "vale") return valeBackdrop(g, t);
   if (theme === "gorge") return gorgeBackdrop(g, t);
@@ -631,6 +682,7 @@ function backdrop(g: CanvasRenderingContext2D, t: number, theme: StageTheme = "g
   if (theme === "nest") return nestBackdrop(g, t);
   if (theme === "caverns") return cavernsBackdrop(g, t);
   if (theme === "rapids") return rapidsBackdrop(g, t);
+  if (theme === "atoll") return atollBackdrop(g, t);
   const sky = g.createLinearGradient(0, 0, 0, 78);
   sky.addColorStop(0, "#0d1033");
   sky.addColorStop(1, "#2a2a6e");

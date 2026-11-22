@@ -202,7 +202,7 @@ describe("Warden Split sprite", () => {
 });
 
 describe("Metric Market boss sprites", () => {
-  for (const id of ["leakage", "imbalance-swarm", "drift"]) {
+  for (const id of ["leakage", "imbalance-swarm", "drift", "heedray"]) {
     it(`${id} is a registered 96×96 sprite with distinct animation frames`, () => {
       const s = spriteById(id);
       expect(s).toBeDefined();
@@ -316,6 +316,23 @@ describe("Metric Market bosses", () => {
     g = guardianLabResult(guardianAdvanceFromCards(g), true);
     g = guardianFight(g, { attack: 95, defence: 90, speed: 80 });
     expect(summarizeGuardian(g, DRIFT_BOSS.badge).badge).toBe(DRIFT_BOSS.badge);
+  });
+  it("Heedray runs on the attention deck with the attention Lab and awards its badge", async () => {
+    const { ATOLL_GUARDIAN, DRIFT_BOSS } = await import("@/lib/guardian/defs");
+    const { ATTENTION_DECK } = await import("@/lib/cards/samples");
+    expect(spriteById(ATOLL_GUARDIAN.spriteId)).toBeTruthy();
+    expect(labById(ATOLL_GUARDIAN.labId)).toBeTruthy();
+    expect(ATOLL_GUARDIAN.theme).toBe("atoll");
+    expect(ATOLL_GUARDIAN.badge).not.toBe(DRIFT_BOSS.badge);
+    let g = startGuardian(ATTENTION_DECK.cards, ATOLL_GUARDIAN.labId);
+    for (let i = 0; i < 100 && g.phase === "cards" && g.cards.current; i++) {
+      g = guardianAnswer(g, correctResponse(g.cards.current));
+      if (g.phase === "cards") g = guardianNext(g);
+    }
+    expect(g.cards.phase).toBe("won");
+    g = guardianLabResult(guardianAdvanceFromCards(g), true);
+    g = guardianFight(g, { attack: 95, defence: 90, speed: 80 });
+    expect(summarizeGuardian(g, ATOLL_GUARDIAN.badge).badge).toBe(ATOLL_GUARDIAN.badge);
   });
   it("guardian ids are unique", async () => {
     const { GUARDIANS } = await import("@/lib/guardian/defs");
