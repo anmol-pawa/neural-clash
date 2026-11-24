@@ -154,7 +154,7 @@ Work top to bottom: take the **first unchecked box**, and split big boxes into r
 
 ## Phase E: Act II regions
 
-- [ ] E1. Attention Atoll (T1), with modules 11–13, the attention-map visualiser and the companion → Transformer (split below)
+- [x] E1. Attention Atoll (T1), with modules 11–13, the attention-map visualiser and the companion → Transformer (split below)
   - [x] E1a. (done 2026-11-19) Attention solvers (`lib/solvers/attention.ts`): stable masked softmax, scaled dot-product attention with analytic backward, sqrt(d) variance demo, multi-head, sinusoidal + RoPE, O(n^2) memory; tests incl. finite differences.
   - [x] E1b. (done 2026-11-19) Lab module 11 `forge-embed-pos` (`Embedding` with scatter-add backward, `sinusoidal_pe`, `rope` with inverse = backward): reference, visible/hidden tests incl. finite differences and the relative-position property, 15 known-wrong versions.
   - [x] E1c. (done 2026-11-20) Lab module 12 `forge-attention` (`causal_mask`, `masked_softmax`, `sdpa` + `sdpa_backward`, `MultiHeadAttention`) with finite-difference checks and 22 known-wrong versions.
@@ -163,7 +163,7 @@ Work top to bottom: take the **first unchecked box**, and split big boxes into r
   - [x] E1f. (done 2026-11-21) Attention-map visualiser (pixel heatmap) at `/dev/attention` and embedded in the attention lessons; pure logic in `lib/viz/attentionMap.ts`. (Lab-page embed deferred to E1g/E1h with the Atoll.)
   - [x] E1g1. (done 2026-11-22) Heedray guardian: 96x96 sprite (front, 4 anims), `/guardian/atoll` fight on the `attention` deck + `forge-attention`, atoll battle backdrop, Softmax Badge, Readiness evidence.
   - [x] E1g2. (done 2026-11-22) Attention Atoll tileset (`scripts/art/attention-atoll.mjs`, 11 animated tile kinds), `ATOLL_PREVIEW` map, and two trainers with walk cycles + portraits (Diver Pell, Tidewatcher Sable); registered on `/dev/sprites`. Playable overworld wiring follows when the overworld engine ships (no region has one yet).
-  - [ ] E1h. Companion -> Transformer sprite and evolution requirements.
+  - [x] E1h. (done 2026-11-24) Companion -> Transformer sprite (64x64 front/back, idle/attack/hurt/faint/evolve; `scripts/art/neuron-pup-transformer.mjs`) and evolution requirements (`forge-embed-pos`, `forge-attention`, `forge-block`).
 - [ ] E2. Token Tundra (T2), with modules 14–17, the tiny LM trained on the Lore Corpus and the companion → Foundation
 - [ ] E3. Pretrain Peaks (T3), with cost solvers
 - [ ] E4. Tuning Terraces (T4), with LoRA maths and the decision guide

@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { evolutionState, FORMS, heroBackSpriteId } from "@/lib/evolution/evolution";
+import { LABS } from "@/lib/labs/catalog";
+import { spriteById } from "@/game/sprites/roster";
 
 const exists = new Set(["linear-gd", "forge-value"]);
 const pass = { passed: true, assisted: false };
@@ -76,5 +78,27 @@ describe("evolutionState", () => {
     expect(heroBackSpriteId(labs, all)).toBe("neuron-pup-convling-back");
     expect(heroBackSpriteId({ ...labs, "forge-rnn": pass }, all)).toBe("neuron-pup-recurrent-back");
     expect(FORMS[3]!.sprite).toBe("neuron-pup-recurrent");
+  });
+
+  it("reaches Transformer only after all three Atoll Labs, unassisted", () => {
+    const atoll = ["forge-embed-pos", "forge-attention", "forge-block"];
+    const all = new Set(["linear-gd", "forge-value", "forge-mlp", "forge-conv", "forge-rnn", ...atoll]);
+    const labs: Record<string, { passed: boolean; assisted: boolean }> = { "linear-gd": pass, "forge-value": pass, "forge-mlp": pass, "forge-conv": pass, "forge-rnn": pass };
+    expect(FORMS[4]!.requires).toEqual(atoll);
+    expect(heroBackSpriteId({ ...labs, "forge-attention": pass, "forge-block": pass }, all)).toBe("neuron-pup-recurrent-back");
+    expect(heroBackSpriteId({ ...labs, "forge-embed-pos": pass, "forge-attention": pass, "forge-block": { passed: true, assisted: true } }, all)).toBe("neuron-pup-recurrent-back");
+    const s = evolutionState({ ...labs, "forge-embed-pos": pass, "forge-attention": pass }, all);
+    expect(s.next?.form.id).toBe("transformer");
+    expect(heroBackSpriteId({ ...labs, "forge-embed-pos": pass, "forge-attention": pass, "forge-block": pass }, all)).toBe("neuron-pup-transformer-back");
+    expect(FORMS[4]!.sprite).toBe("neuron-pup-transformer");
+  });
+
+  it("every requirement of a form with art names a Lab that ships, and its sprites exist", () => {
+    const ids = new Set(LABS.map((l) => l.id));
+    for (const f of FORMS.filter((x) => x.sprite)) {
+      for (const r of f.requires) expect(ids.has(r), `${f.id} needs ${r}`).toBe(true);
+      expect(spriteById(f.sprite!), f.sprite!).toBeDefined();
+      expect(spriteById(`${f.sprite!}-back`), `${f.sprite!}-back`).toBeDefined();
+    }
   });
 });

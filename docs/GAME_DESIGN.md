@@ -66,7 +66,7 @@ Source of truth for what the game is. `docs/CURRICULUM.md` covers what it teache
 | **Multilayer** | autograd `Value` + MLP (Forge Labs `forge-value`, `forge-mlp`) |
 | **Convling** | conv layers (Forge Lab `forge-conv`) |
 | **Recurrent** | sequence models (Forge Lab `forge-rnn`) |
-| **Transformer** | attention + transformer block |
+| **Transformer** | embeddings + positions, attention and the transformer block (Forge Labs `forge-embed-pos`, `forge-attention`, `forge-block`) |
 | **Foundation** | tokenizer + training a tiny language model + sampling |
 
 Each stage is a new sprite set (original 64×64, full animations). Its battle stats derive from **your model's measured metrics** (§5.3).

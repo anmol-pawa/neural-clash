@@ -64,6 +64,23 @@ for (const [name, ctxOpts] of [["desktop", { viewport: { width: 1280, height: 90
   await page.waitForTimeout(400);
   await page.screenshot({ path: join(shots, `companion-${name}-perceptron.png`), fullPage: true });
   await overflow("evolved");
+
+  // every Lab through the Atoll, unassisted: the pup reaches the Transformer form
+  await page.evaluate(async () => {
+    const ids = ["linear-gd", "forge-value", "forge-mlp", "forge-conv", "forge-rnn", "forge-embed-pos", "forge-attention", "forge-block"];
+    const db = await new Promise((res, rej) => { const r = indexedDB.open("neural-clash-save", 1); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); });
+    const cur = await new Promise((res) => { const r = db.transaction("save", "readonly").objectStore("save").get("current"); r.onsuccess = () => res(r.result); });
+    for (const id of ids) cur.labs[id] = { passed: true, assisted: false };
+    await new Promise((res) => { const t = db.transaction("save", "readwrite"); t.objectStore("save").put(cur, "current"); t.oncomplete = res; });
+  });
+  await page.goto(`${origin}${BASE}/companion/`);
+  await page.getByTestId("companion-form").waitFor();
+  check((await page.getByTestId("form-transformer").getAttribute("data-reached")) === "true", `${name}: Atoll Labs unlock Transformer`);
+  check(/Transformer/.test(await page.getByTestId("companion-form").textContent()), `${name}: current form is Transformer`);
+  await page.getByTestId("form-transformer").scrollIntoViewIfNeeded();
+  await page.waitForTimeout(400);
+  await page.screenshot({ path: join(shots, `companion-${name}-transformer.png`) });
+  await overflow("transformer");
   check(errors.length === 0, `${name}: no console errors${errors.length ? ` (${errors[0]})` : ""}`);
   await ctx.close();
 }

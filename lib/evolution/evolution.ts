@@ -19,7 +19,7 @@ export const FORMS: readonly FormDef[] = [
   { id: "multilayer", name: "Multilayer", blurb: "Autograd lets stacked layers learn what one line cannot.", requires: ["forge-value", "forge-mlp"], sprite: "neuron-pup-multilayer" },
   { id: "convling", name: "Convling", blurb: "Shared filters that look for a pattern anywhere in the input.", requires: ["forge-conv"], sprite: "neuron-pup-convling" },
   { id: "recurrent", name: "Recurrent", blurb: "A hidden state carries memory along a sequence.", requires: ["forge-rnn"], sprite: "neuron-pup-recurrent" },
-  { id: "transformer", name: "Transformer", blurb: "Attention lets every token look at every other token.", requires: ["attention", "transformer-block"], sprite: null },
+  { id: "transformer", name: "Transformer", blurb: "Attention lets every token look at every other token.", requires: ["forge-embed-pos", "forge-attention", "forge-block"], sprite: "neuron-pup-transformer" },
   { id: "foundation", name: "Foundation", blurb: "A tokenizer, a tiny language model and sampling, end to end.", requires: ["tokenizer", "tiny-lm", "sampling"], sprite: null },
 ];
 
